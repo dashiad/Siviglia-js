@@ -1,0 +1,57 @@
+<?php
+namespace model\web\Site\WebsiteCountries\datasources;
+/**
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Sites/objects/WebsiteCountries/datasources/AdminFullList.php
+  CLASS:AdminFullList
+*
+*
+**/
+
+class AdminFullList
+{
+	 static  $definition=array(
+               'ROLE'=>'list',
+               'DATAFORMAT'=>'Table',
+               'PARAMS'=>array(
+                     'id_websiteCountry'=>array(
+                           'MODEL'=>'Sites\WebsiteCountries',
+                           'FIELD'=>'id_websiteCountry',
+                           'TRIGGER_VAR'=>'id_websiteCountry'
+                           )
+                     ),
+               'IS_ADMIN'=>1,
+               'FIELDS'=>array(
+                     'id_websiteCountry'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteCountries',
+                           'FIELD'=>'id_websiteCountry'
+                           )
+                     ),
+               'PERMISSIONS'=>array(
+                     array(
+                           'MODEL'=>'Sites\WebsiteCountries',
+                           'PERMISSION'=>'adminList'
+                           )
+                     ),
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'DEFINITION'=>array(
+                                 'TABLE'=>'WebsiteCountries',
+                                 'BASE'=>array('id_websiteCountry'),
+                                 'CONDITIONS'=>array(
+                                       array(
+                                             'FILTER'=>array(
+                                                   'F'=>'id_websiteCountry',
+                                                   'OP'=>'=',
+                                                   'V'=>'{%id_websiteCountry%}'
+                                                   ),
+                                             'TRIGGER_VAR'=>'id_websiteCountry',
+                                             'DISABLE_IF'=>'0',
+                                             'FILTERREF'=>'id_websiteCountry'
+                                             )
+                                       )
+                                 )
+                           )
+                     )
+               );
+}
+?>

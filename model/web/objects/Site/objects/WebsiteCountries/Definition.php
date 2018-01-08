@@ -1,0 +1,66 @@
+<?php
+namespace model\web\Site\WebsiteCountries;
+/**
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Sites/objects/WebsiteCountries/Definition.php
+  CLASS:Definition
+*
+*
+**/
+
+class Definition  extends \lib\model\BaseModelDefinition
+{
+	 static  $definition=array(
+               'ROLE'=>'ENTITY',
+               'DEFAULT_SERIALIZER'=>'default',
+               'DEFAULT_WRITE_SERIALIZER'=>'default',
+               'INDEXFIELDS'=>array('id_websiteCountry'),
+               'TABLE'=>'WebsiteCountries',
+               'LABEL'=>'WebsiteCountries',
+               'SHORTLABEL'=>'WebsiteCountries',
+               'CARDINALITY'=>'30',
+               'CARDINALITY_TYPE'=>'FIXED',
+               'FIELDS'=>array(
+                     'id_websiteCountry'=>array(
+                           'TYPE'=>'AutoIncrement',
+                           'MIN'=>0,
+                           'MAX'=>9999999999,
+                           'LABEL'=>'id_websiteCountry',
+                           'SHORTLABEL'=>'id_websiteCountry',
+                           'DESCRIPTIVE'=>'true',
+                           'ISLABEL'=>'false'
+                           ),
+                     'id_website'=>array(
+                           'DEFAULT'=>'',
+                           'FIELDS'=>array('id_website'=>'id_website'),
+                           'MODEL'=>'Site',
+                           'LABEL'=>'id_website',
+                           'SHORTLABEL'=>'id_website',
+                           'TYPE'=>'Relationship',
+                           'MULTIPLICITY'=>'1:N',
+                           'ROLE'=>'HAS_ONE',
+                           'CARDINALITY'=>1
+                           ),
+                     'id_country'=>array(
+                           'DEFAULT'=>'',
+                           'FIELDS'=>array('id_country'=>'id_country'),
+                           'MODEL'=>'ps_customer\ps_country',
+                           'LABEL'=>'id_country',
+                           'SHORTLABEL'=>'id_country',
+                           'TYPE'=>'Relationship',
+                           'MULTIPLICITY'=>'1:N',
+                           'ROLE'=>'HAS_ONE',
+                           'CARDINALITY'=>1
+                           )
+                     ),
+               'PERMISSIONS'=>array(),
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'ENGINE'=>'InnoDb',
+                           'CHARACTER SET'=>'utf8',
+                           'COLLATE'=>'utf8_general_ci',
+                           'TABLE_OPTIONS'=>array('ROW_FORMAT'=>'FIXED')
+                           )
+                     )
+               );
+}
+?>

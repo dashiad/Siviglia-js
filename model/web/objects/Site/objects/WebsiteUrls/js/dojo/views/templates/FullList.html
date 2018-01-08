@@ -1,0 +1,70 @@
+<div class="SivDatasource">
+	<div class="SivDatasourceHeader">
+		<h2>[@L]FullList[#]</h2>
+				<div class="SivDatasourceDescription"></div>
+		<div class="SivDatasourceFilters">
+        <div class="SivForm">
+
+            <div class="SivFormBody">
+
+                <form method="post" data-dojo-type="dijit/form/Form" data-dojo-attach-point='mainForm'>
+                    <div class="SivFormContents">
+                        <div class="SivFieldContainer" style="position:relative">
+								<div style="float:left">
+
+									<table border=0>
+										<tr>
+											<td class="SivFormLabel">[@L]id_websiteUrl[#]</td>
+											<td class="SivFormInput">
+											<span data-siviglia-name="id_websiteUrl" data-siviglia-input-type="AutoIncrement"  data-siviglia-input-definition='{"TYPE":"AutoIncrement","MIN":0,"MAX":9999999999}'></span>
+											</td>
+										</tr>
+									</table>
+								</div>
+
+								<div style="float:left">
+
+									<table border=0>
+										<tr>
+											<td class="SivFormLabel">[@L]url[#]</td>
+											<td class="SivFormInput">
+											<span data-siviglia-name="url" data-siviglia-input-type="String"  data-siviglia-input-definition='{"DEFAULT":"","MINLENGTH":"4","MAXLENGTH":"255","TYPE":"String"}'></span>
+											</td>
+										</tr>
+									</table>
+								</div>
+
+								<div style="float:left">
+
+									<table border=0>
+										<tr>
+											<td class="SivFormLabel">[@L]dynurl[#]</td>
+											<td class="SivFormInput">
+											<span data-siviglia-name="dynurl" data-siviglia-input-type="String"  data-siviglia-input-definition='{"DEFAULT":"","MINLENGTH":"4","MAXLENGTH":"255","TYPE":"String"}'></span>
+											</td>
+										</tr>
+									</table>
+								</div>
+
+								<div style="float:left">
+
+									<table border=0>
+										<tr>
+											<td class="SivFormLabel">[@L]priority[#]</td>
+											<td class="SivFormInput">
+											<span data-siviglia-name="priority" data-siviglia-input-type="Integer"  data-siviglia-input-definition='{"DEFAULT":"","TYPE":"Integer"}'></span>
+											</td>
+										</tr>
+									</table>
+								</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>		</div>
+		<div style="text-align:right"><span>[@L]Filas:[#]<div data-dojo-type="dijit/form/Select" data-dojo-attach-event="onChange:setLines" data-dojo-attach-point="lineSelector"><option value="10" >10</option><option value="20" selected>20</option><option value="50">50</option><option value="100">100</option></div>&nbsp;&nbsp;<a href="" data-dojo-attach-point="downloadCSVLink">[@L]Descargar CSV:[#]</a>&nbsp;&nbsp;<a href="" data-dojo-attach-point="downloadXLSLink">[@L]Descargar Excel[#]</a></div>
+		<div class="SivDatasourceGrid" data-dojo-attach-point="mainGrid" style="position:relative;height:270px">
+		</div>
+	</div>
+</div>

@@ -1,0 +1,31 @@
+<?php
+            
+            global $SERIALIZERS;
+            $params=Registry::$registry["PAGE"];
+            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
+            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);            $params=\Registry::$registry["PAGE"];
+?>
+            [*/VIEWS/OBJECT_VIEW({"currentPage":"$currentPage","object":"Sites/WebsiteUrls","dsName":"View","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                    [_TITLE]id_website[#]
+                    [_CONTENTS]
+                        [*/LAYOUTS/2Columns]
+				[_ROW]
+					[_LEFT]id_websiteUrl[#]
+					[_RIGHT][*:/types/AutoIncrement({"name":"id_websiteUrl","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]id_website[#]
+					[_RIGHT][*:/types/Relationship({"name":"id_website","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]url[#]
+					[_RIGHT][*:/types/String({"name":"url","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]priority[#]
+					[_RIGHT][*:/types/Integer({"name":"priority","model":"$iterator"})][#][#]
+				[#]
+ 
+                        [#]
+                    [#]    
+           [#]

@@ -1,0 +1,4 @@
+<div class="titled_subcontainer [_CLASS][_*][#]">
+       [_TITLE] <div class="titled_subcontainer_title fontSize2 backgroundColor2 bordercolor2 color2">[_*]</div>[#]
+       [_CONTENTS]<div class="titled_subcontainer_contents">[_*]</div>[#]
+</div>

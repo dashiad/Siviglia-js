@@ -1,0 +1,55 @@
+<div class="SivForm Site">
+    <div class="SivFormHeader">
+        <h2>EditAction</h2>
+        <div class="SivFormDescription">
+            
+        </div>
+    </div>
+    <div data-dojo-attach-point="SivFormOkNode" style="background-color:green;margin-top:5px;margin-bottom:5px;color:white;font-weight:bold;display:none"></div>
+    <div data-dojo-attach-point="SivFormErrorNode" style="background-color:red;margin-top:5px;margin-bottom:5px;color:white;font-weight:bold;display:none"></div>
+    <div class="SivFormBody">
+         <form method="post" data-dojo-type="dijit/form/Form" data-dojo-attach-point='mainForm'>
+            <div class="SivFormContents">
+                <div class="SivFieldContainer">
+                    <div class="SivFieldContainerTitle"></div>
+                    <div class="SivFieldContainerDescription"></div>                
+                    <table cellpadding=0 cellspacing=0>
+                        <tbody data-dojo-attach-point='tableNode'>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">host</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<span data-siviglia-name="host" data-siviglia-input-type="_String"  data-siviglia-input-definition='{"TYPE":"String","MAXLENGTH":40,"REQUIRED":true,"MODEL":"\\\\model\\\\Site","FIELD":"host"}'></span>
+							</td>
+						</tr>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">canonical_url</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<span data-siviglia-name="canonical_url" data-siviglia-input-type="_String"  data-siviglia-input-definition='{"TYPE":"String","MAXLENGTH":255,"REQUIRED":true,"MODEL":"\\\\model\\\\Site","FIELD":"canonical_url"}'></span>
+							</td>
+						</tr>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">hasSSL</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<span data-siviglia-name="hasSSL" data-siviglia-input-type="Boolean"  data-siviglia-input-definition='{"TYPE":"Boolean","REQUIRED":true,"MODEL":"\\\\model\\\\Site","FIELD":"hasSSL"}'></span>
+							</td>
+						</tr>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">namespace</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<span data-siviglia-name="namespace" data-siviglia-input-type="_String"  data-siviglia-input-definition='{"DEFAULT":"","MINLENGTH":"4","MAXLENGTH":"45","TYPE":"String","REQUIRED":true,"MODEL":"\\\\model\\\\Site","FIELD":"namespace"}'></span>
+							</td>
+						</tr>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">websiteName</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<span data-siviglia-name="websiteName" data-siviglia-input-type="_String"  data-siviglia-input-definition='{"DEFAULT":"","MINLENGTH":"4","MAXLENGTH":"45","TYPE":"String","SEARCHABLE":1,"REQUIRED":true,"MODEL":"\\\\model\\\\Site","FIELD":"websiteName"}'></span>
+							</td>
+						</tr>
+                 </tbody>            
+            </table>
+            </div>
+            <div class="SivFormButtons"><button data-dojo-type="dijit/form/Button" data-dojo-attach-event="onClick: submit" type="button">Ok</button></div>
+        </div>
+    </form>
+</div>
+             </div>

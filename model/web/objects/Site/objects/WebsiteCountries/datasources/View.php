@@ -1,0 +1,83 @@
+<?php
+namespace model\web\Site\WebsiteCountries\datasources;
+/**
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Sites/objects/WebsiteCountries/datasources/View.php
+  CLASS:View
+*
+*
+**/
+
+class View
+{
+	 static  $definition=array(
+               'ROLE'=>'view',
+               'DATAFORMAT'=>'Table',
+               'PARAMS'=>array(
+                     'id_websiteCountry'=>array(
+                           'MODEL'=>'Sites\WebsiteCountries',
+                           'FIELD'=>'id_websiteCountry',
+                           'TRIGGER_VAR'=>'id_websiteCountry'
+                           )
+                     ),
+               'IS_ADMIN'=>0,
+               'INDEXFIELDS'=>array(
+                     'id_websiteCountry'=>array(
+                           'MODEL'=>'Sites\WebsiteCountries',
+                           'FIELD'=>'id_websiteCountry',
+                           'REQUIRED'=>'true'
+                           )
+                     ),
+               'FIELDS'=>array(
+                     'id_websiteCountry'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteCountries',
+                           'FIELD'=>'id_websiteCountry'
+                           ),
+                     'id_website'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteCountries',
+                           'FIELD'=>'id_website'
+                           ),
+                     'id_country'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteCountries',
+                           'FIELD'=>'id_country'
+                           )
+                     ),
+               'INCLUDE'=>array(
+                     'Sites_id_website'=>array(
+                           'MODEL'=>'Site',
+                           'DATASOURCE'=>'FullList',
+                           'JOINTYPE'=>'LEFT',
+                           'JOIN'=>array('id_website'=>'id_website')
+                           ),
+                     'ps_customer\ps_country_id_country'=>array(
+                           'MODEL'=>'ps_customer\ps_country',
+                           'DATASOURCE'=>'FullList',
+                           'JOINTYPE'=>'LEFT',
+                           'JOIN'=>array('id_country'=>'id_country')
+                           )
+                     ),
+               'PERMISSIONS'=>array('_PUBLIC_'),
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'DEFINITION'=>array(
+                                 'TABLE'=>'WebsiteCountries',
+                                 'BASE'=>array(
+                                       'id_websiteCountry',
+                                       'id_website',
+                                       'id_country'
+                                       ),
+                                 'CONDITIONS'=>array(
+                                       array(
+                                             'FILTER'=>array(
+                                                   'F'=>'id_websiteCountry',
+                                                   'OP'=>'=',
+                                                   'V'=>'{%id_websiteCountry%}'
+                                                   ),
+                                             'FILTERREF'=>'id_websiteCountry'
+                                             )
+                                       )
+                                 )
+                           )
+                     )
+               );
+}
+?>

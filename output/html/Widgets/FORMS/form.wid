@@ -1,0 +1,112 @@
+<?php
+ $modelkeys=null;
+ $tModel=null;
+ ?>
+[_MODEL]
+                $modelkeys=$keys;
+                $modelSerializer=$serializer;
+                $tModel=& $model;               
+  [#]
+<?php
+// Parameters : object / layer / name / & $form
+  $curObject=$object;
+  $needModel=true;
+  $form=\lib\output\html\Form::getForm($object,$name,$modelkeys,$tModel);
+  $actionResult=isset(Registry::$registry["lastAction"])?Registry::$registry["lastAction"]:null;
+  $curSite= \model\web\Site::getCurrentWebsite();
+  $curSiteName=$curSite->getName();
+  global $request;
+  $curUrl=$request->getUrl();
+
+
+?>
+
+[*:/containers/TITLED_CONTAINER]
+    [_:TITLE]
+        [_TITLE]
+            [_*]
+        [#]
+    [#]
+
+    [_:CONTENT]
+        [_DESCRIPTION]
+            [*:TEXT_1][_*][#]
+        [#]        
+        <form method="POST" enctype="multipart/form-data" action="/action">
+        <input type="hidden" name="FORM" value="<?php echo $name?>">
+        <input type="hidden" name="MODEL" value="<?php echo $object?>">
+            <input type="hidden" name="SITE" value="<?php echo $curSiteName;?>">
+            <input type="hidden" name="PAGE" value="<?php echo $curUrl;?>">
+
+        <?php
+
+            $hk=null;
+            if(isset($keys))
+            {
+                $hk=$keys;
+                foreach($keys as $curKey=>$curValue)
+                {
+                    echo "<input type=\"hidden\" name=\"KEYS[".$curKey."]\" value=\"".$curValue."\">";
+                    $keys[]=$curValue;
+                }
+            }
+
+            $hash=\lib\output\html\Form::getHash($name,$object,$curSiteName,$curUrl,$hk,\Registry::$registry["session"]);
+        ?>
+            <input type="hidden" name="__FROM[SECCODE]" value="<?php echo $hash;?>">
+                <?php
+                    if(isset($instanceError)) {
+                        $hasMessage=false;
+                    ?>
+                <div style="background-color:red;padding:5px;color:white">
+                    [@T][_ID]46c0bea962f74ccf845c7a7a4e75f930[#][_C]Elemento no encontrado[#][#]
+                </div>
+                    <?php
+                    }
+                    ?>
+
+                [_FORMGROUP]
+                        [*:/FORMS/group_1]
+                            [_:TITLE]
+                                [_TITLE][_*][#]                               
+                            [#]
+                            [_:DESCRIPTION]
+                                [_DESCRIPTION][_*][#]                                
+                            [#]
+                            [_:FIELDS]
+                                [_FIELDS][_*][#]
+                            [#]
+                        [#]
+                [#]
+
+            [_FORMERRORS]
+            <?php
+            if($actionResult)
+            {
+                if(!$actionResult->isOk())
+                {
+                    ?>
+                    [_ERROR]<div style="color: red;width: 100%;text-align: center; margin: 10px auto;">[@T][_ID]9036c3b63b31ed00781efc960ff5638b[#][_C]Usuario/Contraseña incorrectos[#][#]</div>[#]
+                <?php
+                }
+
+                $fieldErrors=$actionResult->getGlobalErrors();
+                if($fieldErrors)
+                {
+                    ?>
+
+                <?php
+                }
+            }
+            ?>
+            [#]
+
+                [_BUTTONS]
+                        [*:/FORMS/buttonContainer_1]
+                            [_*]
+                        [#]
+                [#]
+        </form>
+    [#]
+[#]
+ 

@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+[@CSS]
+    [_FILE]admin[#]
+.background3 { background-color: #222 }
+.background2 { background-color: black }
+.background1 { background-color: black }
+.background4 { background-color: #444 }
+.background5 { background-color: #888 }
+
+.cbackground3 { background-color: #DDD }
+.cbackground2 { background-color: #DDD }
+.cbackground1 { background-color: #AAA }
+.cbackground4 { background-color: #DDD }
+.cbackground5 { background-color: #DDD }
+
+.color3 { color: #DDD }
+.color2 { color: #AAA }
+.color1 { color: #888 }
+.color4 { color: #FFF }
+.color5 { color: #FFF }
+.colorwhite {color:white}
+
+.ccolor3 {color: #666 }
+.ccolor2 {color: #222 }
+.ccolor1 {color: black }
+.ccolor4 {color: #666 }
+.ccolor5 {color: #666 }
+
+.bordercolor3 { border-color: #AAA }
+.bordercolor2 { border-color: #888 }
+.bordercolor1 { border-color: #333 }
+.bordercolor4 { border-color: #AAA }
+.bordercolor5 { border-color: #AAA }
+
+.cbordercolor3 {border-color: #AAA }
+.cbordercolor2 {border-color: #AAA }
+.cbordercolor1 {border-color: #888 }
+.cbordercolor4 {border-color: #AAA }
+.cbordercolor5 {border-color: #AAA }
+
+.fontSize1 {font-size:10px}
+.fontSize2 {font-size:12px}
+.fontSize3 {font-size:18px}
+
+* {font-family:Verdana}
+
+a {font-size:12px;}
+table * {font-size:10px}
+
+body{
+margin:0;
+padding:0;
+line-height: 1.5em;
+}
+
+b{font-size: 110%;}
+em{color: red;}
+
+#maincontainer{
+width: 1024px; /*Width of main container*/
+margin: 0 auto; /*Center container on page*/
+}
+
+#topsection{
+height: 90px; /*Height of top section*/
+border-bottom:2px solid;
+}
+
+#topsection h1{
+margin: 0;
+padding-top: 15px;
+}
+
+#contentwrapper{
+float: left;
+width: 100%;
+}
+
+#contentcolumn{
+margin-left: 200px; /*Set left margin to LeftColumnWidth*/
+}
+
+#leftcolumn{
+float: left;
+width: 200px; /*Width of left column*/
+margin-left: -1024px; /*Set left margin to -(MainContainerWidth)*/
+}
+
+#footer{
+clear: left;
+width: 100%;
+background: black;
+color: #FFF;
+text-align: center;
+padding: 4px 0;
+}
+
+#footer a{
+}
+
+.innertube{
+margin: 10px; /*Margins for inner DIV inside each column (to provide padding)*/
+margin-top: 0;
+}
+
+[#]
+[_STYLE][_*][#]
+    <link href="<?php echo WEBPATH?>/css/admin.css" rel="stylesheet" type="text/css" />
+<script src="<?php echo WEBPATH?>/scripts/jquery.js"></script>
+<script src="<?php echo WEBPATH?>/scripts/Siviglia.js"></script>
+<script src="<?php echo WEBPATH?>/scripts/widgets/Widgets.js"></script>
+<script>
+   $(document).ready(function()
+    {
+       
+        top.Widgets={};
+        var root=new Siviglia.model.PathRoot();
+        var oManager=new Siviglia.UI.Dom.Expando.ExpandoManager(root,root.context);
+        oManager.parse($(document.body),null);
+    });
+
+</script>
+[_SCRIPTS][_*][#]
+</head>
+<body class="background1 fontSize1 color1">
+<div id="maincontainer" class="background1">
+
+    <div id="topsection" class="background3 bordercolor4">
+        <div class="innertube colorwhite"><h1>[_TITLE][_*][#TITLE]</h1></div>
+    </div>
+
+    <div style="background-color:white">
+        <div id="contentwrapper" class="background1" >
+            <div id="contentcolumn" >
+                <div class="innertube">[_CONTENT][_*][#CONTENT]</div>
+            </div>
+        
+        </div>
+
+        <div id="leftcolumn" class="cbackground2 bordercolor2 ccolor2">
+            <div class="innertube">[_SIDEBAR][_*][#SIDEBAR]</div>
+            <div style="clear:both"></div>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+
+    <div id="footer" class="background3">[_FOOTER][_*][#FOOTER]</div>
+</div>
+</body>
+</html>
+
+
+

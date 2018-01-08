@@ -1,0 +1,75 @@
+[@SCRIPT]
+    [_FILE]Widgets[#]
+    [_SRC]   
+    Siviglia.Utils.buildClass({
+    context:'Siviglia.Widgets',
+    classes:{
+        VENTANA1:{
+            construct:function(view,pathRoot,context)
+            {
+                this.textTest="lalas";
+                this.context=context;                
+                context["obj"]="prueba";
+                
+                pathRoot["users"]={jose:{nombre:'jose6'}};
+                pathRoot["prueba"]={element:{value:'ESTE ES EL VALOR'}};
+                this.showing=true;
+                this.view=view;                
+            },
+            methods:{
+                initialize:function(params)
+                {                         
+                },
+                onOver:function(params)
+                {                                        
+                    if(this.showing)
+                       this.nodes.CONTENT.style.display='none';
+                    else
+                      this.nodes.CONTENT.style.display='block';
+                    this.showing=!this.showing;
+
+                    //$(this.nodes.TITULO).html('Clicked');
+                },
+                onLeave:function($params)
+                {                    
+                    $(this.nodes.TITULO).html('Left');
+                }
+            }
+        }
+    }
+    });
+    [#]
+    [_TEMPLATE]
+        <div sivWidget="VENTANA1"  widgetParams="obj"  widgetCode="Siviglia.Widgets.VENTANA1">
+        <div style="background-color:blue;color:white">
+            
+            <b>
+                <div sivEvent="mouseleave" sivCallback="onLeave">
+                <div sivValue="/@obj/element/value" sivEvent="click" sivCallback="onOver">uuu</div>
+                </div>
+            </b>
+            <div widgetNode="TITULO">Tit</div>
+        </div>
+        
+        <div style="background-color:yellow;color:black;padding:10px">
+            <div widgetNode="CONTENT">COnt
+            </div>
+        </div>
+        
+        <div style="background-color:black;color:white">
+            Fin de widget
+        </div>
+    </div>
+    [#]
+[#]
+
+
+<div sivView="VENTANA1" >
+    [_TITLE]<div viewNode="TITULO"><div sivValue="/users/jose/nombre"></div>[_*]</div>[#]
+    [_CONTENTS]<div viewNode="CONTENT">[_*]</div>[#]                   
+</div>
+
+<div sivView="VENTANA1" >
+    <div viewNode="TITULO">Segundaventana</div>
+    <div viewNode="CONTENT">Segundo contenido</div>
+</div>

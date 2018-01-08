@@ -1,0 +1,16 @@
+[_ROW]
+<div style="border-bottom:1px solid #444;">
+[_LEFT]
+   <div style="float:left;padding:2px;margin:1px;background-color:#BBB;width:200px;font-family:Verdana;font-size:12px">
+     [_*]
+   </div>
+[#]
+[_RIGHT]
+   <div style="float:left;padding:2px;margin:1px">
+    [_*]
+   </div>
+[#]
+    <div style="clear:both"></div> 
+</div>
+[#]
+

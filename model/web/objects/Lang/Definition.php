@@ -1,0 +1,112 @@
+<?php
+namespace model\web\Lang;
+/**
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang/Definition.php
+  CLASS:Definition
+*
+*
+**/
+
+class Definition  extends \lib\model\BaseModelDefinition
+{
+	 static  $definition=array(
+               'ROLE'=>'ENTITY',
+               'INDEXFIELDS'=>array('id_lang'),
+               'TABLE'=>'Lang',
+               'LABEL'=>'Lang',
+               'SHORTLABEL'=>'Lang',
+               'CARDINALITY'=>'300',
+               'CARDINALITY_TYPE'=>'FIXED',
+               'DEFAULT_SERIALIZER'=>'web',
+               'DEFAULT_WRITE_SERIALIZER'=>'web',
+               'FIELDS'=>array(
+                     'name'=>array(
+                           'DEFAULT'=>'',
+                           'MINLENGTH'=>'4',
+                           'LABEL'=>'name',
+                           'SHORTLABEL'=>'name',
+                           'MAXLENGTH'=>'32',
+                           'TYPE'=>'String',
+                           'DESCRIPTIVE'=>'false',
+                           'ISLABEL'=>'false'
+                           ),
+                     'is_rtl'=>array(
+                           'DEFAULT'=>'0',
+                           'SHORTLABEL'=>'is_rtl',
+                           'TYPE'=>'Integer',
+                           'LABEL'=>'is_rtl',
+                           'DESCRIPTIVE'=>'false',
+                           'ISLABEL'=>'false'
+                           ),
+                     'language_code'=>array(
+                           'DEFAULT'=>'',
+                           'MINLENGTH'=>'4',
+                           'LABEL'=>'language_code',
+                           'SHORTLABEL'=>'language_code',
+                           'MAXLENGTH'=>'5',
+                           'TYPE'=>'String',
+                           'DESCRIPTIVE'=>'false',
+                           'ISLABEL'=>'false'
+                           ),
+                     'iso_code'=>array(
+                           'DEFAULT'=>'',
+                           'MINLENGTH'=>'4',
+                           'LABEL'=>'iso_code',
+                           'SHORTLABEL'=>'iso_code',
+                           'MAXLENGTH'=>'2',
+                           'TYPE'=>'String',
+                           'DESCRIPTIVE'=>'false',
+                           'ISLABEL'=>'false'
+                           ),
+                     'active'=>array(
+                           'DEFAULT'=>'0',
+                           'SHORTLABEL'=>'active',
+                           'TYPE'=>'Integer',
+                           'LABEL'=>'active',
+                           'DESCRIPTIVE'=>'false',
+                           'ISLABEL'=>'false'
+                           ),
+                     'id_lang'=>array(
+                           'TYPE'=>'AutoIncrement',
+                           'MIN'=>0,
+                           'MAX'=>9999999999,
+                           'LABEL'=>'id_lang',
+                           'SHORTLABEL'=>'id_lang',
+                           'DESCRIPTIVE'=>'false',
+                           'ISLABEL'=>'false'
+                           ),
+                     'date_format_full'=>array(
+                           'DEFAULT'=>'Y-m-d H:i:s',
+                           'MINLENGTH'=>'4',
+                           'LABEL'=>'date_format_full',
+                           'SHORTLABEL'=>'date_format_full',
+                           'MAXLENGTH'=>'32',
+                           'TYPE'=>'String',
+                           'DESCRIPTIVE'=>'false',
+                           'ISLABEL'=>'false'
+                           ),
+                     'date_format_lite'=>array(
+                           'DEFAULT'=>'Y-m-d',
+                           'MINLENGTH'=>'4',
+                           'LABEL'=>'date_format_lite',
+                           'SHORTLABEL'=>'date_format_lite',
+                           'MAXLENGTH'=>'32',
+                           'TYPE'=>'String',
+                           'DESCRIPTIVE'=>'false',
+                           'ISLABEL'=>'false'
+                           )
+                     ),
+               'ALIASES'=>array(
+                     ),
+               'PERMISSIONS'=>array(),
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'ENGINE'=>'InnoDb',
+                           'CHARACTER SET'=>'utf8',
+                           'COLLATE'=>'utf8_general_ci',
+                           'TABLE_OPTIONS'=>array('ROW_FORMAT'=>'FIXED')
+                           )
+                     )
+               );
+}
+?>

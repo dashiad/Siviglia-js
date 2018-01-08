@@ -1,0 +1,7 @@
+<?php
+  if(!$pago && DEVELOPMENT)
+  {
+      $pago=\getModel("Payment/pagos_vendedores",array("id_pago_vendedor"=>20603));
+      \Registry::$registry["emailParams"]["pagoVendedor"]=$pago;
+  }
+?>

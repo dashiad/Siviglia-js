@@ -1,0 +1,65 @@
+<div class="SivForm Lang">
+    <div class="SivFormHeader">
+        <h2>EditAction</h2>
+        <div class="SivFormDescription">
+            
+        </div>
+    </div>
+    <div class="SivFormBody">
+         <form method="post" data-dojo-type="dijit/form/Form" data-dojo-attach-point='mainForm'>
+            <div class="SivFormContents">
+                <div class="SivFieldContainer">
+                    <div class="SivFieldContainerTitle"></div>
+                    <div class="SivFieldContainerDescription"></div>                
+                    <table cellpadding=0 cellspacing=0>
+                        <tbody data-dojo-attach-point='tableNode'>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">name</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<input name="name" data-dojo-type="Siviglia/forms/inputs/String" data-dojo-attach-point="name"  data-dojo-definition='{"DEFAULT":"","MINLENGTH":"4","MAXLENGTH":"32","REQUIRED":true}'>
+							</td>
+						</tr>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">is_rtl</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<input name="is_rtl" data-dojo-type="Siviglia/forms/inputs/Integer" data-dojo-attach-point="is_rtl"  data-dojo-definition='{"DEFAULT":"0","REQUIRED":true}'>
+							</td>
+						</tr>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">language_code</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<input name="language_code" data-dojo-type="Siviglia/forms/inputs/String" data-dojo-attach-point="language_code"  data-dojo-definition='{"DEFAULT":"","MINLENGTH":"4","MAXLENGTH":"5","REQUIRED":true}'>
+							</td>
+						</tr>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">iso_code</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<input name="iso_code" data-dojo-type="Siviglia/forms/inputs/String" data-dojo-attach-point="iso_code"  data-dojo-definition='{"DEFAULT":"","MINLENGTH":"4","MAXLENGTH":"2","REQUIRED":true}'>
+							</td>
+						</tr>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">active</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<input name="active" data-dojo-type="Siviglia/forms/inputs/Integer" data-dojo-attach-point="active"  data-dojo-definition='{"DEFAULT":"0","REQUIRED":true}'>
+							</td>
+						</tr>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">date_format_full</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<input name="date_format_full" data-dojo-type="Siviglia/forms/inputs/String" data-dojo-attach-point="date_format_full"  data-dojo-definition='{"DEFAULT":"Y-m-d H:i:s","MINLENGTH":"4","MAXLENGTH":"32","REQUIRED":true}'>
+							</td>
+						</tr>
+						<tr>
+							<td class="SivFormLabel SivFormRequiredField">date_format_lite</td>
+							<td class="SivFormInput SivFormRequiredField">
+				<input name="date_format_lite" data-dojo-type="Siviglia/forms/inputs/String" data-dojo-attach-point="date_format_lite"  data-dojo-definition='{"DEFAULT":"Y-m-d","MINLENGTH":"4","MAXLENGTH":"32","REQUIRED":true}'>
+							</td>
+						</tr>
+                 </tbody>            
+            </table>
+            </div>
+            <div class="SivFormButtons"><button data-dojo-type="dijit/form/Button" data-dojo-attach-event="onclick: submit" type="button">Ok</button></div>
+        </div>
+    </form>
+</div>
+             </div>

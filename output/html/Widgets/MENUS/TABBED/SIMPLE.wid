@@ -1,0 +1,5 @@
+<div style="border-bottom:1px solid black">
+<table border="1"><tr>
+[_MENUITEM]<td><a href="[_LINK][_*][#]">[_LABEL][_*][#]</a></td>[#]
+</table>
+</div>

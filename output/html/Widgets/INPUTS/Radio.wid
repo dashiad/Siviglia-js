@@ -1,0 +1,19 @@
+<?php 
+ echo "<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"Radio\">";
+?>
+[_DATASOURCE]
+    [*:/INPUTS/DATASOURCEDINPUT]
+        [_:ITERATOR({"name":"$name","ds":"$ds"})]
+            <?php
+             //currentFormModel
+             global $globalPath;
+             global $globalContext;
+             $curVal=$globalPath->getPath("/@name/Value",$globalContext);
+             if($value==$curVal)
+                 $cad="checked";
+             else
+                 $cad="";
+             echo '<input type="radio" name="FIELDS['.$name.']" value="'.$curVal.'"  '.$cad.'>';?>{%/@name/Label%}
+        [#]
+    [#]
+[#]

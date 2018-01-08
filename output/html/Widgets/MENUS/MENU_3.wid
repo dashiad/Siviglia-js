@@ -1,0 +1,55 @@
+
+<style type="text/css">
+
+div.topbar{ /* bar that runs across the top of the menu */
+height: 16px;
+background: #e16031;
+}
+
+ul.claybricks{ /* main menu UL */
+font-weight: bold;
+width: 100%;
+background: #e3e490;
+padding: 6px 0 6px 0; /* padding of the 4 sides of the menu */
+margin: 0;
+text-align: left; /* set value to "left", "center", or "right" to align menu accordingly */
+}
+
+ul.claybricks li{
+display: inline;
+}
+
+ul.claybricks li a{
+color:black;
+padding: 6px 8px 4px 8px; /* padding of the 4 sides of each menu link */
+margin-right: 20px; /* spacing between each menu link */
+text-decoration: none;
+}
+
+ul.claybricks li a:hover, ul.claybricks li a.selected{
+color: white;
+background: #5d4137;
+background: -moz-linear-gradient(top, #5d4137 0%, #41251b 12%, #2c0f05 100%); /* moz syntax for CSS3 gradient */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#5d4137), color-stop(12%,#41251b), color-stop(100%,#2c0f05));
+background: -webkit-linear-gradient(top, #5d4137 0%,#41251b 12%,#2c0f05 100%); /* webkit syntax for CSS3 gradient */
+background: -o-linear-gradient(top, #5d4137 0%,#41251b 12%,#2c0f05 100%); /* opera syntax for CSS3 gradient */
+background: -ms-linear-gradient(top, #5d4137 0%,#41251b 12%,#2c0f05 100%);
+background: linear-gradient(top, #5d4137 0%,#41251b 12%,#2c0f05 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5d4137', endColorstr='#2c0f05',GradientType=0 );
+-moz-box-shadow: 0 0 5px #595959; /* moz syntax for CSS3 box shadows */
+-webkit-box-shadow: 0 0 5px #595959;
+box-shadow: 0 0 5px #595959;
+padding-top: 17px; /* large padding to get menu item to protrude upwards */
+padding-bottom: 6px;
+}
+
+</style>
+
+<div class="topbar"></div>
+[_MENUGROUP]
+<ul class="claybricks">
+
+[_MENUITEM]<li><a href="[_LINK][_*][#LINK]">[_LABEL][_*][#LABEL]</a></li>[#MENUITEM]
+</ul>
+[#]
+

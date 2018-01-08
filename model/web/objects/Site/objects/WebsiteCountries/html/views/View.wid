@@ -1,0 +1,95 @@
+<?php
+            
+            global $SERIALIZERS;
+            $params=Registry::$registry["PAGE"];
+            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
+            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);            $params=\Registry::$registry["PAGE"];
+?>
+            [*/VIEWS/OBJECT_VIEW({"currentPage":"$currentPage","object":"Sites/WebsiteCountries","dsName":"View","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                    [_TITLE]id_websiteCountry[#]
+                    [_CONTENTS]
+                        [*/LAYOUTS/2Columns]
+				[_ROW]
+					[_LEFT]id_websiteCountry[#]
+					[_RIGHT][*:/types/AutoIncrement({"name":"id_websiteCountry","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]id_website[#]
+					[_RIGHT][*:/types/Relationship({"name":"id_website","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]id_country[#]
+					[_RIGHT][*:/types/Relationship({"name":"id_country","model":"$iterator"})][#][#]
+				[#]
+ 
+                        [#]
+                    [#]    
+           [#]
+ $Sites_id_websiteIterator=$iterator->Sites_id_website;
+ ?><?php
+
+?>
+[*LIST_IT({"currentPage":"$currentPage","iterator":"&$Sites_id_websiteIterator","subModel":"&$curModel"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]id_website[#][#]
+						[_COLUMN][_LABEL]namespace[#][#]
+						[_COLUMN][_LABEL]websiteName[#][#]
+        
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_website","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"namespace","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"websiteName","model":"$curModel"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]     
+           [#]
+ $ps_customer\ps_country_id_countryIterator=$iterator->ps_customer\ps_country_id_country;
+ ?><?php
+
+?>
+[*LIST_IT({"currentPage":"$currentPage","iterator":"&$ps_customer\ps_country_id_countryIterator","subModel":"&$curModel"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]zip_code_format[#][#]
+						[_COLUMN][_LABEL]id_country[#][#]
+						[_COLUMN][_LABEL]contains_states[#][#]
+						[_COLUMN][_LABEL]call_prefix[#][#]
+						[_COLUMN][_LABEL]need_zip_code[#][#]
+						[_COLUMN][_LABEL]id_currency[#][#]
+						[_COLUMN][_LABEL]need_identification_number[#][#]
+						[_COLUMN][_LABEL]active[#][#]
+						[_COLUMN][_LABEL]iso_code[#][#]
+						[_COLUMN][_LABEL]display_tax_label[#][#]
+						[_COLUMN][_LABEL]id_zone[#][#]
+        
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/String({"name":"zip_code_format","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_country","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"contains_states","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"call_prefix","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"need_zip_code","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"id_currency","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"need_identification_number","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"active","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"iso_code","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"display_tax_label","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"id_zone","model":"$curModel"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]     
+           [#]

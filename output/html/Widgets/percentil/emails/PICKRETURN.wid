@@ -1,0 +1,19 @@
+<?php
+  if(!$order)
+  {
+      $ds=\getDataSource("ps_orders\\ps_order_return","FullList");
+      $params=$ds->getPagingParameters();
+      $params->__count=1;
+      $params->__sort='id_order';
+      $params->__sortDir='DESC';
+      if($viewParams["reason"])
+      {
+          $params->id_reason=$viewParams["reason"];
+      }
+
+      $it=$ds->fetchAll();
+      $return=\getModel("ps_orders\\ps_order_return",array("id_order_return"=>$it[0]->id_order_return));
+      $order=\getModel("ps_orders",array("id_order"=>$it[0]->id_order));
+      \Registry::$registry["emailParams"]["order"]=$order;
+  }
+?>

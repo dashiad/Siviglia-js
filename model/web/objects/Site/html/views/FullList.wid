@@ -1,0 +1,35 @@
+<?php
+            global $SERIALIZERS;
+            $currentPage=Registry::$registry["currentPage"];
+            $params=Registry::$registry["params"];
+            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
+            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+?>
+[*:LIST_DS({"currentPage":"$currentPage","object":"/web/Site","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_:HEADER]
+                    [_:TITLE]Titulo de la lista[#]
+                    [_:DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_:LISTING]
+                    [_:COLUMNHEADERS]
+						[_:COLUMN][_:LABEL]id_site[#][#]
+						[_:COLUMN][_:LABEL]Host[#][#]
+						[_:COLUMN][_:LABEL]Canonical url[#][#]
+						[_:COLUMN][_:LABEL]Has SSL[#][#]
+						[_:COLUMN][_:LABEL]namespace[#][#]
+						[_:COLUMN][_:LABEL]name[#][#]
+        
+                    [#]
+                    [_:ROWS]
+						[_:ROW][_:VALUE][*:/types/AutoIncrement({"name":"id_site","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*:/types/_String({"name":"host","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*:/types/_String({"name":"canonical_url","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*:/types/Boolean({"name":"hasSSL","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*:/types/_String({"name":"namespace","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*:/types/_String({"name":"websiteName","model":"$iterator"})][#][#][#]
+
+                    [#]
+                    [_:LISTINGFOOTER]
+                    [#]
+                [#]     
+           [#]

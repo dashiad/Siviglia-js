@@ -1,0 +1,22 @@
+define(
+       ["dojo/_base/declare","dijit/_WidgetBase",
+        "dijit/_TemplatedMixin","dijit/_WidgetsInTemplateMixin",
+        "dojo/text!web/WebUser/dojo/actions/templates/SetEditorAction.html","dojo/promise/all",
+        "dojo/when","dojo/Deferred","Siviglia/forms/Form","Siviglia/forms/inputs/RelationMxN"
+        ],
+       function(declare,WidgetBase,TemplatedMixin,WidgetsInTemplateMixin,template,all,when,Deferred,Form)
+       {
+          return declare('WebUser.SetEditorAction',[WidgetBase,TemplatedMixin,WidgetsInTemplateMixin,Form],{
+                          templateString:template,
+                          definition:{"MODEL":"WebUser","ROLE":"SetRelation","PERMISSIONS":[{"MODEL":"WebUser","PERMISSION":"edit"}],"IS_ADMIN":false,"TYPE":"DataSet","TARGET_RELATION":"SectionEditors","INDEXFIELDS":{"USER_ID":{"REQUIRED":true,"FIELD":"USER_ID","MODEL":"\\web\\objects\\WebUser"}},"FIELDS":{"SectionEditors":{"REQUIRED":true,"FIELD":"SectionEditors","MODEL":"WebUser","TARGET_RELATION":"SectionEditors","DATASOURCE":{"MODEL":"WebSection","NAME":"FullList","PARAMS":[]}}}},
+                          title:"",
+                          formClass:'',
+                          description:'',
+                          _widgetsInTemplate:true,
+                          errors:[],
+                           constructor:function()
+                          {
+                            this.inherited(arguments);
+                          }
+                        });
+      });

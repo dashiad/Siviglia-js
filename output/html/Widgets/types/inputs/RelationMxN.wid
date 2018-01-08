@@ -1,0 +1,42 @@
+<?php
+    $fDef=$form->__getInputParams($name); 
+    $labelFields=$fDef["LABEL"];
+    $valueFields=$fDef["VALUE"];
+    $formField=$form->__getField($name)->getDefinition();
+    $formModel=$model;
+
+
+    $parts=explode("/",$formField["FIELD"]);
+    $relationField=$formModel->__getField($parts[0]);
+
+    if(!$ds)
+    {
+        if(isset($fDef[$name]["DATASOURCE"]))
+        {
+            $def=$fDef[$name]["DATASOURCE"];
+            $object=$def["MODEL"];
+            $name=$def["NAME"];
+            $params=$fDef[$name]["PARAMS"];
+
+        }
+        else
+        {
+            $remoteField=$relationField->getRemoteField();
+            $remoteModel=$relationField->getRemoteObject();
+            $object=$remoteModel;
+            $name="Full".ucfirst($remoteField);
+            $params=$mapping;
+        }
+        $ds=\lib\datasource\DataSourceFactory::getDataSource($object,$name);
+        if($params)
+        {
+            foreach($params as $key=>$value)
+                $ds->{$key}=$formModel->parseString($value,new stdClass());
+        }
+    }
+    $localMapping=array_values($relationField->getLocalMapping());
+    ?>
+    [*:/INPUTS/SelectMultiple({"name":"$name","labelFields":"$labelFields","valueFields":"$valueFields","relationFields":"$localMapping"})]
+        [_:OPTION({"optionValue":""})][_:LABEL]--Selecciona una opcion[#][#]
+        [_:DATASOURCE({"ds":"$ds"})][#]
+    [#]    

@@ -1,0 +1,8 @@
+<span>
+ [_HEADER]
+            [*:TITLE_1]
+                    [_TITLE][_*][#]
+            [#]
+            [_DESCRIPTION][_*][#]
+        [#]
+</span>

@@ -1,0 +1,12 @@
+<div class="bordercolor3" style="margin-top:10px;">
+  [_TITLE]
+    <div class="cbackground3 ccolor3 fontSize3" style="padding:8px;text-align:right">
+       [_*]
+    </div>
+  [#]
+  [_CONTENT]
+    <div class="background2 color2 fontSize1" style="padding:8px">
+        [_*]
+    </div>
+  [#]
+</div>

@@ -1,0 +1,4 @@
+composer.phar
+phpunit.phar
+vendor/*
+sites/statics/html/node_modules

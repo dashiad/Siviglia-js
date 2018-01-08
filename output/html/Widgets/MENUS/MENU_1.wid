@@ -1,0 +1,18 @@
+<div class="menu3 contentLevel2">    
+  [_MENUGROUP]
+    <div class="menu3group contentLevel3">        
+        [_MENUITEM]            
+            [*:/HELPERS/REQ_PERMISSION({"required":"$permission","group":"$module"})]
+                [_:PERMISSION]
+                    <div class="menu3item contentLevel4">
+                    <a href="[_LINK][_*][#]">[_LABEL][_*][#]</a>
+                    </div>
+                [#]
+                [_:ELSE]   
+                
+                [#]
+            [#]
+        [#]
+    </div>
+  [#]
+</div>

@@ -1,0 +1,105 @@
+<?php
+namespace model\web\Site\WebsiteUrls\datasources;
+/**
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Sites/objects/WebsiteUrls/datasources/FullList.php
+  CLASS:FullList
+*
+*
+**/
+
+class FullList
+{
+	 static  $definition=array(
+               'ROLE'=>'list',
+               'DATAFORMAT'=>'Table',
+               'PARAMS'=>array(
+                     'id_websiteUrl'=>array(
+                           'MODEL'=>'Sites\WebsiteUrls',
+                           'FIELD'=>'id_websiteUrl',
+                           'TRIGGER_VAR'=>'id_websiteUrl'
+                           ),
+                     'url'=>array(
+                           'MODEL'=>'Sites\WebsiteUrls',
+                           'FIELD'=>'url',
+                           'TRIGGER_VAR'=>'url'
+                           ),
+                     'dynurl'=>array(
+                           'MODEL'=>'Sites\WebsiteUrls',
+                           'FIELD'=>'url',
+                           'PARAMTYPE'=>'DYNAMIC'
+                           ),
+                     'priority'=>array(
+                           'MODEL'=>'Sites\WebsiteUrls',
+                           'FIELD'=>'priority',
+                           'TRIGGER_VAR'=>'priority'
+                           )
+                     ),
+               'IS_ADMIN'=>0,
+               'FIELDS'=>array(
+                     'id_websiteUrl'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
+                           'FIELD'=>'id_websiteUrl'
+                           ),
+                     'url'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
+                           'FIELD'=>'url'
+                           ),
+                     'priority'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
+                           'FIELD'=>'priority'
+                           )
+                     ),
+               'PERMISSIONS'=>array('_PUBLIC_'),
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'DEFINITION'=>array(
+                                 'TABLE'=>'WebsiteUrls',
+                                 'BASE'=>array(
+                                       'id_websiteUrl',
+                                       'url',
+                                       'priority'
+                                       ),
+                                 'CONDITIONS'=>array(
+                                       array(
+                                             'FILTER'=>array(
+                                                   'F'=>'id_websiteUrl',
+                                                   'OP'=>'=',
+                                                   'V'=>'{%id_websiteUrl%}'
+                                                   ),
+                                             'TRIGGER_VAR'=>'id_websiteUrl',
+                                             'DISABLE_IF'=>'0',
+                                             'FILTERREF'=>'id_websiteUrl'
+                                             ),
+                                       array(
+                                             'FILTER'=>array(
+                                                   'F'=>'url',
+                                                   'OP'=>'=',
+                                                   'V'=>'{%url%}'
+                                                   ),
+                                             'TRIGGER_VAR'=>'url',
+                                             'DISABLE_IF'=>'0',
+                                             'FILTERREF'=>'url'
+                                             ),
+                                       array(
+                                             'FILTER'=>'url LIKE {%dynurl%}',
+                                             'TRIGGER_VAR'=>'dynurl',
+                                             'DISABLE_IF'=>'0',
+                                             'FILTERREF'=>'dynurl'
+                                             ),
+                                       array(
+                                             'FILTER'=>array(
+                                                   'F'=>'priority',
+                                                   'OP'=>'=',
+                                                   'V'=>'{%priority%}'
+                                                   ),
+                                             'TRIGGER_VAR'=>'priority',
+                                             'DISABLE_IF'=>'0',
+                                             'FILTERREF'=>'priority'
+                                             )
+                                       )
+                                 )
+                           )
+                     )
+               );
+}
+?>

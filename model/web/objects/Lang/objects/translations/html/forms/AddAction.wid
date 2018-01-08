@@ -1,0 +1,68 @@
+<?php
+            global $SERIALIZERS;
+            $formKeys=null;;
+            $serializer=\lib\storage\StorageFactory::getSerializerByName('backoffice');
+            $serializer->useDataSpace($SERIALIZERS["backoffice"]["ADDRESS"]["database"]["NAME"]);
+?>
+
+
+                [*/FORMS/form({"object":"Lang/translations","layer":"backoffice","name":"AddAction","form":"&$form"})]
+                [_TITLE]AddAction Lang\translations[#]
+                [_DESCRIPTION]Form Description[#]
+                [_MODEL({"keys":"$formKeys","serializer":"$serializer","model":"&$currentModel"})][#]                           
+                [_FORMGROUP]
+                        [_TITLE]Form Group Title[#]
+                        [_DESCRIPTION]Form Group Description[#]
+                        [_FORMERRORS]
+
+                        [#]
+                        [_FIELDS]
+
+
+				[*/FORMS/inputContainer({"name":"value"})]
+					[_LABEL]value[#]
+					[_HELP]**Insert Field Help**[#]
+					[_INPUT]
+						[*:/types/inputs/Text({"model":"$currentModel","name":"value","form":"$form"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"INVALID","code":"2"})][@L]Lang\translations__value_INVALID[#][#]
+						[_ERROR({"type":"UNSET","code":"1"})][@L]Lang\translations__value_UNSET[#][#]
+					[#]
+				[#]
+
+
+				[*/FORMS/inputContainer({"name":"lang"})]
+					[_LABEL]lang[#]
+					[_HELP]**Insert Field Help**[#]
+					[_INPUT]
+						[*:/types/inputs/String({"model":"$currentModel","name":"lang","form":"$form"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"INVALID","code":"2"})][@L]Lang\translations__lang_INVALID[#][#]
+						[_ERROR({"type":"UNSET","code":"1"})][@L]Lang\translations__lang_UNSET[#][#]
+						[_ERROR({"type":"TOO_SHORT","code":"100"})][@L]Lang\translations__lang_TOO_SHORT[#][#]
+						[_ERROR({"type":"TOO_LONG","code":"101"})][@L]Lang\translations__lang_TOO_LONG[#][#]
+						[_ERROR({"type":"INVALID_CHARACTERS","code":"102"})][@L]Lang\translations__lang_INVALID_CHARACTERS[#][#]
+					[#]
+				[#]
+
+
+				[*/FORMS/inputContainer({"name":"id_string"})]
+					[_LABEL]id_string[#]
+					[_HELP]**Insert Field Help**[#]
+					[_INPUT]
+						[*:/types/inputs/UUID({"model":"$currentModel","name":"id_string","form":"$form"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"INVALID","code":"2"})][@L]Lang\translations__id_string_INVALID[#][#]
+						[_ERROR({"type":"UNSET","code":"1"})][@L]Lang\translations__id_string_UNSET[#][#]
+					[#]
+				[#]
+         
+                        [#]
+                [#]
+                [_BUTTONS]
+                        [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
+                [#]        
+          [#]

@@ -1,0 +1,17 @@
+<span>
+[*:T_INT]	
+	[_T_EXT_1]	
+		[_:T_INT_1]
+			<div style="border:1px solid black;padding:5px">
+			[_*]
+			</div>
+		[#]
+		
+	[#]	
+	[_T_EXT_2]
+		[_:T_INT_2]
+			[_*]
+		[#]
+	[#]
+[#]
+</span>

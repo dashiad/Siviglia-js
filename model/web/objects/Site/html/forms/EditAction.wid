@@ -1,0 +1,103 @@
+<?php
+            global $SERIALIZERS;
+            $formKeys=array("id_site"=>Registry::$registry["params"]["id_site"]);;
+            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
+            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+?>
+
+
+                [*/FORMS/form({"object":"/model/Site","layer":"web","name":"EditAction","form":"&$form"})]        
+                [_TITLE]EditAction \model\Site[#]
+                [_DESCRIPTION]Form Description[#]
+                [_MODEL({"keys":"$formKeys","serializer":"$serializer","model":"&$currentModel"})][#]                           
+                [_FORMGROUP]
+                        [_TITLE]Form Group Title[#]
+                        [_DESCRIPTION]Form Group Description[#]
+                        [_FORMERRORS]
+{%formerrors%}
+                        [#]
+                        [_FIELDS]
+
+
+				[*/FORMS/inputContainer({"name":"host"})]
+					[_LABEL]host[#]
+					[_HELP]**Insert Field Help**[#]
+					[_INPUT]
+						[*:/types/inputs/_String({"model":"$currentModel","name":"host","form":"$form"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"INVALID","code":"2"})][@L]\model\Site_EditAction_host_INVALID[#][#]
+						[_ERROR({"type":"UNSET","code":"1"})][@L]\model\Site_EditAction_host_UNSET[#][#]
+						[_ERROR({"type":"TOO_SHORT","code":"100"})][@L]\model\Site_EditAction_host_TOO_SHORT[#][#]
+						[_ERROR({"type":"TOO_LONG","code":"101"})][@L]\model\Site_EditAction_host_TOO_LONG[#][#]
+						[_ERROR({"type":"INVALID_CHARACTERS","code":"102"})][@L]\model\Site_EditAction_host_INVALID_CHARACTERS[#][#]
+					[#]
+				[#]
+
+
+				[*/FORMS/inputContainer({"name":"canonical_url"})]
+					[_LABEL]canonical_url[#]
+					[_HELP]**Insert Field Help**[#]
+					[_INPUT]
+						[*:/types/inputs/_String({"model":"$currentModel","name":"canonical_url","form":"$form"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"INVALID","code":"2"})][@L]\model\Site_EditAction_canonical_url_INVALID[#][#]
+						[_ERROR({"type":"UNSET","code":"1"})][@L]\model\Site_EditAction_canonical_url_UNSET[#][#]
+						[_ERROR({"type":"TOO_SHORT","code":"100"})][@L]\model\Site_EditAction_canonical_url_TOO_SHORT[#][#]
+						[_ERROR({"type":"TOO_LONG","code":"101"})][@L]\model\Site_EditAction_canonical_url_TOO_LONG[#][#]
+						[_ERROR({"type":"INVALID_CHARACTERS","code":"102"})][@L]\model\Site_EditAction_canonical_url_INVALID_CHARACTERS[#][#]
+					[#]
+				[#]
+
+
+				[*/FORMS/inputContainer({"name":"hasSSL"})]
+					[_LABEL]hasSSL[#]
+					[_HELP]**Insert Field Help**[#]
+					[_INPUT]
+						[*:/types/inputs/Boolean({"model":"$currentModel","name":"hasSSL","form":"$form"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"INVALID","code":"2"})][@L]\model\Site_EditAction_hasSSL_INVALID[#][#]
+						[_ERROR({"type":"UNSET","code":"1"})][@L]\model\Site_EditAction_hasSSL_UNSET[#][#]
+					[#]
+				[#]
+
+
+				[*/FORMS/inputContainer({"name":"namespace"})]
+					[_LABEL]namespace[#]
+					[_HELP]**Insert Field Help**[#]
+					[_INPUT]
+						[*:/types/inputs/_String({"model":"$currentModel","name":"namespace","form":"$form"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"INVALID","code":"2"})][@L]\model\Site_EditAction_namespace_INVALID[#][#]
+						[_ERROR({"type":"UNSET","code":"1"})][@L]\model\Site_EditAction_namespace_UNSET[#][#]
+						[_ERROR({"type":"TOO_SHORT","code":"100"})][@L]\model\Site_EditAction_namespace_TOO_SHORT[#][#]
+						[_ERROR({"type":"TOO_LONG","code":"101"})][@L]\model\Site_EditAction_namespace_TOO_LONG[#][#]
+						[_ERROR({"type":"INVALID_CHARACTERS","code":"102"})][@L]\model\Site_EditAction_namespace_INVALID_CHARACTERS[#][#]
+					[#]
+				[#]
+
+
+				[*/FORMS/inputContainer({"name":"websiteName"})]
+					[_LABEL]websiteName[#]
+					[_HELP]**Insert Field Help**[#]
+					[_INPUT]
+						[*:/types/inputs/_String({"model":"$currentModel","name":"websiteName","form":"$form"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"INVALID","code":"2"})][@L]\model\Site_EditAction_websiteName_INVALID[#][#]
+						[_ERROR({"type":"UNSET","code":"1"})][@L]\model\Site_EditAction_websiteName_UNSET[#][#]
+						[_ERROR({"type":"TOO_SHORT","code":"100"})][@L]\model\Site_EditAction_websiteName_TOO_SHORT[#][#]
+						[_ERROR({"type":"TOO_LONG","code":"101"})][@L]\model\Site_EditAction_websiteName_TOO_LONG[#][#]
+						[_ERROR({"type":"INVALID_CHARACTERS","code":"102"})][@L]\model\Site_EditAction_websiteName_INVALID_CHARACTERS[#][#]
+					[#]
+				[#]
+         
+                        [#]
+                [#]
+                [_BUTTONS]
+                        [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
+                [#]        
+          [#]

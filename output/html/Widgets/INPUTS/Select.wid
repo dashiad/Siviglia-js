@@ -1,0 +1,49 @@
+<?php
+ echo "<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"Select\">";
+ $fDef=$form->__getInputParams($name);
+ 
+ $valueField=isset($fDef["VALUE"])?$fDef["VALUE"]:null;
+ $labelField=isset($fDef["LABEL"])?$fDef["LABEL"]:null;
+ $mKey=is_array($valueField); 
+ if($mKey)
+     $nKeys=count($valueField); 
+ $mLabels=is_array($labelField)?$labelField:array($labelField);
+ if($mLabels)
+     $nLabels=count($labelField);
+ 
+?>
+<select name="FIELDS[<?php echo $name?>]"  autocomplete="off">
+    <?php
+         if(isset($fDef["PRE_OPTIONS"]))
+         {
+             foreach($fDef["PRE_OPTIONS"] as $keyO=>$valueO)
+                 echo '<option value="'.$keyO.'" '.($keyO==$value?'selected="selected"':"").'>'.$valueO.'</option>';
+         }
+    ?>
+[_OPTION]
+    <?php echo '<option value="'.$optionValue.'" '.($optionValue==$value?'selected="selected"':"").'>'?>[_LABEL][_*][#]<?php echo '</option>';?>
+[#]
+[_DATASOURCE]
+    [*:/INPUTS/DATASOURCEDINPUT]
+        [_:ITERATOR({"name":"$name","ds":"$ds","inputIterator":"&$selectIterator"})]
+            <?php if(!$mKey)
+            {
+                $curVal=$selectIterator->{$valueField};
+                
+            }
+            else
+            {                      
+                 $curVal="";
+                 for($k=0;$k<$nKeys;$k++)
+                     $curVal.=($k>0?',':"").$selectIterator->{$valueField[$k]};                      
+            }
+            $label=array();
+            foreach($labelField as $labelValue)
+                $label[]=$selectIterator->{$labelValue};
+            
+            ?>
+             <?php echo '<option value="'.$curVal.'" '.($value==$curVal?'selected="selected"':"").'>'?><?php echo implode(" ",$label).'</option>';?>
+        [#]
+    [#]
+[#]
+</select>

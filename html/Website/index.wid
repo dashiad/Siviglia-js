@@ -1,0 +1,167 @@
+<?php
+
+$oCurrentUser = $GLOBALS['oCurrentUser'];
+
+$_SESSION['ALLOW_OUTBOUND_EMAILS'] = true;
+
+if (!$oCurrentUser || !$oCurrentUser->isLogged()) {
+    ?><!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8"/>
+    </head>
+    <body>
+        [*:/backoffice/objects/WebUser/html/forms/Login][#]
+    </body>
+    </html><?php
+
+    return;
+}
+
+// No dejar acceder a usuarios con el role "tools"
+if ($oCurrentUser->getRole() === "tools") {
+    $oCurrentUser->logout();
+
+    http_response_code(403);
+
+    die('ACCESS DENIED');
+}
+
+$isDevelopment = (int) (defined('DEVELOPMENT') ? DEVELOPMENT : 0);
+$remoteBackoffice = (int) (defined('REMOTE_BACKOFFICE') ? REMOTE_BACKOFFICE : 0);
+$defaultLanguageId = (int) (defined('DEFAULT_LANGUAGE_ID') ? DEFAULT_LANGUAGE_ID : 3);
+$projectEnvironment = defined('PROJECT_ENVIRONMENT') ? PROJECT_ENVIRONMENT : 'percentil';
+$logoImage = ($projectEnvironment === "percentil") ? "percentilOs.jpg": "logo_kirondo.png";
+$kirondoMediaUrl = defined('_KIRONDO_MEDIA_SERVER_')
+    ? _KIRONDO_MEDIA_SERVER_
+    : 'https://kirondo-production.s3.amazonaws.com/uploads/picture/file';
+
+?><!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Untitled</title>
+    <style>
+        @import "/css/app.css";
+        @import "/css/themes/Percentil/Percentil.css";
+        @import "/css/themes/Percentil/document.css";
+        @import "/css/themes/claro/claro.css";
+        @import "/css/themes/dijit/themes/claro/document.css";
+        @import "/css/themes/dijit/themes/claro/claro.css";
+        @import "/lib/dojo/dojox/layout/resources/FloatingPane.css";
+        @import "/lib/dojo/dojox/layout/resources/ResizeHandle.css";
+        @import "/css/jdesktop/jdesktop.css";
+        @import "/css/jdesktop/jdesktop-theme/jquery-ui-1.10.1.custom.css";
+        @import "/css/jdesktop/jdesktop.forms.css";
+        @import "/css/jdesktop/jdesktop.text.css";
+    </style>
+
+    <script>
+        var dojoConfig = {
+            debugAtAllCosts: true,
+            "dojo-trace-api": true,
+            cacheBust: false,
+            async: true,
+            parseOnLoad: true,
+            packages:[
+                { name: 'backoffice',            location: '/js/dojo/backoffice' },
+                { name: 'gridx',                 location: '../gridx' },
+                { name: 'clipart',               location: '../../clipart' },
+                { name: 'maqettaSamples',        location: '../../../samples' },
+                { name: 'maqetta',               location: '../../maqetta' },
+                { name: 'shapes',                location: '../../shapes' },
+                { name: 'zazl',                  location: '../../zazl' },
+                { name: 'widgets',               location: '../../custom' },
+                { name: 'ChequeoInventarioLine', location: '/lib/custom/ChequeoInventarioLine' },
+                { name: 'PickingList',           location: '/lib/custom/PickingList' },
+                { name: 'BarcodeReader',         location: '/lib/custom/BarcodeReader' },
+                { name: 'BagCheckIn',            location: '/lib/custom/BagCheckIn' },
+                { name: 'Inventario',            location: '/lib/custom/Inventario' },
+                { name: 'Siviglia',              location: '/js/dojo/Siviglia' },
+                { name: 'UniList',               location: '/lib/custom/UniList' },
+                { name: 'ChequeoInventario',     location: '/lib/custom/ChequeoInventario' },
+                { name: 'Preparation',           location: '/lib/custom/Preparation' },
+                { name: 'AppController',         location: '/lib/custom/AppController' },
+                { name: 'BagInfo',               location: '/lib/custom/BagInfo' },
+                { name: 'LoadManager',           location: '/lib/custom/LoadManager' },
+                { name: 'Bagging',               location: '/lib/custom/Bagging' },
+                { name: 'LoadStatus',            location: '/lib/custom/LoadStatus' },
+            ],
+            'themeMap': [
+                ['Android', '', ['themes/android/android.css']],
+                ['BlackBerry', '', ['themes/blackberry/blackberry.css']],
+                ['iPad', '', ['themes/ipad/ipad.css']],
+                ['iPhone', '', ['themes/iphone/iphone.css']],
+                ['.*', '', ['themes/iphone/iphone.css']],
+            ]
+        };
+    </script>
+
+    <script src="js/jquery.js"></script>
+    <script src="js/moment.js"></script>
+    <script src="js/papaparse.js"></script>
+    <script src="js/jdesktop/jquery-ui-1.10.1.custom.min.js"></script>
+    <script src="js/jdesktop/jquery.scrollTo-min.js"></script>
+    <script src="js/jdesktop/jquery.ui.selectmenu.js"></script>
+    <script src="js/jdesktop/ultbuttons1.1.min.js"></script>
+    <script src="js/Siviglia.js"></script>
+    <script src="js/SivigliaTypes.js"></script>
+    <script src="js/SivigliaUtils.js"></script>
+    <script src="lib/Percentil/Backoffice/Base.js"></script>
+    <script src="lib/Percentil/Backoffice/Inventario.js"></script>
+    <script src="lib/dojo/dojo/dojo.js"></script>
+    <script src="js/jdesktop/jdesktop.js"></script>
+    <script src="js/jdesktop/jdesktop.widgets.js"></script>
+    <script>
+        require([
+            "dijit/dijit",
+            "dojo/parser",
+            "AppController/AppController"
+        ]);
+
+        var baseUrl = '<?php echo WEBPATH; ?>';
+        var publicUrl = '<?php echo PRESTASHOP_SITE; ?>';
+        var photosServer = 'http://<?php echo _LOCAL_MEDIA_SERVER_1_; ?>';
+        var Siviglia = Siviglia || {};
+
+        Siviglia.config = {
+            baseUrl: baseUrl,
+            photosServer: photosServer,
+            publicUrl: publicUrl,
+            photoServer: '<?php echo BACKOFFICE_PHOTO_PHOTOSERVER; ?>',
+            tempFilesPath: '<?php echo BACKOFFICE_PHOTO_TEMPDIR; ?>',
+            maxProductReturnDays: '<?php echo DEFAULT_ORDERRETURN_DAYS; ?>',
+            isDevelopment: <?php echo $isDevelopment; ?>,
+            internalBRCustomer: <?php echo INTERNAL_BR_CUSTOMER; ?>,
+            remoteBackoffice: <?php echo $remoteBackoffice; ?>,
+            projectEnvironment: '<?php echo $projectEnvironment; ?>',
+            defaultLanguageId: <?php echo $defaultLanguageId; ?>,
+            kirondoMediaUrl: '<?php echo $kirondoMediaUrl; ?>'
+        };
+
+        require(["dojo/ready"], function (ready) {
+            ready(function () {
+                // This function won't run until the DOM has loaded and other modules that register
+                // have run.
+                top.mainController = dijit.byId("mainController");
+            });
+        });
+    </script>
+</head>
+<body data-maq-flow-layout="true"
+      data-maq-comptype="desktop"
+      data-maq-ws="collapse"
+      data-maq-appstates="{ 'states': ['ShowRecreateInventario', 'ShowPicking', 'ShowInventario', 'BagCheckIn'] }"
+      class="claro"
+      id="myapp">
+
+    <img src="/css/images/<?php echo $logoImage; ?>" style="margin: 100px;" />
+
+    <div id="wrapper">
+        <div id="desktop">
+            <div id="desktop_iconarea"></div>
+        </div>
+        <div data-dojo-type="AppController/AppController" id="mainController"></div>
+    </div>
+</body>
+</html>

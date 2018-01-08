@@ -1,0 +1,10 @@
+
+<?php
+  $curModel=Registry::$registry["currentFormModel"];
+  $val=$curModel->{$name};
+  $code.="<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"Checkbox\">";
+  $code.="<input type=\"checkbox\" name=\"FIELDS[".$name."]\"";
+  if($value===true)
+      $code.=" checked";
+  echo $code.">";
+?>

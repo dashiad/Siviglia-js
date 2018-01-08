@@ -1,0 +1,20 @@
+<div>
+    [_TITLE]
+    <div style="font-size:18px">
+        [_*]
+    </div>
+    [#]
+    <div style="border:1px solid black">
+            [*:DATASOURCE]
+                   [_:PARAMETERS({"object":"$object","name":"$dsName","serializer":"$serializer","params":"$params"})][#]
+                   [_:ITERATOR({"iterator":"&$iterator"})]
+                   [_CONTENTS]                        
+                        [_*]
+                    [#]
+                    [#]
+               [_:NOROWS]
+
+               [#]
+            [#]        
+    </div>
+</div>

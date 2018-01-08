@@ -1,0 +1,46 @@
+<?php
+            global $SERIALIZERS;
+            $params=Registry::$registry["PAGE"];
+            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
+            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+?>
+[*LIST_DS({"currentPage":"$currentPage","object":"/model/Site","dsName":"NotPages","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]id_page[#][#]
+						[_COLUMN][_LABEL]Tag[#][#]
+						[_COLUMN][_LABEL]id_website[#][#]
+						[_COLUMN][_LABEL]name[#][#]
+						[_COLUMN][_LABEL]date_add[#][#]
+						[_COLUMN][_LABEL]date_modified[#][#]
+						[_COLUMN][_LABEL]id_type[#][#]
+						[_COLUMN][_LABEL]isPrivate[#][#]
+						[_COLUMN][_LABEL]path[#][#]
+						[_COLUMN][_LABEL]title[#][#]
+						[_COLUMN][_LABEL]tags[#][#]
+						[_COLUMN][_LABEL]description[#][#]
+        
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_page","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/_String({"name":"tag","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Relationship({"name":"id_site","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/_String({"name":"name","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/DateTime({"name":"date_add","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/DateTime({"name":"date_modified","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"id_type","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Boolean({"name":"isPrivate","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/_String({"name":"path","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/_String({"name":"title","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/_String({"name":"tags","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/_String({"name":"description","model":"$iterator"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]     
+           [#]

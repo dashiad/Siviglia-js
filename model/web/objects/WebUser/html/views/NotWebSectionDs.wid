@@ -1,0 +1,40 @@
+<?php
+            global $SERIALIZERS;
+            $params=Registry::$registry["PAGE"];
+            $serializer=Registry::$registry["serializers"]["web"];
+            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+?>
+[*LIST_DS({"currentPage":"$currentPage","object":"WebUser","dsName":"NotWebSectionDs","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]id_seccion[#][#]
+						[_COLUMN][_LABEL]name[#][#]
+						[_COLUMN][_LABEL]state[#][#]
+						[_COLUMN][_LABEL]isHome[#][#]
+						[_COLUMN][_LABEL]caching[#][#]
+						[_COLUMN][_LABEL]cacheTime[#][#]
+						[_COLUMN][_LABEL]path[#][#]
+						[_COLUMN][_LABEL]creator[#][#]
+						[_COLUMN][_LABEL]creationDate[#][#]
+        
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_seccion","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"name","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/State({"name":"state","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Boolean({"name":"isHome","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Boolean({"name":"caching","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"cacheTime","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"path","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Relationship({"name":"creator","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/DateTime({"name":"creationDate","model":"$iterator"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]     
+           [#]

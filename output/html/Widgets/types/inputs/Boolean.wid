@@ -1,0 +1,4 @@
+<?php
+    $val=$form->{$name}; 
+?>
+[*:/INPUTS/Checkbox({"name":"$name","value":"$val"})][#]

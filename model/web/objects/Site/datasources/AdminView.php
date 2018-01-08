@@ -1,0 +1,97 @@
+<?php
+namespace model\web\Site\datasources;
+/**
+ FILENAME:/var/www/adtopy/model/web/objects/Site/datasources/AdminView.php
+  CLASS:AdminView
+*
+*
+**/
+
+class AdminView
+{
+	 static  $definition=array(
+               'ROLE'=>'view',
+               'DATAFORMAT'=>'Table',
+               'PARAMS'=>array(
+                     'id_site'=>array(
+                           'MODEL'=>'\model\web\Site',
+                           'FIELD'=>'id_site',
+                           'TRIGGER_VAR'=>'id_site'
+                           )
+                     ),
+               'IS_ADMIN'=>1,
+               'INDEXFIELDS'=>array(
+                     'id_site'=>array(
+                           'MODEL'=>'\model\Site',
+                           'FIELD'=>'id_site',
+                           'REQUIRED'=>'true'
+                           )
+                     ),
+               'FIELDS'=>array(
+                     'id_site'=>array(
+                           'MODEL'=>'\model\web\Site',
+                           'FIELD'=>'id_site'
+                           ),
+                     'host'=>array(
+                           'MODEL'=>'\model\web\Site',
+                           'FIELD'=>'host'
+                           ),
+                     'canonical_url'=>array(
+                           'MODEL'=>'\model\web\Site',
+                           'FIELD'=>'canonical_url'
+                           ),
+                     'hasSSL'=>array(
+                           'MODEL'=>'\model\web\Site',
+                           'FIELD'=>'hasSSL'
+                           ),
+                     'namespace'=>array(
+                           'MODEL'=>'\model\web\Site',
+                           'FIELD'=>'namespace'
+                           ),
+                     'websiteName'=>array(
+                           'MODEL'=>'\model\web\Site',
+                           'FIELD'=>'websiteName'
+                           )
+                     ),
+               'INCLUDE'=>array(
+                     'Pages'=>array(
+                           'MODEL'=>'\model\web\Page',
+                           'DATASOURCE'=>'FullList',
+                           'JOINTYPE'=>'INNER',
+                           'JOIN'=>array('id_site'=>'id_site')
+                           )
+                     ),
+               'PERMISSIONS'=>array(
+                     array(
+                           'MODEL'=>'Site',
+                           'PERMISSION'=>'adminView'
+                           )
+                     ),
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'DEFINITION'=>array(
+                                 'TABLE'=>'Websites',
+                                 'BASE'=>array(
+                                       'id_site',
+                                       'host',
+                                       'canonical_url',
+                                       'hasSSL',
+                                       'namespace',
+                                       'websiteName'
+                                       ),
+                                 'CONDITIONS'=>array(
+                                       array(
+                                             'FILTER'=>array(
+                                                   'F'=>'id_site',
+                                                   'OP'=>'=',
+                                                   'V'=>'{%id_site%}'
+                                                   ),
+                                             'FILTERREF'=>'id_site'
+                                             )
+                                       )
+                                 )
+                           )
+                     )
+               );
+}
+?>

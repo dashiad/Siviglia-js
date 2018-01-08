@@ -1,0 +1,36 @@
+<?php
+            global $SERIALIZERS;
+            $params=Registry::$registry["PAGE"];
+            $serializer=\lib\storage\StorageFactory::getSerializerByName('backoffice');
+            $serializer->useDataSpace($SERIALIZERS["backoffice"]["ADDRESS"]["database"]["NAME"]);
+?>
+[*LIST_DS({"currentPage":"$currentPage","object":"Lang/translations","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]id_translation[#][#]
+						[_COLUMN][_LABEL]id_string[#][#]
+						[_COLUMN][_LABEL]lang[#][#]
+						[_COLUMN][_LABEL]realm[#][#]
+						[_COLUMN][_LABEL]dirty[#][#]
+						[_COLUMN][_LABEL]translated[#][#]
+						[_COLUMN][_LABEL]original[#][#]
+        
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_translation","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/UUID({"name":"id_string","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"lang","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Enum({"name":"realm","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Boolean({"name":"dirty","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Text({"name":"translated","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Text({"name":"original","model":"$iterator"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]     
+           [#]
