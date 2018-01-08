@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="PhpUnit">
-    <phpunit_settings>
-      <PhpUnitSettings load_method="CUSTOM_LOADER" custom_loader_path="C:/xampp7/htdocs/adtopy/vendor/autoload.php" phpunit_phar_path="C:/xampp7/htdocs/adtopy/phpunit.phar" />
-    </phpunit_settings>
-  </component>
-</project>
