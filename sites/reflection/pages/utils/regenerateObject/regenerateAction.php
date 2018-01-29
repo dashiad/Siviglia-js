@@ -17,15 +17,15 @@ include_once(LIBPATH . "/php/debug/Debug.php");
 include_once(LIBPATH . "/Registry.php");
 // Se listan todos los objetos que hay.
 include_once(LIBPATH . "/reflection/SystemReflector.php");
-\lib\reflection\ReflectorFactory::loadFactory();
+\model\reflection\ReflectorFactory::loadFactory();
 global $APP_NAMESPACES;
 $layers=& $APP_NAMESPACES;
 $layer=$_GET["layer"];
 $obj=$_GET["object"];
-$model=\lib\reflection\ReflectorFactory::getModel($obj);
+$model=\model\reflection\ReflectorFactory::getModel($obj);
 
 include_once(LIBPATH."/reflection/js/dojo/DojoGenerator.php");
-$dojoClass=new \lib\reflection\js\dojo\DojoGenerator($model);
+$dojoClass=new \model\reflection\Js\dojo\DojoGenerator($model);
 
 $type = $_GET['type'];
 
@@ -40,7 +40,7 @@ if ($act === 'all') {
         $aValue->save();
 
         include_once(LIBPATH.'/reflection/html/forms/FormDefinition.php');
-        $formInstance=new \lib\reflection\html\forms\FormDefinition($aKey,$aValue);
+        $formInstance=new \model\reflection\Html\forms\FormDefinition($aKey,$aValue);
         $formInstance->create();
         $formInstance->saveDefinition();
         $formInstance->generateCode();
@@ -65,7 +65,7 @@ else {
     }
 
     include_once(LIBPATH.'/reflection/html/forms/FormDefinition.php');
-    $formInstance=new \lib\reflection\html\forms\FormDefinition($act,$action);
+    $formInstance=new \model\reflection\Html\forms\FormDefinition($act,$action);
     $formInstance->create();
     $formInstance->saveDefinition();
     $formInstance->generateCode();

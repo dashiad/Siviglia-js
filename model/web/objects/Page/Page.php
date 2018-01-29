@@ -14,6 +14,7 @@ class PageException extends \lib\model\BaseException
 abstract class Page extends \lib\model\BaseModel
 {
     private $__pageConfig;
+    private $__pageDef;
     const ROLE_VIEW="VIEW";
     const ROLE_LIST="LIST";
     const ROLE_ADD="ADD";
@@ -27,9 +28,13 @@ abstract class Page extends \lib\model\BaseModel
         parent::__construct($serializer, $pageDef);
     }
 
-    static function getPageFromPath($path,$request,$params)
+    static function getPageFromPath($path,$site,$request,$params)
     {
-        $currentSite=\model\web\Site::getCurrentWebsite();
+        if($site==null)
+            $currentSite=\model\web\Site::getCurrentWebsite();
+        else
+            $currentSite=\model\web\Site::getSiteFromNamespace($site);
+
         $ds=\getDataSource('\model\web\Page',"FullList");
         $ds->path=$path;
         $ds->id_site=$currentSite->id_site;
@@ -39,6 +44,7 @@ abstract class Page extends \lib\model\BaseModel
         return Page::getPageInstance($it[0],$request,$params);
 
     }
+
     static function getPageInstance($data,$request,$params)
     {
         $site=\getModel('\model\web\Site',array("id_site"=>$data->id_site));
@@ -82,6 +88,7 @@ abstract class Page extends \lib\model\BaseModel
             include_once($this->getPageDefinitionPath());
             $className = $this->id_site[0]->getPageClass($this->path) . "\\Definition";
             $objDef=new $className();
+            $this->__pageDef=$objDef;
             $this->__pageConfig = $objDef->getDefinition();
         }
         return $this->__pageConfig;
@@ -432,5 +439,12 @@ EOT;
         $router=\Registry::getService("router");
         return $router->generateUrl($name,$params);
     }
-
+    function canAccess($permsService,$user)
+    {
+        $this->getPageDefinition();
+        $perms=$this->__pageDef->getRequiredPermissions();
+        if(!$perms)
+            return true;
+        return $permsService->canAccess($perms,$this,$user);
+    }
 }

@@ -27,9 +27,9 @@ include_once(LIBPATH . "/Registry.php");
 // Se listan todos los objetos que hay.
 include_once(LIBPATH . "/reflection/SystemReflector.php");
 
-\lib\reflection\ReflectorFactory::loadFactory();
+\model\reflection\ReflectorFactory::loadFactory();
 
-$layers=\lib\reflection\ReflectorFactory::$layers;
+$layers=\model\reflection\ReflectorFactory::$layers;
 global $APP_NAMESPACES;
 $layers=& $APP_NAMESPACES;
 
@@ -37,7 +37,7 @@ for($k=0;$k<count($layers);$k++)
 {
     echo "<h2>Layer : ".$layers[$k]."</h2>";
 
-    $cLayer=\lib\reflection\ReflectorFactory::getObjectsByLayer($layers[$k]);
+    $cLayer=\model\reflection\ReflectorFactory::getObjectsByLayer($layers[$k]);
     foreach($cLayer as $key=>$value)
     {
         $extra="";

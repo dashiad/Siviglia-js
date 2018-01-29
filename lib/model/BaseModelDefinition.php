@@ -13,9 +13,11 @@ class BaseModelDefinitionException extends \lib\model\BaseException
     const ERR_NO_SUCH_FIELD=1;
     const ERR_NO_SUCH_ALIAS=2;
     const ERR_NO_PATH=3;
-    const TXT_NO_SUCH_FIELD="Field doesnt exist: {%field%}";
-    const TXT_NO_SUCH_ALIAS="Alias doesnt exist: {%alias%}";
-    const TXT_NO_PATH="Cant traverse the field {%field%} as it is not a relation";
+    const ERR_NO_SUCH_DEFINITION=4;
+    const TXT_NO_SUCH_FIELD="Field doesnt exist: [%field%]";
+    const TXT_NO_SUCH_ALIAS="Alias doesnt exist: [%alias%]";
+    const TXT_NO_PATH="Cant traverse the field [%field%] as it is not a relation";
+    const TXT_NO_SUCH_DEFINITION="Trying to access unset definition field [%field%]";
 }
 
 class BaseModelDefinition
@@ -39,7 +41,7 @@ class BaseModelDefinition
     }
     static function loadDefinition($model)
     {
-        $objName = new \lib\reflection\model\ObjectDefinition('\\'.get_class($model));
+        $objName = new \model\reflection\Model\ModelName('\\'.get_class($model));
         $defname = $objName->getNamespaced() . "\\Definition";
         include_once($objName->getDestinationFile()."/Definition.php");
         // Se hace new() por si la definicion requiere inicializacion de constantes.
@@ -94,9 +96,7 @@ class BaseModelDefinition
             $remote=$field->getRemoteObject();
             $remoteDef=BaseModelDefinition::loadDefinition($remote);
             $curField=array_shift($path);
-            $part=$remoteDef->getFieldPath($path);
-
-            $next=$remoteDef->getFieldPath($path);;
+            $next=$remoteDef->getFieldPath($path);
             if(is_array($next))
                 return array_merge($a,$next);
             return $a;
@@ -110,6 +110,13 @@ class BaseModelDefinition
             }
             return array("TABLE"=>$this->getTableName(),"FIELD"=>$path[0]);
         }
+    }
+    function getOwnerPath()
+    {
+        $def=$this->getDefinition();
+        if(!isset($def["OWNERPATH"]))
+            throw new BaseModelDefinitionException(BaseModelDefinitionException::ERR_NO_SUCH_DEFINITION,array("field"=>"OWNERPATH"));
+        return $def["OWNERPATH"];
     }
 
 }

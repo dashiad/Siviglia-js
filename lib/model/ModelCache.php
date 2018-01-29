@@ -11,7 +11,7 @@ namespace lib\model;
 
 class ModelCache {
     static $models=array();
-    static function getInstance($modelName,$params=null,$nocache=false)
+    function getInstance($modelName,$params=null,$nocache=false)
     {
         if($nocache)
         {
@@ -31,7 +31,7 @@ class ModelCache {
         }
         return ModelCache::storeOrLoad($instance);
     }
-    static function storeOrLoad($instance)
+    function storeOrLoad($instance)
     {
         $key=$instance->__getKeys();
         if($key->is_set())
@@ -49,7 +49,7 @@ class ModelCache {
 
     }
 
-    static function store($instance)
+    function store($instance)
     {
 
         $key=$instance->__getKeys();
@@ -66,7 +66,7 @@ class ModelCache {
             ModelCache::$models[$hash]=$instance;
         return $instance;
     }
-    static function clear($instance)
+    function clear($instance)
     {
         $key=$instance->__getKeys();
         $hash=$key->getHash();
@@ -75,7 +75,7 @@ class ModelCache {
             unset(ModelCache::$models[$hash]);
         }
     }
-    static function fromId($objectName,$id,$serializer=null)
+    function fromId($objectName,$id,$serializer=null)
     {
         $m=\getModel($objectName);
         $m->setId($id);

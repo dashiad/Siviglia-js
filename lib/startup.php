@@ -1,8 +1,9 @@
 <?php
+include_once(LIBPATH."/model/permissions/PermissionsManager.php");
 
 class Startup
 {
-    function __construct()
+    static function init()
     {
         if(defined("DEVELOPMENT"))
         {
@@ -11,6 +12,19 @@ class Startup
             ini_set("display_errors",1);
             ini_set("xdebug.max_nesting_level",500);
         }
+        include_once(LIBPATH."/autoloader.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Model/ModelName.php");
+        include_once(LIBPATH."/model/BaseException.php");
+        include_once(LIBPATH."/model/types/BaseType.php");
+        include_once(LIBPATH."/Registry.php");
+        include_once(LIBPATH."/datasource/DataSourceFactory.php");
+        include_once(LIBPATH."/model/BaseTypedObject.php");
+        include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
+        include_once(PROJECTPATH."/vendor/autoload.php");
+        $oPath=new \lib\Paths();
+        \Registry::addService("paths",$oPath);
+        \Registry::addService("model",new \lib\model\ModelCache());
+
     }
     static function initializeHTTPPage()
     {
@@ -20,33 +34,28 @@ class Startup
         global $currentSite;
         $currentSite=\model\web\Site::getCurrentWebsite();
         Registry::addService("site",$currentSite);
+        Registry::initialize($request);
         
     }
 
     static function commonSetup()
     {
-        include_once(LIBPATH."/autoloader.php");
-        include_once(LIBPATH."/reflection/model/ObjectDefinition.php");
-        include_once(LIBPATH."/model/BaseException.php");
-        include_once(LIBPATH."/model/types/BaseType.php");
-        include_once(LIBPATH."/Registry.php");
-        include_once(LIBPATH."/datasource/DataSourceFactory.php");
-        include_once(LIBPATH."/model/BaseTypedObject.php");
-        include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
-        include_once(PROJECTPATH."/vendor/autoload.php");
+
+        Startup::initializeContext();
         $ser=\lib\storage\StorageFactory::getSerializerByName("default");
-        $oPerms=new \lib\model\permissions\AclManager($ser);
+        $oPerms = new \PermissionsManager(
+            \Registry::getService("model"),
+            \Registry::getService("user"),
+            \Registry::getService("site"),
+            $ser);
+
         \Registry::addService("permissions",$oPerms);
-
-
-
 
         //Incluimos las constantes en el registro para poder ser usadas en DS
         $constants = get_defined_constants(true);
         foreach($constants["user"] as $constant=>$constantValue) {
             Registry::store($constant, $constantValue);
         }
-        Startup::initializeContext();
         //Startup::initializeSerializers();
 
         //   date_default_timezone_set($confClass::$DEFAULT_TIMEZONE);
@@ -60,16 +69,7 @@ class Startup
         $globalPath=new \lib\model\SimplePathObject();
         $globalPath->addPath("registry",Registry::$registry);
     }
-    static function initializeUser()
-    {
-        // Se obtiene el usuario actual
-       /* global $oCurrentUser;
-        $oCurrentUser=$currentProject->getUserFactory()->getUser($request);
-        \Registry::store(\Registry::USER,$oCurrentUser);
-        \Registry::store(\Registry::USER_LANGUAGE_ISO,$oCurrentUser->getEffectiveLanguage());*/
-        // Finalmente, se enruta la request
 
-    }
     static function initializeSerializers()
     {
         global $SERIALIZERS;
@@ -77,6 +77,8 @@ class Startup
         \lib\storage\StorageFactory::$defaultSerializer="default";
     }
 }
+Startup::init();
+Startup::initializeHTTPPage();
 Startup::commonSetup();
 
 
@@ -93,8 +95,7 @@ $modelCache=array();
 
 function getModel($objName,$fields=null)
 {
-
-    return \lib\model\ModelCache::getInstance($objName,$fields);
+    return \Registry::getService("model")->getInstance($objName,$fields);
 }
 
 function getModelInstance($objName,$serializer=null,$definition=null)

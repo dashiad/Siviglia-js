@@ -14,16 +14,17 @@ class Page
     var $request;
     var $pageInstance;
     var $definition;
+    var $params;
     function __construct($def,$params,$request)
     {
         $this->request=$request;
         $this->definition=$def;
+        $this->params=$params;
         global $currentPage;
-        $this->pageInstance = \model\web\Page::getPageFromPath($def["PAGE"],$request,$params);
-
+        $this->pageInstance = \model\web\Page::getPageFromPath($def["PAGE"],io($def,"SITE",null),$request,$params);
         if($this->pageInstance!=null)
         {
-            $this->pageInstance->initializePage($params, $request);
+
             $currentPage = $this->pageInstance;
             \Registry::addService("page", $this->pageInstance);
             \Registry::store("currentPage", $this->pageInstance);
@@ -36,15 +37,27 @@ class Page
         $response=\Registry::$registry["response"];
         $m=$this;
         if($this->pageInstance!=null) {
-            $response->setBuilder(function () use ($m) {
-                $this->pageInstance->render($this->request->getOutputType(), $m->request, isset($m->definition["OUTPUT_PARAMS"]) ? $m->definition["OUTPUT_PARAMS"] : array());
-            });
+            if($this->pageInstance->canAccess(\Registry::getService("permissions"),\Registry::getService("user"))) {
+                $this->pageInstance->initializePage($this->params, $this->request);
+                $response->setBuilder(function () use ($m) {
+                    $this->pageInstance->render($this->request->getOutputType(), $m->request, isset($m->definition["OUTPUT_PARAMS"]) ? $m->definition["OUTPUT_PARAMS"] : array());
+                });
+            }
+            else
+                $this->onUnauthorized($response);
         }
         else
-        {
-            $router=\Registry::getService("router");
+            $this->onError($response);
 
-            $response->setBuilder(\lib\Response::redirect($router->generateUrl("error",array())));
-        }
+    }
+    function onUnauthorized($response)
+    {
+        $router=\Registry::getService("router");
+        $response->setBuilder(\lib\Response::redirect($router->generateUrl("error",array())));
+    }
+    function onError($response)
+    {
+        $router=\Registry::getService("router");
+        $response->setBuilder(\lib\Response::redirect($router->generateUrl("error",array())));
     }
 }

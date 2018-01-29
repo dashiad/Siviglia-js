@@ -2,6 +2,14 @@
 include_once(LIBPATH."/model/permissions/AclManager.php");
 class PermissionsManager {
     static $aclManager;
+    const PERMS_REFLECTION="Reflection";
+    const PERMS_ADMIN="Admin";
+    const PERMS_EDIT="Edit";
+    const PERMS_VIEW="View";
+    const PERMS_CREATE="Create";
+    const PERMS_DESTROY="Destroy";
+    const PERMS_DISABLE="Disable";
+
     var $currentUserProfiles;
     static $permCache=array();
     var $effectiveProfiles;
@@ -14,10 +22,10 @@ class PermissionsManager {
         $this->siteService=$siteService;
 
         if(!PermissionsManager::$aclManager)
-            PermissionsManager::$aclManager=new AclManager($serializer);
+            PermissionsManager::$aclManager=new \lib\model\permissions\AclManager($serializer);
         }
 
-    function getPermissionsOverModel($userId,$objName,$model)
+    function getPermissionsOverModel($user,$objName,$model)
     {
         if($model)
             $loaded=$model->isLoaded();
@@ -29,19 +37,20 @@ class PermissionsManager {
         else
             $keyPart="NOKEYS";
             
-            if(PermissionsManager::$permCache[$userId][$objName][$keyPart])
+            if(PermissionsManager::$permCache[$user->getId()][$objName][$keyPart])
             {             
                 
-                $cached=PermissionsManager::$permCache[$userId][$objName][$keyPart];                    
+                $cached=PermissionsManager::$permCache[$user->getId()][$objName][$keyPart];
                     if(isset($cached))
                         return $cached;
            }        
-        $permissions=PermissionsManager::$aclManager->getUserPermissions($model->__getObjectName(),
-                                                                            ($loaded?PermissionsManager::$aclManager->getModelId($model):null),
-                                                                            $userId);
+        $permissions=PermissionsManager::$aclManager->getUserPermissions(
+            PermissionsManager::$aclManager->getModulePath($model),
+            ($loaded?PermissionsManager::$aclManager->getModelId($model):null),
+            $user->getId());
         
                 
-        PermissionsManager::$permCache[$userId][$objName][$keyPart]=$permissions;
+        PermissionsManager::$permCache[$user->getId()][$objName][$keyPart]=$permissions;
         return $permissions;
     }
 
@@ -50,10 +59,10 @@ class PermissionsManager {
     //      a BaseModel instance
     //      an array("ITEM"=>x,"GROUP"=>y)
     //      a string (equivalent to array("ITEM"=>x))
-    function canAccess($reqPermission, $item,$userId=null)
+    function canAccess($reqPermission, $item,$user=null)
     {
         if (is_object($item))
-            return $this->canAccessModel($item,$reqPermission);
+            return $this->canAccessModel($item,$reqPermission,$user);
         else
         {
             if (is_array($item))
@@ -70,7 +79,7 @@ class PermissionsManager {
         }
         $aro=array("GROUP"=>"Users");
         
-        if(!$userId)
+        if(!$user)
         {
             $oCurrentUser=$this->userService->getUser();
             if($oCurrentUser->isLogged())
@@ -81,21 +90,23 @@ class PermissionsManager {
         }
         else
         {
-            $aro["ITEM"]=$userId;
+            $aro["ITEM"]=$user->getId();
         }
         return PermissionsManager::$aclManager->acl_check(array("ITEM" => $reqPermission), $aro, $axo);
     }
-    
-    function canAccessModel(& $model,$requiredPermission,$userId=null) {
+
+
+    function canAccessModel(\lib\model\BaseModel $model,$requiredPermission,$user=null) {
 
         $objName=$model->__getObjectName();
         if(!is_array($requiredPermission))
             $requiredPermission=array($requiredPermission);
-        if(!$userId)
+
+        if(!$user)
         {
-            $oCurrentUser=$this->userService->getUser();
-            $userId=$oCurrentUser->getId();
+            $user=$this->userService->getUser();
         }
+
         
 
         foreach($requiredPermission as $req)
@@ -107,25 +118,23 @@ class PermissionsManager {
             if($req=="_PUBLIC_")
                 return true;
             
-            if(!$userId)
-            {
-                $userId=0;
-            }
                 //continue;
             
-            if($req=="_LOGGED_" && $userId)
-                return true;
+            if($req=="_LOGGED_" && !$user->isLogged())
+                return false;
                 
             if($req=="_OWNER_")
             {
-                 if($model->isLoaded() && $model->getOwner()==$userId)
-                    return true;
+                if(!$user)
+                    return false;
+                if(!$model->__isOwner($user))
+                    return false;
             }
-            
+
             if(!is_array($req))
             {
                 
-                $perms=$this->getPermissionsOverModel($userId,$objName,$model);
+                $perms=$this->getPermissionsOverModel($user,$objName,$model);
 
                 if(in_array($req,$perms))
                     return true;
@@ -158,11 +167,14 @@ class PermissionsManager {
                                 $curName=$curModel->__getObjectName();
                                 
                             }
-                        
+                    }
+                    else
+                    {
+                        $curModel=$model;
                     }
                 }
 
-                if($this->canAccessModel($curModel,is_array($req["PERMISSION"])?$req["PERMISSION"]:array($req["PERMISSION"]),$userId))                
+                if($this->canAccessModel($curModel,is_array($req["PERMISSION"])?$req["PERMISSION"]:array($req["PERMISSION"]),$user))
                         return true;
                 
             }
@@ -335,7 +347,94 @@ class PermissionsManager {
             // Falta la parte de los permisos heredados!!
         }
     }
+
+    // Permissions debe ser un array
+    function givePermissionOverItem($permissions, $userId, $model)
+    {
+        return PermissionsManager::$aclManager->givePermissionOverItem($permissions,$userId,$model);
+    }
+
+    function removePermissionOverItem($permission, $userId, $model)
+    {
+        return PermissionsManager::$aclManager->removePermissionOverItem($permission,$userId,$model);
+    }
+
+    function addPermissionOverModule($permissions, $userId, $moduleName)
+    {
+        return PermissionsManager::$aclManager->addPermissionOverModule($permissions,$userId,$moduleName);
+    }
+
+    function removePermissionOverModule($permission, $userId, $moduleName)
+    {
+        return PermissionsManager::$aclManager->removePermissionOverModule($permission,$userId,$moduleName);
+    }
+
+    function addGroupPermissionOverModule($permissions, $groupName, $moduleName)
+    {
+        return PermissionsManager::$aclManager->addGroupPermissionOverModule($permissions,$groupName,$moduleName);
+    }
+
+    function removeGroupPermissionOverModule($permission, $groupName, $moduleName)
+    {
+        return PermissionsManager::$aclManager->removeGroupPermissionOverModule($permission,$groupName,$moduleName);
+    }
+
+    function addUserToGroup($groupName, $userId,$raw=false)
+    {
+        if($raw!=false)
+            $groupName="/AllUsers/Sys/".$groupName;
+        return PermissionsManager::$aclManager->addUserToGroup($groupName,$userId);
+    }
+
+    function getUserGroups($userId)
+    {
+        return PermissionsManager::$aclManager->getUserGroups($userId);
+    }
+
+    // Se busca si el usuario pertenece al grupo, o a alguno de sus padres.
+    function userBelongsToGroup($groupName, $userId)
+    {
+        return PermissionsManager::$aclManager->userBelongsToGroup($groupName, $userId);
+    }
+
+    function removeUserFromGroup($groupName, $userId)
+    {
+        return PermissionsManager::$aclManager->removeUserFromGroup($groupName, $userId);
+    }
+
+    function grantPermissionToGroup($groupName, $permissionName)
+    {
+        return PermissionsManager::$aclManager->grantPermissionToGroup($groupName, $permissionName);
+    }
+
+    function revokePermissionToGroup($groupName, $permissionName)
+    {
+        return PermissionsManager::$aclManager->revokePermissionToGroup($groupName, $permissionName);
+    }
+
+    function install()
+    {
+        return PermissionsManager::$aclManager->install();
+    }
+    function uninstall()
+    {
+        return PermissionsManager::$aclManager->uninstall();
+    }
+    function addModule($moduleClass)
+    {
+        return PermissionsManager::$aclManager->addModule($moduleClass);
+    }
+    function addPermissionsToGroup($permArray,$path="/AllPermissions/Sys/Default")
+    {
+        for($k=0;$k<count($permArray);$k++) {
+            $this->resolveAccessIds(null, array("ITEM" => $permArray[$k], "CREATE" => 1, "CREATEPATH" => $path),null);
+        }
+    }
+    function createUserGroup($group,$path="/AllUsers/Sys")
+    {
+        $this->resolveAccessIds(null, array("ITEM" => $group, "CREATE" => 1, "CREATEPATH" => $path),null);
+    }
 }
-global $oPermissions;
+
 
 ?>

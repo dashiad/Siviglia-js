@@ -24,8 +24,8 @@ include_once(LIBPATH . "/php/debug/Debug.php");
 include_once(LIBPATH . "/Registry.php");
 // Se listan todos los objetos que hay.
 include_once(LIBPATH . "/reflection/SystemReflector.php");
-\lib\reflection\ReflectorFactory::loadFactory();
-$model=\lib\reflection\ReflectorFactory::getModel($_GET["object"]);
+\model\reflection\ReflectorFactory::loadFactory();
+$model=\model\reflection\ReflectorFactory::getModel($_GET["object"]);
 $actionDir=$model->objectName->getDestinationFile("actions");
 $baseNamespace=$model->objectName->getNamespaced();
 echo "<h2>Seleccionar accion del objeto ".$_GET["object"]."</h2>";

@@ -331,7 +331,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
     {
         if (!$extraDef)
         {
-            $mysqlDesc = \lib\reflection\storage\options\MysqlOptionsDefinition::createDefault($modelDef);
+            $mysqlDesc = \model\reflection\Storage\Mysql\MysqlOptionsDefinition::createDefault($modelDef);
             $extraDef = $mysqlDesc->getDefinition();
         }
         $extraDefinition = $extraDef;

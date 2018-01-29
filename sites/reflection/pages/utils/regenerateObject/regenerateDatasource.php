@@ -19,12 +19,12 @@ function regenerateAll($dojoClass, $model, $datasource, $dsName)
 
     //Ahora hay que generar la vista HTML y dojo.
     include_once(LIBPATH."/reflection/html/views/ListWidget.php");
-    $listWidget=new lib\reflection\html\views\ListWidget($dsName,$model,$datasource);
+    $listWidget=new model\reflection\Html\views\ListWidget($dsName,$model,$datasource);
     $listWidget->initialize();
     $listWidget->generateCode(false,false);
     $listWidget->save();
 
-    $webPage=new \lib\reflection\html\pages\ViewWebPageDefinition();
+    $webPage=new \model\reflection\Html\pages\ViewWebPageDefinition();
 
     $base="";
     if($model->objectName->isPrivate())
@@ -61,7 +61,7 @@ function regenerateAll($dojoClass, $model, $datasource, $dsName)
 
     $position["SUBPAGES"]["/".$parts[$k]]=$paths[$path];
 
-    $pathHandler=new \lib\reflection\html\UrlPathDefinition($curPaths[$keys[0]]["SUBPAGES"]);
+    $pathHandler=new \model\reflection\Html\UrlPathDefinition($curPaths[$keys[0]]["SUBPAGES"]);
     $pathHandler->save();
 
     $code=$dojoClass->generateDatasourceView($dsName,$datasource);
@@ -90,16 +90,16 @@ include_once(LIBPATH . "/php/debug/Debug.php");
 include_once(LIBPATH . "/Registry.php");
 // Se listan todos los objetos que hay.
 include_once(LIBPATH . "/reflection/SystemReflector.php");
-\lib\reflection\ReflectorFactory::loadFactory();
+\model\reflection\ReflectorFactory::loadFactory();
 global $APP_NAMESPACES;
 $layers=& $APP_NAMESPACES;
 $layer=$_GET["layer"];
 $obj=$_GET["object"];
 $action=$_GET["action"];
-$model=\lib\reflection\ReflectorFactory::getModel($obj);
+$model=\model\reflection\ReflectorFactory::getModel($obj);
 
 include_once(LIBPATH."/reflection/js/dojo/DojoGenerator.php");
-$dojoClass=new \lib\reflection\js\dojo\DojoGenerator($model);
+$dojoClass=new \model\reflection\Js\dojo\DojoGenerator($model);
 
 $ds = $_GET['datasource'];
 if (! $ds) {

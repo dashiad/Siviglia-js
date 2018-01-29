@@ -83,7 +83,7 @@ class BaseMetadata
 class ModelMetaData extends BaseMetadata {
     function __construct($objName)
     {
-        $Obj=new \lib\reflection\model\ObjectDefinition($objName);
+        $Obj=new \model\reflection\Model\ModelName($objName);
         $path=$Obj->getDestinationFile("Definition.php");
         parent::__construct($path, $Obj->getNamespaced().'\Definition', "definition", true ,array(), false,array('STORAGE'));
         $this->definition["layer"]=$Obj->layer;
@@ -117,7 +117,7 @@ class FormMetaData extends BaseMetadata {
     function __construct($objName,$formName)
     {
 
-        $Obj=new \lib\reflection\model\ObjectDefinition($objName);
+        $Obj=new \model\reflection\Model\ModelName($objName);
         $path=$Obj->getDestinationFile("/html/forms/$formName.php");
         parent::__construct($path, $Obj->getNamespaced().'\html\forms\\'.$formName, "definition", false ,array(), false,array());
     }

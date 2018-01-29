@@ -28,12 +28,12 @@ include_once(LIBPATH . "/php/debug/Debug.php");
 include_once(LIBPATH . "/Registry.php");
 // Se listan todos los objetos que hay.
 include_once(LIBPATH . "/reflection/SystemReflector.php");
-\lib\reflection\ReflectorFactory::loadFactory();
+\model\reflection\ReflectorFactory::loadFactory();
 global $APP_NAMESPACES;
 $layers=& $APP_NAMESPACES;
 $layer=$_GET["layer"];
 $obj=$_GET["object"];
-$model=\lib\reflection\ReflectorFactory::getModel($obj,$layer);
+$model=\model\reflection\ReflectorFactory::getModel($obj,$layer);
 // Hay que incluir los plugins
 // Se regeneran acciones.
 function printItem($cad){echo $cad;}
@@ -53,7 +53,7 @@ include_once(LIBPATH."/reflection/plugins/ActionsProcessor.php");
 $actions=new \lib\reflection\plugins\ActionsProcessor();
 $actions->generateActions($obj, $model, $layer,false);
 include_once(LIBPATH."/reflection/plugins/FormsGenerator.php");
-$p=new \lib\reflection\plugins\FormsGenerator();
+$p=new \lib\reflection\plugins\FormsProcessor();
 $p->buildForms($layer,$obj,$model);
 include_once(LIBPATH."/reflection/plugins/DataSourceProcessor.php");
 $p=new \lib\reflection\plugins\DataSourceProcessor();
@@ -69,7 +69,7 @@ include_once(LIBPATH."/reflection/plugins/ListCodeProcessor.php");
 $p=new \lib\reflection\plugins\ListCodeProcessor();
 $p->buildViews($layer,$_GET["object"],$model,true);
 include_once(LIBPATH."/reflection/plugins/DojoGenerator.php");
-$p=new \lib\reflection\plugins\DojoGenerator();
+$p=new \lib\reflection\plugins\DojoProcessor();
 $p->createOutput($layer,$obj,$model);
 
 

@@ -11,32 +11,40 @@ namespace lib;
 
 class Paths
 {
-    static function getDojoActionJs($namespace,$model,$actionName)
+    static function getBase()
     {
-        return PROJECTPATH."/".$namespace."/objects/".$model."/js/dojo/actions/".$actionName."Action.js";
+        return __DIR__."/../";
     }
-    static function getDojoActionTemplate($namespace,$model,$actionName)
+    static function getLib()
     {
-        return PROJECTPATH."/".$namespace."/objects/".$model."/js/dojo/actions/templates/".$actionName.".html";
+        return __DIR__;
     }
-    static function getRelativeSitePath()
+    function getDojoActionJs($namespace,$model,$actionName)
+    {
+        return Paths::getBase()."/".$namespace."/objects/".$model."/js/dojo/actions/".$actionName."Action.js";
+    }
+    function getDojoActionTemplate($namespace,$model,$actionName)
+    {
+        return Paths::getBase()."/".$namespace."/objects/".$model."/js/dojo/actions/templates/".$actionName.".html";
+    }
+    function getRelativeSitePath()
     {
         return "/sites";
     }
-    static function getSitePath()
+    function getSitePath()
     {
-        return PROJECTPATH.Paths::getRelativeSitePath();
+        return Paths::getBase().Paths::getRelativeSitePath();
     }
-    static function getSiteNamespace()
+    function getSiteNamespace()
     {
         return '\\sites';
     }
-    static function getSiteDocumentRoot($siteName)
+    function getSiteDocumentRoot($siteName)
     {
-        return PROJECTPATH."/html/".$siteName;
+        return Paths::getBase()."/html/".$siteName;
     }
-    static function getModelPath()
+    function getModelPath()
     {
-        return PROJECTPATH."/model";
+        return Paths::getBase()."/model";
     }
 }

@@ -48,7 +48,7 @@ class RelationMxN extends ModelBaseRelation
     function parseFromModel($name,$model,$def)
     {
         
-            $remObject=new \lib\reflection\model\ObjectDefinition($def["MODEL"]);
+            $remObject=new \model\reflection\Model\ModelName($def["MODEL"]);
             $this->targetObject=$def["MODEL"];
             $relObject=\lib\model\BaseModel::getModelInstance($def["RELATION_MODEL"]);
             $this->interTable=$relObject->__getTableName();
@@ -113,7 +113,7 @@ class RelationMxN extends ModelBaseRelation
             $targetObject=$def["MODEL"];
         
         $this->targetObject=$targetObject; 
-        $remObject=new \lib\reflection\model\ObjectDefinition($targetObject);
+        $remObject=new \model\reflection\Model\ModelName($targetObject);
         
         $remClassName=$remObject->className;
         if($remClassName > $model->__getObjectName())

@@ -35,7 +35,7 @@ class Form extends \lib\model\BaseTypedObject
     {
         if(isset($definition["ACTION"]) && isset($definition["ACTION"]["INHERIT"]) && $definition["ACTION"]["INHERIT"])
         {
-            $obj=new \lib\reflection\model\ObjectDefinition($definition["ACTION"]["MODEL"]);
+            $obj=new \model\reflection\Model\ModelName($definition["ACTION"]["MODEL"]);
             $clName=$obj->getNamespacedAction($definition["ACTION"]["ACTION"]);
             include_once($obj->getActionFileName($definition["ACTION"]["ACTION"]));
 
@@ -100,7 +100,7 @@ class Form extends \lib\model\BaseTypedObject
             return $modelInstance;
         }
 
-        $objName=new \lib\reflection\model\ObjectDefinition(str_replace("/",'\\',$object));
+        $objName=new \model\reflection\Model\ModelName(str_replace("/",'\\',$object));
         include_once($objName->getFormFileName($name));
         $formClass=$objName->getNamespacedForm($name);
         $actionResult=new \lib\action\ActionResult();
@@ -475,7 +475,7 @@ class Form extends \lib\model\BaseTypedObject
 
     static function getFormPath($object,$name)
     {
-        $objName=new \lib\reflection\model\ObjectDefinition($object);
+        $objName=new \model\reflection\Model\ModelName($object);
 
         return array("CLASS"=>$objName->getNamespacedForm($name),
                      "PATH"=>$objName->getFormFileName($name));

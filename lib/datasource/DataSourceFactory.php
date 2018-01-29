@@ -17,7 +17,7 @@ class DataSourceFactory
 {
         static function getDataSource($objName,$dsName,&$serializer=null)
         {
-                $objNameClass=new \lib\reflection\model\ObjectDefinition($objName);
+                $objNameClass=new \model\reflection\Model\ModelName($objName);
                 require_once($objNameClass->getDataSourceFileName($dsName));
                 $objLayer=$objNameClass->layer;
                 $objName=$objNameClass->getNamespaced();

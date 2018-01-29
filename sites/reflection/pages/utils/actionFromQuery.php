@@ -10,15 +10,15 @@ $name="lala";
 // Se busca el objeto.
 
 // Se busca ahora el modelo.
-include_once(LIBPATH."/reflection/SystemReflector.php");
+include_once(PROJECTPATH."/model/reflection/ReflectorFactory/ReflectorFactory.php");
 
-$model=\lib\reflection\ReflectorFactory::getModel($object);
+$model=\model\reflection\ReflectorFactory::getModel($object);
 
-include_once(LIBPATH."/reflection/datasources/DataSourceDefinition.php");
-$oDs=new \lib\reflection\datasources\DataSourceDefinition($name,$model);
+include_once(PROJECTPATH."/model/reflection/Datasource/DataSourceDefinition.php");
+$oDs=new \model\reflection\Datasource\DataSourceDefinition($name,$model);
 
-include_once(LIBPATH."/reflection/storage/MysqlDsDefinition.php");
-$mysqlDef=new \lib\reflection\storage\MysqlDsDefinition($model,$name,$oDs);
+include_once(PROJECTPATH."/model/reflection/Storage/objects/Mysql/MysqlDsDefinition.php");
+$mysqlDef=new \model\reflection\Storage\Mysql\MysqlDefinition($model,$name,$oDs);
 
 $info=$mysqlDef->discoverQueryFields($query);
 // Se miran ahora los campos que se han descubierto, las tablas a las que pertenecen, y se ve si la query contiene
@@ -47,13 +47,13 @@ die();
 
 // Ahora hay que generar la vista HTML y dojo.
 include_once(LIBPATH."/reflection/html/views/ListWidget.php");
-$listWidget=new lib\reflection\html\views\ListWidget($name,$model,$newDs);
+$listWidget=new model\reflection\Html\views\ListWidget($name,$model,$newDs);
 $listWidget->initialize();
 $listWidget->generateCode(false,false);
 $listWidget->save();
 
 
-$webPage=new \lib\reflection\html\pages\ViewWebPageDefinition();
+$webPage=new \model\reflection\Html\pages\ViewWebPageDefinition();
 $webPage->create($name,$newDs,$model->objectName->getClassName(),null);
 $path=$webPage->getPath();
 $paths[$path]=$webPage->getPathContents();
@@ -82,7 +82,7 @@ $curPaths=$urls->getPaths();
 
  $position["SUBPAGES"]["/".$parts[$k]]=$paths[$path];
 
- $pathHandler=new \lib\reflection\html\UrlPathDefinition($curPaths);
+ $pathHandler=new \model\reflection\Html\UrlPathDefinition($curPaths);
  $pathHandler->save();
 
 ?>

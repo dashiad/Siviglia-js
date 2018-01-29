@@ -23,7 +23,9 @@ class Site extends \lib\model\BaseModel
     const SITECACHE_ROUTES=3;
     const SITECACHE_FILEMAP=4;
 
-    function getRelativeRoot(){return \lib\Paths::getRelativeSitePath()."/".$this->namespace;}
+    function getRelativeRoot(){
+        return \Registry::getService("paths")->getRelativeSitePath()."/".$this->namespace;
+    }
     function getRoot(){return PROJECTPATH.$this->getRelativeRoot();}
     function getCachePath($isWork=false)
     {
@@ -47,7 +49,7 @@ class Site extends \lib\model\BaseModel
     function getDocumentRoot(){return $this->getRoot()."/html/";}
     function getClassPath(){return $this->getRoot()."/".ucfirst($this->namespace).".php";}
     function toRelative($path){return "/".str_replace(PROJECTPATH,"",$path);}
-    function getNamespace(){return \lib\Paths::getSiteNamespace().'\\'.$this->namespace;}
+    function getNamespace(){return \Registry::getService("paths")->getSiteNamespace().'\\'.$this->namespace;}
     function getConfig(){
         $name=$this->getNamespace()."\\Config";
         return new $name();
@@ -84,7 +86,7 @@ class Site extends \lib\model\BaseModel
 
     function getSectionResourcesPath($pageName)
     {
-        return \lib\Paths::getSiteDocumentRoot($this->name).$this->getRelativeSectionResourcesPath($pageName);
+        return \Registry::getService("paths")->getSiteDocumentRoot($this->name).$this->getRelativeSectionResourcesPath($pageName);
     }
 
     static function getClass($name){return '\sites\\'.ucfirst($name);}

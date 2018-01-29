@@ -36,7 +36,7 @@ class StorageFactory
             return StorageFactory::getSerializerByName(DEFAULT_SERIALIZER);
         else
         {
-            $objNameClass=new \lib\reflection\model\ObjectDefinition($objName);
+            $objNameClass=new \model\reflection\Model\ModelName($objName);
 
                 $Cserializer=$objNameClass->getDefaultSerializer();
             if($Cserializer)

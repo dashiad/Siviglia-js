@@ -18,15 +18,15 @@ include_once(LIBPATH . "/php/debug/Debug.php");
 include_once(LIBPATH . "/Registry.php");
 // Se listan todos los objetos que hay.
 include_once(LIBPATH . "/reflection/SystemReflector.php");
-\lib\reflection\ReflectorFactory::loadFactory();
+\model\reflection\ReflectorFactory::loadFactory();
 global $APP_NAMESPACES;
 $layers=& $APP_NAMESPACES;
 $layer=$_GET["layer"];
 $obj=$_GET["object"];
-$model=\lib\reflection\ReflectorFactory::getModel($obj);
+$model=\model\reflection\ReflectorFactory::getModel($obj);
 
 include_once(LIBPATH."/reflection/js/dojo/DojoGenerator.php");
-$dojoClass=new \lib\reflection\js\dojo\DojoGenerator($model);
+$dojoClass=new \model\reflection\Js\dojo\DojoGenerator($model);
 
 
 echo '<h2>Layer : '.$layer.'</h2>';

@@ -37,7 +37,7 @@ abstract class StorageSerializer
     function loadExtraDefinition($objectName)
     {       
         
-        $objNameClass=new \lib\reflection\model\ObjectDefinition($objectName);
+        $objNameClass=new \model\reflection\Model\ModelName($objectName);
         $objLayer=$objName->layer;
         $objName=$objName->className;
 

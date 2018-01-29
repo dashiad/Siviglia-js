@@ -4,7 +4,7 @@ ini_set("display_errors","on");
 try {
     include_once 'localConfig.php';
     include_once LIBPATH . '/startup.php';
-    Startup::initializeHTTPPage();
+    //Startup::initializeHTTPPage();
 
     $request = Request::getInstance();
     $router=new \lib\Router();

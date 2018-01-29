@@ -6,7 +6,6 @@ class RegistryException extends \lib\model\BaseException
 }
 class Registry
 {
-
     public static $registry = null;
     public static $saved=false;
 
@@ -70,7 +69,7 @@ class Registry
             $oAcl=new PermissionsManager(\lib\storage\StorageFactory::getDefaultSerializer());
             Registry::$registry["acl"]=$oAcl;
         }
-        return Registry::$registry["acl"];                             
+        return Registry::$registry["acl"];
     }
     static function getRequest()
     {
@@ -88,7 +87,7 @@ class Registry
         {
             // Si existian ficheros, hay que eliminarlos de lastAction, ya que no se pueden resetear.
             if(isset($_FILES) &&  !empty($_FILES))
-            {                
+            {
                 foreach(Registry::$registry["newForm"]["DATA"] as $key=>$value)
                 {
                     if(isset($_FILES[$key]))
@@ -104,7 +103,7 @@ class Registry
 
         if (isset(Registry::$registry["newAction"]))
         {
-            
+
             $lastAction  = Registry::$registry["newAction"]->serialize();
             
             $session["Registry/lastAction"]=$lastAction;

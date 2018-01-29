@@ -131,16 +131,16 @@ include_once(LIBPATH."/model/types/BaseType.php");
        static function getObjectDefinition($objName,$layer=null)
       {
 
-          if(!is_object($objName) || get_class($objName)!='lib\reflection\model\ObjectDefinition')
+          if(!is_object($objName) || get_class($objName)!= 'model\reflection\Model\ModelName')
           {
               if(trim($objName)=="")
               {
                   print_r(debug_backtrace());          
               }
-              $objName=new \lib\reflection\model\ObjectDefinition($objName,$layer);
+              $objName=new \model\reflection\Model\ModelName($objName,$layer);
           }
 
-          $objName->includeDefinition();
+          $objName->getDefinition();
           $className=$objName->getNamespaced().'\Definition';
           if(!class_exists($className))
           {
@@ -148,7 +148,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
           }
           // Se instancia, por si hay que hacer inicializacion de la definicion en el constructor.
           $n=new $className();
-          return $className::$definition;
+          return $n->getDefinition();
       }
 
       static function getSerializer($mixedType,$serializer)

@@ -12,6 +12,8 @@ namespace sites\reflection\routes\Urls;
 class Pages
 {
     static $definition = array(
-        "/" => "index"
+        "/" => "index",
+        "/test"=>"test",
+        "/login"=>"login"
     );
 }

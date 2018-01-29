@@ -35,7 +35,7 @@ include_once(LIBPATH . "/php/debug/Debug.php");
 include_once(LIBPATH . "/Registry.php");
 // Se listan todos los objetos que hay.
 include_once(LIBPATH . "/reflection/SystemReflector.php");
-$model=\lib\reflection\ReflectorFactory::getModel($_POST["objName"]);
+$model=\model\reflection\ReflectorFactory::getModel($_POST["objName"]);
 include_once(LIBPATH . "/reflection/actions/ActionDefinition.php");
 if($_POST["tipo"]=="EditAction" || $_POST["tipo"]=="DeleteAction")
     $indexFields = $model->getIndexFields();
@@ -72,24 +72,24 @@ for($k=0;$k<count($_POST["extraFields"]);$k++)
         $paths[$fName]=$fTarget;
     }
 }
-$perms=\lib\reflection\permissions\PermissionRequirementsDefinition::create(array("_PUBLIC_"));
-$curAction=new \lib\reflection\actions\ActionDefinition($_POST["actionName"],$model);
+$perms=\model\reflection\Permissions\PermissionRequirementsDefinitionRequirementsDefinition::create(array("_PUBLIC_"));
+$curAction=new \model\reflection\Action\ActionDefinition($_POST["actionName"],$model);
 
 $curAction->create($_POST["tipo"],$indexFields,$requiredFields,$optionalFields,null,false,"",$paths);
 $curAction->save();
 
 include_once(LIBPATH.'/reflection/html/forms/FormDefinition.php');
-$formInstance=new \lib\reflection\html\forms\FormDefinition($_POST["actionName"],$curAction);
+$formInstance=new \model\reflection\Html\forms\FormDefinition($_POST["actionName"],$curAction);
     $formInstance->create();
 $formInstance->saveDefinition();
 $formInstance->generateCode();
 
 // Se crea el formulario dojo.
 include_once(LIBPATH."/reflection/js/dojo/DojoGenerator.php");
-$oDojo=new \lib\reflection\js\dojo\DojoGenerator($model);
+$oDojo=new \model\reflection\Js\dojo\DojoGenerator($model);
 $code=$oDojo->generateForm($_POST["actionName"],$formInstance);
 $oDojo->saveForm($_POST["actionName"],$code);
-$webPage=new \lib\reflection\html\pages\FormWebPageDefinition();
+$webPage=new \model\reflection\Html\pages\FormWebPageDefinition();
 $webPage->create($_POST["actionName"],$curAction,$_POST["objName"],$model);
 $path=$webPage->getPath();
 $paths[$path]=$webPage->getPathContents();
@@ -118,7 +118,7 @@ for($k=0;$k<$len-1;$k++)
 
 $position["SUBPAGES"]["/".$parts[$k]]=$paths[$path];
 
-$pathHandler=new \lib\reflection\html\UrlPathDefinition($curPaths);
+$pathHandler=new \model\reflection\Html\UrlPathDefinition($curPaths);
 $pathHandler->save();
 */
 // Se introduce la nueva url.Primero, hay que cargar las existentes.
@@ -142,5 +142,5 @@ for($k=0;$k<$len-1;$k++)
 
 $position["SUBPAGES"]["/".$parts[$k]]=$paths[$path];
 
-$pathHandler=new \lib\reflection\html\UrlPathDefinition($curPaths[$keys[0]]["SUBPAGES"]);
+$pathHandler=new \model\reflection\Html\UrlPathDefinition($curPaths[$keys[0]]["SUBPAGES"]);
 $pathHandler->save();

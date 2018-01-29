@@ -42,7 +42,7 @@ class BaseModel extends BaseTypedObject
     protected $__def;
     function __construct($serializer = null, $definition = null)
     {
-        $this->__objName = new \lib\reflection\model\ObjectDefinition('\\'.get_class($this));
+        $this->__objName = new \model\reflection\Model\ModelName('\\'.get_class($this));
         if (!$definition)
             $this->__def=BaseModelDefinition::loadDefinition($this);
         else
@@ -319,8 +319,6 @@ class BaseModel extends BaseTypedObject
             $fieldName= str_replace("fetchBy", "", $name);
             if(!isset($this->__fieldDef[$fieldName]))
             {
-                _d($fieldName);
-                debug_trace_plain();
                 throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
             }
             $cField=$this->__getField($fieldName);
@@ -407,11 +405,12 @@ class BaseModel extends BaseTypedObject
 
     static function getModelInstance($objectName, $serializer = null, $definition = null)
     {        
-        $objName = new \lib\reflection\model\ObjectDefinition($objectName);
-        $objName->includeDefinition();
+        $objName = new \model\reflection\Model\ModelName($objectName);
+        if($definition==null)
+            $definition=$objName->getDefinition();
         $objName->includeModel();        
         $namespacedName=$objName->getNamespaced();
-        $obj=new $namespacedName($serializer,$definition);        
+        $obj=new $namespacedName($serializer);
         return $obj;
     }
     static function getModel($objectName,$fields=null)
@@ -434,7 +433,7 @@ class BaseModel extends BaseTypedObject
 
         if ($def["TABLE"])
             return $def["TABLE"];
-        $objDef = new \lib\reflection\model\ObjectDefinition($objectName);
+        $objDef = new \model\reflection\Model\ModelName($objectName);
         return $objDef->className;
     }
 
@@ -530,6 +529,14 @@ class BaseModel extends BaseTypedObject
         return $perms ? $perms : null;
     }
 
+    function hasPermission($permsService,$user)
+    {
+        $perms=$this->__def->getRequiredPermissions();
+        if(!$perms)
+            return true;
+        return $permsService->canAccess($perms,$this,$user->getId());
+    }
+
     function getOwner()
     {
 
@@ -619,6 +626,12 @@ class BaseModel extends BaseTypedObject
     {
 
         return "[ ".get_class($this)." ( ".$this->__key->__toString().") ]";
+    }
+
+    function __isOwner(BaseModel $model)
+    {
+        $ctx=new SimpleContext();
+        return $model->getPath($this->definition->getOwnerPath(),$ctx)==$this->getPath($this->definition->getOwnerPath(),$ctx);
     }
             
 }

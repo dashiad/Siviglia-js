@@ -28,7 +28,7 @@ class Action
 
     static function getAction($object, $name)
     {
-        $objName = new \lib\reflection\model\ObjectDefinition($object);
+        $objName = new \model\reflection\Model\ModelName($object);
         include_once($objName->getActionFileName($name));
         $className = $objName->getNamespacedAction($name);
         $instance = new $className();
@@ -134,7 +134,7 @@ class Action
                                 $cDef = $def["FIELDS"][$key];
                                 if (isset($cDef["MODEL"])) {
 
-                                    $mT = new \lib\reflection\model\ObjectDefinition($cDef["MODEL"]);
+                                    $mT = new \model\reflection\Model\ModelName($cDef["MODEL"]);
                                     if ($mT->getNamespaced() == $namespaced) {
                                         // $key es el campo del formulario, $targetField es el campo del modelo.
                                         $targetField = $cDef["FIELD"];

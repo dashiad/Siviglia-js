@@ -1,5 +1,6 @@
 <?php
 namespace lib\model\permissions;
+include_once(LIBPATH."/model/BaseException.php");
 class AclException extends \lib\model\BaseException
 {
 
@@ -241,7 +242,7 @@ class AclManager
      * The path is supposed to be in the form : "/a/b/c/d"
      * All paths must be absolute.
      */
-    function getGroupFromPath($path, $type = AclManager::ARO)
+    function getGroupFromPath($path, $type = AclManager::ARO,$autoCreate=false)
     {
         // Si es una cadena, se espera que sean nombres de grupos separados por "/", que
         // es mas intuitivo que por comas.
@@ -264,11 +265,16 @@ class AclManager
 
             if (!$arr)
             {
-                echo $q;
-                throw new AclException(AclException::ERR_GROUP_DOESNT_EXIST);
+                if($autoCreate)
+                    $id=$this->add_group($parts[$k],$lastId,$type);
+                else
+                    throw new AclException(AclException::ERR_GROUP_DOESNT_EXIST);
             }
-            $currentPath.=$arr[0]["id"];
-            $lastId = $arr[0]["id"];
+            else
+                $id=$arr[0]["id"];
+            $currentPath .= $id;
+            $lastId = $id;
+
         }
         if($lastId==0)
         {
@@ -741,7 +747,7 @@ class AclManager
 
     function canAccess($permsDefinition, $user, $model = null)
     {
-        $permsObj = new \lib\reflection\permissions\PermissionRequirementsDefinition($permsDefinition);
+        $permsObj = new \model\reflection\Permissions\PermissionRequirementsDefinitionRequirementsDefinition($permsDefinition);
         if ($permsObj->isJustPublic())
             return true;
         if ($model)
@@ -795,7 +801,7 @@ class AclManager
 
                     if (isset($current["CREATEPATH"]))
                     {
-                        $groupId = $this->getGroupFromPath($current["CREATEPATH"], $key);
+                        $groupId = $this->getGroupFromPath($current["CREATEPATH"], $key,true);
                         if (!$groupId)
                         {
                             throw new AclException(AclException::ERR_GROUP_DOESNT_EXIST);
@@ -844,15 +850,15 @@ class AclManager
         return $results;
     }
 
-    private function getModulePath($model, $onlyParent = false)
+    function getModulePath($model, $onlyParent = false)
     {
         if (is_object($model))
         {
-            $objName = $model->__objectName;
+            $objName = $model->__getObjectNameObj();
         }
         else
         {
-            $objName = new \lib\reflection\model\ObjectDefinition($model);
+            $objName = new \model\reflection\Model\ModelName($model);
         }
         $objLayer = $objName->layer;
         if ($onlyParent)
@@ -937,6 +943,10 @@ class AclManager
         $this->add_acl(
                 array("ITEM" => is_array($permissions) ? $permissions : array($permissions)), array("ITEM" => array($userId)), array("GROUP" => array($moduleName)));
     }
+    function addModule($modelClass)
+    {
+        $this->resolveAccessIds(null, null, array("ITEM" => $modelClass, "CREATE" => 1, "CREATEPATH" => $this->getModulePath($modelClass)));
+    }
 
     function removePermissionOverModule($permission, $userId, $moduleName)
     {
@@ -960,7 +970,7 @@ class AclManager
     {
         $innerId = $this->get_object($userId);
 
-        $result = $this->resolveAccessIds(array("ITEM" => $userId, "CREATE" => 1), null, null);
+        $result = $this->resolveAccessIds(array("GROUP"=>$groupName,"ITEM" => $userId, "CREATE" => 1), null, null));
 
         $groupId = $this->get_group_id(null, $groupName, AclManager::ARO);
         if (!$groupId)

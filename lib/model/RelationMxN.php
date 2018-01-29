@@ -16,8 +16,8 @@
     protected $uniqueRelations;
     function __construct($name,& $model, $definition, $value=null)
     {
-        $this->relationModelName=new \lib\reflection\model\ObjectDefinition($definition["MODEL"]);
-        $this->remoteModelName=new \lib\reflection\model\ObjectDefinition($definition["REMOTE_MODEL"]);
+        $this->relationModelName=new \model\reflection\Model\ModelName($definition["MODEL"]);
+        $this->remoteModelName=new \model\reflection\Model\ModelName($definition["REMOTE_MODEL"]);
         // Se necesita la definicion del objeto relacion.
         $this->uniqueRelations=isset($definition["RELATIONS_ARE_UNIQUE"])?$definition["RELATIONS_ARE_UNIQUE"]:false;
         $this->relationModelInstance=\lib\model\BaseModel::getModelInstance($definition["MODEL"]);

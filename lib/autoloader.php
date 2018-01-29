@@ -24,10 +24,17 @@ function mainAutoloader($name)
         {
             include_once(PROJECTPATH.implode("/",$parts).".php");
         }break;
+        case "model":
+        {
+            $modelDef=new \model\reflection\Model\ModelName($name);
+            $destFile=$modelDef->getDestinationFile(array_pop($parts)).".php";
+            if(is_file($destFile))
+                $modelDef->includeModel();
+        }break;
         default:
         {
             $name=str_replace("Exception","",$name);
-            $def=new \lib\reflection\model\ObjectDefinition($name);
+            $def=new \model\reflection\Model\ModelName($name);
             $fName=$parts[count($parts)-1];
             $fName=str_replace("Exception","",$fName);
             $dest=$def->getDestinationFile($fName).".php";

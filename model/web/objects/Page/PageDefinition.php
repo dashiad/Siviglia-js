@@ -159,31 +159,9 @@ abstract class PageDefinition extends \lib\model\BaseTypedObject
     }
     abstract function getPageDefinition();
 
-    private function checkPermissions()
+    function getRequiredPermissions()
     {
-        if(isset($this->definition["PERMISSIONS"]))
-        {
-            $d=$this->definition["PERMISSIONS"];
-            $permission=$d["PERMISSION"];
-            $model=$d["TARGET_MODEL"];
-            $sourceModel=io($d,"SOURCE_MODEL",$model);
-            $sourceId=io($d,"KEY_PARAM",null);
-            $target=array("GROUP"=>$sourceModel);
-            if($sourceId!=null)
-                $target["ITEM"]=$this->pageInstance[$sourceId]->getValue();
-
-            global $SERIALIZERS;
-            $ser=\lib\storage\StorageFactory::getSerializer($SERIALIZERS["web"]);
-            include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
-            $oPerms=new \AclManager($ser);
-
-            // $permissionsChecking[]=array(array(array("GROUP"=>"Documents","ITEM"=>"create"),array("GROUP"=>"Workers","ITEM"=>"Alberto"),array("GROUP"=>"Documents","ITEM"=>"salaries")),true); //0
-            global $oCurrentUser;
-            if(!$oPerms->acl_check(array("GROUP"=>$model,"ITEM"=>$permission),array("ITEM"=>$oCurrentUser->getId()),$target))
-            {
-                throw new PageDefinitionException(PageDefinitionException::ERR_NO_PERMISSIONS);
-            }
-        }
+        return io($this->getPageDefinition(),"PERMISSIONS",null);
     }
 
 

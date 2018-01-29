@@ -369,7 +369,7 @@ class DEPENDENCY extends Plugin {
         $objName=$spec["MODEL"][0];
         // Cuando se carga un modelo, hay que meter tanto su meta, como la instancia del fichero.
         include_once(PROJECTPATH."/lib/reflection/model/ObjectDefinition.php");
-        $Obj=new \lib\reflection\model\ObjectDefinition($objName);
+        $Obj=new \model\reflection\Model\ModelName($objName);
         $srcFile=$Obj->getDestinationFile("/js/Model.js");
 
         // Se marca este modelo como ya usado.
@@ -510,7 +510,7 @@ class DEPENDENCY extends Plugin {
         {
             $obj=$spec["MODEL"][0];
             include_once(PROJECTPATH."/lib/reflection/model/ObjectDefinition.php");
-            $obj=new \lib\reflection\model\ObjectDefinition($obj);
+            $obj=new \model\reflection\Model\ModelName($obj);
             if(isset($this->params["WIDGET_PATH"]))
                 $path=$this->params["WIDGET_PATH"];
             else

@@ -746,7 +746,7 @@ class RelationFields
         $this->waitingRemoteSave=false; 
         if(is_object($value) && is_subclass_of($value,"\\lib\\model\\BaseModel"))
         {
-            $remObjName=new \lib\reflection\model\ObjectDefinition($this->relObject->getRemoteObject());            
+            $remObjName=new \model\reflection\Model\ModelName($this->relObject->getRemoteObject());
             if($remObjName->className==$value->__getObjectName())
             {                            
                 $this->setFromModel($value);
