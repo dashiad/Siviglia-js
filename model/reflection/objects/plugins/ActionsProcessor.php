@@ -33,7 +33,7 @@ class ActionsProcessor extends \model\reflection\base\SystemPlugin
             $prefixL="";
             $prefixU="";
             if ($ownershipField)
-                $modifyPermission[] = "_OWNER_";
+                $modifyPermission[] = 'OWNER';
         }
         else
         {
@@ -98,7 +98,7 @@ class ActionsProcessor extends \model\reflection\base\SystemPlugin
         {
             $cName=$defaultActions["NAMES"][$k];
             $curName=$prefixU.$cName;
-            $curAction=new \model\reflection\Action\ActionDefinition($curName,$objModel);
+            $curAction=new \model\reflection\Action($curName,$objModel);
             if($curAction->mustRebuild())
             {
                 $curAction->create($defaultActions["NAMES"][$k],

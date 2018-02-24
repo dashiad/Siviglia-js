@@ -1,3 +1,6 @@
-
-[*/model/web/objects/Site/html/views/FullList][#]
-
+[*SKIN_PAGE]
+    [_TITLE]Mi titulo[#]
+    [_CONTENT]
+        [*/model/web/objects/Site/html/views/FullList][#]
+    [#]
+[#]

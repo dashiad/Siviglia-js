@@ -17,19 +17,18 @@ class PageDefinitionException extends \lib\model\BaseException
     const TXT_REQUIRED_PARAM="Required parameter";
 }
 
-abstract class PageDefinition extends \lib\model\BaseTypedObject
+abstract class PageDefinition extends \lib\model\BaseDefinition
 {
     private $pageInstance;
-
+    private $__modelInstance;
     function __construct()
     {
         $pageDefinition=$this->getPageDefinition();
         if (!isset($pageDefinition["FIELDS"]))
                 $pageDefinition["FIELDS"] = array();
 
-
         if (isset($pageDefinition["ROLE"]) &&
-            in_array($pageDefinition["ROLE"],array(\model\web\Page::ROLE_ADD,\model\web\Page::ROLE_EDIT,\model\web\Page::ROLE_DELETE)))
+            in_array($pageDefinition["ROLE"],array(\model\web\Page::PAGE_ROLE_CREATE,\model\web\Page::PAGE_ROLE_EDIT)))
         {
             if (!is_array(\Registry::$registry["action"])) {
                 \Registry::$registry["action"] = array("FIELDS" => \Registry::$registry["params"]);
@@ -39,66 +38,9 @@ abstract class PageDefinition extends \lib\model\BaseTypedObject
                 //\Registry::$registry["action"]["FIELDS"]=array_merge(\Registry::$registry["action"]["FIELDS"],\Registry::$registry["params"]);
             }
         }
-        $getData = \Registry::$registry["params"];
-        $fullData = $getData;
-
         $this->initializeDefinition($pageDefinition);
         \lib\model\BaseTypedObject::__construct($pageDefinition);
 
-        foreach ($pageDefinition["FIELDS"] as $getKey => $getDef) {
-            if (!isset($fullData[$getKey])) {
-                if ($getDef["REQUIRED"]) {
-
-                    throw new PageDefinitionException(PageDefinitionException::ERR_REQUIRED_PARAM, array("name" => $getKey));
-                } else
-                    unset($pageDefinition["FIELDS"][$getKey]);
-            } else {
-
-                if (is_object($fullData[$getKey])) {
-                    $curVal = $fullData[$getKey]->getValue();
-                } else
-                    $curVal = $fullData[$getKey];
-
-                \lib\model\types\TypeFactory::unserializeType($this->{"*" . $getKey}, $curVal, "HTML");
-            }
-        }
-        $instance = null;
-        if (isset($pageDefinition["MODELIDS"])) {
-
-            foreach ($pageDefinition["MODELIDS"] as $key => $value) {
-                $modelName = $key;
-                $curKey = array();
-                $instance = \lib\model\BaseModel::getModelInstance($modelName);
-
-                $instance->disableStateChecks();
-                foreach ($value as $fieldKey) {
-                    $curField = $this->__getField($fieldKey);
-
-                    $instance->{$fieldKey} = $curField->getType()->getValue();
-                }
-                try {
-                    $instance->loadFromFields();
-                    $instance->enableStateChecks();
-                    \Registry::$registry["currentModel"] = $instance;
-                } catch (\lib\model\BaseModelException $e) {
-                }
-            }
-
-        } else {
-            if (isset($pageDefinition["MODEL"]))
-                $instance = \lib\model\BaseModel::getModelInstance($pageDefinition["MODEL"]);
-        }
-
-        if ($instance) {
-            global $oCurrentUser;
-            try {
-                $this->checkPermissions();
-
-            } catch (\Exception $e) {
-                echo "Sin permisos";
-                exit();
-            }
-        }
 
     }
 
@@ -108,11 +50,10 @@ abstract class PageDefinition extends \lib\model\BaseTypedObject
         $role=io($pageDefinition,"ROLE","");
         switch($role)
         {
-            case \model\web\Page::ROLE_VIEW:
+            case \model\web\Page::PAGE_ROLE_VIEW:
             {
-
             }break;
-            case \model\web\Page::ROLE_LIST:
+            case \model\web\Page::PAGE_ROLE_LIST:
             {
                 $addFields=array(
                     '__start'=>array('TYPE'=>'Integer'),
@@ -137,17 +78,11 @@ abstract class PageDefinition extends \lib\model\BaseTypedObject
                     )
                 );
             }break;
-            case \model\web\Page::ROLE_ADD:
+            case \model\web\Page::PAGE_ROLE_CREATE:
             {
-
             }break;
-            case \model\web\Page::ROLE_EDIT:
+            case \model\web\Page::PAGE_ROLE_EDIT:
             {
-
-            }break;
-            case \model\web\Page::ROLE_DELETE:
-            {
-
             }break;
         }
         foreach($addFields as $key=>$value)
@@ -164,13 +99,45 @@ abstract class PageDefinition extends \lib\model\BaseTypedObject
         return io($this->getPageDefinition(),"PERMISSIONS",null);
     }
 
+    function createPageModelInstance($pageDefinition)
+    {
+        $this->__modelInstance=null;
+        if(! in_array($this->role,array(\model\web\Page::PAGE_ROLE_VIEW, \model\web\Page::PAGE_ROLE_CREATE,\model\web\Page::PAGE_ROLE_EDIT)))
+            return;
+        $instance=null;
+        if (isset($pageDefinition["MODELIDS"])) {
+            foreach ($pageDefinition["MODELIDS"] as $key => $value) {
+                $modelName = $key;
+                $instance = \lib\model\BaseModel::getModelInstance($modelName);
+                $instance->disableStateChecks();
+                foreach ($value as $fieldKey) {
+                    $curField = $this->__getField($fieldKey);
+                    $instance->{$fieldKey} = $curField->getType()->getValue();
+                }
+                try {
+                    $instance->loadFromFields();
+                    $instance->enableStateChecks();
+                    \Registry::$registry["currentModel"] = $instance;
+                } catch (\lib\model\BaseModelException $e) {
+                }
+            }
 
-    /*    function checkPermissions($user, $modelInstance)
-        {
-            $permManager = \Registry::getPermissionsManager();
-            $perms = $this->definition["PERMISSIONS"];
+        } else {
+            if (isset($pageDefinition["MODEL"]))
+                $instance = \lib\model\BaseModel::getModelInstance($pageDefinition["MODEL"]);
+        }
+        $this->__modelInstance=$instance;
+        return $instance;
+    }
 
-            if (!$permManager->canAccessModel($modelInstance, $perms, $user ? $user->getId() : null))
-                throw new WebPageException(WebPageException::ERR_UNAUTHORIZED);
-        }*/
+    function getModelInstance()
+    {
+        return $this->__modelInstance==null?\Registry::getService("site"):$this->__modelInstance;
+    }
+    function getPermissionsTarget()
+    {
+        return $this->getModelInstance();
+    }
+
+
 }

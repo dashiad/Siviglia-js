@@ -19,6 +19,8 @@ class BaseModelException extends \lib\model\BaseException
     const ERR_DOUBLE_STATE_CHANGE=12;
     const ERR_UNKNOWN_OBJECT=13;
     const ERR_INVALID_STATE_DATASOURCE=14;
+    const ERR_INVALID_FIELD_PATH=15;
+    const ERR_NOT_ENOUGH_PERMISSIONS=16;
 }
 
 
@@ -406,8 +408,6 @@ class BaseModel extends BaseTypedObject
     static function getModelInstance($objectName, $serializer = null, $definition = null)
     {        
         $objName = new \model\reflection\Model\ModelName($objectName);
-        if($definition==null)
-            $definition=$objName->getDefinition();
         $objName->includeModel();        
         $namespacedName=$objName->getNamespaced();
         $obj=new $namespacedName($serializer);
@@ -627,12 +627,70 @@ class BaseModel extends BaseTypedObject
 
         return "[ ".get_class($this)." ( ".$this->__key->__toString().") ]";
     }
-
-    function __isOwner(BaseModel $model)
+    function __getOwner()
     {
         $ctx=new SimpleContext();
-        return $model->getPath($this->definition->getOwnerPath(),$ctx)==$this->getPath($this->definition->getOwnerPath(),$ctx);
+        return $this->getPath($this->definition->getOwnerPath(),$ctx);
     }
-            
+    function __isOwner(BaseModel $model)
+    {
+        return $this->__getOwner()==$model->__getOwner();
+    }
+
+    /**
+     * Resuelve una cadena de texto, a un array de especificaciones de tablas y campos relacionados.
+     * Es un tipo de resolucion de path
+     * Un ejemplo es /id_user/is_company/name
+     * devolveria un array indicando cada tabla, el local y el remoto.
+     * @param $path
+     */
+    function __getFieldPath($path)
+    {
+        $parts=explode("/",$path);
+        if($parts[0]=="")
+            array_shift($parts);
+        $result=array();
+        $curModel=$this;
+        for($k=0;$k<count($parts);$k++)
+        {
+            if($curModel==null)
+                throw new BaseModelException(BaseModelException::ERR_INVALID_FIELD_PATH);
+            $field=$curModel->{"*".$parts[$k]};
+            $def=$field->getDefinition();
+            $r=array("TABLE"=>$curModel->__getTableName());
+            if($field->isRelation())
+            {
+                $keys=array_keys($def["FIELDS"]);
+                // TODO: Soportar relaciones por mas de 1 campo.
+                // TODO: Soportar "encadenar" ownership: si 1 modelo tiene ownership a otro
+                // modelo que tambien tiene ownership, encadenar ambos.
+                $r["FIELD"]=$keys[0];
+                $r["REMOTEFIELD"]=$def["FIELDS"][$keys[0]];
+                $curModel=BaseModel::getModel($def["OBJECT"]);
+                $r["REMOTETABLE"]=$curModel->__getTableName();
+            }
+            else
+            {
+                $r["FIELD"]=$parts[$k];
+                $curModel=null;
+            }
+
+            $result[]=$r;
+        }
+        return $result;
+    }
+
+    function __getOwnerPath()
+    {
+        try
+        {
+            return $this->__getFieldPath($this->definition->getOwnerPath());
+
+        }catch(BaseModelDefinitionException $e)
+        {
+            return null;
+        }
+    }
+
 }
 

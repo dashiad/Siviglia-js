@@ -29,10 +29,29 @@
           }
           $this->value=password_hash($this->value,$type,$options);
       }
+      function setRandomValue()
+      {
+          $length=6;
+          $str = 'abcdefghijkmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+          for ($i = 0, $passwd = ''; $i < $length; $i++)
+                  $passwd .= substr($str, mt_rand(0, strlen($str) - 1), 1);
+          $this->setValue($passwd);
+          return $passwd;
+      }
+      
 
       function check($string)
       {
           return password_verify($string,$this->value);
+      }
+  }
+class PasswordMeta extends \lib\model\types\BaseTypeMeta
+  {
+      function getMeta($type)
+      {
+          $def=$type->getDefinition();
+          unset($def["SALT"]);
+          return $def;
       }
   }
 ?>

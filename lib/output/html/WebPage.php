@@ -122,12 +122,4 @@ class WebPage extends \lib\model\BaseTypedObject
         }
     }
 
-    function checkPermissions($user, $modelInstance)
-    {
-        $permManager = \Registry::getPermissionsManager();
-        $perms = $this->definition["PERMISSIONS"];
-
-        if (!$permManager->canAccessModel($modelInstance, $perms, $user ? $user->getId() : null))
-            throw new WebPageException(WebPageException::ERR_UNAUTHORIZED);
-    }
 }

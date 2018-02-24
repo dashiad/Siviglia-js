@@ -22,15 +22,7 @@ class RouteBuilder
     }
     static function rebuildSiteUrls($site)
     {
-        $cachePath=$site->getRouteCachePath();
-        $routeDir = $site->getRoutesPath();
-        $routeSpec = array(
-            "Urls" => $routeDir . "/Urls",
-            "Definitions" => $routeDir . "/Definitions",
-            "namespace" => $site->getNamespace()."\\routes"
-        );
-        $builder=new \lib\routing\RouteBuilder(array($routeSpec));
-        $builder->regenerateCache($cachePath);
+        return $site->rebuildSiteUrls();
     }
 
     function regenerateCache($cachePath)
@@ -40,12 +32,12 @@ class RouteBuilder
         $definitions = array();
 
         foreach ($this->routeSpec as $key => $val) {
-            $routes = array_merge_recursive($routes, $this->loadDefinitions($val["Urls"], $val["namespace"], 'urls'));
+            $routes = array_merge_recursive($routes, $this->loadDefinitions($val["Urls"], $val["namespace"], 'urls',"",true));
             $this->counter = 0;
             $paths = $this->buildPaths($routes);
             for ($k = 0; $k < count($paths["REGEX"]); $k++)
                 $regexes[] = "~^" . $paths["REGEX"][$k] . "(?:\\?.*){0,1}(?:&.*){0,1}$~";
-            $definitions = array_merge($definitions, $this->loadDefinitions($val["Definitions"], $val["namespace"], 'Definitions'));
+            $definitions = array_merge($definitions, $this->loadDefinitions($val["Definitions"], $val["namespace"], 'Definitions',"",false));
         }
         $dir=basename($cachePath);
         if(!is_dir($dir))
@@ -53,8 +45,10 @@ class RouteBuilder
         file_put_contents($cachePath, serialize(array("DEFINITIONS" => $definitions, "PATHS" => $routes, "REGEX" => $regexes)));
     }
 
-    function loadDefinitions($path, $baseNamespace, $classNamespace)
+    function loadDefinitions($path, $baseNamespace, $classNamespace,$prefix="",$usePrefix=false)
     {
+        if($usePrefix==false)
+            $prefix="";
         $definition = array();
         $dir = opendir($path);
         if (!$dir) {
@@ -65,12 +59,16 @@ class RouteBuilder
             if ($file == "." || $file == "..")
                 continue;
             if (is_dir($path . "/" . $file)) {
-                $defs = $this->loadDefinitions($path . "/" . $file, $baseNamespace, $classNamespace . "\\" . $file);
+                $defs = $this->loadDefinitions($path . "/" . $file, $baseNamespace, $classNamespace . "\\" . $file,$prefix."/".$file,$usePrefix);
                 $definition = array_merge_recursive($definition, $defs);
             } else {
                 include_once($path . "/" . $file);
                 $className = $baseNamespace . '\\' . $classNamespace . '\\' . basename($file, ".php");
-                $definition = array_merge_recursive($definition, $className::$definition);
+                $d=$className::$definition;
+                foreach($d as $k=>$v)
+                {
+                    $definition[$prefix.$k]=$v;
+                }
             }
         }
         return $definition;

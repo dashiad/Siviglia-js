@@ -23,7 +23,7 @@ class LoginPage extends \model\web\Page
     function onFormSuccess($form)
     {
         $response=\Registry::$registry["response"];
-        $response->setBuilder(\lib\Response::redirect($this->generateUrl("editor")));
+        $response->setBuilder(\lib\Response::redirect($this->generateUrl("index")));
     }
     function onFormError($form)
     {

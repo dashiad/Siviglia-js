@@ -244,7 +244,12 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         $ds=$this->getDataSource();
         if(!$ds)
             return $data;
-        $autoInclude=$ds->getPagingParameters()->__autoInclude;
+        $params=$ds->getPagingParameters();
+        $autoInclude="";
+        if($params)
+        {
+            $autoInclude=$ds->getPagingParameters()->__autoInclude;
+        }
         if($autoInclude=="")
             return $data;
 

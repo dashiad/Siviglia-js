@@ -27,7 +27,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'LABEL'=>'id_page',
                            'SHORTLABEL'=>'id_page',
                            'DESCRIPTIVE'=>'true',
-                           'ISLABEL'=>'true'
+                           'ISLABEL'=>true
                            ),
                      'tag'=>array(
                            'TYPE'=>'String',
@@ -35,7 +35,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'MAXLENGTH'=>30,
                            'DESCRIPTIVE'=>'true',
                            'SHORTLABEL'=>'tag',
-                           'ISLABEL'=>'true'
+                           'ISLABEL'=>true
                            ),
                      'id_site'=>array(
                            'DEFAULT'=>'NULL',
@@ -56,7 +56,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'SEARCHABLE'=>1,
                            'SHORTLABEL'=>'name',
                            'DESCRIPTIVE'=>'true',
-                           'ISLABEL'=>'true'
+                           'ISLABEL'=>true
                            ),
                      'date_add'=>array(
                            'DEFAULT'=>'NULL',
@@ -64,7 +64,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'TYPE'=>'DateTime',
                            'LABEL'=>'date_add',
                            'DESCRIPTIVE'=>'true',
-                           'ISLABEL'=>'true'
+                           'ISLABEL'=>true
                            ),
                      'date_modified'=>array(
                            'DEFAULT'=>'NULL',
@@ -72,7 +72,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'TYPE'=>'DateTime',
                            'LABEL'=>'date_modified',
                            'DESCRIPTIVE'=>'true',
-                           'ISLABEL'=>'true'
+                           'ISLABEL'=>true
                            ),
                      'id_type'=>array(
                            'DEFAULT'=>'1',
@@ -80,14 +80,14 @@ class Definition extends \lib\model\BaseModelDefinition
                            'TYPE'=>'Integer',
                            'LABEL'=>'id_type',
                            'DESCRIPTIVE'=>'true',
-                           'ISLABEL'=>'true'
+                           'ISLABEL'=>true
                            ),
                      'isPrivate'=>array(
                            'TYPE'=>'Boolean',
                            'LABEL'=>'isPrivate',
                            'SHORTLABEL'=>'isPrivate',
                            'DEFAULT'=>false,
-                           'DESCRIPTIVE'=>'true',
+                           'DESCRIPTIVE'=>true,
                            'ISLABEL'=>'true'
                            ),
                      'path'=>array(
@@ -97,7 +97,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'LABEL'=>'path',
                            'SEARCHABLE'=>1,
                            'SHORTLABEL'=>'path',
-                           'DESCRIPTIVE'=>'true',
+                           'DESCRIPTIVE'=>true,
                            'ISLABEL'=>'true'
                            ),
                      'title'=>array(
@@ -107,7 +107,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'LABEL'=>'title',
                            'SEARCHABLE'=>1,
                            'SHORTLABEL'=>'title',
-                           'DESCRIPTIVE'=>'true',
+                           'DESCRIPTIVE'=>true,
                            'ISLABEL'=>'true'
                            ),
                      'tags'=>array(
@@ -117,7 +117,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'LABEL'=>'tags',
                            'SEARCHABLE'=>1,
                            'SHORTLABEL'=>'tags',
-                           'DESCRIPTIVE'=>'true',
+                           'DESCRIPTIVE'=>true,
                            'ISLABEL'=>'true'
                            ),
                      'description'=>array(
@@ -127,9 +127,63 @@ class Definition extends \lib\model\BaseModelDefinition
                            'LABEL'=>'description',
                            'SEARCHABLE'=>1,
                            'SHORTLABEL'=>'description',
-                           'DESCRIPTIVE'=>'true',
+                           'DESCRIPTIVE'=>true,
                            'ISLABEL'=>'true'
-                           )
+                           ),
+                        'role'=>array(
+                            'LABEL'=>'Role',
+                            'SHORTLABEL'=>'Role',
+                            'DESCRIPTIVE'=>true,
+                            'TYPE'=>'Enum',
+                            'REQUIRED'=>true,
+                            'VALUES'=>array(
+                                \model\web\Page::PAGE_ROLE_VIEW,
+                                \model\web\Page::PAGE_ROLE_LIST,
+                                \model\web\Page::PAGE_ROLE_EDIT,
+                                \model\web\Page::PAGE_ROLE_CREATE,
+                                \model\web\Page::PAGE_ROLE_GENERIC
+                            )
+                        ),
+                        'model'=>array(
+                            'TYPE'=>'String',
+                            'REQUIRED'=>false,
+                            'LABEL'=>"Model",
+                            "SHORTLABEL"=>"Model",
+                            "MAXLENGTH"=>128
+                        ),
+                        'modelParam'=>array(
+                            'TYPE'=>'String',
+                            'REQUIRED'=>false,
+                            'LABEL'=>"Model id param",
+                            "SHORTLABEL"=>"Param",
+                            "MAXLENGTH"=>40
+                        ),
+                        'datasource'=>array(
+                            'TYPE'=>'String',
+                            'REQUIRED'=>false,
+                            'LABEL'=>'Datasource',
+                            'SHORTLABEL'=>'Datasource',
+                            'MAXLENGTH'=>128
+                        ),
+                        'requiredPermission'=>array(
+                            'TYPE'=>'ENUM',
+                            'REQUIRED'=>true,
+                            'DEFAULT'=>'PUBLIC',
+                            'LABEL'=>'Required permission',
+                            'VALUES'=>array(
+                                \model\web\Page::PAGE_PERMISSION_PUBLIC,
+                                \model\web\Page::PAGE_PERMISSION_LOGGED,
+                                \model\web\Page::PAGE_PERMISSION_OWNER,
+                                \model\web\Page::PAGE_PERMISSION_MODEL,
+                                \model\web\Page::PAGE_PERMISSION_SITE
+                            )
+                        ),
+                        'requireOwnership'=>array(
+                            'TYPE'=>"Boolean",
+                            'REQUIRED'=>false,
+                            'DEFAULT'=>false,
+                            'LABEL'=>'Only owner'
+                        )
                      ),
                'PERMISSIONS'=>array(),
                'STORAGE'=>array(

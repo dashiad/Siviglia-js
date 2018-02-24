@@ -298,7 +298,7 @@
             // Accion Add
             // Es importante para Add, saber si en la relacion multiple estan permitidas las repeticiones o no.
             // Esto determinara que tipo de  listado va a ser necesario.
-            $action=new \model\reflection\Action\ActionDefinition($prefixU."Add".$baseName,$targetModel);
+            $action=new \model\reflection\Action($prefixU."Add".$baseName,$targetModel);
             if($action->mustRebuild())          
             {
                   $newActions[]=$action->create("AddRelationAction", 
@@ -308,7 +308,7 @@
             }*/            
             if($this->relationsAreUnique())
             {
-                $action=new \model\reflection\Action\ActionDefinition($prefixU."Set".$baseName,$this->parentModel);
+                $action=new \model\reflection\Action($prefixU."Set".$baseName,$this->parentModel);
                 if($action->mustRebuild())          
                 {
                       $newActions[]=$action->create("SetRelationAction", 
@@ -320,7 +320,7 @@
             if(!$this->relationsAreUnique())
             {
                 // Accion Delete
-                $action=new \model\reflection\Action\ActionDefinition($prefixU."Delete".$baseName,$targetModel);
+                $action=new \model\reflection\Action($prefixU."Delete".$baseName,$targetModel);
                 if($action->mustRebuild())          
                 {
                       $newActions[]=$action->create("DeleteRelationAction", 
@@ -331,7 +331,7 @@
             
           return $newActions;
         }
-      function getDatasourceCreationCallback()
+      function getDataSourceCreationCallback()
       {
             return "createFromMxNRelation";           
       }

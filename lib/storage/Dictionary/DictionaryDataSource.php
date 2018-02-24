@@ -8,13 +8,17 @@ class DictionaryDataSource extends \lib\datasource\ArrayDataSource
     protected $nRows;
     protected $iterator;
     protected $parameters;
-
-    function __construct($objName,$dsName,$definition,$serializer,$serializerDefinition=null)
+    protected $serializerDefinition;
+    protected $definitionInstance;
+    function __construct($objName,$dsName,$definitionInstance,$serializer,$serializerDefinition=null)
     {
-        parent::__construct($objName, $dsName, $definition);
+        parent::__construct($objName, $dsName, $definitionInstance::$definition);
 
         if($serializerDefinition)
             $this->serializerDefinition=$serializerDefinition;
+        if(!$serializer)
+            $serializer=new DictionarySerializer($serializerDefinition,"PHP");
+        $this->definitionInstance=$definitionInstance;
         $this->serializer=$serializer;
     }
 
@@ -40,27 +44,32 @@ class DictionaryDataSource extends \lib\datasource\ArrayDataSource
     function fetchAll()
     {
         $def = $this->getOriginalDefinition();
-        $definition = $def['STORAGE']['Dictionary']['DEFINITION'];
+        $definition = $def['STORAGE']['DICTIONARY']['DEFINITION'];
 
-        if (!isset($definition['MODEL']) || !isset($definition['METHOD'])) {
+        if (!isset($definition['METHOD'])) {
             throw new \lib\datasource\DataSourceException(\lib\datasource\DataSourceException::ERR_NO_MODEL_OR_METHOD);
         }
-
-        $mdl = \getModel($definition['MODEL']);
         $method = $definition['METHOD'];
         $params = $this->parameters;
-        $data = $mdl->{$method}($params);
-
-        foreach($data as $key=>$value) {
-            $j = 0;
-            foreach($def['FIELDS'] as $fieldName=>$fieldDef) {
-                $this->data[$key][$fieldName] = $value[$j];
-                $j++;
-            }
+        if(isset($definition["MODEL"]) && $definition["MODEL"]!="self") {
+            $mdl = \getModel($definition['MODEL']);
         }
-        $this->nRows = count($this->data);
+        else
+        {
+            $mdl=$this->definitionInstance;
+        }
+        $this->data = $mdl->{$method}($this);
+        if($this->data) {
+            $this->nRows = count($this->data);
+        }
+        else
+        {
+            $this->data=array();
+            $this->nRows=0;
+        }
 
         $this->iterator=new \lib\model\types\DataSet(array("FIELDS"=>$def['FIELDS']),$this->data,$this->nRows,$this->nRows,$this,array());
+
         return $this->iterator;
     }
 
@@ -72,5 +81,9 @@ class DictionaryDataSource extends \lib\datasource\ArrayDataSource
     function getStartingRow()
     {
         return 0;
+    }
+    function getSerializer()
+    {
+        return $this->serializer;
     }
 }

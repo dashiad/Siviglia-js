@@ -175,6 +175,9 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
             if(strpos($q," WHERE ")===0)
                 $q=substr($q,strlen(" WHERE "));
 
+            if (is_string($results['value']) && $results['value'][0]!="'") {
+                $results['value'] = "'".$results['value']."'";
+            }
             $this->conn->updateFromAssociative($object->__getTableName(), $results, $q, false);
         }
 

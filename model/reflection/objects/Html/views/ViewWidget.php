@@ -91,14 +91,14 @@ WIDGET;
         {
           foreach($this->parentDs->getIncludes() as $key=>$value)
           {
-              $curDs=$value->getDatasource();
+              $curDs=$value->getDataSource();
               if(!$curDs)
               {
                   $def=$value->getDefinition();
                   $oName=$def["MODEL"];
                   $remoteObject=\model\reflection\ReflectorFactory::getModel($oName);
-                  $remoteObject->loadDatasources();
-                  $curDs=$value->getDatasource();
+                  $remoteObject->loadDataSources();
+                  $curDs=$value->getDataSource();
                   $p=1;
               }
 
@@ -119,7 +119,7 @@ WIDGET;
                   {
                       $code.="\tif(\$iterator->".$key."->count() > 0){\n";
                       $code.="\t\t\$".$key2."Iterator=\$iterator->".$key."[0]->".$key2."; ?".">\n";
-                      $ds2=$value2->getDatasource()->getWidget("html");
+                      $ds2=$value2->getDataSource()->getWidget("html");
                       $code.=$ds2->generateCode($dsType,true,$key2."Iterator");
                       $code.="<?php \t}\n?".">\n";
                   }

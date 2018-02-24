@@ -92,7 +92,7 @@ class Definition extends \lib\model\BaseModelDefinition
                        'MINLENGTH'=>'1',
                        'LABEL'=>'firstname',
                        'SHORTLABEL'=>'firstname',
-                       'MAXLENGTH'=>'32',
+                       'MAXLENGTH'=>'128',
                        'TYPE'=>'String',
                        'DESCRIPTIVE'=>'true',
                        'ISLABEL'=>'true'
@@ -111,7 +111,7 @@ class Definition extends \lib\model\BaseModelDefinition
                        'MINLENGTH'=>'1',
                        'LABEL'=>'lastname',
                        'SHORTLABEL'=>'lastname',
-                       'MAXLENGTH'=>'32',
+                       'MAXLENGTH'=>'128',
                        'TYPE'=>'String',
                        'DESCRIPTIVE'=>'true',
                        'ISLABEL'=>'true',

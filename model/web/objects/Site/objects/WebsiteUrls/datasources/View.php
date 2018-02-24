@@ -14,7 +14,7 @@ class View
                'DATAFORMAT'=>'Table',
                'PARAMS'=>array(
                      'id_websiteUrl'=>array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'FIELD'=>'id_websiteUrl',
                            'TRIGGER_VAR'=>'id_websiteUrl'
                            )
@@ -22,7 +22,7 @@ class View
                'IS_ADMIN'=>0,
                'INDEXFIELDS'=>array(
                      'id_websiteUrl'=>array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'FIELD'=>'id_websiteUrl',
                            'REQUIRED'=>'true'
                            )
@@ -53,7 +53,7 @@ class View
                            'JOIN'=>array('id_website'=>'id_website')
                            )
                      ),
-               'PERMISSIONS'=>array('_PUBLIC_'),
+               'PERMISSIONS'=>array('PUBLIC'),
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(

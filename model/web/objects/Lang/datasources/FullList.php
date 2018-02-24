@@ -114,7 +114,7 @@ class FullList
                            'FIELD'=>'date_format_lite'
                            )
                      ),
-               'PERMISSIONS'=>array('_PUBLIC_'),
+               'PERMISSIONS'=>array('PUBLIC'),
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(

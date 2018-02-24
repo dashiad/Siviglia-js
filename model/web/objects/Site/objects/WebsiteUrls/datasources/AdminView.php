@@ -14,7 +14,7 @@ class AdminView
                'DATAFORMAT'=>'Table',
                'PARAMS'=>array(
                      'id_websiteUrl'=>array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'FIELD'=>'id_websiteUrl',
                            'TRIGGER_VAR'=>'id_websiteUrl'
                            )
@@ -22,7 +22,7 @@ class AdminView
                'IS_ADMIN'=>1,
                'INDEXFIELDS'=>array(
                      'id_websiteUrl'=>array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'FIELD'=>'id_websiteUrl',
                            'REQUIRED'=>'true'
                            )
@@ -55,7 +55,7 @@ class AdminView
                      ),
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'PERMISSION'=>'adminView'
                            )
                      ),

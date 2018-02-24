@@ -5,6 +5,9 @@ class Relationship extends BaseType {
     function getRelationshipType()
       {          
           $obj=$this->definition["MODEL"];
+          if ($obj == null)
+              $obj=$this->definition["MODEL"];
+
           if(io($this->definition,"MULTIPLICITY","1:1")=="M:N")
           {
           

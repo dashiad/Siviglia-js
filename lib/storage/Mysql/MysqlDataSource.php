@@ -8,14 +8,15 @@ include_once(LIBPATH."/datasource/DataSource.php");
         var $reindexArray=array();
         var $joinBy;
         var $usingParsed=false;
-
-        function __construct($objName,$dsName,$definition,$serializer,$serializerDefinition=null)
+        var $definitionInstance=null;
+        function __construct($objName,$dsName,$definitionInstance,$serializer,$serializerDefinition=null)
         {
 
             if($serializerDefinition)
                 $this->serializerDefinition=$serializerDefinition;
             $this->serializer=$serializer;
-            \lib\datasource\StorageDataSource::__construct($objName,$dsName,$definition,$serializer);
+            $this->definitionInstance=$definitionInstance;
+            \lib\datasource\StorageDataSource::__construct($objName,$dsName,$definitionInstance::$definition,$serializer);
             // Se parsean los "using"
 
 

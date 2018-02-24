@@ -18,6 +18,7 @@ class ModelField
     protected $compositeFields;
     protected $normalizedName;
     protected $name;
+    protected $isMultiple=false;
     function __construct($name,& $model, $definition,$value=false)
     {   
         
@@ -51,7 +52,7 @@ class ModelField
     }
     static function getModelField($name,$model, $definition,$value=false)
     {
-        $type=io($definition,"TYPE","");
+        $type=\io($definition,"TYPE","");
         switch($type)
         {
         
@@ -144,12 +145,19 @@ class ModelField
             $rawModelData[$this->name]=$setVal;
         }
 
-        if($unserializeType!=null)
+        if($unserializeType!=null && $unserializeType!="PHP")
         {
              \lib\model\types\TypeFactory::unserializeType($this->type,io($rawModelData,$this->name,null),$unserializeType);
         }
         else
-             $this->type->__rawSet($rawModelData[$this->name]);
+        {
+            if ($this->isMultiple) {
+                \lib\model\types\TypeFactory::unserializeType($this->type,$rawModelData,$unserializeType);
+            }
+            else {
+                \lib\model\types\TypeFactory::unserializeType($this->type,$rawModelData[$this->name],$unserializeType);
+            }
+        }
         $this->state=ModelField::SET;
     }
 

@@ -37,7 +37,7 @@ class FullPs_feature_value_langDs
                            'JOIN'=>array('id_lang'=>'id_lang')
                            )
                      ),
-               'PERMISSIONS'=>array('_PUBLIC_'),
+               'PERMISSIONS'=>array('PUBLIC'),
                'FIELDS'=>array(
                      'name'=>array(
                            'MODEL'=>'\model\web\Lang',

@@ -11,7 +11,7 @@ class AddAction extends \lib\output\html\Form
 {
 	 static  $definition=array(
                'NAME'=>'AddAction',
-               'MODEL'=>'Sites\WebsiteUrls',
+               'MODEL'=>'\model\web\Site\WebsiteUrls',
                'ACTION'=>array(
                      'MODEL'=>'\model\web\Site\WebsiteUrls',
                      'ACTION'=>'AddAction',
@@ -81,7 +81,7 @@ class AddAction extends \lib\output\html\Form
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate( $params, $actionResult, $user)
+	function validate ( $actionResult )
 	{
 
 

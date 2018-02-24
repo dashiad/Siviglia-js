@@ -1,0 +1,298 @@
+-- MySQL dump 10.16  Distrib 10.1.13-MariaDB, for Win32 (AMD64)
+--
+-- Host: localhost    Database: adtopy
+-- ------------------------------------------------------
+-- Server version	10.1.13-MariaDB
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `_permission_group_items`
+--
+
+DROP TABLE IF EXISTS `_permission_group_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `_permission_group_items` (
+  `group_id` smallint(8) DEFAULT NULL,
+  `item_id` smallint(8) DEFAULT NULL,
+  KEY `group_id` (`group_id`),
+  KEY `item_id` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `_permission_group_items`
+--
+
+LOCK TABLES `_permission_group_items` WRITE;
+/*!40000 ALTER TABLE `_permission_group_items` DISABLE KEYS */;
+INSERT INTO `_permission_group_items` VALUES (5,1),(6,2),(9,3),(10,4),(13,5),(14,6),(15,7),(18,8);
+/*!40000 ALTER TABLE `_permission_group_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `_permission_groups`
+--
+
+DROP TABLE IF EXISTS `_permission_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `_permission_groups` (
+  `id` smallint(8) NOT NULL AUTO_INCREMENT,
+  `group_name` varchar(30) DEFAULT NULL,
+  `group_type` smallint(2) DEFAULT NULL,
+  `group_parent` smallint(8) DEFAULT '0',
+  `group_path` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `group_type` (`group_type`,`group_name`,`group_parent`) USING HASH,
+  KEY `group_name` (`group_name`,`group_path`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `_permission_groups`
+--
+
+LOCK TABLES `_permission_groups` WRITE;
+/*!40000 ALTER TABLE `_permission_groups` DISABLE KEYS */;
+INSERT INTO `_permission_groups` VALUES (1,'AllObjects',2,0,',1'),(2,'Sys',2,1,',1,2'),(3,'Lang',2,2,',1,2,3'),(4,'LangModules',2,3,',1,2,3,4'),(5,'Lang',2,4,',1,2,3,4,5'),(6,'translations',2,4,',1,2,3,4,6'),(7,'Page',2,2,',1,2,7'),(8,'PageModules',2,7,',1,2,7,8'),(9,'Page',2,8,',1,2,7,8,9'),(10,'PageResource',2,8,',1,2,7,8,10'),(11,'Site',2,2,',1,2,11'),(12,'SiteModules',2,11,',1,2,11,12'),(13,'Site',2,12,',1,2,11,12,13'),(14,'WebsiteCountries',2,12,',1,2,11,12,14'),(15,'WebsiteUrls',2,12,',1,2,11,12,15'),(16,'WebUser',2,2,',1,2,16'),(17,'WebUserModules',2,16,',1,2,16,17'),(18,'WebUser',2,17,',1,2,16,17,18');
+/*!40000 ALTER TABLE `_permission_groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `_permission_items`
+--
+
+DROP TABLE IF EXISTS `_permission_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `_permission_items` (
+  `id` smallint(8) NOT NULL AUTO_INCREMENT,
+  `item_type` smallint(2) DEFAULT NULL,
+  `item_name` varchar(20) DEFAULT NULL,
+  `item_value` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `item_type` (`item_type`,`item_name`,`item_value`) USING HASH
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `_permission_items`
+--
+
+LOCK TABLES `_permission_items` WRITE;
+/*!40000 ALTER TABLE `_permission_items` DISABLE KEYS */;
+INSERT INTO `_permission_items` VALUES (2,2,'','modelLang	ranslations'),(1,2,'','modelLang'),(3,2,'','modelPage'),(4,2,'','modelPagePageResource'),(5,2,'','modelSite'),(6,2,'','modelSiteWebsiteCountries'),(7,2,'','modelSiteWebsiteUrls'),(8,2,'','modelWebUser');
+/*!40000 ALTER TABLE `_permission_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `_permissions`
+--
+
+DROP TABLE IF EXISTS `_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `_permissions` (
+  `id` smallint(8) NOT NULL AUTO_INCREMENT,
+  `aro_type` smallint(1) DEFAULT NULL,
+  `aco_type` smallint(1) DEFAULT NULL,
+  `aro_id` smallint(8) DEFAULT NULL,
+  `aco_id` smallint(8) DEFAULT NULL,
+  `axo_type` smallint(1) DEFAULT '0',
+  `axo_id` smallint(8) DEFAULT '0',
+  `allow` smallint(1) DEFAULT '1',
+  `enabled` smallint(1) DEFAULT '1',
+  `ACLDATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `aro_type` (`aro_type`,`aro_id`,`aco_type`,`aco_id`,`axo_type`,`axo_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `_permissions`
+--
+
+LOCK TABLES `_permissions` WRITE;
+/*!40000 ALTER TABLE `_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `lang`
+--
+
+DROP TABLE IF EXISTS `lang`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `lang` (
+  `id_lang` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL,
+  `active` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `iso_code` char(2) NOT NULL,
+  `language_code` char(5) NOT NULL,
+  `date_format_lite` char(32) NOT NULL DEFAULT 'Y-m-d',
+  `date_format_full` char(32) NOT NULL DEFAULT 'Y-m-d H:i:s',
+  `is_rtl` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_lang`),
+  KEY `lang_iso_code` (`iso_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lang`
+--
+
+LOCK TABLES `lang` WRITE;
+/*!40000 ALTER TABLE `lang` DISABLE KEYS */;
+INSERT INTO `lang` VALUES (1,'English (Ingl├®s)',0,'en','en-us','m/d/Y','m/d/Y H:i:s',0),(3,'Espa├▒ol (Spanish)',1,'es','es','d/m/Y','d/m/Y H:i:s',0),(4,'German',0,'de','de','Y-m-d','Y-m-d H:i:s',0),(5,'Franc├®s',0,'fr','fr','d/m/Y','d/m/Y H:i:s',0);
+/*!40000 ALTER TABLE `lang` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `page`
+--
+
+DROP TABLE IF EXISTS `page`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `page` (
+  `id_page` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tag` varchar(30) DEFAULT NULL,
+  `id_site` bigint(20) DEFAULT NULL,
+  `name` varchar(30) DEFAULT NULL,
+  `date_add` datetime DEFAULT NULL,
+  `date_modified` datetime DEFAULT NULL,
+  `id_type` int(11) DEFAULT '1',
+  `isPrivate` tinyint(1) DEFAULT NULL,
+  `path` varchar(255) DEFAULT NULL,
+  `title` varchar(200) DEFAULT NULL,
+  `tags` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id_page`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `page`
+--
+
+LOCK TABLES `page` WRITE;
+/*!40000 ALTER TABLE `page` DISABLE KEYS */;
+INSERT INTO `page` VALUES (1,'index',1,'Index','2017-11-18 16:36:21','2017-11-18 16:36:21',1,0,'index','Index','',''),(2,'index',2,'Index','2017-11-26 18:56:11','2017-11-26 18:56:11',1,0,'index','Index','',''),(4,'index',3,'Index','2017-11-27 02:33:05','2017-11-27 02:33:05',1,0,'index','Index','',''),(5,'login',2,'Login','2017-12-10 16:22:52','2017-12-10 16:22:52',1,0,'User/Login','Login',NULL,NULL),(6,'error',2,'Error','2017-12-26 16:51:08','2017-12-26 16:51:08',1,0,'error','Error',NULL,NULL),(7,'editor',2,'Error','2017-12-26 16:51:24','2017-12-26 16:51:24',1,0,'editor','Editor',NULL,NULL),(8,'test',3,'Test','2018-01-26 02:27:48','2018-01-26 02:27:48',1,0,'test','Test',NULL,NULL);
+/*!40000 ALTER TABLE `page` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `translations`
+--
+
+DROP TABLE IF EXISTS `translations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `translations` (
+  `value` text,
+  `lang` char(10) DEFAULT NULL,
+  `id_string` char(40) DEFAULT NULL,
+  `id_translation` bigint(20) NOT NULL AUTO_INCREMENT,
+  `dirty` tinyint(1) DEFAULT '0',
+  `realm` enum('Site','Back','Editor','Reflection') DEFAULT 'Site',
+  PRIMARY KEY (`id_translation`),
+  KEY `aa` (`id_string`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `translations`
+--
+
+LOCK TABLES `translations` WRITE;
+/*!40000 ALTER TABLE `translations` DISABLE KEYS */;
+INSERT INTO `translations` VALUES ('USUARIO','es','422560cb24964b0483b703a42bcd7500',1,0,'Site'),('CLAVE','es','230554a3a50cbfa648f233d46df9ca36',2,0,'Site'),('Aceptar','es','d1cdc7bc8e002ceb7405de577046402c',3,0,'Site'),('Elemento no encontrado','es','46c0bea962f74ccf845c7a7a4e75f930',4,0,'Site'),('Usuario/Contraseña incorrectos','es','9036c3b63b31ed00781efc960ff5638b',5,0,'Site');
+/*!40000 ALTER TABLE `translations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `websites`
+--
+
+DROP TABLE IF EXISTS `websites`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `websites` (
+  `id_site` bigint(20) NOT NULL AUTO_INCREMENT,
+  `host` varchar(40) DEFAULT NULL,
+  `canonical_url` varchar(255) DEFAULT NULL,
+  `hasSSL` tinyint(1) DEFAULT NULL,
+  `namespace` varchar(45) DEFAULT '',
+  `websiteName` varchar(45) DEFAULT '',
+  PRIMARY KEY (`id_site`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `websites`
+--
+
+LOCK TABLES `websites` WRITE;
+/*!40000 ALTER TABLE `websites` DISABLE KEYS */;
+INSERT INTO `websites` VALUES (1,'adtopy','http://www.adtopy.com',0,'adtopy','Adtopy'),(2,'editor','http://editor.adtopy.com',0,'editor','Editor'),(3,'reflection','http://reflection.adtopy.com',0,'reflection','Reflection');
+/*!40000 ALTER TABLE `websites` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `webuser`
+--
+
+DROP TABLE IF EXISTS `webuser`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `webuser` (
+  `LOGIN` char(15) DEFAULT NULL,
+  `PASSWORD` char(128) DEFAULT NULL,
+  `USER_ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `EMAIL` char(128) DEFAULT NULL,
+  `active` tinyint(1) DEFAULT '1',
+  `lastlogin` datetime DEFAULT NULL,
+  `date_add` datetime DEFAULT NULL,
+  `firstname` char(128) DEFAULT NULL,
+  `date_upd` datetime DEFAULT NULL,
+  `lastname` char(128) DEFAULT NULL,
+  `deleted` tinyint(1) DEFAULT '0',
+  `last_passwd_gen` datetime DEFAULT NULL,
+  `FAILEDLOGINATTEMPTS` int(8) DEFAULT NULL,
+  PRIMARY KEY (`USER_ID`),
+  KEY `aa` (`LOGIN`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `webuser`
+--
+
+LOCK TABLES `webuser` WRITE;
+/*!40000 ALTER TABLE `webuser` DISABLE KEYS */;
+INSERT INTO `webuser` VALUES ('admin','$2y$12$p0YxpjCeUuW/YvDI47xqmO4uBuNaawgElD82XWxZ0AXJJoMOP2PCi',1,'admin@admin.com',1,'2018-01-28 19:45:44','2017-12-24 15:07:42',NULL,NULL,NULL,0,'2017-12-24 15:07:42',1);
+/*!40000 ALTER TABLE `webuser` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2018-01-29  4:03:08

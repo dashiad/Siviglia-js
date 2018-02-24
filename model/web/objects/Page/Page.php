@@ -3,6 +3,10 @@ namespace model\web;
 
 class PageException extends \lib\model\BaseException
 {
+    const ERR_PAGE_NOT_FOUND=1;
+    const ERR_LOGIN_REQUIRED=3;
+    const ERR_NOT_ALLOWED=2;
+    const ERR_INVALID_PARAMETERS=2;
 }
 
 /**
@@ -15,17 +19,34 @@ abstract class Page extends \lib\model\BaseModel
 {
     private $__pageConfig;
     private $__pageDef;
-    const ROLE_VIEW="VIEW";
-    const ROLE_LIST="LIST";
-    const ROLE_ADD="ADD";
-    const ROLE_EDIT="EDIT";
-    const ROLE_DELETE="DELETE";
+    const PAGE_ROLE_VIEW="View";
+    const PAGE_ROLE_CREATE="Create";
+    const PAGE_ROLE_EDIT="Edit";
+    const PAGE_ROLE_LIST="List";
+    const PAGE_ROLE_GENERIC="Generic";
 
+    const PAGE_PERMISSION_PUBLIC="PUBLIC";
+    const PAGE_PERMISSION_LOGGED="LOGGED";
+    const PAGE_PERMISSION_OWNER="OWNER";
+    const PAGE_PERMISSION_MODEL="MODEL";
+    const PAGE_PERMISSION_SITE="SITE";
 
     public function __construct($serializer = null, $definition = null)
     {
-        $pageDef=\model\web\Page\Definition::$definition;
-        parent::__construct($serializer, $pageDef);
+        $pageModelDef=\model\web\Page\Definition::$definition;
+        parent::__construct($serializer, $pageModelDef);
+
+
+    }
+    public function checkPermissions($user)
+    {
+        try {
+            $this->getPageDefinition();
+            $this->__pageDef->checkPermissions($user);
+        }catch(\lib\model\permissions\AccessDefinitionException $e)
+        {
+            throw new PageException(PageException::ERR_NOT_ALLOWED);
+        }
     }
 
     static function getPageFromPath($path,$site,$request,$params)
@@ -44,26 +65,56 @@ abstract class Page extends \lib\model\BaseModel
         return Page::getPageInstance($it[0],$request,$params);
 
     }
+    static function getPageFromName($name,$site,$request,$params)
+    {
+        if($site==null)
+            $currentSite=\model\web\Site::getCurrentWebsite();
+        else
+            $currentSite=\model\web\Site::getSiteFromNamespace($site);
+
+        $ds=\getDataSource('\model\web\Page',"FullList");
+        $ds->name=$name;
+        $ds->id_site=$currentSite->id_site;
+        $it=$ds->fetchAll();
+        if($ds->count()==0)
+            return null;
+        return Page::getPageInstance($it[0],$request,$params);
+    }
 
     static function getPageInstance($data,$request,$params)
     {
         $site=\getModel('\model\web\Site',array("id_site"=>$data->id_site));
-        $path=$site->getPagePath($data->path);
+        //$path=$site->getPagePath($data->path);
         $parts=explode("/",$data->path);
         $name=array_pop($parts);
         $pageName=ucfirst(strtolower($name))."Page";
         $namespace=$site->getPageClass($data->path);
         $fullName=$namespace.'\\'.$pageName;
         $defName=$namespace.'\\Definition';
-        $definition=new $defName($request,$params);
+        $definition=new $defName();
+        $definition->loadFields($params,"HTML");
         if(!class_exists($fullName))
         {
             debug("Error instanciando pagina ".$fullName,true);
         }
         $instance = new $fullName();
         $instance->loadFromArray($data->getRow(),"MYSQL");
-        $instance->mergeObject($definition);
+        $instance->setPageDefinition($definition,$params);
         return $instance;
+    }
+    /*
+     * Se sobreescribe el metodo get para obtener variables de la definicion de pagina, con
+     * prioridad sobre los campos del modelo.
+     */
+    function __get($varName)
+    {
+        try{
+            return $this->__pageDef->{$varName};
+        }
+        catch(\lib\model\BaseTypedException $e)
+        {
+            return parent::__get($varName);
+        }
     }
 
     abstract function initializePage($params);
@@ -88,10 +139,28 @@ abstract class Page extends \lib\model\BaseModel
             include_once($this->getPageDefinitionPath());
             $className = $this->id_site[0]->getPageClass($this->path) . "\\Definition";
             $objDef=new $className();
-            $this->__pageDef=$objDef;
-            $this->__pageConfig = $objDef->getDefinition();
+            $this->setPageDefinition($objDef);
         }
         return $this->__pageConfig;
+    }
+    public function getPageDefinitionObject()
+    {
+        if($this->__pageDef==null)
+            $this->getPageDefinition();
+        return $this->__pageDef;
+    }
+    function setPageDefinition($obj,$params)
+    {
+        $this->__pageDef=$obj;
+        $obj->loadFromArray($params,"HTML");
+        try
+        {
+            $obj->validate();
+        }catch(\lib\model\BaseTypedException $e)
+        {
+            throw new PageException(PageException::ERR_INVALID_PARAMETERS);
+        }
+        $this->__pageConfig = $obj->getDefinition();
     }
     function getPagePath()
     {
@@ -223,6 +292,7 @@ EOT;
     function getCachePath($isWork=false){
         return $this->id_site[0]->getCachePath($isWork);
     }
+
 
     function getEditableLayout($subwidget=null){
 
@@ -411,6 +481,10 @@ EOT;
             $widgetPath=$def["WIDGETPATH"];
         }
         $widgetPath[]=$this->id_site[0]->getPagePath($this->path)."/widgets".($isWork===true?"_work":"")."/";
+        // Se incluyen los paths del sitio actual (ojo, no el de la pagina, porque esta pagina podria ser llamada desde otros sites).
+        $curSite=\Registry::getService("site");
+        $sitePaths=$curSite->getExtraWidgetPath();
+        $widgetPath=array_merge($widgetPath,$sitePaths);
         $widgetPath[]=$this->id_site[0]->getRoot()."/widgets/";
         $widgetPath[]=PROJECTPATH."/output/html/Widgets";
         $widgetPath[]=PROJECTPATH;

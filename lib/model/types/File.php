@@ -149,7 +149,7 @@
             }
         }
 
-       return $filePath;
+       return true;
 
       }
 
@@ -311,6 +311,17 @@
           }
           $this->dirty=true;
       }      
+  }
+
+  class FileMeta extends \lib\model\types\BaseTypeMeta
+  {
+    function getMeta($type)
+    {
+        $def=$type->getDefinition();
+        unset($def["TARGET_FILEPATH"]);
+        unset($def["TARGET_FILENAME"]);
+        return $def;
+    }
   }
 
   class FileHTMLSerializer extends BaseTypeHTMLSerializer

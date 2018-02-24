@@ -13,6 +13,7 @@ include_once(PROJECTPATH."/model/web/objects/Site/SiteConfig.php");
 class Config extends \model\web\Site\SiteConfig
 {
     static $definition=array(
+        "DEFAULT_ISO"=>"es",
         "services"=>array(
             "user"=>array(
                 'REQUIRE_UNIQUE_EMAIL' => true,

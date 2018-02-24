@@ -7,7 +7,7 @@ class QuickModelGenerator
         $objectName=$name;        
         $table=$name;
         
-        $instance=new \model\reflection\Model\ModelDefinition($name,$layer);
+        $instance=new \model\reflection\Model($name,$layer);
             
         // Se crea automaticamente un campo id
         $fieldIndex="id_".strtolower($objectName);

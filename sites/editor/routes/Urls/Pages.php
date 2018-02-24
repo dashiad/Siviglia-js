@@ -14,6 +14,7 @@ class Pages
     static $definition = array(
         "/" => "index",
         "/editor"=>"editor",
-        "/error"=>"error"
+        "/error"=>"error",
+        "/Site/{namespace}"=>"site"
     );
 }

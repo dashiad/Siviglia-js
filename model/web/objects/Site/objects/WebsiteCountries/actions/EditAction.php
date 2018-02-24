@@ -10,11 +10,11 @@ namespace model\web\Site\WebsiteCountries\actions;
 class EditAction extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'Sites\WebsiteCountries',
+               'MODEL'=>'\model\web\Site\WebsiteCountries',
                'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'Sites\WebsiteCountries',
+                           'MODEL'=>'\model\web\Site\WebsiteCountries',
                            'PERMISSION'=>'edit'
                            )
                      ),
@@ -30,7 +30,7 @@ class EditAction extends \lib\action\Action
                      'id_website'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'id_website',
-                           'MODEL'=>'Sites\WebsiteCountries',
+                           'MODEL'=>'\model\web\Site\WebsiteCountries',
                            'DATASOURCE'=>array(
                                  'MODEL'=>'Site',
                                  'NAME'=>'FullList',
@@ -40,7 +40,7 @@ class EditAction extends \lib\action\Action
                      'id_country'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'id_country',
-                           'MODEL'=>'Sites\WebsiteCountries',
+                           'MODEL'=>'\model\web\Site\WebsiteCountries',
                            'DATASOURCE'=>array(
                                  'MODEL'=>'ps_customer\ps_country',
                                  'NAME'=>'FullList',
@@ -85,7 +85,7 @@ class EditAction extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate( $params, $actionResult, $user)
+	function validate ( $actionResult )
 	{
 
 
@@ -134,7 +134,7 @@ class EditAction extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function onError( $params, $actionResult, $user)
+	function onError ($keys, $params, $actionResult, $user)
 	{
 
 

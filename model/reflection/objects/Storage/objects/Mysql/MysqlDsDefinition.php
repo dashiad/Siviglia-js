@@ -133,8 +133,8 @@ class MysqlDsDefinition
                 $parameters[$dsParamsBooleans[$k]]=array("TYPE"=>"Boolean","TRIGGER_VAR"=>$dsParamsBooleans[$k]);
             }
 
-            $ds=new \model\reflection\Datasource\DatasourceDefinition($dsName,$model);
-            $ds->create($metaData,array("_PUBLIC_"),array(),$parameters,"list");
+            $ds=new \model\reflection\DataSource\DataSource($dsName,$model);
+            $ds->create($metaData,array('PUBLIC'),array(),$parameters,"list");
             $mysqlDef=array(
                 "TABLE"=>$model->getTableName(),
                 "BASE"=>$query,
@@ -143,7 +143,7 @@ class MysqlDsDefinition
 
             $myDs=new MysqlDsDefinition($model,$dsName,$ds);
             $myDs->initialize(array("DEFINITION"=>$mysqlDef));
-            $model->addDatasource($ds);
+            $model->addDataSource($ds);
             $def=$ds->getDefinition();
             return $ds;
 
@@ -382,7 +382,7 @@ class MysqlDsDefinition
              $this->initialize($baseDef);
              return $this;
         }
-        static function createDatasourceFromQuery($curModel, $queryName,$queryDef)
+        static function createDataSourceFromQuery($curModel, $queryName,$queryDef)
         {
             /*
              *             /*
@@ -416,9 +416,9 @@ class MysqlDsDefinition
                     // TODO : Aqui tendremos problemas con los campos de ambas tablas que tengan el mismo nombre.
                     $descriptive=array_merge_recursive($descriptive,$curDescriptive);
                 }
-                $ds=new \model\reflection\Datasource\DatasourceDefinition($queryName,$curModel);
-                $ds->create($descriptive,array("_PUBLIC_"),array(),$descriptive,"list");
-                $curModel->addDatasource($ds);
+                $ds=new \model\reflection\DataSource\DataSource($queryName,$curModel);
+                $ds->create($descriptive,array('PUBLIC'),array(),$descriptive,"list");
+                $curModel->addDataSource($ds);
                 $myDs=new MysqlDsDefinition($curModel,$queryName,$ds);
                 $myDs->initialize(array("DEFINITION"=>$q));
                 return $myDs;

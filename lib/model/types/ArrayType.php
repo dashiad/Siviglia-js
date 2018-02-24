@@ -73,6 +73,25 @@
       {
 
       }
+      function getApplicableErrors()
+      {
+          $errors=parent::getApplicableErrors();
+          $errors[get_class($this)."Exception"][ArrayTypeException::ERR_ERROR_AT]=ArrayTypeException::TXT_ERROR_AT;
+          $subType=TypeFactory::getType(null,$this->subTypeDef,null);
+          $errorsSubType=$subType->getApplicableErrors();
+          return array_merge($errors,$errorsSubType);
+      }
+  }
+
+  class ArrayTypeMeta
+  {
+      function getMeta($type)
+      {
+          $def=$type->getDefinition();
+          $subType=$def["ELEMENTS"];
+          $def["ELEMENTS"]=\lib\model\types\TypeFactory::getTypeMeta($subType);
+          return $def;
+      }
   }
 
   class ArrayTypeHTMLSerializer
@@ -89,7 +108,8 @@
       }
   }
 
-  class ArrayTypeMYSQLSerializer {
+  class ArrayTypeMYSQLSerializer
+  {
       var $typeSer;
       var $typeInstance;
       function getTypeSerializer($type)
@@ -101,7 +121,10 @@
           return $this->typeSer;
       }
       function serialize($type)
-      {         
+      {
+         if(!is_array($type->getValue())){
+             return $type->getValue();
+         }
          $remoteSerializer=$this->getTypeSerializer($type);
          $nItems=$type->count();
          if($nItems==0)

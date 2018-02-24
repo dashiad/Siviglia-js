@@ -18,6 +18,7 @@
             $this->objName = $objName;
             $this->dsName = $dsName;
             $this->originalDefinition=$definition;
+            parent::__construct($definition);
 
             /*
             $this->columnNames=$columnNames;

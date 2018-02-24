@@ -120,7 +120,7 @@ class ModelKey
                     $result.="#";
                 $fType=$field->getType();
                 if($fType->hasValue())
-                    $result.=$fType->getValue();
+                    $result.=$fType->getValue($value);
                 $k++;
             }
             return $result;

@@ -11,7 +11,7 @@ class DeleteAction extends \lib\output\html\Form
 {
 	 static  $definition=array(
                'NAME'=>'DeleteAction',
-               'MODEL'=>'Sites\WebsiteUrls',
+               'MODEL'=>'\model\web\Site\WebsiteUrls',
                'ACTION'=>array(
                      'MODEL'=>'\model\web\Site\WebsiteUrls',
                      'ACTION'=>'DeleteAction',
@@ -69,7 +69,7 @@ class DeleteAction extends \lib\output\html\Form
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate( $params, $actionResult, $user)
+	function validate ( $actionResult )
 	{
 
 

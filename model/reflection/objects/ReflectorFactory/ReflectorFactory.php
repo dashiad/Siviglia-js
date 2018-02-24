@@ -20,7 +20,7 @@ namespace model\reflection;
    // ADD_OBJECT(layer,name)
    // ADD_FIELD(layer,name,
 include_once(PROJECTPATH."/model/reflection/objects/Model/ModelName.php");
-include_once(PROJECTPATH."/model/reflection/objects/Model/ModelDefinition.php");
+include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
 
    class ReflectorFactory
    {
@@ -72,7 +72,7 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/ModelDefinition.php");
            return $layers;
        }
 
-       private static function getLayerObjects($layer,$path,$prefix=null)
+       static function getLayerObjects($layer,$path,$prefix=null,$childKey="subobjects")
        {
            $path=$path."/objects";
            if(!is_dir($path))
@@ -90,20 +90,21 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/ModelDefinition.php");
                            "path"=>$fileinfo->getRealPath(),
                            "class"=>$prefix.$name
                        );
-                       $subobjects=ReflectorFactory::getLayerObjects($layer,$current["path"],$current["class"]);
+                       $subobjects=ReflectorFactory::getLayerObjects($layer,$current["path"],$current["class"],$childKey);
                        if($subobjects)
-                           $current["subobjects"]=$subobjects;
+                           $current[$childKey]=$subobjects;
                        $objects[]=$current;
                }
            }
            return $objects;
        }
+
        private static function getObjectCache($pointer,$layer,& $existingModels,& $objectDefinitions)
         {
             for($k=0;$k<count($pointer);$k++)
             {
                 $existingModels[$pointer[$k]["class"]]=$layer;
-                $objectDefinitions[$layer][$pointer[$k]["class"]]=new \model\reflection\Model\ModelDefinition("model\\".$pointer[$k]["layer"].'\\'.$pointer[$k]["class"]);
+                $objectDefinitions[$layer][$pointer[$k]["class"]]=new \model\reflection\Model("model\\".$pointer[$k]["layer"].'\\'.$pointer[$k]["class"]);
                 if(isset($pointer[$k]["subobjects"]))
                     ReflectorFactory::getObjectCache($pointer[$k]["subobjects"],$layer,$existingModels,$objectDefinitions);
             }

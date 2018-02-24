@@ -17,6 +17,7 @@ class SiteException extends \lib\model\BaseException
 class Site extends \lib\model\BaseModel
 {
     var $config;
+    var $__routeBuilder;
     static $currentSite;
     const SITECACHE_CLASSMAP=1;
     const SITECACHE_LAYOUTS=2;
@@ -51,8 +52,11 @@ class Site extends \lib\model\BaseModel
     function toRelative($path){return "/".str_replace(PROJECTPATH,"",$path);}
     function getNamespace(){return \Registry::getService("paths")->getSiteNamespace().'\\'.$this->namespace;}
     function getConfig(){
-        $name=$this->getNamespace()."\\Config";
-        return new $name();
+        if($this->config==null) {
+            $name = $this->getNamespace() . "\\Config";
+            $this->config = new $name();
+        }
+        return $this->config;
     }
 
     function normalizePagePath($path,$separator)
@@ -290,5 +294,47 @@ EOT;
         file_put_contents($info[$type]["file"],$pageDef);
         \lib\routing\RouteBuilder::rebuildSiteUrls($this);
     }
+
+    function getDefaultIso()
+    {
+        return $this->getConfig()->getDefaultIso();
+    }
+
+    function getStaticsSite()
+    {
+        $st=$this->getConfig()->getStaticsSite();
+        if(!$st)
+            return $this;
+        return Site::getSiteFromNamespace($st);
+    }
+    function getExtraWidgetPath()
+    {
+        $paths=$this->getConfig()->getExtraWidgetPath();
+        for($k=0;$k<count($paths);$k++)
+            $paths[$k]=PROJECTPATH.$paths[$k];
+        return $paths;
+    }
+    function getRouteBuilder()
+    {
+        if($this->__routeBuilder==null)
+        {
+
+            $routeDir = $this->getRoutesPath();
+            $routeSpec = array(
+                "Urls" => $routeDir . "/Urls",
+                "Definitions" => $routeDir . "/Definitions",
+                "namespace" => $this->getNamespace()."\\routes"
+            );
+            $this->__routeBuilder=new \lib\routing\RouteBuilder(array($routeSpec));
+        }
+        return $this->__routeBuilder;
+    }
+    function rebuildSiteUrls()
+    {
+        $builder=$this->getRouteBuilder();
+        $cachePath=$this->getRouteCachePath();
+        $builder->regenerateCache($cachePath);
+    }
+
 }
 ?>

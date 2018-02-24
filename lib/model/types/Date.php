@@ -5,6 +5,18 @@
       const ERR_END_YEAR=101;
       const ERR_STRICTLY_PAST=104;
       const ERR_STRICTLY_FUTURE=105;
+
+      const TXT_START_YEAR="El año minimo permitido es %year%";
+      const REQ_START_YEAR="STARTYEAR";
+
+      const TXT_END_YEAR="El año maximo permitido es %year%";
+      const REQ_END_YEAR="ENDYEAR";
+
+      const TXT_STRICTLY_PAST="La fecha no puede ser futura";
+      const REQ_STRICTLY_PAST="STRICTLYPAST";
+
+      const TXT_STRICTLY_FUTURE="La fecha debe ser futura";
+      const REQ_STRICTLY_FUTURE="STRICTLYFUTURE";
   }
 
   // Definitions of this class should always indicate:
@@ -49,10 +61,15 @@
 
       function validate($value)
       {
+          if (!$value && (!isset($this->definition["REQUIRED"]) || $this->definition["REQUIRED"]==false))
+              return true;
+
           BaseType::validate($value);
           $asArr=$this->asArray($value);
           
           extract($asArr);
+          if($day==0 && $month==0 && $year==0 && (!isset($this->definition["REQUIRED"]) || $this->definition["REQUIRED"]==false))
+              return true;
           if(!checkdate($month,$day,$year))
               throw new BaseTypeException(BaseTypeException::ERR_INVALID);
           

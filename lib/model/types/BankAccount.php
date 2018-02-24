@@ -1,4 +1,11 @@
 <?php namespace lib\model\types;
+class BankAccountException extends \lib\model\BaseTypedException
+{
+    const ERR_INVALID_IBAN = 1;
+    const ERR_INVALID_CCC = 2;
+    const TXT_INVALID_IBAN= "IBAN no valido";
+    const TXT_INVALID_CCC = "CCC no valido";
+}
 class BankAccount extends _String
 {
     function __construct($def,$value=false)
@@ -62,7 +69,9 @@ class BankAccount extends _String
             $segundo_digito_control = 1;
 
         if($segundo_digito_control != $ccc[9])
-            $valido = false;
+        {
+            throw new BankAccountException(BankAccountException::ERR_INVALID_CCC);
+        }
 
         return $valido;
     }
@@ -93,11 +102,15 @@ class BankAccount extends _String
                 return TRUE;
             }
             else{
-                return FALSE;
+                throw new BankAccountException(BankAccountException::ERR_INVALID_IBAN);
             }
         }
         else{
-            return FALSE;
+            throw new BankAccountException(BankAccountException::ERR_INVALID_IBAN);
+
         }
+        return true;
+
     }
+
 }

@@ -1,0 +1,22 @@
+<?php
+  $i=0;
+  $id="temp_".rand(0,1000);
+
+?>
+<div class="x_panel" role="tabpanel" data-example-id="togglable-tabs">
+    <ul id="<?php echo $id;?>" class="nav nav-tabs bar_tabs" role="tablist">
+        [_TABS]
+        <li role="presentation" class="<?php echo $i==0?"active":""?>"><a href="#<?php echo $id."-content1-".$i;?>" id="<?php echo $id."-tab-".$i;?>" role="tab" data-toggle="tab" aria-expanded="true">[_LABEL][_*][#]</a>
+        </li>
+        <?php $i++;?>
+        [#]
+    </ul>
+    <?php $i=0;?>
+    <div id="myTabContent" class="tab-content">
+        [_CONTENT]
+        <div role="tabpanel" class="tab-pane fade <?php echo $i==0?"active in":""?>" id="<?php echo $id."-content1-".$i;?>" aria-labelledby="<?php echo $id."-tab-".$i;?>">
+            [_*]
+        </div>
+        [#]
+    </div>
+</div>

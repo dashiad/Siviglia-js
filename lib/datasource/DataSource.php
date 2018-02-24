@@ -19,7 +19,11 @@ abstract class DataSource extends \lib\model\BaseTypedObject
     function isLoaded()
     {
         return $this->isLoaded;
-    }    
+    }
+    function getFieldsKey()
+    {
+        return "PARAMS";
+    }
 }
 
 abstract class TableDataSource extends DataSource {

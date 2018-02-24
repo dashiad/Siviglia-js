@@ -53,6 +53,10 @@ class MultipleDatasourceIterator
         }
         return $result;
     }
+    function count()
+    {
+        return 0;
+    }
 }
 
 class MultipleDatasource {
@@ -140,12 +144,35 @@ class MultipleDatasource {
                     foreach($includes as $key2)
                     {
                         $include=$value->getSubDataSourceInstance($key2);
-                        $def["DATASOURCES"][$key2]["DEFINITION"]=$include->getOriginalDefinition();
+                        $odef=$include->getOriginalDefinition();
+                        $def["DATASOURCES"][$key2]=array(
+                            "OBJECT"=>$include->getObjectName(),
+                            "DATASOURCE"=>$include->getName(),
+                            "DEFINITION"=>$odef);
                     }
                 }
             }
         }
         return $def;
+    }
+    function getDefinition()
+    {
+        return $this->definition;
+    }
+    function getStartingRow()
+    {
+        return 0;
+    }
+    function __set($varName,$varValue)
+    {
+        if(!$this->params)
+            $this->createParamsObject();
+        $this->params->{$varName}=$varValue;
+    }
+    function createParamsObject()
+    {
+        $paramDef=array("FIELDS"=>(isset($this->definition["PARAMS"])?$this->definition["PARAMS"]:array()));
+        $this->params=new \lib\model\BaseTypedObject($paramDef);
     }
 }
 

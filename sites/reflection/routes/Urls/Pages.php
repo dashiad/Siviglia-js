@@ -12,8 +12,10 @@ namespace sites\reflection\routes\Urls;
 class Pages
 {
     static $definition = array(
+        "/meta"=>"meta",
         "/" => "index",
         "/test"=>"test",
-        "/login"=>"login"
+        "/login"=>"login",
+        "/datasources/model/{*modelPath}/{dsName}"=>"Datasources"
     );
 }

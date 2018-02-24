@@ -6,8 +6,10 @@ namespace sites\reflection\routes\Definitions;
 class Pages
 {
     static $definition = array(
+        "meta" => array("TYPE"=>"META"),
         "index" => array("TYPE" => "PAGE", "PAGE" => "index"),
-        "test"=>array("TYPE"=>"PAGE","PAGE"=>"test"),
+        "Datasources"=>array("TYPE"=>"DATASOURCE"),
+        "EditDefinition"=>array("TYPE"=>"PAGE","PAGE"=>"EditDefinition")
 
     );
 }

@@ -1,6 +1,14 @@
 <?php
 namespace lib\output\html;
 include_once(LIBPATH."/model/types/BaseType.php");
+class FormException extends \lib\model\BaseException
+{
+    const ERR_NO_DATA_RECEIVED=1;
+    const ERR_INVALID_IDENTIFYING_DATA=2;
+    const ERR_INVALID_FORM_HASH=3;
+    const ERR_FORM_NOT_FOUND=4;
+    const ERR_INVALID=5;
+}
 class Form extends \lib\model\BaseTypedObject
 {
     var $actionResult;
@@ -8,7 +16,7 @@ class Form extends \lib\model\BaseTypedObject
     var $srcModelInstance=null;
     var $srcModelKeys=null;
     var $srcModelName=null;
-    
+    var $fieldMapping=null;
     function __construct($definition,& $actionResult)
     {
         Form::getFormDefinition($definition);
@@ -26,6 +34,8 @@ class Form extends \lib\model\BaseTypedObject
 
 
         parent::__construct($this->formDefinition);
+        if(isset($this->formDefinition["FIELDMAP"]))
+            $this->fieldMapping=array_flip($this->formDefinition["FIELDMAP"]);
     }
     function resetResult()
     {
@@ -113,11 +123,11 @@ class Form extends \lib\model\BaseTypedObject
         $data=$request->getActionData();
         if(!$data)
         {
-            throw new \Exception();
+            throw new FormException(FormException::ERR_NO_DATA_RECEIVED);
         }
         if(!isset($data["name"]) || !isset($data["object"]) || !isset($data["site"]) || !isset($data["validationCode"])  || !isset($data["page"]))
         {
-            throw new \Exception();
+            throw new FormException(FormException::ERR_INVALID_IDENTIFYING_DATA);
         }
         $form=$data["name"];
         $model=$data["object"];
@@ -128,7 +138,7 @@ class Form extends \lib\model\BaseTypedObject
         // Se comprueba el codigo de seguridad.
         if(!Form::checkHash($seccode,$form,$model,$site,$page,$keys,\Registry::$registry["session"]))
         {
-            throw new \Exception();
+            throw new FormException(FormException::ERR_INVALID_FORM_HASH);
         }
         $formInfo=\lib\output\html\Form::getFormPath(
             $model,
@@ -136,7 +146,7 @@ class Form extends \lib\model\BaseTypedObject
         );
         if(!$formInfo)
         {
-            throw new \Exception();
+            throw new FormException(FormException::ERR_FORM_NOT_FOUND);
         }
         $actionResult=new \lib\action\ActionResult();
         $className=$formInfo["CLASS"];
@@ -157,6 +167,11 @@ class Form extends \lib\model\BaseTypedObject
         {
             if(!isset($this->__fieldDef[$fieldName]))
             {
+                if($this->fieldMapping && isset($this->fieldMapping[$fieldName]))
+                {
+                    return $this->__getField($this->fieldMapping[$fieldName]);
+                }
+
                 include_once(PROJECTPATH."/lib/model/BaseModel.php");
                 throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
             }
@@ -217,42 +232,50 @@ class Form extends \lib\model\BaseTypedObject
         return $this->srcModelInstance;*/
     }
 
+
     function process($doRedirect=true)
     {
         if (!$this->actionResult->isOk()) {
-            return false;
+            throw new FormException(FormException::ERR_INVALID);
         }
 
         include_once(LIBPATH . "/output/html/InputFactory.php");
         $formData = \Registry::$registry["action"];
 
         //$hasState=$this->__stateDef->hasState;
+        $unserializedFields=array();
         foreach ($this->formDefinition["FIELDS"] as $key => $value) {
-            /*if($hasState)
-            {
-                $editable=$this->isEditable($key);
-                $fixed=$this->isFixed($key);
-                if(!$editable || $fixed)
+            if($this->__getField($key)->isDirty())
                     continue;
-            }*/
             $inputName = isset($value["TARGET_RELATION"]) ? $value["TARGET_RELATION"] : $key;
+            if($this->fieldMapping && isset($this->fieldMapping[$key]))
+            {
+                $mapped=$this->fieldMapping[$key];
+            }
+            else
+                $mapped=$inputName;
             // Si no viene el tipo de input , se supone textField.
-            if (!isset($formData["INPUTS"][$inputName]))
+            if(!isset($formData["INPUTS"][$mapped]))
                 $curInput = "DefaultInput";
             else
-                $curInput = $formData["INPUTS"][$inputName];
-            // Se obtiene el controlador.            
-            $inputController = \lib\templating\html\inputs\InputFactory::getInputController($inputName, $curInput, $value, $this->formDefinition["INPUTS"][$inputName]);
-            try {
+                $curInput=$formData["INPUTS"][$mapped];
+            // Se obtiene el controlador.
+            $inputController=\lib\templating\html\inputs\InputFactory::getInputController($mapped,$curInput,$value,$this->formDefinition["INPUTS"][$mapped]);
+            try
+            {
                 // Puede ser que formValues["FIELDS"][$field] no este "set",y, aun asi, el campo tenga un valor.
                 // Por ejemplo, en los checkboxes.
 
-                if (isset($formData["FIELDS"][$inputName])) {
-                    $currentInputValue = $formData["FIELDS"][$inputName];
+                if(isset($formData["FIELDS"][$mapped]))
+                {
+                    $currentInputValue=$formData["FIELDS"][$mapped];
                     $inputController->unserialize($currentInputValue);
-                    \Registry::$registry["action"]["FIELDS"][$key] = $inputController->getValue();
-                    $this->unserializeValue($key, $inputController, $value, $formData["FIELDS"], $this->actionResult);
-                } else {
+                    $val=$inputController->getValue();
+                    \Registry::$registry["action"]["FIELDS"][$key] = $val;
+                    $unserializedFields[$key]=$val;
+                }
+                else
+                {
                     $currentInputValue = null;
                     \Registry::$registry["action"]["FIELDS"][$key] = null;
                 }
@@ -261,7 +284,9 @@ class Form extends \lib\model\BaseTypedObject
                 // Al pasarlo al action, siempre va a ser con el nombre del campo, no con el nombre del input.
 
 
-            } catch (\lib\output\html\inputs\InputException $e) {
+            }
+            catch(\lib\output\html\inputs\InputException $e)
+            {
                 $this->actionResult->addFieldInputError($inputName, $input, $currentInputValue, $e);
 
                 if ($e->fatal())
@@ -290,9 +315,18 @@ class Form extends \lib\model\BaseTypedObject
             }*/
 
         }
+        $errored=false;
+        if($this->actionResult->isOk())
+        {
+            if(!$this->validate($unserializedFields,$this->actionResult,"PHP"))
+            {
+                $this->onError($this->actionResult);
+                $errored=true;
+            }
+        }
 
         // _d($this->actionResult);
-        $errored=false;
+
         if ($this->actionResult->isOk()) {
             if ($this->processAction($this->actionResult)) {
                 // Se destruye la informacion de LastForm del registro.
@@ -327,7 +361,15 @@ class Form extends \lib\model\BaseTypedObject
         \Registry::$registry["newAction"] = $this->actionResult;
         if (!$doRedirect)
             return $this->actionResult;
-        \Registry::save();
+        // gestion de la redireccion.
+        if(isset($this->formDefinition["REDIRECT"]))
+            {
+            $redirect=$this->formDefinition["REDIRECT"][$this->actionResult->isOk()?"ON_SUCCESS":"ON_ERROR"];
+            \Registry::save();
+            // TODO : Hacer el redirect!!
+        }
+        else
+            {
 
         global $request;
         $data=$request->getActionData();
@@ -339,6 +381,7 @@ class Form extends \lib\model\BaseTypedObject
         } else
             $page->onFormError($this);*/
         \lib\Router::routeToReferer();
+        }
     }
 
     function getResult()
@@ -350,23 +393,10 @@ class Form extends \lib\model\BaseTypedObject
     {
 
         // Hay que hacer un tratamiento especial para las relaciones multiples.Primero se comprueba si este campo
-        // representa una relacion externa.      
-          
+        // representa una relacion externa.
+
         $fieldInstance=$this->__getField($field);
 
-        if(isset($definition["TARGET_RELATION"]))
-        {            
-            $type=$inputObj->getDataSet();            
-            // Ya tenemos el tipo.El problema es la interaccion de este tipo (DataSet), con el campo, que no tiene ese
-            // tipo. 
-            // Luego, la accion...Tiene que funcionar tambien para ella.
-            // Finalmente, el guardado..Hay que hacer que RelationMxN borre todo su valor de la base de datos, e inserte los nuevos.         
-
-            $fieldInstance->copy($type);
-            return $fieldInstance;
-        }
-        else
-        {
 
             $type=$fieldInstance->getType();
 
@@ -381,13 +411,13 @@ class Form extends \lib\model\BaseTypedObject
                 }
             }
             catch(\lib\model\types\BaseTypeException $e)
-            {                            
+            {
                 // Siempre se asigna el campo.Aunque no sea valido.Ya que lo necesitamos para repintarlo en el formulario.
                 $this->actionResult->addFieldTypeError($field,$iVal,$e);
                 if( $e->fatal() )
                     return;
             }
-        }
+
 
         return $this->{$field};
     }
@@ -399,7 +429,7 @@ class Form extends \lib\model\BaseTypedObject
     }
 
     // Los siguientes metodos son para ser sobreescritos en las clases de formulario.
-    function validate()
+    function validate($params,$actionResult,$user)
     {
 
     }
@@ -409,7 +439,7 @@ class Form extends \lib\model\BaseTypedObject
         return true;
     }
 
-    function onSuccess()
+    function onSuccess($actinResult)
     {
         return true;
     }

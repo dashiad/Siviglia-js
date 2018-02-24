@@ -1,18 +1,15 @@
-location ~ /js/dojo/adtopy/
+location ~* ^.+\.(jpeg|gif|png|jpg|ico|js|css)
 {
-try_files $uri /admin/translator.php?subpath=$uri&$args;
-}
-location ~ /js/dojo/web/
-{
-try_files $uri /admin/translator.php?subpath=$uri&$args;
+   add_header Cache-control "public";
+   access_log off;
+   try_files $uri =404; 	
 }
 
 # Inicio de cambios para version jquery
-location ~ /js/adtopy/
+location ~ /js/model/
 {
-root /var/www/adtopy/model/adtopy/objects/;
-rewrite /js/adtopy/([^/]*)/objects/([^/]*)/(.*)\.js$  /$1/objects/$2/js/$3.js break;
-rewrite /js/adtopy/([^/]*)/(.*)\.js$  /$1/js/$2.js break;
+root /var/www/adtopy/model;
+rewrite /js/model/(.*)/Model.js /$1/Model.js break;
 }
 
 location ~ /js/jquery/adtopy/
@@ -45,7 +42,7 @@ fastcgi_split_path_info ^(.+\.php)(/.+)$;
 #       # With php5-cgi alone:
 #       fastcgi_pass 127.0.0.1:9000;
 #       # With php5-fpm:
-fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+fastcgi_pass unix:/var/run/php/php7.1-fpm.sock;
 fastcgi_keep_conn on;
 fastcgi_index index.php;
 fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;

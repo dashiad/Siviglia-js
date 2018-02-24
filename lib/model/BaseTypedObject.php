@@ -1,6 +1,8 @@
 <?php namespace lib\model;
 
 
+use lib\model\types\BaseTypeException;
+
 class PathObjectException extends \lib\model\BaseException {
     const ERR_PATH_NOT_FOUND=1;
     const ERR_NO_CONTEXT=2;
@@ -127,19 +129,6 @@ class PathObject {
 
     //return  Ecija.Dom.getPath(obj[path[index+1]],path,index+1,context,currentObject,listener);
 }
-    static function getPathPath(BaseTypedObject $obj,$path)
-    {
-        $def=$obj->getDefinition();
-        $parts=explode("/",$path);
-        if($parts[0]=="")
-            array_shift($parts);
-        return PathObject::__getPathPath($def,$parts);
-    }
-    static function __getPathPath($srcDef,$curPath)
-    {
-
-    }
-
 }
 
  class SimpleContext  
@@ -171,6 +160,8 @@ class BaseTypedException extends BaseException {
     const ERR_CANT_CHANGE_STATE=10;
     const ERR_CANT_CHANGE_STATE_TO=11;
     const ERR_REJECTED_CHANGE_STATE=12;
+    const ERR_NOT_EDITABLE_IN_STATE=13;
+    const ERR_LOAD_DATA_FAILED=14;
 }
 
 class BaseTypedObject extends PathObject
@@ -186,14 +177,26 @@ class BaseTypedObject extends PathObject
         protected $__stateDef;
         protected $__oldState=null;
         protected $__newState=null;
+
+        // referencedModel indica sobre que modelo tenemos que calcular operaciones, cuando este
+        // baseTypedObject nerecsita referenciar a otro para ejecutar esas operaciones.
+        // El ejemplo es Action , que es un BaseTypedObject, que requiere comprobar estado en base a otro
+        // objeto, un modelo externo, que tiene estado.
+        // En ese caso, la definicion de estado, no es la del propio BaseTypedObject (que es una accion), sino
+        // de un objeto remoto (el modelo al que se refiere).
+        protected $__referencedModel;
         function __construct($definition)
         {
             
                 $this->__objectDef=$definition;
-                $this->__fieldDef=& $this->__objectDef["FIELDS"];
+                $this->__fieldDef=& $this->__objectDef[$this->getFieldsKey()];
                 $this->__stateDef=new \lib\model\states\StatedDefinition($this);
+                $this->__referencedModel=$this;
         }
-        
+        function getFieldsKey()
+        {
+            return "FIELDS";
+        }
         function getDefinition() {
                 return $this->__objectDef;
         }
@@ -231,6 +234,10 @@ class BaseTypedObject extends PathObject
             }
             return $this->__fields[$fieldName];            
         }
+        function __getFieldNames()
+        {
+            return array_keys($this->__fields);
+        }
         function & __getFieldDefinition($fieldName)
         {
             if(isset($this->__fieldDef[$fieldName]))
@@ -253,25 +260,28 @@ class BaseTypedObject extends PathObject
         // Si raw es true, el valor se asigna incluso si la validacion da un error.
         function loadFromArray($data,$serializer,$raw=false)
         {   
-            $fields=$this->__getFields();     
-            foreach($fields as $key=>$value) 
-            {                                
-                try{
-                    $value->unserialize($data,$serializer);
-                }
-                catch(\Exception $e)
+            $fields=$this->__getFields();
+            if(!$fields)
+                return;
+            if(!$raw)
+            {
+                $result=$this->validate($data,null,$serializer);
+                if(!$result->isOk())
                 {
-                    if($raw==false)
-                        throw $e;
-                    $value->getType()->__rawSet($data[$key]);
+                    throw new BaseTypedException(BaseTypedException::ERR_LOAD_DATA_FAILED);
                 }
             }
+            foreach($fields as $key=>$value)
+            {
+                if(!isset($data[$key]))
+                    continue;
+                $value->getType()->__rawSet($data[$key]);
+                $this->addDirtyField($key);
+            }
             $this->__data=$data;
-            
             $this->__loaded=true;
-
         }
-        function load($data) 
+        /*function load($data)
         {            
              if(is_object($data))
              {
@@ -279,7 +289,7 @@ class BaseTypedObject extends PathObject
                  return;
              }
              $this->__loaded=true;
-        }
+        }*/
 
         function isLoaded() 
         {        
@@ -337,11 +347,21 @@ class BaseTypedObject extends PathObject
         {
             foreach($fields as $key => $value)
             {
-                $t=11;
+
                 $this->__set($key,$value);
             }
 
         }
+        function getFields($fields)
+        {
+            $names=$this->__getFieldNames();
+            $result=array();
+            foreach($names as $key=>$value)
+                $result[$key]=$value->getValue();
+
+            return $result;
+        }
+
         function __set($varName,$value) {
 
 
@@ -357,7 +377,7 @@ class BaseTypedObject extends PathObject
                     if(!$this->__stateDef->isEditable($varName) && $value!=$this->{$varName})
                     {
 
-                        throw new BaseTypedException(BaseTypedException::ERR_INVALID_STATE,array("field"=>$varName,"state"=>$this->__stateDef->getCurrentState()));
+                        throw new BaseTypedException(BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,array("field"=>$varName,"state"=>$this->__stateDef->getCurrentState()));
                     }
                 }
                 $checkMethod="check_".$varName;
@@ -389,8 +409,8 @@ class BaseTypedObject extends PathObject
             {
                 if($varName==$this->__stateDef->getStateField())
                 {
-                    if ($this->__dirtyFields[$varName])
-                        throw(new BaseModelException(BaseTypedException::ERR_DOUBLESTATECHANGE));
+                    if (isset($this->__dirtyFields[$varName]))
+                        throw(new BaseTypedException(BaseTypedException::ERR_DOUBLESTATECHANGE));
                     $this->__stateDef->setOldState($this->__getField($varName)->get());
                     $this->__stateDef->changeState($value);
                     // El cambiar el estado en si, lo hace la definicion de estados, en el metodo changeState
@@ -444,15 +464,160 @@ class BaseTypedObject extends PathObject
              $this->__isDirty=$remoteObject->__isDirty;             
          }
 
-         function validate()
+         function setReferencedModel($model)
          {
-             foreach($this->__fieldDef as $key=>$value)
+             $this->__referencedModel=$model;
+         }
+         function getReferencedModel()
+         {
+             return $this->__referencedModel;
+         }
+         function normalizeToAssociativeArray($fields)
+         {
+             $fieldArray=null;
+             if(is_object($fields) && is_a('\lib\model\BaseTypedObject',$fields))
              {
-                 if($this->isRequired($key) && $this->__getField($key)->is_set())
+                 $fieldArray=$fields->getFields();
+             }
+             else
+             {
+                 if(is_array($fields))
                  {
-                       throw new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD,array("name"=>$key));
+                     foreach($fields as $key=>$value)
+                     {
+                         // Si no es un campo nuestro, continuamos.
+                         if(!isset($this->__fieldDef[$key]))
+                             continue;
+                         if(is_a('\lib\model\types\BaseType',$value))
+                         {
+                             if($value->hasValue())
+                                 $fieldArray[$key]=$value->getValue();
+                         }
+                         else
+                             $fieldArray[$key]=$value;
+                     }
                  }
              }
+             return $fieldArray;
+         }
+
+         function validate($fields,\lib\model\ModelFieldErrorContainer $result=null,$serializer="PHP")
+         {
+             // Si no se envia un resultado, se crea uno.
+             if(!$result)
+                 $result=new \lib\model\ModelFieldErrorContainer();
+
+             // Si no hay campos...Salimos.
+             if(!$this->__fieldDef)
+                 return true;
+
+             // Se normalizan los campos.Queremos solo y exclusivamente un array campo->valir.
+             $fieldArray=$this->normalizeToAssociativeArray($fields);
+
+             // Primero se normalizan todos los tipos, porque lo vamos a necesitar
+             // para tener en cuenta el estado.
+             foreach ($this->__fieldDef as $key => $value) {
+                 if(isset($fieldArray[$key])) {
+                     $curVal = $fieldArray[$key];
+                     $newType = \lib\model\types\TypeFactory::getType($this, $value);
+                     try {
+
+                         \lib\model\types\TypeFactory::unserializeType($newType, $curVal, $serializer);
+                     }catch(\Exception $e)
+                     {
+                         $result->addFieldTypeError($key,$curVal,$e);
+                     }
+                     $result->addParsedField($key,$newType);
+                 }
+                 else {
+                     $result->addParsedField($key,$this->{"*".$key});
+                 }
+
+             }
+
+             $types=$result->getParsedFields();
+
+             $targetModel=$this->getReferencedModel();
+             $stateFieldName = $targetModel->getStateField();
+             $nextState=null;
+             $newState=null;
+
+             if ($stateFieldName && isset($types[$stateFieldName])) {
+                 $stateType = $types[$stateFieldName];
+
+                 if (isset($fieldArray[$stateFieldName])) {
+                     try {
+                         $oldState=$targetModel->{$stateFieldName};
+                         $newState = $stateType->get();
+                         if($oldState!=$newState) {
+                             if (isset($targetModel->__dirtyFields[$stateFieldName]))
+                                 $result->addFieldTypeError($stateFieldName, null, new BaseTypeException(BaseTypedException::ERR_DOUBLESTATECHANGE));
+                             else
+                             {
+                                 if($targetModel->getStateDef()->isFinalState($oldState))
+                                     $result->addFieldTypeError($stateFieldName,null,new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_FINAL_STATE));
+
+                                 if(!$targetModel->getStateDef()->canTranslateTo($newState))
+                                     $result->addFieldTypeError($stateFieldName,null,new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_STATE_TO));
+                             }
+                         }
+                         // Aunque haya dado error, asignamos el tipo.
+                         \lib\model\types\TypeFactory::unserializeType($stateType, $fieldArray[$stateFieldName], $serializer);
+
+                         // El estado a tener en cuenta es el estado al que vamos.
+                         $nextState=$targetModel->getStateDef()->getStateLabel($newState);
+                     } catch (\Exception $e) {
+                         $result->addFieldTypeError($stateFieldName, null, $e);
+                     }
+                 }
+             }
+
+             foreach ($this->__fieldDef as $key => $value) {
+                 $curVal=\io($fieldArray,$key,null);
+                 $isset=false;
+                 $newType=$types[$key];
+                 if($curVal!=null)
+                     $isset=true;
+                 else
+                 {
+                     if(($newType->getFlags() & \lib\model\types\BaseType::TYPE_NOT_MODIFIED_ON_NULL) ||
+                         (isset($value["UPDATE_ON_NULL"]) && !$value[$key]["UPDATE_ON_NULL"]))
+                         $isset=true;
+                 }
+                 $reference=$newType->getTypeReference();
+                 $targetField=$key;
+                 if($reference)
+                 {
+                     $targetField=$reference["FIELD"];
+                 }
+
+                 // NOTE: si en el array inicial no estaba esta key, lo deserializamos con null.
+                 // Esto es importante ya que si el campo es requerido, aunque no tuviera valor, podria haber
+                 // un valor por defecto.
+                 // Esta linea ya daria una excepcion, en caso de que se
+
+                 if($stateFieldName) {
+                     $currentValue = $targetModel->{"*" . $targetField}->getValue();
+                     // Si se quiere cambiar el valor, hay que comprobarlo contra el sistema de estados.
+                     if ($currentValue != $newType->getValue()) {
+                         if (!$targetModel->getStateDef()->isEditableInState($targetField,$nextState)) {
+                             $result->addFieldTypeError($key, $curVal,
+                                        new BaseTypedException(BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,
+                                            array("field" => $targetField, "state" => $targetModel->__stateDef->getCurrentState())
+                                        ));
+                         }
+                     }
+                     $required = $targetModel->getStateDef()->isRequiredForState($targetField,$nextState);
+                 }
+                 else
+                     $required = $targetModel->isRequired($key);
+
+                 if ($required && !$isset) {
+                     $e=new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, array("name" => $key));
+                         $result->addFieldTypeError($key,$curVal,$e);
+                     }
+                 }
+             return $result;
          }
          function save()
          {
@@ -506,6 +671,11 @@ class BaseTypedObject extends PathObject
          {
              $this->__isDirty=false;
              $this->__dirtyFields=array();
+             $this->__stateDef->reset();
+         }
+         function getDirtyFields()
+         {
+             return $this->__dirtyFields;
          }
          function isRequired($fieldName)
          {
@@ -577,15 +747,17 @@ class BaseTypedObject extends PathObject
 
     function mergeObject(BaseTypedObject $obj)
     {
-        $source=$obj->__fields;
-        if($source==null)
+        if(!is_a($obj,'\lib\model\BaseTypedObject'))
+            return;
+        $source=$obj->__getFields();
+        if(!$source)
             return;
         foreach($source as $key=>$value)
         {
             $this->__fields[$key]=$value;
             $this->__fieldDef[$key]=$obj->__fieldDef[$key];
             $this->__fieldDef[$key]["MERGED"]=true;
-            $this->__objectDef["FIELDS"][$key]=$this->__fieldDef[$key];
+            $this->__objectDef[$this->getFieldsKey()][$key]=$this->__fieldDef[$key];
         }
 
     }

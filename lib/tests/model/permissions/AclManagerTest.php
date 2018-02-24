@@ -454,7 +454,7 @@ class AclManagerTest extends TestCase
             ->disallowMockingUnknownTypes()
             ->getMock();*/
         $user=null;
-        $access=$this->acl->canAccess(array("_PUBLIC_"),$user);
+        $access=$this->acl->canAccess(array('PUBLIC'),$user);
         $this->assertEquals(true,$access);
     }
     function testCanAccessUserModel()

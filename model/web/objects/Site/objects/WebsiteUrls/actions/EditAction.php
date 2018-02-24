@@ -10,11 +10,11 @@ namespace model\web\Site\WebsiteUrls\actions;
 class EditAction extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'Sites\WebsiteUrls',
+               'MODEL'=>'\model\web\Site\WebsiteUrls',
                'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'PERMISSION'=>'edit'
                            )
                      ),
@@ -30,7 +30,7 @@ class EditAction extends \lib\action\Action
                      'id_website'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'id_website',
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'DATASOURCE'=>array(
                                  'MODEL'=>'model\web\Site',
                                  'NAME'=>'FullList',
@@ -40,12 +40,12 @@ class EditAction extends \lib\action\Action
                      'url'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'url',
-                           'MODEL'=>'Sites\WebsiteUrls'
+                           'MODEL'=>'\model\web\Site\WebsiteUrls'
                            ),
                      'priority'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'priority',
-                           'MODEL'=>'Sites\WebsiteUrls'
+                           'MODEL'=>'\model\web\Site\WebsiteUrls'
                            )
                      )
                );
@@ -85,7 +85,7 @@ class EditAction extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate( $params, $actionResult, $user)
+	function validate ( $actionResult )
 	{
 
 
@@ -134,7 +134,7 @@ class EditAction extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function onError( $params, $actionResult, $user)
+	function onError ($keys, $params, $actionResult, $user)
 	{
 
 

@@ -1,0 +1,760 @@
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_CONTENTS]
+        [_WIDGET][_FILE]/sites/reflection/widgets/JSWIDGETS/Common.wid[#][#]
+        [_SCRIPT]
+            [_CODE]
+            <script>
+    Siviglia.Utils.buildClass(
+    {
+        context:'Reflection.Widgets',
+        classes:{
+            DefinitionEditor:{
+                inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                methods:{
+                    preInitialize:function(params){
+
+                        this.self=this;
+                    },
+                    initialize:function(params){
+                        var m=this;
+                        this.currentEditor=null;
+                    },
+                    editDefinition:function(name)
+                    {
+                        this.currentDefinition=name;
+                        if(this.currentEditor!=null)
+                            this.currentEditor.destruct();
+                        var m=this;
+                        $.ajax({
+                            url:top.Siviglia.Paths("loadDefinition",{name:name}),
+                            dataType:'json',
+                            success:function(result)
+                            {
+                                m.createEditor(result)
+                            },
+                            error:function()
+                            {
+                                console.dir(arguments);
+                            }
+                        });
+                    },
+                    onNewSite:function(name)
+                    {
+                        this.currentDefinition=name;
+                        if(this.currentEditor!=null)
+                            this.currentEditor.destruct();
+                        this.createEditor({
+                            configType:"default",
+                            actions:[
+                                {
+                                    regex:[".*"],
+                                    actions:[]
+                                }
+                            ]
+                        });
+                    },
+                    createEditor:function(value)
+                    {
+                        var nn=$("<div></div>");
+                        this.currentEditor=new Reflection.Widgets.DefinitionForm(
+                            "Reflection.Widgets.DefinitionForm",
+                            {value:value},{},nn, Siviglia.model.Root
+                        );
+                        this.form.append(nn);
+                    },
+                    save:function()
+                    {
+                        $.post(
+                            top.Siviglia.Paths("saveDefinition",{}),
+                            {
+                                name:name,
+                                action:'save',
+                                data:JSON.stringify(this.currentEditor.dump())
+                            },
+                            function(){
+                                alert("Guardado");
+                            }
+                        );
+                    }
+                }
+            }
+
+        }
+    }
+);
+Siviglia.Utils.buildClass(
+    {
+        context:'Reflection.Widgets',
+        classes:
+            {
+
+                /*SiteSelector: {
+                    inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                    methods: {
+                        preInitialize: function (params) {
+
+                            this.controller=params.controller;
+                        },
+                        initialize: function (params) {
+                            var source =
+                                {
+                                    datatype: "json",
+                                    datafields: [
+                                        { name: 'name' },
+                                    ],
+                                    url: top.Config.baseUrl+"/smartclipConfig/datasources/currentConfigs"
+                                };
+                            var dataAdapter = new $.jqx.dataAdapter(source);
+                            this.siteCombo.jqxComboBox(
+                                {
+                                    width: 200,
+                                    height: 25,
+                                    source: dataAdapter,
+                                    displayMember: "name",
+                                    valueMember: "name"
+                                });
+                            var m=this;
+                            this.siteCombo.on('change', function (event) {
+                                if (event.args) {
+                                    var item = event.args.item;
+                                    if (item) {
+                                        m.fireEvent("SITE_CHANGE",{site:item.value})
+                                    }
+                                }
+                            });
+                        },
+                        onNew:function()
+                        {
+                            var val=this.newConfig.val();
+                            if(val=="")
+                            {
+                                alert("Introduce un nombre de configuracion");
+                                return;
+                            }
+                            this.fireEvent("NEW_SITE",{site:val});
+                        },
+                        dump:function()
+                        {
+                            this.controller.dump();
+                        }
+                    }
+                },*/
+
+                DefinitionForm:{
+                    inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                    methods:
+                        {
+                            preInitialize:function(params)
+                            {
+                                var m=new Siviglia.Model.Model("/model/reflection/ArrayDefinition");
+                                var self=this;
+                                var localPromise=$.Deferred();
+                                m.getDataSource("ListAll",{}).then(function(d){
+                                    self.definitionList=d;
+                                    localPromise.resolve();});
+                                this.value=params.value;
+                                return localPromise;
+                            },
+                            initialize:function(params)
+                            {
+                                var m=this;
+                                var spec={"success":true,"data":{meta:
+                                    {
+                                        "ROOT": {
+                                            "TYPE": "DICTIONARY",
+                                            "LABEL": "Definition",
+                                            "VALUETYPE": "NODE"
+                                        },
+                                        "NODE": {
+                                            "TYPE": "TYPESWITCH",
+                                            "TYPE_FIELD": "TYPE",
+                                            "LABEL": "Node",
+                                            "ALLOWED_TYPES": [
+                                                "*INTEGER",
+                                                "*STRING",
+                                                "*BOOLEAN",
+                                                "*CONTAINER",
+                                                "*DICTIONARY",
+                                                "*ARRAY",
+                                                "*SELECTOR",
+                                                "*TYPESWITCH",
+                                                "*OBJECTARRAY"
+                                            ]
+                                        },
+                                        "INTEGER": {
+                                            "TYPE": "CONTAINER",
+                                            "LABEL": "Integer",
+                                            "FIELDS": {
+                                                "LABEL": {
+                                                    "LABEL": "Label",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": "y"
+                                                },
+                                                "HANDLER": {
+                                                    "LABEL": "Class Handler",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Instances of this class (in format a.b.c) will be created to handle this input events"
+                                                },
+                                                "REQUIRED": {
+                                                    "LABEL": "Required?",
+                                                    "TYPE": "BOOLEAN"
+                                                },
+                                                "SAVE_URL": {
+                                                    "LABEL": "Save URL",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If this value is set, it will be the url  where this node value (indluding its children) will be POSTed to be saved."
+                                                },
+                                                "DESCRIPTION": {
+                                                    "LABEL": "Description",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Description to accompany this field"
+                                                },
+                                                "HELP": {
+                                                    "LABEL": "Help",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Field Help"
+                                                },
+                                                "SET_ON_EMPTY": {
+                                                    "LABEL": "Set on empty",
+                                                    "TYPE": "BOOLEAN",
+                                                    "HELP": "If true, this element will be saved if it's null"
+                                                },
+                                                "DEFAULT": {
+                                                    "LABEL": "Default Value",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Default value for field"
+                                                }
+                                            }
+                                        },
+                                        "STRING": {
+                                            "TYPE": "CONTAINER",
+                                            "LABEL": "String",
+                                            "FIELDS": {
+                                                "LABEL": {
+                                                    "LABEL": "Label",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": "y"
+                                                },
+                                                "HANDLER": {
+                                                    "LABEL": "Class Handler",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Instances of this class (in format a.b.c) will be created to handle this input events"
+                                                },
+                                                "REQUIRED": {
+                                                    "LABEL": "Required?",
+                                                    "TYPE": "BOOLEAN"
+                                                },
+                                                "SAVE_URL": {
+                                                    "LABEL": "Save URL",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If this value is set, it will be the url  where this node value (indluding its children) will be POSTed to be saved."
+                                                },
+                                                "DESCRIPTION": {
+                                                    "LABEL": "Description",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Description to accompany this field"
+                                                },
+                                                "HELP": {
+                                                    "LABEL": "Help",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Field Help"
+                                                },
+                                                "SET_ON_EMPTY": {
+                                                    "LABEL": "Set on empty",
+                                                    "TYPE": "BOOLEAN",
+                                                    "HELP": "If true, this element will be saved if it's null or ''"
+                                                },
+                                                "DEFAULT": {
+                                                    "LABEL": "Default Value",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Default value for field"
+                                                }
+                                            }
+                                        },
+                                        "BOOLEAN": {
+                                            "TYPE": "CONTAINER",
+                                            "LABEL": "Boolean",
+                                            "FIELDS": {
+                                                "LABEL": {
+                                                    "LABEL": "Label",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": "y"
+                                                },
+                                                "HANDLER": {
+                                                    "LABEL": "Class Handler",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Instances of this class (in format a.b.c) will be created to handle this input events"
+                                                },
+                                                "REQUIRED": {
+                                                    "LABEL": "Required?",
+                                                    "TYPE": "BOOLEAN"
+                                                },
+                                                "SAVE_URL": {
+                                                    "LABEL": "Save URL",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If this value is set, it will be the url  where this node value (indluding its children) will be POSTed to be saved."
+                                                },
+                                                "DESCRIPTION": {
+                                                    "LABEL": "Description",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Description to accompany this field"
+                                                },
+                                                "HELP": {
+                                                    "LABEL": "Help",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Field Help"
+                                                },
+                                                "DEFAULT": {
+                                                    "LABEL": "Default Value",
+                                                    "TYPE": "BOOLEAN",
+                                                    "HELP": "Default value for field"
+                                                }
+                                            }
+                                        },
+                                        "CONTAINER": {
+                                            "TYPE": "CONTAINER",
+                                            "LABEL": "Container",
+                                            "FIELDS": {
+                                                "LABEL": {
+                                                    "LABEL": "Label",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": "y"
+                                                },
+                                                "HANDLER": {
+                                                    "LABEL": "Class Handler",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Instances of this class (in format a.b.c) will be created to handle this input events"
+                                                },
+                                                "LOAD_URL": {
+                                                    "LABEL": "Load URL",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If defined, this element will fill itself with values received from this datasource in JSON format"
+                                                },
+                                                "SAVE_URL": {
+                                                    "LABEL": "Save URL",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If this value is set, it will be the url  where this node value (indluding its children) will be POSTed to be saved."
+                                                },
+                                                "DESCRIPTION": {
+                                                    "LABEL": "Description",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Description to accompany this field"
+                                                },
+                                                "HELP": {
+                                                    "LABEL": "Help",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Field Help"
+                                                },
+                                                "SET_ON_EMPTY": {
+                                                    "LABEL": "Set on empty",
+                                                    "TYPE": "BOOLEAN",
+                                                    "HELP": "If true, this element will be saved if it's null or empty"
+                                                },
+                                                "FIELDS": {
+                                                    "LABEL": "Fields",
+                                                    "TYPE": "DICTIONARY",
+                                                    "HELP": "Container Fields",
+                                                    "VALUETYPE": "NODE"
+                                                }
+                                            }
+                                        },
+                                        "DICTIONARY": {
+                                            "TYPE": "CONTAINER",
+                                            "LABEL": "Dictionary",
+                                            "FIELDS": {
+                                                "LABEL": {
+                                                    "LABEL": "Label",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": "y"
+                                                },
+                                                "HANDLER": {
+                                                    "LABEL": "Class Handler",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Instances of this class (in format a.b.c) will be created to handle this input events"
+                                                },
+                                                "LOAD_URL": {
+                                                    "LABEL": "Load URL",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If defined, this element will fill itself with values received from this datasource in JSON format"
+                                                },
+                                                "REQUIRED": {
+                                                    "LABEL": "Required?",
+                                                    "TYPE": "BOOLEAN"
+                                                },
+                                                "SAVE_URL": {
+                                                    "LABEL": "Save URL",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If this value is set, it will be the url  where this node value (indluding its children) will be POSTed to be saved."
+                                                },
+                                                "DESCRIPTION": {
+                                                    "LABEL": "Description",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Description to accompany this field"
+                                                },
+                                                "HELP": {
+                                                    "LABEL": "Help",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Field Help"
+                                                },
+                                                "SET_ON_EMPTY": {
+                                                    "LABEL": "Set on empty",
+                                                    "TYPE": "BOOLEAN",
+                                                    "HELP": "If true, this element will be saved if it's null"
+                                                },
+                                                "SOURCE": {
+                                                    "LABEL": "Source",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If set, this defines the source for the allowed keys in this dictionary"
+                                                },
+                                                "FIELDS": {
+                                                    "LABEL": "Fields",
+                                                    "TYPE": "DICTIONARY",
+                                                    "HELP": "Container Fields",
+                                                    "VALUETYPE": "NODE"
+                                                }
+                                            }
+                                        },
+                                        "ARRAY": {
+                                            "TYPE": "CONTAINER",
+                                            "LABEL": "Array",
+                                            "FIELDS": {
+                                                "LABEL": {
+                                                    "LABEL": "Label",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": "y"
+                                                },
+                                                "HANDLER": {
+                                                    "LABEL": "Class Handler",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Instances of this class (in format a.b.c) will be created to handle this input events"
+                                                },
+                                                "LOAD_URL": {
+                                                    "LABEL": "Load URL",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If defined, this element will fill itself with values received from this datasource in JSON format"
+                                                },
+                                                "SAVE_URL": {
+                                                    "LABEL": "Save URL",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If this value is set, it will be the url  where this node value (indluding its children) will be POSTed to be saved."
+                                                },
+                                                "DESCRIPTION": {
+                                                    "LABEL": "Description",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Description to accompany this field"
+                                                },
+                                                "SET_ON_EMPTY": {
+                                                    "LABEL": "Set on empty",
+                                                    "TYPE": "BOOLEAN",
+                                                    "HELP": "If true, this element will be saved if it's null"
+                                                },
+                                                "HELP": {
+                                                    "LABEL": "Help",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Field Help"
+                                                },
+                                                "SOURCE": {
+                                                    "LABEL": "Source",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "If set, this defines the source for the allowed values in this array"
+                                                }
+                                            }
+                                        },
+                                        "SELECTOR": {
+                                            "TYPE": "CONTAINER",
+                                            "LABEL": "Selector",
+                                            "FIELDS": {
+                                                "LABEL": {
+                                                    "LABEL": "Label",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": true
+                                                },
+                                                "HANDLER": {
+                                                    "LABEL": "Class Handler",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Instances of this class (in format a.b.c) will be created to handle this input events"
+                                                },
+                                                "REQUIRED": {
+                                                    "LABEL": "Required?",
+                                                    "TYPE": "BOOLEAN"
+                                                },
+                                                "DESCRIPTION": {
+                                                    "LABEL": "Description",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Description to accompany this field"
+                                                },
+                                                "HELP": {
+                                                    "LABEL": "Help",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Field Help"
+                                                },
+                                                "SET_ON_EMPTY": {
+                                                    "LABEL": "Set on empty",
+                                                    "TYPE": "BOOLEAN",
+                                                    "HELP": "If true, this element will be saved if it's null"
+                                                },
+                                                "OPTIONS": {
+                                                    "LABEL": "Options",
+                                                    "REQUIRED": true,
+                                                    "TYPE": "OBJECTARRAY",
+                                                    "VALUETYPE": "*OPTION"
+                                                }
+                                            }
+                                        },
+                                        "TYPESWITCH": {
+                                            "TYPE": "CONTAINER",
+                                            "LABEL": "Type Switch",
+                                            "FIELDS": {
+                                                "LABEL": {
+                                                    "LABEL": "Label",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": true
+                                                },
+                                                "TYPE_FIELD": {
+                                                    "LABEL": "Type field",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": true
+                                                },
+                                                "ALLOWED_TYPES": {
+                                                    "LABEL": "Allowed Types",
+                                                    "TYPE": "OBJECTARRAY",
+                                                    "REQUIRED": true,
+                                                    "VALUETYPE": {
+                                                        "TYPE": "*ALLOW_TYPE"
+                                                    }
+                                                },
+                                                "HANDLER": {
+                                                    "LABEL": "Class Handler",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Instances of this class (in format a.b.c) will be created to handle this input events"
+                                                },
+                                                "REQUIRED": {
+                                                    "LABEL": "Required?",
+                                                    "TYPE": "BOOLEAN"
+                                                },
+                                                "DESCRIPTION": {
+                                                    "LABEL": "Description",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Description to accompany this field"
+                                                },
+                                                "SET_ON_EMPTY": {
+                                                    "LABEL": "Set on empty",
+                                                    "TYPE": "BOOLEAN",
+                                                    "HELP": "If true, this element will be saved if it's null"
+                                                },
+                                                "HELP": {
+                                                    "LABEL": "Help",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Field Help"
+                                                }
+                                            }
+                                        },
+                                        "OBJECTARRAY": {
+                                            "TYPE": "CONTAINER",
+                                            "LABEL": "Object Array",
+                                            "FIELDS": {
+                                                "LABEL": {
+                                                    "LABEL": "Label",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": true
+                                                },
+                                                "VALUETYPE": {
+                                                    "LABEL": "Object type",
+                                                    "TYPE": "*OBJARRAY_VALUE"
+                                                },
+                                                "HANDLER": {
+                                                    "LABEL": "Class Handler",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Instances of this class (in format a.b.c) will be created to handle this input events"
+                                                },
+                                                "REQUIRED": {
+                                                    "LABEL": "Required?",
+                                                    "TYPE": "BOOLEAN"
+                                                },
+                                                "DESCRIPTION": {
+                                                    "LABEL": "Description",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Description to accompany this field"
+                                                },
+                                                "SET_ON_EMPTY": {
+                                                    "LABEL": "Set on empty",
+                                                    "TYPE": "BOOLEAN",
+                                                    "HELP": "If true, this element will be saved if it's null"
+                                                },
+                                                "HELP": {
+                                                    "LABEL": "Help",
+                                                    "TYPE": "STRING",
+                                                    "HELP": "Field Help"
+                                                }
+                                            }
+                                        },
+                                        "OPTION": {
+                                            "TYPE": "DICTIONARY",
+                                            "FIELDS": {
+                                                "LABEL": {
+                                                    "LABEL": "Label",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": true
+                                                },
+                                                "VALUE": {
+                                                    "LABEL": "Value",
+                                                    "TYPE": "STRING",
+                                                    "REQUIRED": true
+                                                },
+                                                "DEFAULT": {
+                                                    "LABEL": "Is default",
+                                                    "TYPE": "BOOLEAN"
+                                                }
+                                            }
+                                        },
+                                        "ALLOW_TYPE": {
+                                            "TYPE": "CONTAINER",
+                                            "FIELDS": {
+                                                "TYPE": {
+                                                    "TYPE": "SELECTOR",
+                                                    "LABEL": "Type",
+                                                    "SOURCE": "/",
+                                                    "REQUIRED": true
+                                                },
+                                                "LABEL": {
+                                                    "TYPE": "STRING",
+                                                    "LABEL": "Label",
+                                                    "REQUIRED": true
+                                                }
+                                            }
+                                        },
+                                        "OBJARRAY_VALUE": {
+                                            "TYPE": "SELECTOR",
+                                            "LABEL": "Type",
+                                            "SOURCE": "/",
+                                            "REQUIRED": true
+                                        }
+                                    }
+                                    ,value:this.value}};
+                                this.controller=new Siviglia.AutoUI.AutoUIController(top.page.App.config.baseUrl);
+                                this.controller.initialize(spec.data.meta,spec.data.value);
+                                this.doInitialize(spec.data,this.autoUINode);
+                            },
+                            doInitialize:function(data,node)
+                            {
+
+                                var v=$("<div></div>");
+                                var B=new Siviglia.AutoUI.Painter.Factory('AUTOUI_FACTORY',
+                                    {parentObject:null,parentNode:this.controller.rootNode,controller:this.controller},
+                                    {},
+                                    v,
+                                    Siviglia.model.Root
+                                );
+                                this.autoUINode.append(v);
+                            },
+                            dump:function(node,params)
+                            {
+                                return this.controller.save();
+                            }
+
+                        }
+                }
+
+            }
+    }
+);
+
+/* Se necesita una clase derivada de TYPESWITCHER para gestionar las regexes, que es un tipo
+ raro de TypeSwitcher.
+ Hay que declarar tanto la clase, como el painter asociado.El
+ */
+/*Siviglia.Utils.buildClass(
+    {
+        context: 'Siviglia.AutoUI',
+        classes: {
+            "RegexpSwitcher":
+                {
+                    "inherits":"Siviglia.AutoUI.TypeSwitcher",
+                    construct: function (definition, parent, value,controller) {
+                        this.TypeSwitcher({
+                            "TYPE":"RegexpSwitcher",
+                            "LABEL":"Urls:"
+                        },parent,value,controller);
+                        // Se inicializa el painter de este tipo, para que lo encuentre AutoUIPainter2
+                        Siviglia.AutoUI.RegexpSwitcher.prototype.PAINTER="TypeSwitchPainter";
+                    },
+                    methods:
+                        {
+                            getTypeFromValue:function(v)
+                            {
+                                if(v==null)
+                                    return null;
+                                if(v.constructor.toString().match("Array"))
+                                {
+                                    if(v[0].constructor.toString().match("String"))
+                                        return "RegexpArray";
+                                    return "RegexpObject";
+
+                                }
+                                return null;
+                            },
+                            getAllowedTypes: function () {
+                                return [{"LABEL":"Lista de Regexp","VALUE":"RegexpArray"},
+                                    {"LABEL":"Include/Exclude","VALUE":"RegexpObject"}];
+                            },
+                            getCurrentType: function () {
+                                return this.getTypeFromValue(this.getValue())
+                            },
+                            setType: function (typeName) {
+                                if(typeName=="RegexpObject")
+                                    this.setValue([{"match":".*","dontmatch":""}]);
+                                else
+                                    this.setValue([".*"]);
+
+                            }
+                        }
+                }
+        }
+    });*/
+            </script>
+[#]
+        [#]
+        [_CSS]
+            [_CODE]
+            <style type="text/css">
+            .miclase {width:100px;font-weight:bold}
+            </style>
+            [#]
+        [#]
+    [#]
+[#]
+
+<div style="display:none">
+
+
+
+
+    <div sivWidget="Reflection.Widgets.DefinitionForm" widgetParams="" widgetCode="Reflection.Widgets.DefinitionForm">
+        [*:SKIN_BOX]
+            [_:TITLE][_:TEXT]Definiciones del sistema[#][#]
+            [_:CONTENT]
+                <div class="container">
+                    <div class="row justify-content-md-center">
+                        <div class="col-md-6 col-sm-6">Cargar:</div>
+                        <div sivView="Components.SelectorOrNew" sivParams='{"options":"/*definitionList","label":"name","value":"name"}'></div>
+                        <div class="col-md-6 col-sm-6 text-right">
+                            <button class="btn btn-primary" value="Save" style="font-size:12px;margin-top:6px" sivEvent="click" sivCallback="save">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+                    <div style="clear:both"></div>
+                <div sivId="autoUINode"></div>
+            [#]
+        [#]
+
+    </div>
+
+
+</div>
+

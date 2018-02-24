@@ -92,7 +92,6 @@ class HTMLRequest extends \Request implements \ArrayAccess
         $session=new \lib\storage\Persistence\PHPSession();
         \Registry::addService("session",$session);
 
-        \Registry::initialize($this);
     }
     function getCurrentSite()
     {
@@ -360,5 +359,9 @@ class HTMLRequest extends \Request implements \ArrayAccess
         $queryString=$this->getQueryString();
         return $this->requestedPath.($queryString?"?".$queryString:"");
 
+    }
+    function getUnSerializerType()
+    {
+        return "HTML";
     }
 }

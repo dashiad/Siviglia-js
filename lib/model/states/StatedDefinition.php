@@ -3,6 +3,94 @@ namespace lib\model\states;
 
 use lib\model\types\BaseTypeException;
 
+/*
+ * Ejemplo complejo de defincion de estado:
+ *
+ * array(
+               'STATES' => array(
+                'LISTENER_TAGS'=>array(
+                "APPLY_WALLET"=>"applyWallet",
+                "PRODUCTS_ARE_PUBLISHED"=>array(
+                    "METHOD"=>"changeProducts",
+                    "PARAMS"=>\backoffice\ps_product\PercentilProduct::STATE_PUBLISHED
+                ),
+                "SEND_PAID_EMAIL"=>array("METHOD"=>"sendEmail","PARAMS"=>array("paidEmail")),
+                "REMOVE_FROM_PICKING"=>"removeFromPicking",
+                "RETURN_PAYMENT"=>"returnPayment",
+                "ORDER_IS_RETURNED"=>"doFullReturn",
+                "ORDER_IS_RETURNED_WITHOUT_PAYMENT"=>array("METHOD"=>"fullReturn","PARAMS"=>array(\backoffice\ps_orders\OrderDetailReturnReasons::REASON_REJECTED_COD)),
+                "ORDER_IS_LOST"=>"onLost",
+                "SET_AS_PAID"=>"setAsPaid",
+                "SET_AS_NOT_PAID"=>"setAsNotPaid",
+
+                "TEST_PRODUCTS_AVAILABLE"=>"productsAreAvailable",
+                "TEST_PAYMENT_OK"=>"hasPaymentOk",
+                "TEST_NO_PICKING_MISSES"=>"hasNoPickingMisses",
+                "TEST_NOT_PAID"=>"hasNoPayment",
+                "TEST_NO_RETURNS"=>"hasNoReturns",
+                "TEST_PAID"=>"isPaid"
+            ),
+            "STATES"=>array(
+            ps_order_state::STATE_ORDER_NONE=>array(
+                    'LISTENERS'=>array('TEST'=>array(),'ON_LEAVE'=>array(),'ON_ENTER'=>array()),
+                    'FIELDS' => array('EDITABLE' => array('*'),'REQUIRED'=>array(),'FIXED'=>array(),'SET'=>array())
+            ),
+            ps_order_state::STATE_ORDER_PAID=>array(
+                    'ALLOW_FROM'=>array( ps_order_state::STATE_ORDER_NONE,
+                            ps_order_state::STATE_ORDER_WAITING_PAYMENT,
+                            ps_order_state::STATE_ORDER_PAYMENT_AMOUNT_ERROR,
+                            ps_order_state::STATE_PAYMENT_ERROR ),
+                    'LISTENERS'=>array(
+                        'TESTS'=>array("TEST_PRODUCTS_AVAILABLE","TEST_PAYMENT_OK"),
+                        'ON_ENTER'=>array_merge(array("APPLY_WALLET"),$paidAct,array("SEND_PAID_EMAIL", "CREATE_INVOICE"))
+        )
+    ),
+
+            ps_order_state::STATE_ORDER_WAITING_PAYMENT=>array(
+                'ALLOW_FROM'=>array(ps_order_state::STATE_ORDER_NONE),
+                'LISTENERS'=>array('TESTS'=>array("TEST_PRODUCTS_AVAILABLE"),
+                    'ON_ENTER'=>$paidAct
+                )
+            ),
+    ps_order_state::STATE_ORDER_CANCELLED=>array(
+        'IS_FINAL'=>1,
+        'ALLOW_FROM'=>array(ps_order_state::STATE_ORDER_PAID,ps_order_state::STATE_ORDER_PICKED,
+            ps_order_state::STATE_ORDER_PROCESSED,ps_order_state::STATE_ORDER_WAITING_PAYMENT,
+            ps_order_state::STATE_PAYMENT_ERROR,ps_order_state::STATE_ORDER_PAYMENT_AMOUNT_ERROR,
+            ps_order_state::STATE_ORDER_REVIEWED,ps_order_state::STATE_ORDER_OK,ps_order_state::STATE_ORDER_NONE
+        ),
+        'LISTENERS'=>array(
+            'TESTS'=>array("TEST_PAID"),
+
+            'ON_ENTER'=>array(
+                'STATES'=>array(
+                    // ORDER CANCELLED DESDE ORDER PAID
+                    ps_order_state::STATE_ORDER_PAID=>$cancelledAct,
+                    ps_order_state::STATE_ORDER_WAITING_PAYMENT=>array_merge($cancelledAct,array("REMOVE_CART_RESERVES","SEND_CANCELLED_EMAIL")),
+                    ps_order_state::STATE_PAYMENT_ERROR=>array("REMOVE_CART_RESERVES","SEND_CANCELLED_EMAIL","ADD_HISTORY"),
+                    ps_order_state::STATE_ORDER_PAYMENT_AMOUNT_ERROR=>array("REMOVE_CART_RESERVES","SEND_CANCELLED_EMAIL","ADD_HISTORY"),
+                    ps_order_state::STATE_ORDER_REVIEWED=>$cancelledAct,
+                    ps_order_state::STATE_ORDER_OK=>$cancelledAct,
+                    ps_order_state::STATE_ORDER_PICKED=>array_merge($cancelledAct,array("REMOVE_FROM_PICKING")),
+                    ps_order_state::STATE_ORDER_PROCESSED=>array_merge($cancelledAct,array("REMOVE_FROM_PICKING")),
+                    ps_order_state::STATE_ORDER_NONE=>array()
+                )
+            ),
+            // Hay que tener un REJECT_TO ya que puede ser que nos llegue una notificacion asincrona de pago, para un pedido que ya esta cancelado.
+            'REJECT_TO'=>array(
+                'STATES'=>array(
+                    ps_order_state::STATE_ORDER_PAID=>$cancelledAct
+                )
+            )
+        )
+    ),
+
+               )
+            );
+ *
+ *
+ *
+ */
 class StatedDefinition
 {
         var $definition;
@@ -14,6 +102,8 @@ class StatedDefinition
         var $stateType;
         var $oldState=null;
         var $newState=null;
+        var $newStateLabel=null;
+        var $oldStateLabel=null;
         var $changingState=false;
         function __construct(& $model)
         {
@@ -30,6 +120,7 @@ class StatedDefinition
         function setNewState($state)
         {
             $this->newState=$state;
+            $this->newStateLabel = $this->getStateLabel($state);
         }
 
         function getNewState()
@@ -48,7 +139,9 @@ class StatedDefinition
         function reset()
         {
             $this->oldState=null;
+            $this->oldStateLabel=null;
             $this->newState=null;
+            $this->newStateLabel=null;
         }
 
         function disable()
@@ -115,6 +208,12 @@ class StatedDefinition
         {
             return $this->stateType->getValueFromLabel($name);
         }
+        function isFinalState($label)
+        {
+            if(!is_string($label))
+                $label=$this->getStateLabel($label);
+            return \io($this->definition["STATES"]["STATES"][$label],"IS_FINAL",false);
+        }
         function getStateLabel($id)
         {
             if(!is_numeric($id))
@@ -133,11 +232,11 @@ class StatedDefinition
             if($this->newState==null)
                 return true;
 
-            if(!isset($this->definition["STATES"]["STATES"][$this->newState]) ||
-                !isset($this->definition["STATES"]["STATES"][$this->newState]["FIELDS"]) ||
-                !isset($this->definition["STATES"]["STATES"][$this->newState]["FIELDS"]["REQUIRED"]))
+            if(!isset($this->definition["STATES"]["STATES"][$this->newStateLabel]) ||
+                !isset($this->definition["STATES"]["STATES"][$this->newStateLabel]["FIELDS"]) ||
+                !isset($this->definition["STATES"]["STATES"][$this->newStateLabel]["FIELDS"]["REQUIRED"]))
                 return true;
-            $st=& $this->definition["STATES"]["STATES"][$this->newState]["FIELDS"]["REQUIRED"];
+            $st=& $this->definition["STATES"]["STATES"][$this->newStateLabel]["FIELDS"]["REQUIRED"];
             foreach($st as $cF)
             {
                 $field=$this->model->__getField($cF);
@@ -162,7 +261,7 @@ class StatedDefinition
             if($fieldName==$this->stateField)
                 return true;
 
-            return $this->isEditableInState($fieldName,$this->getOldState());
+            return $this->isEditableInState($fieldName,$this->getCurrentStateLabel());
         }
         function isFixed($fieldName)
         {
@@ -186,7 +285,8 @@ class StatedDefinition
                 return true;
             if($fieldName==$this->stateField)
                 return true;
-            return $this->existsFieldInStateDefinition($stateName,$fieldName,"EDITABLE",true);
+            $res=$this->existsFieldInStateDefinition($stateName,$fieldName,"EDITABLE",true);
+            return $res;
         }
         function isFixedInState($fieldName,$stateName)
         {
@@ -215,16 +315,18 @@ class StatedDefinition
     }
     function changeState($next)
     {
+        if(is_string($next))
+        {
+            $next=$this->getStateId($next);
+        }
         $this->changingState=true;
         if($next==$this->newState)
             return;
-        // por ahora, hacemos esto...
+        // por ahora, hacemos esto: Si ya hay un newState, rechanzamos el nuevo cambio.
         if($this->newState)
-            throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_REJECTED_CHANGE_STATE,array("current"=>$this->getCurrentState(),"new"=>$next,"middle"=>$this->newState));
+            throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_DOUBLESTATECHANGE,array("current"=>$this->getCurrentState(),"new"=>$next,"middle"=>$this->newState));
 
         $this->setOldState($this->getOldState());
-        $states = $this->getStates();
-        $result = true;
         $actualState = $this->oldState;
         if($this->oldState===$next && $this->oldState!==null) {
             $this->changingState=false;
@@ -234,26 +336,35 @@ class StatedDefinition
 
         $oldId=$this->oldState;
         $newId=$this->newState;
-        if(!isset($this->definition["STATES"]["STATES"][$newId]))
+        if(!isset($this->definition["STATES"]["STATES"][$this->newStateLabel]))
         {
             $this->model->__getField($this->stateField)->set($newId);
             $this->changingState=false;
             return;
         }
-        $definition=$this->definition["STATES"]["STATES"][$newId];
+        $definition=$this->definition["STATES"]["STATES"][$this->newStateLabel];
         // Se ve si el estado actual es final o no.
-        if(isset($this->definition["STATES"]["STATES"][$oldId]["IS_FINAL"]))
+        if($this->isFinalState($this->oldStateLabel))
         {
             $this->changingState=false;
             throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_CANT_CHANGE_FINAL_STATE,array("current"=>$actualState,"new"=>$next));
         }
+        if(isset($definition["FIELDS"]["REQUIRED"]))
+        {
+            $f=$definition["FIELDS"]["REQUIRED"];
+            for($n=0;$n<count($f);$n++)
+            {
+                if(!$this->model->{"*".$f[$n]}->hasValue())
+                    throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_REQUIRED_FIELD,array("field"=>$f[$n]));
+            }
+        }
         if(isset($definition["ALLOW_FROM"]))
         {
-            if(array_search($oldId,$definition["ALLOW_FROM"])===false)
+            if(array_search($this->oldStateLabel,$definition["ALLOW_FROM"])===false)
             {
-                if(isset($definition["REJECT_TO"][$newId]))
+                if(isset($definition["REJECT_TO"][$this->newStateLabel]))
                 {
-                    $this->executeCallbacks("REJECT_TO",$newId,$oldId);
+                    $this->executeCallbacks("REJECT_TO",$this->newStateLabel,$this->oldStateLabel);
                     $this->changingState=false;
                     throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_REJECTED_CHANGE_STATE,array("current"=>$actualState,"new"=>$next));
                 }
@@ -267,7 +378,7 @@ class StatedDefinition
         }
         try
         {
-            $result=$this->executeCallbacks("TESTS",$newId,$oldId);
+            $result=$this->executeCallbacks("TESTS",$this->newStateLabel,$this->oldStateLabel);
         }catch(\Exception $e)
         {
             $this->changingState=false;
@@ -277,69 +388,27 @@ class StatedDefinition
         {
             throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_CANT_CHANGE_STATE,array("current"=>$actualState,"new"=>$next));
         }
-        $this->executeCallbacks("ON_LEAVE",$oldId,$newId);
-        $this->executeCallbacks("ON_ENTER",$newId,$oldId);
+        $this->executeCallbacks("ON_LEAVE",$this->oldStateLabel,$this->newStateLabel);
+        $this->executeCallbacks("ON_ENTER",$this->newStateLabel,$this->oldStateLabel);
         $this->model->__getField($this->stateField)->set($newId);
         $this->changingState=false;
     }
 
     function executeCallbacks($type,$state,$refState)
     {
-        $result=true;
         if(!isset($this->definition["STATES"]['STATES'][$state]["LISTENERS"][$type]))
             return true;
+
+        $cbConnection=new \lib\model\states\CallbackCollection($this->definition["LISTENER_TAGS"]);
+
         $def=$this->definition["STATES"]['STATES'][$state]["LISTENERS"][$type];
         $callbacks=$this->getStatedDefinition($def,$refState);
-        foreach ($callbacks as $callback)
-        {
-            if($type=="TESTS" and $result==false)
-                return $result;
 
-            if(!is_array($callback))
-            {
-                if(isset($this->definition["STATES"]["LISTENER_TAGS"]))
-                {
-                    $callback=$this->definition["STATES"]["LISTENER_TAGS"][$callback];
-                    if(!is_array($callback))
-                    {
-                        $callback=array("METHOD"=>$callback,"MODEL"=>"SELF");
-                    }
-                }
-                else
-                {
-                    throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_INVALID_STATE_CALLBACK,array("listenerTag"=>$callback));
-                }
-            }
-
-
-            $obj = $callback['MODEL'];
-            $method = $callback['METHOD'];
-
-            if(!$obj || $obj=="SELF")
-                $obj=$this->model;
-            // Atencion aqui! No se comprueba que el metodo exista, ya que si $obj es un ExtendedModel B, que extiende A , aunque B no posea un cierto metodo, puede
-            // ser que exista en A, y eso se va a resolver via __call, por lo que method_exists devolveria false.
-
-                if(is_object($obj) || $obj == "SELF")
-                {
-                    $param=isset($callback["PARAMS"])?$callback["PARAMS"]:array();
-                    if(!is_array($param))
-                    {
-                        $param=array($param);
-                    }
-
-                    //echo "Ejecutando metodo $method<br>";
-
-                    $tempResult = call_user_func_array(array($this->model,$method),$param);
-                    $result = $result && $tempResult;
-                }
-                else
-                {
-                    $instance = new $obj();
-
-                    $result = $result && $instance->$method($type, $this->model, $this->getOldState(), $this->getNewState(),$callback);
-                }
-        }
+        $result=$cbConnection->apply(
+            $callbacks,
+            $this->model,
+            $type
+            );
         return $result;
     }
 
@@ -357,7 +426,7 @@ class StatedDefinition
     function canTranslateTo($newStateId)
     {
         $currentState=$this->getCurrentState();
-        $transitions=array_keys($this->getStateTransitions($currentState,'_PUBLIC_'));
+        $transitions=array_keys($this->getStateTransitions($currentState));
         if($transitions===null)
             return true;
         return in_array($newStateId,$transitions);

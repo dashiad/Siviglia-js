@@ -37,7 +37,7 @@ class NotPages
                            'JOIN'=>array('id_site'=>'id_site')
                            )
                      ),
-               'PERMISSIONS'=>array('_PUBLIC_'),
+               'PERMISSIONS'=>array('PUBLIC'),
                'FIELDS'=>array(
                      'id_page'=>array(
                            'MODEL'=>'\model\web\Page',

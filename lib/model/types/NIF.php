@@ -24,6 +24,8 @@ class NIF extends _String{
         $val=strtoupper($val);
         if(!parent::validate($val))
             return false;
-        return substr("TRWAGMYFPDXBNJZSQVHLCKE",strtr(substr($val,0,-1),"XYZ","012")%23,1)==substr($val,-1);
+        if(substr("TRWAGMYFPDXBNJZSQVHLCKE",strtr(substr($val,0,-1),"XYZ","012")%23,1)!=substr($val,-1))
+            throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_INVALID);
+        return true;
     }
 }

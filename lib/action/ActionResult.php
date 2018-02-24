@@ -1,25 +1,20 @@
 <?php
 namespace lib\action;
-class ActionResult
+
+class ActionResult extends \lib\model\ModelFieldErrorContainer
 {
-    var $fieldErrors=array();
     var $inputErrors=array();
     var $permissionError=false;
-    var $isOk=true;
     var $globalErrors=array();
     var $model=null;
     function reset()
     {
-        $this->isOk=true;
-        $this->fieldErrors=array();
+        parent::reset();
         $this->inputErrors=array();
         $this->globalErrors=array();
         $this->permissionError=false;
     }
-    function setCorrupted()
-    {
-        $this->isOk=false;
-    }
+
     function addFieldInputError($field,$input,$value,$exception)
     {
         $this->addFieldTypeError($field,$value,$exception);
@@ -27,23 +22,14 @@ class ActionResult
         $code=$exception->getCode();
         $this->inputErrors[$field][$exception->getCodeString()][$code]=array("input"=>$input,"value"=>$value,"code"=>$code);*/
     }
-    function addFieldTypeError($field,$value,$exception)
-    {
-        
-        $this->isOk=false;
-        $code=$exception->getCode();        
-        $this->fieldErrors[$field][$exception->getCodeString()][$code]=array("value"=>$value,"code"=>$code);
-    }
+
     function addGlobalError($exception)
     {
         $this->isOk=false;
         $code=$exception->getCode();
         $this->globalErrors[$exception->getCodeString()]=array("code"=>$code,"params"=>$exception->getParams());
     }
-    function isOk()
-    {
-        return $this->isOk;
-    }
+
     function addPermissionError()
     {
         $this->permissionError=true;
@@ -57,12 +43,7 @@ class ActionResult
     {
         list($this->permissionError,$this->fieldErrors,$this->inputErrors,$this->globalErrors,$this->isOk)=$data;
     }
-    function getFieldErrors($fieldName=null)
-    {
-        if($fieldName!=null)
-            return io($this->fieldErrors,$fieldName,null);
-        return $this->fieldErrors;
-    }
+
     function getGlobalErrors()
     {
         return $this->globalErrors;

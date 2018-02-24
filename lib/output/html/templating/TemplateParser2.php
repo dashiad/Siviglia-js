@@ -266,12 +266,12 @@ class CWidgetGrammarParser extends CGrammarParser {
             $info["CONTENTS"]=$c;
         }
         // Se mira ahora el php embebido dentro del tag (ifs, bucles,etc)
-        $control=$this->parseControl($info);
-        if($control)
+        $info["CONTROL"]=$this->parseControl($info);
+        /*if($control)
         {
             array_unshift($info["CONTENTS"],$control[0]);
             $info["CONTENTS"][]=$control[1];
-        }
+        }*/
         if($targetVariable)
         {
             $info["CONTENTS"]=array($this->parseVariableAssign($targetVariable,$info["CONTENTS"]));
@@ -302,6 +302,16 @@ class CWidgetGrammarParser extends CGrammarParser {
             $result = $this->layoutManager->parsePlugin($info, $info["NAME"], $params["contents"]);
             if(isset($result["FILE"]))
                 $this->layoutManager->addDependency($result["FILE"], "plugin");
+            else {
+                for($k=0;$k<count($result);$k++)
+                {
+                    if($result[$k]["TYPE"]=="PHP")
+                    {
+                        $result[$k]["TEXT"]=$this->context->remapVariables($result[$k]["TEXT"]);
+                        $result[$k]["CONTEXT"]=$this->context;
+                    }
+                }
+            }
             return $result;
         }
 
@@ -313,6 +323,29 @@ class CWidgetGrammarParser extends CGrammarParser {
         $widgetContents=$this->layoutManager->layoutLoader->findWidget($params["tag"]["tag"],$location);
         $newContext=new SubwidgetFileContext();
         $this->layoutManager->addDependency($location,"widget");
+        $paramSpec=null;
+        if($paramExpr)
+        {
+            // Si hay mapeo de parametros, hay que pasar variables que estan definidas en el contexto local, a variables definidas en el contexto remoto
+
+           $paramSpec=$this->parseParams($paramExpr,
+                    $this->context->getPrefix(),
+                    $newContext->getPrefix()
+                );
+           // Se mira si hay replaces de widget
+            if(isset($paramSpec["WIDGETPARAMS"]))
+            {
+                $s=array();
+                $r=array();
+                foreach($paramSpec["WIDGETPARAMS"] as $k=>$v)
+                {
+                    $s[]="[|*".$k;
+                    $r[]=$v;
+                }
+                $widgetContents=str_replace($s,$r,$widgetContents);
+            }
+        }
+
         $oParser = new CWidgetGrammarParser("subwidgetFile", 0, $info, $this->layoutManager,$newContext);
         $this->layoutManager->currentWidget = array("FILE" => $location, "NAME" => $params["tag"]["tag"]);
         $widget=$oParser->compile($widgetContents,$this->layoutManager->getLang(),$this->layoutManager->getTargetProtocol());
@@ -330,22 +363,16 @@ class CWidgetGrammarParser extends CGrammarParser {
         $isTop=$this->context->isTopLayout()?0:1;
         $tempResult=$this->resolveWidgetReferences($c,$widget["CONTENTS"],$isTop,$result);
         $this->dumpBoth($c,$widget["CONTENTS"],$tempResult,"**WIDGET::".$params["tag"]["tag"],true);
-        if($paramExpr)
-        {
-            // Si hay mapeo de parametros, hay que pasar variables que estan definidas en el contexto local, a variables definidas en el contexto remoto
-            array_unshift($tempResult,
-                $this->parseParams($paramExpr,
-                                            $this->context->getPrefix(),
-                                            $newContext->getPrefix()
-                    ));
-        }
+
+        if($paramSpec!=null)
+            array_unshift($tempResult,$paramSpec);
         // Se mira ahora el php embebido dentro del tag (ifs, bucles,etc)
-        $control=$this->parseControl($info);
-        if($control)
+        $info["CONTROL"]=$this->parseControl($info);
+        /*if($control)
         {
             array_unshift($tempResult,$control[0]);
             $tempResult[]=$control[1];
-        }
+        }*/
             // Se comprime $result
         $tt=$this->compressHTML($tempResult);
         return $tt;
@@ -479,6 +506,10 @@ class CWidgetGrammarParser extends CGrammarParser {
                             }
                             if($layout[$j]["NAME"]==$widget[$k]["NAME"])
                             {
+                                if(isset($layout[$j]["CONTROL"]) && $layout[$j]["CONTROL"]["start"]!=null) {
+                                    $result[] = $layout[$j]["CONTROL"]["start"];
+                                }
+
                                 if(isset($layout[$j]["PARAMS"]))
                                 {
                                     $lpar=$layout[$j]["PARAMS"];
@@ -541,6 +572,9 @@ class CWidgetGrammarParser extends CGrammarParser {
                                 }
                                 if($subResult!=null)
                                     $result=array_merge($result,$subResult);
+                                if(isset($layout[$j]["CONTROL"]) && $layout[$j]["CONTROL"]["end"]!=null) {
+                                    $result[] = $layout[$j]["CONTROL"]["end"];
+                                }
                             }
                         }
 
@@ -583,15 +617,26 @@ class CWidgetGrammarParser extends CGrammarParser {
 
         $data = json_decode($paramsExpr, true);
         $text="";
+        $code="";
+        $widgetParams=array();
         foreach($data as $key=>$value) {
+            // Se obtienen los parametros de widget, que se utilizan para pasar nombres de widget como
+            // parametro a otros widgets.
+            if($key[0]=="|")
+            {
+                // Es un nombre de widget a sustituir en el widget cargado.
+                $widgetParams[substr($key,1)]=$value;
+                continue;
+            }
             ob_start();
             var_export($value);
             $exported=ob_get_clean();
             $replaced=preg_replace('/[\'"](&{0,1}\$)([^\'"]*)[\'"]/', '\1'.$parentPrefix.'\2',$exported);
             $text.=('$'.$localPrefix.$key."=".$replaced.";\n");
         }
-        $code = "<?php " . $text . " ?>";
-        return array("TYPE" => "PHP", "TEXT" => $code);
+        if($text!="")
+            $code = "<?php " . $text . " ?>";
+        return array("TYPE" => "PHP", "TEXT" => $code, "WIDGETPARAMS"=>$widgetParams);
     }
     function parseVariableAssign($varName,$children,$context=null)
     {
@@ -622,8 +667,8 @@ class CWidgetGrammarParser extends CGrammarParser {
             $fullC=$start."/* --CONTROL-- */".$end;
             $remapped=$this->context->remapVariables($fullC);
             $parts=explode("/* --CONTROL-- */",$remapped);
-            return array(array("TYPE"=>"PHP","TEXT"=>$parts[0]),
-                         array("TYPE"=>"PHP","TEXT"=>$parts[1]));
+            return array("start"=>array("TYPE"=>"PHP","TEXT"=>$parts[0]),
+                         "end"=>array("TYPE"=>"PHP","TEXT"=>$parts[1]));
         }
         return null;
     }
@@ -798,7 +843,8 @@ class SubwidgetFileContext
                     }
                         break;
                     case T_ENCAPSED_AND_WHITESPACE: {
-                        $newText .= '$' . $prefix . substr($tokens[$k][1], 1);
+                        //$newText .= '$' . $prefix . substr($tokens[$k][1], 1);
+                        $newText.=$tokens[$k][1];
                     }
                         break;
                     case T_FUNCTION: {
@@ -861,6 +907,7 @@ class LayoutLoader
 {
     var $widgetPath;
     var $manager;
+    static $lastWidget="";
     function __construct($manager,$widgetPath)
     {
         $this->widgetPath=$widgetPath;
@@ -879,17 +926,20 @@ class LayoutLoader
             {
                 if(is_file($value."/".$widgetPath."/".$widgetName."_work.".WIDGET_EXTENSION))
                 {
-                    return $value."/".$widgetPath."/".$widgetName."_work.".WIDGET_EXTENSION;
+                    LayoutLoader::$lastWidget=$value."/".$widgetPath."/".$widgetName."_work.".WIDGET_EXTENSION;
+                    return LayoutLoader::$lastWidget;
                 }
             }
             if(is_file($value."/".$widgetPath."/".$widgetName.".".WIDGET_EXTENSION))
             {
                 //echo "LOADING ".$value."/".$widgetPath."/".$widgetName.".".WIDGET_EXTENSION;
-                return $value."/".$widgetPath."/".$widgetName.".".WIDGET_EXTENSION;
+                LayoutLoader::$lastWidget=$value."/".$widgetPath."/".$widgetName.".".WIDGET_EXTENSION;
+                return LayoutLoader::$lastWidget;
             }
         }
 
-        echo "WIDGET NO ENCONTRADO :: $widgetPath / $widgetName";
+        echo "WIDGET NO ENCONTRADO :: $widgetPath / $widgetName<br>";
+        echo "LAST WIDGET:".LayoutLoader::$lastWidget;
         var_dump($this->widgetPath);
         die();
     }
@@ -1175,8 +1225,13 @@ class CLayoutManager
                     $t="";
                     for($k=0;$k<count($layout["CONTENTS"]);$k++)
                     {
-                        if(isset($layout["CONTENTS"][$k]["TEXT"]))
-                            $t.=$layout["CONTENTS"][$k]["TEXT"];
+                        if(isset($layout["CONTENTS"][$k]["TEXT"])) {
+                            if(is_array($layout["CONTENTS"][$k]["TEXT"]))
+                            {
+                                $t=11;
+                            }
+                            $t .= $layout["CONTENTS"][$k]["TEXT"];
+                        }
                     }
                     return $t;
                 }

@@ -70,8 +70,8 @@ class T extends Plugin
                      if($val["TYPE"]=="HTML")
                          $text.=$val["TEXT"];
                  }
-                 $elements[$curEl["NAME"]]["text"]=$text;
-                 $elements[$curEl["NAME"]]["node"]=$curEl;
+                 $elements[$curEl["NAME"]]=array("text"=>$text,"node"=>$curEl);
+
              }
          }
          return $elements;

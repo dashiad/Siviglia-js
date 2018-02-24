@@ -1,0 +1,195 @@
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_CONTENTS]
+        [_WIDGET][_FILE]/sites/reflection/widgets/JSWIDGETS/Common.wid[#][#]
+        [_SCRIPT]
+            [_CODE]
+            <script>
+                Siviglia.Utils.buildClass({
+                    context: 'Reflection.Widgets',
+                    classes: {
+                        Namespace: {
+                            inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            methods: {
+                                preInitialize:function(params)
+                                {
+                                    var p=$.Deferred();
+                                    var m=new Siviglia.Model.Model("/model/reflection/ReflectorFactory");
+                                    this.self=this;
+                                    this.currentObject={name:'Selecciona un modelo'};
+                                    this.currentObjectWidget=null;
+                                    this.namespace=params.namespace;
+                                    var t=this;
+                                    m.getDataSource("NamespaceObjects",{namespace:params.namespace}).then(function(d){
+                                        t.objects=d;
+                                        p.resolve();
+                                        });
+                                    return p;
+                                },
+                                initialize:function(params)
+                                {
+                                    /*this.view.theTabs.viewObject.addListener(Components.Tabbar.TAB_CHANGED,function(ev,p){
+                                        console.dir(arguments);
+                                    })
+                                    console.dir(this.theTabs);*/
+                                },
+                                onObjectSelected:function(current)
+                                {
+                                    if(this.currentObject==current)
+                                        return;
+                                    this.currentObject=current;
+                                    if(this.currentObjectWidget) {
+                                        this.currentObjectWidget.destruct();
+                                        this.objectWrap.remove();
+                                    }
+                                    this.objectWrap=document.createElement("div");
+                                    this.currentObjectWidget= new Reflection.Widgets.NamespaceObject('Reflection.Widgets.NamespaceObject',
+                                        {object:current,controller:this},
+                                        {},
+                                        $(this.objectWrap),
+                                        Siviglia.model.Root
+                                    );
+                                    this.objectContainer.append(this.objectWrap);
+                                    this.notifyPathListeners();
+                                }
+                            }
+                        },
+                        ObjectList:{
+                            inherits:"Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            methods:{
+                                preInitialize:function(params)
+                                {
+                                    this.objects=params.objects;
+                                    this.controller=params.controller;
+                                    this.self=this;
+                                },
+                                initialize:function(params)
+                                {
+
+                                },
+                                onObjectSelected:function(current)
+                                {
+                                    this.controller.onObjectSelected(current);
+                                }
+                            }
+                        },
+                        ObjectTree:{
+                            inherits:"Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            methods:{
+                                preInitialize:function(params)
+                                {
+
+                                },
+                                initialize:function(params)
+                                {
+
+                                },
+                                onClicked:function(node,params)
+                                {
+
+                                    this.controller.onObjectSelected(params.object);
+                                }
+                            }
+                        },
+                        NamespaceObject:{
+                            inherits:"Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            methods:{
+                                preInitialize:function(params)
+                                {
+                                    debugger;
+                                    this.object=params.object;
+                                    this.controller=params.controller;
+                                    var m=new Siviglia.Model.Model("/model/reflection/Model");
+                                    this.self=this;
+                                    var t=this;
+                                    m.getDataSource("ObjectSummary",{class:this.object.layer+'/'+this.object.class}).then(function(d){
+                                        t.objects=d;
+                                        p.resolve();
+                                    });
+                                    return p;
+                                },
+                                initialize:function(params)
+                                {
+
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+            [#]
+        [#]
+        [_CSS]
+            [_CODE]
+            <style type="text/css">
+            .miclase {width:100px;font-weight:bold}
+            </style>
+            [#]
+        [#]
+    [#]
+[#]
+<div sivWidget="Reflection.Widgets.Namespace" widgetParams="factoryClass" widgetCode="Reflection.Widgets.Namespace">
+    <div class="page-title">
+        <div class="title_left"><h3>Namespace <span sivValue="/*namespace"></span></h3></div>
+        <div class="title_right"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 col-sm-2 well">
+            <div sivId="modelTree" sivView="Reflection.Widgets.ObjectList" sivParams='{"objects":"/*objects","controller":"/*self"}'></div>
+        </div>
+        <div class="col-md-10 col-sm-10">
+            <div sivView="Components.Box">
+                <div viewNode="TITLE"><span sivValue="/*currentObject/name"></span></div>
+                <div viewNode="CONTENT">
+                    <div sivId="objectContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div sivWidget="Reflection.Widgets.ObjectList" widgetParams="objects,controller" widgetCode="Reflection.Widgets.ObjectList">
+    <div sivView="Reflection.Widgets.ObjectTree" sivParams='{"objects":"/*objects","controller":"/*self"}'></div>
+</div>
+
+<div sivWidget="Reflection.Widgets.ObjectTree" widgetParams="objects,controller" widgetCode="Reflection.Widgets.ObjectTree">
+    <ul sivLoop="/*objects" contextIndex="current">
+        <li><a href="#" sivEvent="click" sivCallback="onClicked" sivParams='{"object":"/@current"}' sivValue="/@current/name"></a>
+            <div sivView="Reflection.Widgets.ObjectTree" sivParams='{"objects":"/@current/objects","controller":"/*controller"}'></div>
+        </li>
+    </ul>
+</div>
+
+<div sivWidget="Reflection.Widgets.NamespaceObject" widgetParams='object,controller' widgetCode="Reflection.Widgets.NamespaceObject">
+    <h1 sivValue="/*object/name"></h1>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Definicion<span class="sr-only">(current)</span></a></li>
+                    <li class="active"><a href="#">Acciones<span class="sr-only">(current)</span></a></li>
+                    <li class="active"><a href="#">DataSources<span class="sr-only">(current)</span></a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">HTML<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Forms</a></li>
+                            <li><a href="#">Views</a></li>
+                            <li><a href="#">Widgets</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Javascript<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Forms</a></li>
+                            <li><a href="#">Views</a></li>
+                            <li><a href="#">Widgets</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+</div>

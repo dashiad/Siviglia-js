@@ -16,7 +16,7 @@ class Definition extends \model\web\Page\PageDefinition
         return array(
             'CACHING'=>array('TYPE'=>'NO-CACHE'),
             'ENCODING'=>'utf8',
-            'PERMISSIONS'=>array('_PUBLIC_'),
+            'PERMISSIONS'=>array('PUBLIC'),
             'SOURCES'=>array(
             ),
             'FIELDS'=>array(

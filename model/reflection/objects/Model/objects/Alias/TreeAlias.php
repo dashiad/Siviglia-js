@@ -17,7 +17,7 @@
           return array();
       }
 
-      function getDatasourceCreationCallback()
+      function getDataSourceCreationCallback()
       {
           return null;
       }

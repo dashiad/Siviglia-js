@@ -85,7 +85,7 @@ class View
                            'JOIN'=>array('id_site'=>'id_site')
                            )
                      ),
-               'PERMISSIONS'=>array('_PUBLIC_'),
+               'PERMISSIONS'=>array('PUBLIC'),
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(

@@ -24,7 +24,7 @@ class Registry
 
 
         global $oCurrentUser;
-        $userId=$session["Registry/userId"];
+        $userId=$session->retrieve("Registry/userId");
         $oCurrentUser=\lib\model\BaseModel::getModelInstance("web/WebUser");
         if ($userId)
         {

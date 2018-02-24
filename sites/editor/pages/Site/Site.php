@@ -1,0 +1,16 @@
+[*/PAGE/PAGE]
+    [_CONTENT]
+        [*/SKIN_LAYOUT_100]
+            [*/SKIN_BOX]
+                [_TITLE]
+                    [_TEXT]Site editor[#]
+                [#]
+                [_CONTENT]
+                    El contenudo
+                [#]
+
+            [#]
+            [*/SKIN_NEXTROW][#]
+        [#]
+    [#]
+[#]

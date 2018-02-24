@@ -1,18 +1,6 @@
-<?php  
-  global $oCurrentUser;
-?>
 [*:/LAYOUTS/LAYOUT_2]
    [_:TITLE]
-   <div style="float:right;width:200px">
-       <?php
-            if($oCurrentUser->isLogged())
-                echo "Bienvenido, ".$oCurrentUser->LOGIN;
-            else
-                echo "Haz Login";
-       ?>
-   </div>
-       
-        Your WebPage Title
+        [_*]
    [#]
    [_:CONTENT]
         [_CONTENT][_*][#]

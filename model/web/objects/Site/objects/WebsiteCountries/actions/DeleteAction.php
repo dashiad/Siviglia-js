@@ -10,11 +10,11 @@ namespace model\web\Site\WebsiteCountries\actions;
 class DeleteAction extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'Sites\WebsiteCountries',
+               'MODEL'=>'\model\web\Site\WebsiteCountries',
                'ROLE'=>'Delete',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'Sites\WebsiteCountries',
+                           'MODEL'=>'\model\web\Site\WebsiteCountries',
                            'PERMISSION'=>'delete'
                            )
                      ),
@@ -63,7 +63,7 @@ class DeleteAction extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate( $params, $actionResult, $user)
+	function validate ( $actionResult )
 	{
 
 
@@ -112,7 +112,7 @@ class DeleteAction extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function onError( $params, $actionResult, $user)
+	function onError ($keys, $params, $actionResult, $user)
 	{
 
 

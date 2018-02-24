@@ -1,6 +1,0 @@
-<?php $found=0;?>
-[_WHEN]
-<?php if($value==$w || ($w=="" && !$found)){$found=true;?>
-[_*]
-<?php } ?>
-[#]

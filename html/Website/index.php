@@ -13,7 +13,7 @@ class index extends WebPage
         'CACHING' => ['TYPE' => 'NO-CACHE'],
         'ENCODING' => 'utf8',
         'LAYOUT' => ['/index.wid'],
-        'PERMISSIONS' => ['_PUBLIC_'],
+        'PERMISSIONS' => ['PUBLIC'],
         'FIELDS' => [],
         'PATH' => '/index',
         'WIDGETPATH' => [

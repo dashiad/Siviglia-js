@@ -19,7 +19,6 @@ class DataSourceFactory
         {
                 $objNameClass=new \model\reflection\Model\ModelName($objName);
                 require_once($objNameClass->getDataSourceFileName($dsName));
-                $objLayer=$objNameClass->layer;
                 $objName=$objNameClass->getNamespaced();
                 $csN=$objName.'\datasources\\'.$dsName;
                 
@@ -46,7 +45,7 @@ class DataSourceFactory
                 include_once(LIBPATH."/storage/".$serType."/".$serType."DataSource.php");
 
                 $dsN='\\lib\\storage\\'.$serType.'\\'.$serType.'DataSource';
-                $mainDs=new $dsN($objName,$dsName,$mainDef,null,$mainDef["STORAGE"][strtoupper($serType)]);
+                $mainDs=new $dsN($objName,$dsName,$instance,null,$mainDef["STORAGE"][strtoupper($serType)]);
                 return $mainDs;
         }
         function applyDataSource($objName,$dsName,$params,$callable,$dsParams=null,$serializer=null)

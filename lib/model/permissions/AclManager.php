@@ -53,7 +53,7 @@ class AclManager
     {
         // Los campos "TYPE" en grupos,items,etc, significan : 0: ARO, 1:ACO, 2:AXO
         // Primera tabla : grupos. 
-        $q[] = "CREATE TABLE IF NOT EXISTS _permission_groups (id smallint(8) AUTO_INCREMENT PRIMARY KEY NOT NULL,group_name varchar(30),group_type smallint(2),group_parent smallint(8) DEFAULT 0,group_path varchar(200),KEY USING HASH(group_type,group_name,group_parent),KEY(group_name,group_path))";
+        $q[] = "CREATE TABLE IF NOT EXISTS _permission_groups (id smallint(8) AUTO_INCREMENT PRIMARY KEY NOT NULL,group_name varchar(30),group_type smallint(2),group_parent smallint(8) DEFAULT 0,group_path varchar(200),group_charPath char(255), KEY USING HASH(group_type,group_name,group_parent),KEY(group_name,group_path),UNIQUE KEY(group_charPath))";
         $q[] = "CREATE TABLE IF NOT EXISTS _permission_items (id smallint(8) AUTO_INCREMENT PRIMARY KEY NOT NULL,item_type smallint(2),item_name varchar(20),item_value varchar(50),KEY USING HASH(item_type,item_name,item_value))";
         $q[] = "CREATE TABLE IF NOT EXISTS _permission_group_items (group_id smallint(8),item_id smallint(8),KEY (group_id),KEY(item_id))";
         $q[] = "CREATE TABLE IF NOT EXISTS _permissions (id smallint(8) AUTO_INCREMENT PRIMARY KEY,aro_type smallint(1),aco_type smallint(1),aro_id smallint(8),aco_id smallint(8),axo_type smallint(1) DEFAULT 0,axo_id smallint(8) DEFAULT 0,allow smallint(1) DEFAULT 1,enabled smallint(1) DEFAULT 1,ACLDATE TIMESTAMP,UNIQUE KEY(aro_type,aro_id,aco_type,aco_id,axo_type,axo_id))";
@@ -185,6 +185,29 @@ class AclManager
         $this->conn->insert($insertQuery);
     }
 
+    function add_acl_by_id($aco, $aro, $axo = NULL, $allow = 1, $enabled = 1)
+    {
+        $itemTypes = & $this->itemTypes;
+        for ($k = 0; $k < count($itemTypes); $k++) {
+            $curItem = $itemTypes[$k];
+            $curVal = $$curItem;
+            if (!$curVal)
+                continue;
+            $fieldNames[] = $curItem . "_type";
+            if (isset($curVal["ITEM"])) {
+                $fieldValues[] = 0;
+                $val = $curVal["ITEM"];
+            } else {
+                $fieldValues[] = 1;
+                $val = $curVal["GROUP"];
+            }
+            $fieldNames[] = $curItem . "_id";
+            $fieldValues[] = $val;
+        }
+        $insertQuery = "INSERT INTO _permissions (" . implode(",", $fieldNames) . ") VALUES (" . implode(",", $fieldValues).") ON DUPLICATE KEY UPDATE ACLDATE=NOW()";
+        $this->conn->insert($insertQuery);
+    }
+
     /**
      * del_acl()
      * Deletes a given ACL
@@ -252,6 +275,8 @@ class AclManager
         // El path no era absoluto...esto se considera un error.
         for ($k = 1; $k < count($parts); $k++)
         {
+            if($parts[$k]=="")
+                continue;
             if ($currentPath != "")
                 $currentPath.=",";
             $q = "SELECT id from _permission_groups WHERE group_name='" . $parts[$k] . "' AND group_type=$type";
@@ -283,22 +308,27 @@ class AclManager
         return $lastId;
     }
 
-    // Group parent is the id of the parent group (not the path).
+	private function __getGroupIdCondition($group_parent)
+	{
+			if(is_numeric($group_parent))			
+				return "id=$group_parent";			
+			return "group_charPath='$group_parent'";
+	}
+    // Group parent is the id of the parent group OR the path string.
+	
     // If set to 0, it's a root group
     function add_group($group_name, $group_parent = 0, $type = AclManager::ARO)
-    {
-        $path = "";
-        $q = "SELECT id from _permission_groups WHERE group_type=$type AND group_name='$group_name' AND " . ($group_parent ? "group_path LIKE ',$group_parent,%'" : "group_parent=0");
-        $result = $this->conn->select($q);
-        if (count($result) > 0)
-        {
-            throw new AclException(AclException::ERR_GROUP_ALREADY_EXISTS);
-        }
+    {        
+		$parent_id=0;
         if ($group_parent)
         {
 
             // Buscamos que tipo de grupo es el padre...Y asi lo pasamos al hijo.
-            $q = "SELECT group_type,group_path from _permission_groups where id=$group_parent";
+			
+			// is group_parent is numeric, we take it as the group_id of the parent.
+		
+							
+            $q = "SELECT id,group_type,group_path,group_charPath from _permission_groups where ".$this->__getGroupIdCondition($group_parent);
             $result = $this->conn->select($q);
             if (count($result) != 1)
             {
@@ -306,29 +336,38 @@ class AclManager
             }
             $type = $result[0]["group_type"];
             $path = $result[0]["group_path"] . ",";
+			$fullPath=$result[0]["group_charPath"];
+			$parent_id=$result[0]["id"];
         }
 
-        if (!$group_parent)
+        if (!$parent_id)
         {
-            $group_parent = 0;
+            $parent_id = 0;
             $path=",";
         }
         // Lo insertamos primero sin especificar el path.Una vez tengamos el id del nuevo grupo,
         // se construye el path.
-        $group_id = $this->conn->insert("INSERT INTO _permission_groups (group_type,group_name,group_parent) VALUES ($type,'$group_name',$group_parent)");
+        $group_id = $this->conn->insert("INSERT INTO _permission_groups (group_type,group_name,group_parent,group_charPath) VALUES ($type,'$group_name',$parent_id,'".$fullPath."/".$group_name."')");
         $path.=$group_id;
         $this->conn->update("UPDATE _permission_groups SET group_path='$path' WHERE id='$group_id'");
         return $group_id;
     }
-
+	
+	
+	function __getGroupFrom($groupId)
+	{
+		return  $this->conn->select("SELECT * FROM _permission_groups WHERE ".$this->__getGroupIdCondition($groupId));
+	}
+	
     function __itemIdFromGroupAndId($group_id, $item_name, $item_value = "")
     {
 
         // From the group id, we'll know what kind of object (aro,aco,axo) is this.
 
-        $gData = $this->conn->select("SELECT group_type FROM _permission_groups WHERE id=$group_id");
+        $gData = $this->__getGroupFrom($group_id);
         if (count($gData) == 0)
             throw new AclException(AclException::ERR_GROUP_DOESNT_EXIST);
+		
 
         $q = "SELECT id FROM _permission_items WHERE item_value='$item_value' AND item_type=" . $gData[0]["group_type"];
         $arr = $this->conn->select($q);
@@ -336,7 +375,7 @@ class AclManager
             throw new AclException(AclException::ERR_ITEM_NOT_FOUND, array("group_id" => $group_id,
                 "name" => $item_name,
                 "value" => $item_value));
-        return $arr[0]["id"];
+        return array("item"=>$arr[0]["id"],"group"=>$gData[0]["id"]);
     }
 
     /**
@@ -348,14 +387,25 @@ class AclManager
 
         if ($item_value != "")
         {
-            $item_id = $this->__itemIdFromGroupAndId($group_id, $item_name_or_id, $item_value);
+            $ids = $this->__itemIdFromGroupAndId($group_id, $item_name_or_id, $item_value);
+
+			$item_id=$ids["item"];
+			$gid=$ids["group"];
         }
         else
-            $item_id = $item_name_or_id;
+		{
 
-        $res = $this->conn->select("SELECT group_id from _permission_group_items WHERE item_id=$item_id AND group_id=$group_id");
+            $item_id = $item_name_or_id;
+			$gData=$this->__getGroupFrom($group_id);
+			$gid=$gData[0]["id"];
+
+			
+		}
+        $q="SELECT group_id from _permission_group_items WHERE item_id=$item_id AND group_id=$gid";
+        echo $q."\n";
+        $res = $this->conn->select($q);
         if (count($res) == 0) // No existia la asignacion de item a grupo.
-            $this->conn->insert("INSERT INTO _permission_group_items (group_id,item_id) VALUES ($group_id,$item_id)");
+            $this->conn->insert("INSERT INTO _permission_group_items (group_id,item_id) VALUES ($gid,$item_id)");
 
         return $item_id;
     }
@@ -366,9 +416,10 @@ class AclManager
      */
     function del_group_object($group_id, $item_name_or_id, $item_value = "")
     {
-
-        $item_id = $this->__itemIdFromGroupAndId($group_id, $item_name_or_id, $item_value);
-        $this->conn->delete("DELETE FROM _permission_group_items WHERE group_id=$group_id AND item_id=$item_id");
+        $ids = $this->__itemIdFromGroupAndId($group_id, $item_name_or_id, $item_value);
+		$item_id=$ids["item"];
+		$gid=$ids["group"];
+        $this->conn->delete("DELETE FROM _permission_group_items WHERE group_id=$gid AND item_id=$item_id");
     }
 
     function rename_group($group_id, $newName)
@@ -393,7 +444,8 @@ class AclManager
         if (!$group_id)
             return;
         // Primero, obtenemos informacion del grupo:
-        $groupInfo = $this->conn->select("SELECT * FROM _permission_groups WHERE id=$group_id");
+        $groupInfo = $this->__getGroupFrom($group_id);
+		$group_id=$groupInfo[0]["group_id"];
 
         if (!$groupInfo || count($groupInfo) == 0)
             throw new AclException(AclException::ERR_GROUP_DOESNT_EXIST);
@@ -405,7 +457,8 @@ class AclManager
         {
             // Se mueven todos los hijos de este grupo, al padre.
             // Primero, los grupos hijos
-            $this->conn->update("UPDATE _permission_groups SET group_parent=" . $groupInfo[0]["group_parent"] . " WHERE group_parent=$group_id");
+			$repPath="/".$groupInfo["group_name"];
+            $this->conn->update("UPDATE _permission_groups SET group_parent=" . $groupInfo[0]["group_parent"] . ",group_charPath=REPLACE(group_charPath,'$repPath','') WHERE group_parent=$group_id");
             // Segundo, los items
             $this->conn->update("UPDATE _permission_group_items SET group_id=".$groupInfo[0]["group_parent"]." WHERE group_id=$group_id");
 
@@ -413,8 +466,7 @@ class AclManager
         else
         {
 
-                $path = "%,$group_id,%";
-
+            $path = "%,$group_id,%";
             $groupsToDelete = array();
             $this->conn->selectCallback("SELECT id FROM _permission_groups WHERE group_path LIKE '$path'", function($arr)
                     {
@@ -547,8 +599,12 @@ class AclManager
                              item_type=' . $k . ' AND item_value=\'' . $c["ITEM"] . '\'';
                 if (isset($c["GROUP"]))
                 {
+					if($c["GROUP"][0]=="/")
+						$cond='g.group_charPath=\'' . $c["GROUP"] . '\'';
+					else
+						$cond='g.group_name=\'' . $c["GROUP"] . '\'';
                     $subQ.=' UNION SELECT g.group_type,null as id ,g.id as group_id,group_path from _permission_groups g
-                             WHERE g.group_name=\'' . $c["GROUP"] . '\'';
+                             WHERE '.$cond;
                 }
             }
             else
@@ -626,8 +682,13 @@ class AclManager
                              item_type=' . $k . ' AND item_value=\'' . $c["ITEM"] . '\'';
                 if ($c["GROUP"])
                 {
+					if($c["GROUP"][0]=="/")
+						$cond='g.group_charPath=\'' . $c["GROUP"] . '\'';
+					else
+						$cond='g.group_name=\'' . $c["GROUP"] . '\'';
+					
                     $subQ.=' UNION SELECT g.group_type,null as id ,g.id as group_id,group_path from _permission_groups g
-                             WHERE g.group_name=\'' . $c["GROUP"] . '\'';
+                             WHERE '.$cond;
                 }
             }
             else
@@ -671,7 +732,7 @@ class AclManager
         //return $results[0]['allow'];
     }
 
-    function getAccessDetails($module, $moduleItem, $permission, $userId, $userGroup = AclManager::DEFAULT_USER_GROUP)
+    function getAccessDetails($module, $moduleItem, $permission, $userId)
     {
         // Aro => usuarios
         // Aco => tipos de permisos
@@ -679,7 +740,7 @@ class AclManager
         //aco aro axo
         $res=$this->acl_check(
             array("ITEM"=>$permission),
-            array("ITEM"=>$userId,"GROUP"=>$userGroup),
+            array("ITEM"=>$userId),
             array("GROUP"=>$module),
             true
         );
@@ -766,9 +827,9 @@ class AclManager
         foreach ($reqPermissions as $key => $value)
         {
             $reqPerms = array();
-            if ($value == "_PUBLIC_")
+            if ($value == 'PUBLIC')
                 return true;
-            if ($value == "_OWNER_")
+            if ($value == 'OWNER')
             {
                 $owner = $model->getOwner();
                 if ($owner == $user->getId())
@@ -865,7 +926,9 @@ class AclManager
             return "/AllObjects/Sys/" . $objLayer . "/" . $objLayer . "Modules";
 
         $objClass = $objName->className;
-        return "/AllObjects/Sys/" . $objLayer . "/" . $objLayer . "Modules/" . $objClass;
+        $objClass=str_replace('\\',"_",$objClass);
+
+        return "/AllModules/Sys/" . $objLayer . "/" .str_replace('\\','/',$objClass);
     }
 
     public function getModelId($model)
@@ -945,7 +1008,7 @@ class AclManager
     }
     function addModule($modelClass)
     {
-        $this->resolveAccessIds(null, null, array("ITEM" => $modelClass, "CREATE" => 1, "CREATEPATH" => $this->getModulePath($modelClass)));
+        $this->resolveAccessIds(null, null, array("GROUP" => $modelClass, "CREATE" => 1, "CREATEPATH" => $this->getModulePath($modelClass)));
     }
 
     function removePermissionOverModule($permission, $userId, $moduleName)
@@ -968,14 +1031,9 @@ class AclManager
 
     function addUserToGroup($groupName, $userId)
     {
-        $innerId = $this->get_object($userId);
-
-        $result = $this->resolveAccessIds(array("GROUP"=>$groupName,"ITEM" => $userId, "CREATE" => 1), null, null));
-
-        $groupId = $this->get_group_id(null, $groupName, AclManager::ARO);
-        if (!$groupId)
-            return null;
-        $this->add_group_object($groupId, $result["aro"]["ITEM"]);
+        $res1 = $this->resolveAccessIds(array("ITEM" => $userId, "CREATE" => 1), null, null);
+        $res2 = $this->resolveAccessIds(array("GROUP"=>$groupName,"CREATE" => 1), null, null);
+        $this->add_group_object($res2["aro"]["GROUP"],$res1["aro"]["ITEM"]);
     }
 
     function getUserGroups($userId)

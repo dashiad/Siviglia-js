@@ -54,7 +54,7 @@ class DataSourceDefinition extends ClassFileGenerator
         }
         
         
-        $this->permissions=new PermissionRequirementsDefinition($definition["PERMISSIONS"]?$definition["PERMISSIONS"]:"_PUBLIC_");
+        $this->permissions=new PermissionRequirementsDefinition($definition["PERMISSIONS"]?$definition["PERMISSIONS"]:'PUBLIC');
 
         $this->includes=array();
         if($definition["INCLUDES"])
@@ -160,7 +160,7 @@ class DataSourceDefinition extends ClassFileGenerator
         $indexFields=$parentModel->getIndexFields();
         $defaultDs=array(array("FullList","View","AdminFullList","AdminView"),
                          array($descriptiveFields,$fullFields,$descriptiveFields,$fullFields),
-                         array(array("_PUBLIC_"),array("_PUBLIC_"),array(array("MODEL"=>$objName,"PERMISSION"=>"adminList")),array(array("MODEL"=>$objName,"PERMISSION"=>"adminView"))),
+                         array(array('PUBLIC'),array('PUBLIC'),array(array("MODEL"=>$objName,"PERMISSION"=>"adminList")),array(array("MODEL"=>$objName,"PERMISSION"=>"adminView"))),
                          array(array(),$indexFields,array(),$indexFields),
                          array($descriptiveFields,array(),$descriptiveFields,array()),
                          array("list","view","list","view"),
@@ -174,7 +174,7 @@ class DataSourceDefinition extends ClassFileGenerator
 
             $defaultDs[0][]="ListOwn";
             $defaultDs[1][]=$descriptiveFields;
-            $defaultDs[2][]=array("_OWNER_");
+            $defaultDs[2][]=array('OWNER');
             $defaultDs[3][]=$ownerField;
             $defaultDs[4][]=$descriptiveFields;
             $defaultDs[5][]="list";
@@ -182,7 +182,7 @@ class DataSourceDefinition extends ClassFileGenerator
             
             $defaultDs[0][]="ViewOwn";
             $defaultDs[1][]=$fullFields;
-            $defaultDs[2][]=array("_OWNER_");
+            $defaultDs[2][]=array('OWNER');
             $defaultDs[3][]=array_merge($indexFields,$ownerField);
             $defaultDs[4][]=array();
             $defaultDs[5][]="view";

@@ -1,6 +1,6 @@
 <?php
 namespace model\reflection\base;
-
+include_once(PROJECTPATH."/model/reflection/objects/base/SimpleModelDefinition.php");
 class ConfiguredObject extends SimpleModelDefinition
 {
         var $srcModel;

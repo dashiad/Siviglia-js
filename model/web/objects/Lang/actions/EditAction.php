@@ -100,7 +100,7 @@ class EditAction extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate( $params, $actionResult, $user)
+	function validate ( $actionResult )
 	{
 
 
@@ -149,7 +149,7 @@ class EditAction extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function onError( $params, $actionResult, $user)
+	function onError ($keys, $params, $actionResult, $user)
 	{
 
 

@@ -24,6 +24,7 @@ class Startup
         $oPath=new \lib\Paths();
         \Registry::addService("paths",$oPath);
         \Registry::addService("model",new \lib\model\ModelCache());
+        \Registry::addService("router",new \lib\Router());
 
     }
     static function initializeHTTPPage()
@@ -77,9 +78,6 @@ class Startup
         \lib\storage\StorageFactory::$defaultSerializer="default";
     }
 }
-Startup::init();
-Startup::initializeHTTPPage();
-Startup::commonSetup();
 
 
 
@@ -129,19 +127,9 @@ function ___cleanup()
         \lib\php\FPMManager::getInstance()->runWorkers();
     }
 }
-register_shutdown_function('___cleanup');
-
-function breakme()
-{
-    $a=1;
-    $q=10;
+if(!defined("__RUNNING_TESTS__")) {
+    Startup::init();
+    Startup::initializeHTTPPage();
+    Startup::commonSetup();
+    register_shutdown_function('___cleanup');
 }
-function debug($str,$die=false)
-{
-    echo $str;
-    if($die)
-        die();
-}
-
-
-

@@ -1,9 +1,15 @@
 <?php
 namespace lib;
+use lib\php\ParametrizableString;
+
 class RouterException extends \lib\model\BaseException
 {
     const ERR_PAGE_NOT_FOUND=1;
     const ERR_CANT_FIND_ROUTE_DEFINITION=2;
+    const ERR_REQUIRED_PARAMETER=3;
+    const TXT_PAGE_NOT_FOUND="Page not found";
+    const TXT_CANT_FIND_ROUTE_DEFINITION="No se encuentra la definicion de la ruta [%routeName%]";
+    const TXT_REQUIRED_PARAMETER="Parametro de construccion de url no encontrado : [%paramName%]";
 }
 
 class Router
@@ -12,7 +18,6 @@ class Router
     var $request;
     function __construct()
     {
-        \Registry::addService("router",$this);
     }
     function route($request)
     {
@@ -107,20 +112,51 @@ class Router
     {
         if($this->revPaths==null)
             $this->revPaths=array_flip($this->paths);
+        if(is_object($params))
+            $p=$params->getFields();
+        else
+            $p=$params;
+
         $definitions = $this->definitions;
+
         if (isset($definitions[$name])) {
 
-            $f = function ($matches) use ($params) {
-                if (is_array($params)) {
-                    if (isset($params[$matches[1]]))
-                        return $params[$matches[1]];
-                } else {
-                    // Se supone un objeto
-                    return $params->{$matches[1]};
-                }
+            $curUrl=$this->revPaths[$name];
+            $usedParams=array();
+            $f = function ($matches) use ($params,& $usedParams){
+
+                // Si comienza por "*" significa que va a hacer match desde ese elemento del path, hasta el final
+                // es decir, mientras /a/{param}/b  hace match con /a/q/b , y param==q,
+                // la ruta /a/{*param} hace match con /a/q/b , y param==q/b
+                $paramName = $matches[1];
+                if($matches[1][0]=="*")
+                    $paramName=substr($matches[1],1);
+                if(!isset($params[$paramName]))
+                    throw new RouterException(RouterException::ERR_REQUIRED_PARAMETER,array("paramName"=>$paramName));
+                $usedParams[]=$paramName;
+                return $params[$paramName];
             };
-            return preg_replace_callback("/{([^}]*)}/", $f, $this->revPaths[$name]);
+
+            $curUrl=preg_replace_callback("/{([^}]*)}/", $f, $curUrl);
+            for($k=0;$k<count($usedParams);$k++)
+                unset($p[$usedParams[$k]]);
+            if(count(array_keys($p))>0)
+            {
+                $curUrl.="?";
+                $parts=array();
+                foreach($p as $k=>$v)
+                {
+                    if($v[0]=="$")
+                        $parts[]=$k."=".$v;
+                    else
+                        $parts[]=$k."=".urlencode($v);
+                }
+                $curUrl.=implode("&",$parts);
+            }
+            return $curUrl;
         }
+        throw new RouterException(RouterException::ERR_CANT_FIND_ROUTE_DEFINITION,array("routeName"=>$name));
+
     }
 
     function resolve($path,$request)
@@ -177,7 +213,7 @@ class Router
 
         // Ahora, segun el perfil de la pagina, se ejecuta una cosa u otra.
 
-        $this->resolveDefinition($this->definitions[$linkName], $urlParams);
+        $this->resolveDefinition($linkName,$this->definitions[$linkName], $urlParams);
     }
 
     /*******************************************************************************************
@@ -185,7 +221,7 @@ class Router
      *            METODOS DE GESTION DE LOS DISTINTOS TIPOS DE DEFINICIONES
      *
      */
-    function resolveDefinition($d, $params)
+    function resolveDefinition($name,$d, $params)
     {
         global $response;
         $response=new \lib\Response($d);
@@ -199,16 +235,25 @@ class Router
         $value = $d;
         switch ($d["TYPE"]) {
             default:
-
+            case "META":
+            {
+                $r=new \lib\routing\Meta($value,$params,$this->request);
+                $r->resolve();
+                break;
+            }break;
             case "REDIRECT":
                 $r=new \lib\routing\Redirect($value,$params,$this->request);
                 $r->resolve();
                 break;
             case "PAGE":
-                $r=new \lib\routing\Page($value,$params,$this->request);
+                $r=new \lib\routing\Page($name,$value,$params,$this->request);
                 $r->resolve();
                 break;
             case "DATASOURCE":
+                $value["MODEL"]="model/".$params["modelPath"];
+                $value["NAME"]=$params["dsName"];
+                unset($params["modelPath"]);
+                unset($params["dsName"]);
                 $r=\lib\routing\Datasource::getInstance($value,$params,$this->request);
                 $r->resolve();
                 break;

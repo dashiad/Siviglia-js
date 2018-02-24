@@ -43,5 +43,6 @@ abstract class Request implements \ArrayAccess
     abstract function getUser();
     abstract function getOutputType();
     abstract function getUrl();
+    abstract function getUnserializerType();
 }
 

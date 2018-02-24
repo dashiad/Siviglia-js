@@ -99,7 +99,7 @@ class WebsiteProcessor extends \model\reflection\base\SystemPlugin
               $this->paths=array_merge($this->paths,$extra);
 
           $webPage->save();                
-          $model->addDatasourcePage($webPage,$dsDef);
+          $model->addDataSourcePage($webPage,$dsDef);
        }
     }
 /*

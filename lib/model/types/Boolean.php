@@ -12,6 +12,9 @@
       }
   }
 
+  class BooleanTypeMeta extends BaseTypeMeta
+      {}
+
    class BooleanHTMLSerializer extends BaseTypeHTMLSerializer
    {
       function serialize($type)

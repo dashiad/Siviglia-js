@@ -68,7 +68,7 @@ class Login extends \lib\action\Action
 	 * RETURNS:
 	 */
     var $newUser;
-	function validate( $params, $actionResult, $user)
+	function validate ( $actionResult )
 	{        
             try{
                 $this->newUser=\model\web\WebUser::login($params->LOGIN,$params->PASSWORD);

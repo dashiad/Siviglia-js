@@ -14,22 +14,22 @@ class AdminFullList
                'DATAFORMAT'=>'Table',
                'PARAMS'=>array(
                      'id_websiteUrl'=>array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'FIELD'=>'id_websiteUrl',
                            'TRIGGER_VAR'=>'id_websiteUrl'
                            ),
                      'url'=>array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'FIELD'=>'url',
                            'TRIGGER_VAR'=>'url'
                            ),
                      'dynurl'=>array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'FIELD'=>'url',
                            'PARAMTYPE'=>'DYNAMIC'
                            ),
                      'priority'=>array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'FIELD'=>'priority',
                            'TRIGGER_VAR'=>'priority'
                            )
@@ -51,7 +51,7 @@ class AdminFullList
                      ),
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'Sites\WebsiteUrls',
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
                            'PERMISSION'=>'adminList'
                            )
                      ),

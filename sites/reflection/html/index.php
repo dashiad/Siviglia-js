@@ -7,13 +7,13 @@ try {
     //Startup::initializeHTTPPage();
 
     $request = Request::getInstance();
-    $router=new \lib\Router();
+    $router  = Registry::getService("router");
     $router->route($request);
     Registry::$registry["response"]->generate();
 } catch (Exception $e) {
     header('Content-type: text/html');
 
-    print_r($e);
+    var_dump($e);
 }
 
 Registry::save();

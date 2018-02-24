@@ -8,27 +8,29 @@
 
 namespace lib\routing;
 
-
 class Page
 {
     var $request;
     var $pageInstance;
     var $definition;
     var $params;
-    function __construct($def,$params,$request)
+    var $name;
+
+    function __construct($name,$def,$params,$request)
     {
+        $this->name=$name;
         $this->request=$request;
         $this->definition=$def;
         $this->params=$params;
         global $currentPage;
-        $this->pageInstance = \model\web\Page::getPageFromPath($def["PAGE"],io($def,"SITE",null),$request,$params);
+        $this->pageInstance = \model\web\Page::getPageFromName($name,io($def,"SITE",null),$request,$params);
         if($this->pageInstance!=null)
         {
-
             $currentPage = $this->pageInstance;
             \Registry::addService("page", $this->pageInstance);
             \Registry::store("currentPage", $this->pageInstance);
         }
+
     }
 
     function resolve()
@@ -37,14 +39,18 @@ class Page
         $response=\Registry::$registry["response"];
         $m=$this;
         if($this->pageInstance!=null) {
-            if($this->pageInstance->canAccess(\Registry::getService("permissions"),\Registry::getService("user"))) {
-                $this->pageInstance->initializePage($this->params, $this->request);
-                $response->setBuilder(function () use ($m) {
-                    $this->pageInstance->render($this->request->getOutputType(), $m->request, isset($m->definition["OUTPUT_PARAMS"]) ? $m->definition["OUTPUT_PARAMS"] : array());
-                });
+            try{
+            $this->pageInstance->checkPermissions(\Registry::getService("user"));
             }
-            else
+            catch(\model\web\PageException $e)
+            {
                 $this->onUnauthorized($response);
+                return;
+            }
+            $this->pageInstance->initializePage($this->pageInstance->getPageDefinitionObject(), $this->request);
+            $response->setBuilder(function () use ($m) {
+                $this->pageInstance->render($this->request->getOutputType(), $m->request, isset($m->definition["OUTPUT_PARAMS"]) ? $m->definition["OUTPUT_PARAMS"] : array());
+                });
         }
         else
             $this->onError($response);

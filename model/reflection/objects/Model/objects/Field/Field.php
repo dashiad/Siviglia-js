@@ -1,6 +1,7 @@
 <?php
 namespace model\reflection\Model;
 include_once(PROJECTPATH."/model/reflection/objects/Model/ModelComponent.php");
+include_once(PROJECTPATH."/model/reflection/objects/Model/objects/Type/TypeReflectionFactory.php");
 class Field extends \model\reflection\Model\ModelComponent
 {
     var $targetRelation="";

@@ -1,5 +1,6 @@
-CREATE DATABASE web;
-use web;
+DROP DATABASE IF EXISTS adtopy;
+CREATE DATABASE adtopy;
+use adtopy;
 
  CREATE TABLE `_permissions` (
   `id` smallint(8) NOT NULL AUTO_INCREMENT,
@@ -14,7 +15,7 @@ use web;
   `ACLDATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `aro_type` (`aro_type`,`aro_id`,`aco_type`,`aco_id`,`axo_type`,`axo_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `_permission_items` (
   `id` smallint(8) NOT NULL AUTO_INCREMENT,
@@ -23,7 +24,7 @@ CREATE TABLE `_permission_items` (
   `item_value` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `item_type` (`item_type`,`item_name`,`item_value`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `_permission_groups` (
   `id` smallint(8) NOT NULL AUTO_INCREMENT,
@@ -34,7 +35,7 @@ CREATE TABLE `_permission_groups` (
   PRIMARY KEY (`id`),
   KEY `group_type` (`group_type`,`group_name`,`group_parent`),
   KEY `group_name` (`group_name`,`group_path`)
-) ENGINE=MyISAM AUTO_INCREMENT=124 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
  CREATE TABLE `_permission_group_items` (
   `group_id` smallint(8) DEFAULT NULL,
@@ -42,6 +43,16 @@ CREATE TABLE `_permission_groups` (
   KEY `group_id` (`group_id`),
   KEY `item_id` (`item_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `websites` (
+  `id_site` int(11) NOT NULL AUTO_INCREMENT,
+  `host` char(40) DEFAULT NULL,
+  `canonical_url` char(255) DEFAULT NULL,
+  `hasSSL` tinyint(1) DEFAULT NULL,
+  `namespace` char(45) DEFAULT NULL,
+  `websiteName` char(45) DEFAULT NULL,
+  PRIMARY KEY (`id_site`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
  CREATE TABLE `Websites` (
   `id_website` int(11) NOT NULL AUTO_INCREMENT,
@@ -53,23 +64,22 @@ CREATE TABLE `_permission_groups` (
   `mail_passwd` char(30) DEFAULT '',
   `mail_server` char(100) DEFAULT '',
   `id_default_country` int(11) DEFAULT NULL,
-  `id_default_zone` int(11) DEFAULT NULL
+  `id_default_zone` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_website`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
-
-
- CREATE TABLE `WebsiteEditors` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ 
+CREATE TABLE `WebsiteEditors` (
   `id_editor` int(11) NOT NULL AUTO_INCREMENT,
   `login` char(20) DEFAULT NULL,
   `passwd` char(50) DEFAULT NULL,
   `enabled` int(1) DEFAULT NULL,
   PRIMARY KEY (`id_editor`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `WebsiteEditorPermissions` (
   `id_editor` int(11) DEFAULT NULL,
   `id_website` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `Translations` (
   `id_translation` int(11) NOT NULL AUTO_INCREMENT,
@@ -83,7 +93,7 @@ CREATE TABLE `Translations` (
   UNIQUE KEY `i1` (`id_string`,`lang`),
   KEY `realm` (`realm`),
   KEY `realm_2` (`realm`)
-) ENGINE=InnoDB AUTO_INCREMENT=5063 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `CustomSections` (
   `id_section` int(11) NOT NULL AUTO_INCREMENT,
@@ -100,7 +110,7 @@ CREATE TABLE `CustomSections` (
   `description` char(255) DEFAULT NULL,
   PRIMARY KEY (`id_section`),
   KEY `a1` (`id_website`)
-) ENGINE=InnoDB AUTO_INCREMENT=362 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
  CREATE TABLE `CustomSectionResources` (
@@ -113,14 +123,14 @@ CREATE TABLE `CustomSections` (
   `description` char(100) DEFAULT NULL,
   PRIMARY KEY (`id_resource`),
   KEY `a1` (`id_section`)
-) ENGINE=InnoDB AUTO_INCREMENT=2002 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `CustomSectionTypes` (
   `id_sectionType` int(11) NOT NULL AUTO_INCREMENT,
   `typeName` char(30) DEFAULT NULL,
   `allowResources` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id_sectionType`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO CustomSectionTypes (id_sectionType,typeName,allowResources) VALUES (1,"Section",1),(2,"Email",0),(3,"Widget",0);
 
@@ -132,5 +142,23 @@ INSERT INTO CustomSectionTypes (id_sectionType,typeName,allowResources) VALUES (
   `lastLogin` datetime DEFAULT NULL,
   `EMAIL` varchar(50) DEFAULT '',
   `ROLE` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`USER_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `WebUser` (
+  `LOGIN` varchar(15) DEFAULT '''',
+  `PASSWORD` varchar(16) DEFAULT '''',
+  `USER_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `active` tinyint(1) NOT NULL DEFAULT ''0'',
+  `lastLogin` datetime DEFAULT NULL,
+  `EMAIL` varchar(50) DEFAULT '''',
+  `ROLE` varchar(50) NOT NULL DEFAULT '''',
+  `FAILEDLOGINATTEMPTS` int(4) DEFAULT ''0'',
+  `date_add` datetime DEFAULT NULL,
+  `date_upd` datetime DEFAULT NULL,
+  `firstname` char(128) DEFAULT NULL,
+  `lastname` char(128) DEFAULT NULL,
+  `deleted` tinyint(1) DEFAULT ''0'',
+  `last_passwd_gen` datetime DEFAULT NULL,
   PRIMARY KEY (`USER_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8

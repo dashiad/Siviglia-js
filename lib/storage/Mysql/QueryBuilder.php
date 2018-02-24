@@ -84,6 +84,8 @@ class QueryBuilder
 
     function build($onlyConditions = false)
     {
+        global $registry;
+
         $curQuery = $this->definition;
         if ($onlyConditions == false) {
             if (is_array($curQuery["BASE"]))
@@ -110,25 +112,10 @@ class QueryBuilder
         {
             $queryText .= " GROUP BY " . $curQuery["GROUPBY"];
         }
-        $orderBy=null;
-        if(isset($curQuery["ORDERBY"]))
-            $orderBy=$curQuery["ORDERBY"];
-        else
-        {
-            if(isset($curQuery["DEFAULT_ORDER"]))
-                $orderBy=$curQuery["DEFAULT_ORDER"];
-        }
+        $orderBy = $curQuery["DEFAULT_ORDER"] ? $curQuery["DEFAULT_ORDER"] : $curQuery["ORDERBY"];
+        $orderDirection = $curQuery["DEFAULT_ORDER_DIRECTION"] ? $curQuery["DEFAULT_ORDER_DIRECTION"] : $curQuery["ORDERTYPE"];
         if($orderBy)
         {
-            $orderDirection="ASC";
-            if(isset($curQuery["ORDERTYPE"]))
-                $orderDirection=$curQuery["ORDERTYPE"];
-            else
-            {
-                if(isset($curQuery["DEFAULT_ORDER_DIRECTION"]))
-                    $orderDirection=$curQuery["DEFAULT_ORDER_DIRECTION"];
-            }
-
             if(is_array($orderBy))
             {
                 $orderExpression=" ORDER BY ";
@@ -167,7 +154,12 @@ class QueryBuilder
                 $queryText.=$limitExpression;
         }
 
+        //Modificamos la query text para incorporar las partes interiores
+        $queryText = $this->buildInnerParts($queryText);
+
+        //Construimos las condiciones
         $queryText = $this->buildConditions($queryText);
+
         // Se hace el reemplazo final, obteniendo los campos serializados.
         preg_match_all('/{\%([^%]+)\%}/', $queryText, $matches);
         if (count($matches[1]) > 0 && !$this->data) {
@@ -199,11 +191,22 @@ class QueryBuilder
         // Se reemplazan las constantes
         preg_match_all("/\|\%([^%]*)\%\|/", $qText, $matches);
         if (isset($matches[1])) {
-
             $constants = get_defined_constants(true);
             for ($k = 0; $k < count($matches[1]); $k++) {
-                if($matches[1][$k]=="currentUser")
-                {
+                //Vemos si es un valor metido en el registro
+                if (strstr($matches[1][$k], '/registry/')) {
+                    preg_match('#/registry/(.*)#', $matches[1][$k], $moreMatches);
+                    $tr = explode('?', $moreMatches[1]);
+                    try {
+                        $value = \Registry::retrieve($tr[0]);
+                    }
+                    catch(\Exception $e) {
+                        $value = $tr[1];
+                    }
+                    $qText = str_replace("|%" . $matches[1][$k] . "%|", $value, $qText);
+                }
+                else {
+                    if($matches[1][$k]=="currentUser") {
                     // TODO : Tirar excepcion cuando el usuario no esta logeado.
                     global $oCurrentUser;
                     if($oCurrentUser->isLogged())
@@ -216,6 +219,9 @@ class QueryBuilder
                 $qText = str_replace("|%" . $c . "%|", $constants["user"][$c], $qText);
             }
         }
+        }
+
+        //Reemplazo de serializadores
         preg_match_all("/\|\|([^|]*)\|\|/", $qText, $matches);
         if (isset($matches[1])) {
             $replaces=array();
@@ -231,6 +237,62 @@ class QueryBuilder
 
 
         return $qText;
+    }
+
+    function buildInnerParts($base)
+    {
+        $curQuery = $this->definition;
+        $conditions = $curQuery["CONDITIONS"];
+        if (!$conditions) return $base;
+
+        foreach ($conditions as $conditionName => $curCondition) {
+            if (isset($curCondition["TRIGGER_VAR"])) {
+                $tVar = $curCondition["TRIGGER_VAR"];
+                try {
+                    $curField = $this->data->__getField($tVar);
+                } catch (\Exception $e) {
+                    continue;
+                }
+
+                if ($curField->getType()->hasOwnValue()) {
+                    //Tenemos que buscar si existe esa parte y substituirla
+                    $val = $curField->getType()->getValue();
+
+                    $inEnable = in_array($val, (array)$curCondition["ENABLE_IF"]);
+                    $hasDisable = isset($curCondition["DISABLE_IF"]);
+                    $hasEnable = isset($curCondition["ENABLE_IF"]);
+                    if ($hasDisable && $this->checkDisableValue($val, (array)$curCondition["DISABLE_IF"]))
+                        $addPart = false;
+                    else {
+                        if ($hasEnable)
+                            $addPart = $inEnable;
+                        else
+                            $addPart = true;
+                    }
+
+                    if ($addPart) {
+                        $replacement = '\\1';
+                    }
+                    else {
+                        $replacement = '';
+                    }
+                }
+                else {
+                    $replacement = '';
+                }
+
+                $pattern = '/{%'.$tVar.':(.*)%}/';
+                $matches = array();
+                $base = preg_replace($pattern, $replacement, $base);
+            }
+        }
+
+        return $base;
+    }
+
+    function removeUnusedParts($base)
+    {
+        return preg_replace('/{%.*%}/', '', $base);
     }
 
     function buildConditions($base)
@@ -282,25 +344,20 @@ class QueryBuilder
 
 
 
-
+                $inEnable = in_array($val, (array)$curCondition["ENABLE_IF"]);
 
                 $hasDisable = isset($curCondition["DISABLE_IF"]);
 
                 $hasEnable = isset($curCondition["ENABLE_IF"]);
-                if ($hasDisable && $this->checkDisableValue($val, (array)$curCondition["DISABLE_IF"])) {
+                if ($hasDisable && $this->checkDisableValue($val, (array)$curCondition["DISABLE_IF"]))
                     $addCondition = false;
-                }
                 else {
-                    if ($hasEnable) {
-                        $inEnable = in_array($val, (array)$curCondition["ENABLE_IF"]);
+                    if ($hasEnable)
                         $addCondition = $inEnable;
-                    }
-                    else {
+                    else
                         $addCondition = true;
                     }
-                }
-            }
-            else {
+            } else {
                 $addCondition = true;
             }
 

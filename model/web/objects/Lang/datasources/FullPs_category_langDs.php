@@ -37,7 +37,7 @@ class FullPs_category_langDs
                            'JOIN'=>array('id_lang'=>'id_lang')
                            )
                      ),
-               'PERMISSIONS'=>array('_PUBLIC_'),
+               'PERMISSIONS'=>array('PUBLIC'),
                'FIELDS'=>array(
                      'name'=>array(
                            'MODEL'=>'backoffice\ps_product\ps_category_lang',

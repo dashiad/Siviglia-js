@@ -26,4 +26,20 @@ abstract class SiteConfig
         return $def[SiteConfig::CONFIG_KEY_SERVICES][SiteConfig::CONFIG_KEY_PERMISSIONS];
 
     }
+    function getDefaultIso()
+    {
+        $def=$this->getDefinition();
+        return io($def,"DEFAULT_ISO","en");
+    }
+    function getStaticsSite()
+    {
+        $def=$this->getDefinition();
+        return io($def,"STATICS_SITE",null);
+    }
+    function getExtraWidgetPath()
+    {
+        $def=$this->getDefinition();
+        return io($def,"WIDGETPATH",array());
+
+    }
 }

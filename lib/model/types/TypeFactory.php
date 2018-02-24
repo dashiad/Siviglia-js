@@ -51,11 +51,11 @@ include_once(LIBPATH."/model/types/BaseType.php");
                     // object.
                     return TypeFactory::getType($object,$def["REFERENCES"],$value);
                 }
-
                 if($def["MODEL"])
                 {
 
                     $newType=TypeFactory::getType(null,TypeFactory::getObjectField($def["MODEL"],$def["FIELD"]),$value);
+                    $newType->setTypeReference($def["MODEL"],$def["FIELD"]);
                     // En caso de que la referencia defina un DEFAULT, sobreescribe al que llega de la definicion de tipo.
                     if(isset($def["DEFAULT"]) && !empty($def["DEFAULT"]))
                     {
@@ -63,11 +63,9 @@ include_once(LIBPATH."/model/types/BaseType.php");
                     }
                     return $newType;
                 }
-
-
-                  throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def));
+                throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def));
             }
-            $type=$def["TYPE"];                      
+            $type=ucfirst(strtolower($def["TYPE"]));
             $targetType=TypeFactory::includeType($type);
             $t= new $targetType($def,$value);
             return $t;
@@ -82,7 +80,6 @@ include_once(LIBPATH."/model/types/BaseType.php");
               }
               else
                   $def=$object->getDefinition();
-              debug($def);
               if($def["EXTENDS"])
                       return TypeFactory::getType($def["EXTENDS"],$def,$value);              
           }
@@ -149,7 +146,32 @@ include_once(LIBPATH."/model/types/BaseType.php");
           // Se instancia, por si hay que hacer inicializacion de la definicion en el constructor.
           $n=new $className();
           return $n->getDefinition();
+       }
+      static function getTypeMeta($mixedType)
+      {
+          if(is_array($mixedType))
+          {
+              $mixedType=TypeFactory::getType(null,$mixedType);
+          }
+           $className=get_class($mixedType);
+          $typeList=array_values(class_parents($className));
+          $nEls=array_unshift($typeList,$className);
+
+          for($k=0;$k<$nEls;$k++)
+          {
+              if($typeList[$k]=='lib\model\types\BaseType')
+                  break;
+              $sName=$typeList[$k]."Meta";
+              if(@class_exists($sName))
+              {
+                  $i=new $sName();
+                  return $i->getMeta($mixedType);
+              }
+          }
+         $metaClass= new \lib\model\types\BaseTypeMeta();
+         return $metaClass->getMeta($mixedType);
       }
+
 
       static function getSerializer($mixedType,$serializer)
       {
@@ -172,7 +194,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
                   return new $cachedType();
           }
           
-          $type=TypeFactory::includeType($type);
+          $type=TypeFactory::includeType(ucfirst(strtolower($type)));
           
           $name=$type;
           
@@ -191,7 +213,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
               }              
           }
 
-          clean_debug_backtrace(4);
+       //   clean_debug_backtrace(4);
           throw new BaseTypeException(BaseTypeException::ERR_SERIALIZER_NOT_FOUND,array("name"=>$type,"serializer"=>$serializer));
           
       }
@@ -205,6 +227,10 @@ include_once(LIBPATH."/model/types/BaseType.php");
       }
       static function unserializeType($type,$value,$serializerType)
       {
+          if($serializerType=="PHP") {
+              $type->set($value);
+              return;
+          }
           if(!$type)
           {
               throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type));

@@ -1,0 +1,11 @@
+
+SELECT group_id from _permission_group_items WHERE item_id=1 AND group_id=16
+SELECT group_id from _permission_group_items WHERE item_id=2 AND group_id=16
+SELECT group_id from _permission_group_items WHERE item_id=3 AND group_id=16
+SELECT group_id from _permission_group_items WHERE item_id=4 AND group_id=16
+SELECT group_id from _permission_group_items WHERE item_id=5 AND group_id=16
+SELECT group_id from _permission_group_items WHERE item_id=6 AND group_id=16
+SELECT group_id from _permission_group_items WHERE item_id=7 AND group_id=16
+SELECT group_id from _permission_group_items WHERE item_id=8 AND group_id=16
+SELECT group_id from _permission_group_items WHERE item_id=9 AND group_id=16
+SELECT group_id from _permission_group_items WHERE item_id=10 AND group_id=17

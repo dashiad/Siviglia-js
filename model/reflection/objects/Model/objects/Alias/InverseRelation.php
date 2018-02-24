@@ -104,25 +104,25 @@
           // En principio, sin acciones.
           return array();
       }
-      function getDatasourceCreationCallback()
+      function getDataSourceCreationCallback()
       {
             return "createFromInverseRelation";           
       }
 
       function getDataSources()
         {
-           $callbackName=$this->getDatasourceCreationCallback();        
+           $callbackName=$this->getDataSourceCreationCallback();
 
             if($this->datasources!=null)
                 return $this->datasources;
-            $perms=array("_PUBLIC_");
+            $perms=array('PUBLIC');
             $isadmin=false;
 
             $multiplicity=$this->targetField->getMultiplicity();
 
             if($multiplicity=="1:1")
             {
-                $innerDs=new \model\reflection\Datasource\DatasourceDefinition($this->name,$this->parentModel);
+                $innerDs=new \model\reflection\DataSource($this->name,$this->parentModel);
 
                   if($innerDs->mustRebuild())            
                       $innerDs->$callbackName($this,"MxNlist","INNER",$isadmin,$perms);
@@ -133,7 +133,7 @@
             {
 
               $fullName="Full".ucfirst($this->name);
-              $fullDs=new \model\reflection\Datasource\DatasourceDefinition($fullName,$this->parentModel);
+              $fullDs=new \model\reflection\DataSource($fullName,$this->parentModel);
               if($fullDs->mustRebuild())
                   $fullDs->$callbackName($this,"MxNlist","LEFT",$isadmin,$perms);
 
@@ -141,7 +141,7 @@
          
               $notName="Not".ucfirst($this->name);
             
-              $notDs=new \model\reflection\Datasource\DatasourceDefinition($notName,$this->parentModel);
+              $notDs=new \model\reflection\DataSource($notName,$this->parentModel);
               if($notDs->mustRebuild())
                   {
                   $notDs->$callbackName($this,"MxNlist","OUTER",$isadmin,$perms);
@@ -230,6 +230,11 @@
       function getExtraConditions()
       {
           return isset($this->definition["CONDITIONS"])?$this->definition["CONDITIONS"]:null;
+      }
+      static function getMetaData($objectName)
+      {
+          include_once(__DIR__."/ModelMeta.php");
+          return new \model\reflection\Model\ModelMeta($objectName);
       }
       
   }

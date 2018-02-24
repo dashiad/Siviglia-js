@@ -14,12 +14,14 @@ abstract class Datasource
     var $definition;
     var $params;
     var $request;
+    var $unserializerType;
 
     function __construct($definition,$params,\Request $request)
     {
         $this->definition = $definition;
         $this->params = $params;
         $this->request = $request;
+        $this->unserializerType=$request->getUnserializerType();
     }
     function getDataSource()
     {
@@ -27,19 +29,19 @@ abstract class Datasource
         $name=$this->definition["NAME"];
 
         $ds=\lib\datasource\DataSourceFactory::getDataSource($obj,$name);
-        $dsDefinition=$obj->getOriginalDefinition();
+        $dsDefinition=$ds->getOriginalDefinition();
         if (isset($this->definition["FILTERING_DATASOURCES"]))
             $ds->setFilteringDatasources($this->definition["FILTERING_DATASOURCES"]);
         if($this->params)
         {
             if(is_array($this->params))
-            {
-                foreach($this->params as $key=>$value)
-                {
-                    if(isset($dsDefinition["PARAMS"][$key]))
-                        $ds->{$key}=$value;
-                }
-            }
+                $ds->loadFromArray($this->params,$this->unserializerType);
+        }
+        try {
+            $ds->validate();
+        }catch(\lib\model\BaseTypedException $e)
+        {
+            throw $e;
         }
         return $ds;
     }

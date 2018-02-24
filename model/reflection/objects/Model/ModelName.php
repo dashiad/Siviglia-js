@@ -121,7 +121,10 @@ class ModelName
         {
             if($this->definition!=null)
                 return $this->definition;
-            require_once($this->getPath("Definition.php"));
+            $file=$this->getPath("Definition.php");
+            if(!is_file($file))
+                return null;
+            include_once($file);
             $defClass=$this->getNamespaced().'\\Definition';
             $inst=new $defClass();
             $this->definition=$inst->getDefinition();
@@ -158,6 +161,24 @@ class ModelName
         function getFormFileName($formName)
         {
             return $this->getPath("/html/forms/".$formName.".php");
+        }
+        function getForms()
+        {
+            $startPath=$this->getPath("/html/forms");
+            $files=\lib\php\FileTools::getFilesInDirectory($startPath,false,array("php"),$relative=true);
+            return $files;
+        }
+        function getFormWidgets()
+        {
+            $startPath=$this->getPath("/html/forms");
+            $files=\lib\php\FileTools::getFilesInDirectory($startPath,false,array("wid"),$relative=true);
+            return $files;
+        }
+        function getViews()
+        {
+            $startPath=$this->getPath("/html/views");
+            $files=\lib\php\FileTools::getFilesInDirectory($startPath,false,".wid",$relative=true);
+            return $files;
         }
         function getNamespacedForm($formName)
         {

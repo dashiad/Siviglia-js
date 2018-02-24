@@ -14,8 +14,6 @@ class TestPage extends \model\web\Page
     {
         $factory=new \model\reflection\ReflectorFactory();
         $factory->loadFactory();
-        $perms=\Registry::getService("permissions");
-        $perms->addModule('\model\web\Page');
-        echo "HOLA";
+
     }
 }

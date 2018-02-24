@@ -26,6 +26,13 @@ function mainAutoloader($name)
         }break;
         case "model":
         {
+            $direct=PROJECTPATH.str_replace('\\','/',$name.".php");
+            if(is_file($direct))
+            {
+                include_once($direct);
+                return;
+            }
+
             $modelDef=new \model\reflection\Model\ModelName($name);
             $destFile=$modelDef->getDestinationFile(array_pop($parts)).".php";
             if(is_file($destFile))
@@ -33,6 +40,9 @@ function mainAutoloader($name)
         }break;
         default:
         {
+            $p=strpos($name,"model");
+            if($p===false)
+                return false;
             $name=str_replace("Exception","",$name);
             $def=new \model\reflection\Model\ModelName($name);
             $fName=$parts[count($parts)-1];

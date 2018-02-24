@@ -14,7 +14,7 @@
       
       function validate($val)
       {     
-          if($val===null || !isset($val) || $val==='' || $val==='%')
+          if($val===null || !isset($val))
               return true;
         $res=BaseType::validate($val);     
         if($res!==true)

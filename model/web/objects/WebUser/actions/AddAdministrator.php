@@ -65,7 +65,7 @@ class AddAdministrator extends \lib\controller\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate( $params, $actionResult, $user)
+	function validate ( $actionResult )
 	{
             /* Insert the validation code here */            
             return $actionResult->isOk();
@@ -114,7 +114,7 @@ class AddAdministrator extends \lib\controller\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function onError( $params, $actionResult, $user)
+	function onError ($keys, $params, $actionResult, $user)
 	{
 
 

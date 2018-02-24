@@ -156,6 +156,38 @@ class ArrayTools {
     }
     return 0; // $op1 == $op2
  }
+  // Busca un valor hoja en un array asociativo anidado, y elimina la key correspondiente, eliminando tambien los padres que hayan quedado
+    // vacios. Es decir, teniendo este array;
+    // $p=array("a"=>array("b"=>array("c"=>"yu"),"d"=>"q"),"b"=>"g");
+    // si se le llama con unsetByValue($p,"yu"), eliminara tanto la clave "c" como la subsecuente clave vacia "b"
+
+  static function unsetByValue(& $position,$toFind)
+    {
+        foreach($position as $key=>& $value)
+        {
+            if(is_array($value))
+            {
+                if(ArrayTools::unsetByValue($value,$toFind))
+                {
+                    if(count(array_values($value))==0)
+                    {
+                        unset($position[$key]);
+                    }
+                    return 1;
+                }
+            }
+            else
+            {
+                if($value==$toFind)
+                {
+                    echo "FOUND";
+                    unset($position[$key]);
+                    return 1;
+                }
+            }
+        }
+        return 0;
+    }
 
 }
 

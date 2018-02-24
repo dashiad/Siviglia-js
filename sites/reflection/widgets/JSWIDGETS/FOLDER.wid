@@ -1,0 +1,58 @@
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_CODE]
+            <script>
+                Siviglia.Utils.buildClass({
+                    context: 'Reflection.Widgets',
+                    classes: {
+                        FOLDERS: {
+                            inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            methods: {
+                                preInitialize:function(params)
+                                {
+                                    var m=new Siviglia.Model("/model/reflection/ReflectorFactory");
+                                    m.getData
+                                    this.list=[{a:1},{a:2},{a:3}];
+                                },
+                                initialize:function(params)
+                                {
+
+                                },
+                                doAlert:function()
+                                {
+                                    this.value=this.value+"a";
+                                    this.list.push({a:25});
+                                    this.notifyPathListeners();
+                                },
+                                alert2:function(node,params)
+                                {
+                                    console.dir(arguments);
+                                    alert(params.item.a);
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+            [#]
+        [#]
+        [_CSS]
+            [_CODE]
+            <style type="text/css">
+            .miclase {width:100px;font-weight:bold}
+            </style>
+            [#]
+        [#]
+    [#]
+[#]
+<div sivWidget="Reflection.Widgets.FOLDER" widgetParams="factoryClass" widgetCode="Reflection.Widgets.FOLDERS">
+    <span class="miclase" sivValue="/*value"></span>
+    <span sivEvent="click" sivCallback="doAlert">Click me</span>
+    <div sivLoop="/*list" contextIndex="current">
+        <div sivView="" sivParams=""
+        <span sivEvent="click" sivCallback="alert2" sivParams='{"item":"/@current"}'><span sivValue="/@current/a"></span></span>
+
+    </div>
+</div>

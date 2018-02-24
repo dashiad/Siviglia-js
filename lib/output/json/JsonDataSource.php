@@ -8,17 +8,20 @@
 
 namespace lib\output\json;
 
-
+include_once(PROJECTPATH."/model/reflection/objects/Datasource/DataSourceMetaData.php");
 class JsonDataSource extends \lib\output\Datasource
 {
     function resolve()
     {
         $result=array();
         $ds=$this->getDataSource();
+        $it=$ds->fetchAll();
         $result["count"]=$ds->count();
         $result["result"]=1;
         $result["error"]=0;
-        $it=$ds->fetchAll();
+        $metaDataObj=new \model\reflection\Datasource\DataSourceMetadata($this->definition["MODEL"],$this->definition["NAME"]);
+        $result["definition"]=$metaDataObj->definition;
+
         if($this->getRole()=="view") {
             $data=$it->getFullRow();
             if(!$data)

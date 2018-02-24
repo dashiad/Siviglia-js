@@ -15,7 +15,7 @@ include_once(PROJECTPATH."/model/reflection/ReflectorFactory/ReflectorFactory.ph
 $model=\model\reflection\ReflectorFactory::getModel($object);
 
 include_once(PROJECTPATH."/model/reflection/Datasource/DataSourceDefinition.php");
-$oDs=new \model\reflection\Datasource\DataSourceDefinition($name,$model);
+$oDs=new \model\reflection\Datasource\DataSource($name,$model);
 
 include_once(PROJECTPATH."/model/reflection/Storage/objects/Mysql/MysqlDsDefinition.php");
 $mysqlDef=new \model\reflection\Storage\Mysql\MysqlDefinition($model,$name,$oDs);

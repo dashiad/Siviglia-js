@@ -1,9 +1,9 @@
 <div style="border:1px solid #DDDDDD;background-color:#EEEEEE">
    <div style="background-color:#CCCCCC">
         [_HEADER]
-            [*:TITLE_1]
+
                     [_TITLE][_*][#]
-            [#]
+
             [_DESCRIPTION][_*][#]
         [#]
 
@@ -14,7 +14,7 @@
     [_LISTING]
         [_COLUMNHEADERS]
            <tr>
-            [_COLUMN][_LABEL]<th  style="border-bottom:1px solid #AAAAAA;">[*:TEXT_1][_*][#]</th>[#][#]
+            [_COLUMN][_LABEL]<th  style="border-bottom:1px solid #AAAAAA;">[_*]</th>[#][#]
            </tr>
          [#]
         

@@ -1,5 +1,6 @@
 <?php
 namespace model\reflection\Html\forms;
+include_once(PROJECTPATH."/model/reflection/objects/base/ConfiguredObject.php");
 class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFileGenerator
 {
     function __construct($name,$parentAction)
@@ -20,7 +21,8 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
     function initialize($def=null)
     {
         parent::initialize($def);
-        $this->action->addForm($this);
+        if($this->action)
+            $this->action->addForm($this);
         $this->widget=new FormWidget($this->className,$this);
     }
     
@@ -33,10 +35,12 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
         $def=array();
         $def["NAME"]=$name;
         $def["MODEL"]=$objName;
-        $def["ACTION"]=array("MODEL"=>$modelDef->objectName->getNamespaced("objects"),
-                             "ACTION"=>$name,"INHERIT"=>true);
+        if($this->action) {
+            $def["ACTION"] = array("MODEL" => $modelDef->objectName->getNamespaced("objects"),
+                "ACTION" => $name, "INHERIT" => true);
 
-        $def["ROLE"]=$actionDef->getRole();
+            $def["ROLE"] = $actionDef->getRole();
+        }
         $def["REDIRECT"]=array("ON_SUCCESS"=>"",
                                "ON_ERROR"=>"");
         $def["INPUTS"]=array();
@@ -44,10 +48,11 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
         if($relationName!="")
             $def["TARGET_RELATION"]=$relationName;
 
-        $indexes=$actionDef->getIndexFields();
-        if( $indexes )
-        {
-            $def["INDEXFIELDS"]=$indexes;
+        if($this->action) {
+            $indexes = $actionDef->getIndexFields();
+            if ($indexes) {
+                $def["INDEXFIELDS"] = $indexes;
+            }
         }
         
         $fields=$actionDef->getFields();
@@ -278,6 +283,34 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
         if($def["ACTION"]["INHERIT"]==1)
             return $this->action->getField($key);
         return parent::getField($key);
+    }
+    static function getMetaData($objectName,$dsName)
+    {
+        include_once(__DIR__."/FormMetadata.php");
+        return new \model\reflection\Html\forms\FormMetadata($objectName,$dsName);
+    }
+    static function getModelForms($className)
+    {
+        $objectName=new \model\reflection\Model\ModelName($className);
+        $model=\model\reflection\ReflectorFactory::getModel($className);
+        $forms=$objectName->getForms();
+        $result=array();
+        foreach($forms as $key=>$value)
+        {
+            $part=pathinfo($value, PATHINFO_FILENAME);
+
+            $f=$objectName->getFormFileName($part);
+            include_once($f);
+            $class=$objectName->getNamespacedForm($f);
+            $formDef=$class::$definition;
+            $action=null;
+            if(isset($formDef["ACTION"]))
+            {
+                $action=new \model\reflection\Action($formDef["ACTION"],$model);
+            }
+            $result[$part]=new FormDefinition($part,$action);
+        }
+        return $result;
     }
     
 }

@@ -65,10 +65,10 @@ CLASS;
         $relDs=$this->model->getDataSources();
         foreach($relDs as $key=>$value)
         {
-            $dsCode=$this->generateDatasourceView($key,$value);
+            $dsCode=$this->generateDataSourceView($key,$value);
             if(!$dsCode)
                 continue;
-            $this->saveDatasource($key,$dsCode);
+            $this->saveDataSource($key,$dsCode);
         }
     }
     function saveModel()
@@ -368,7 +368,7 @@ CLASSCODE;
      *
      */
 
-    function generateDatasourceView($name,$datasource)
+    function generateDataSourceView($name,$datasource)
     {
 
         // Los mappings se usan para tener varios filtros que en realidad filtran el mismo campo.
@@ -390,11 +390,11 @@ CLASSCODE;
         if(count($groupable)>0)
             $needsTabs=true;
 
-        $text="<div class=\"SivDatasource\">\n";
-        $text.="\t<div class=\"SivDatasourceHeader\">\n\t\t<h2>".$name."</h2>\n\t\t";
-        $text.="\t\t<div class=\"SivDatasourceDescription\">".io($dsDef,"DESCRIPTION","")."</div>\n";
-        $text.="\t\t<div class=\"SivDatasourceFilters\">\n";
-        $text.=$this->generateDatasourceForm($datasource,$mappings);
+        $text="<div class=\"SivDataSource\">\n";
+        $text.="\t<div class=\"SivDataSourceHeader\">\n\t\t<h2>".$name."</h2>\n\t\t";
+        $text.="\t\t<div class=\"SivDataSourceDescription\">".io($dsDef,"DESCRIPTION","")."</div>\n";
+        $text.="\t\t<div class=\"SivDataSourceFilters\">\n";
+        $text.=$this->generateDataSourceForm($datasource,$mappings);
         $text.="\t\t</div>\n";
 
         if($needsTabs)
@@ -417,7 +417,7 @@ CLASSCODE;
 
         $text.="\t\t<span>[@L]Filas:[#]</span><div data-dojo-type=\"dijit/form/Select\" data-dojo-attach-event=\"onChange:setLines\" data-dojo-attach-point=\"lineSelector\"><option value=\"10\" >10</option><option value=\"20\" selected>20</option><option value=\"50\">50</option><option value=\"100\">100</option></div>&nbsp;&nbsp;<a href=\"\" data-dojo-attach-point=\"downloadCSVLink\">Descargar CSV</a>&nbsp;&nbsp;<a href=\"\" data-dojo-attach-point=\"downloadXLSLink\">Descargar Excel</a></div>\n";
         $text.="<div data-dojo-attach-point=\"showSetColumnsWrapper\" style=\"display:none\"><div data-dojo-attach-point=\"setColumnsContainer\"></div><div><input data-dojo-attach-event=\"onClick:setColumns\" data-dojo-attach-point=\"setColumnsButton\" type=\"button\" data-dojo-type=\"dijit/form/Button\" intermediateChanges=\"false\" label=\"Aceptar\"></div></div>";
-        $text.="\t\t<div class=\"SivDatasourceGrid\" data-dojo-attach-point=\"mainGrid\" style=\"position:relative;height:270px\">\n";
+        $text.="\t\t<div class=\"SivDataSourceGrid\" data-dojo-attach-point=\"mainGrid\" style=\"position:relative;height:270px\">\n";
         $text.="\t\t</div>\n";
 
         if($needsTabs)
@@ -425,7 +425,7 @@ CLASSCODE;
 
             $text.="\t\t</div>\n";
             $text.="\t\t<div data-dojo-attach-point=\"gridPane\" data-dojo-type=\"dijit/layout/ContentPane\" title=\"Charts\" data-dojo-attach-event='onShow:showCharts'>\n";
-            $text.=$this->getDatasourceCharts($datasource,$groupable,$addable);
+            $text.=$this->getDataSourceCharts($datasource,$groupable,$addable);
             $text.="\t\t</div>";
         }
         $text.="\t</div>\n";
@@ -534,7 +534,7 @@ TEMPLATE;
         return array("dsCode"=>$classCode,"dsTemplate"=>$text);
     }
 
-    function generateDatasourceForm($datasource,& $mappings)
+    function generateDataSourceForm($datasource,& $mappings)
     {
         $dsDef=$datasource->getDefinition();
         $parentObj=$datasource->parentModel;
@@ -632,7 +632,7 @@ TEMPLATE;
             {
             // Aqui, se esta tomando TARGET_RELATION a nivel de campo, no a nivel de form.
 
-            $curField=$this->getDatasourceFormInput($key,$value);
+            $curField=$this->getDataSourceFormInput($key,$value);
             $templateCode.="\n\t\t\t\t\t\t\t\t<div style=\"float:left\">\n";
             $templateCode.="\n\t\t\t\t\t\t\t\t\t<table border=0>\n";
             $templateCode.="\t\t\t\t\t\t\t\t\t\t<tr>\n";
@@ -666,7 +666,7 @@ TEMPLATE;
         return true;
     }
 
-    function getDatasourceFormInput($name,$def)
+    function getDataSourceFormInput($name,$def)
     {
         $type=\lib\model\types\TypeFactory::getType(null,$def);
         $definition=$type->getDefinition();
@@ -711,7 +711,7 @@ TEMPLATE;
 
         return '<span data-siviglia-name="'.$name.'" data-siviglia-input-type="'.$path.'" '.$paramData.'></span>';
     }
-    function getDatasourceCharts($datasource,$groupable,$addable)
+    function getDataSourceCharts($datasource,$groupable,$addable)
     {
         $text="\t\t\t<div data-dojo-attach-point=\"chartForm\">\n";
         $dsDef=$datasource->getDefinition();
@@ -760,7 +760,7 @@ TEMPLATE;
         return $text;
     }
 
-    function saveDatasource($dsName,$code)
+    function saveDataSource($dsName,$code)
     {
         $destFile=$this->model->objectName->getDestinationFile("js/dojo/views/".$dsName.".js");
         $targetDir=dirname($destFile);

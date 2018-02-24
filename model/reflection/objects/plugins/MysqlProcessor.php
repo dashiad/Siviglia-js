@@ -55,7 +55,7 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
         if($step!=2)
             return;
 
-        printPhase("Generando Datasources Mysql");
+        printPhase("Generando DataSources Mysql");
 
         // Creacion del soporte en base de datos de las tablas.
         $this->iterateOnModels("rebuildDataSources");
@@ -80,7 +80,7 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
                     {
                         // Se anota este datasource como procesado.
                         $processedDs[]=$key;
-                        $msQ=\model\reflection\Storage\Mysql\MysqlDefinition::createDatasourceFromQuery($modelDef,$key,$value);
+                        $msQ=\model\reflection\Storage\Mysql\MysqlDefinition::createDataSourceFromQuery($modelDef,$key,$value);
                     }
                 }
 

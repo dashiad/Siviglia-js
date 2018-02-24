@@ -63,6 +63,7 @@ class DEPENDENCY_BUNDLE {
         $this->documentRoot=$documentRoot;
         $this->usedFiles=array();
         $this->webRoot=$webRoot;
+        $this->refTime=time();
         srand(microtime(true));
     }
     function setManager($manager)
@@ -82,7 +83,7 @@ class DEPENDENCY_BUNDLE {
     }
     function save($phase)
     {
-        $destPath=$this->documentRoot."/".$this->basePath;
+        $destPath=$this->basePath;
         if(!is_dir($destPath))
         {
             mkdir($destPath,0777,true);
@@ -90,7 +91,7 @@ class DEPENDENCY_BUNDLE {
 	$baseText="";
         if(isset($this->resources[$phase]))
         {
-            $this->refTime=time();
+
             $cssText="";
             $jsText="";
             $htmlText="";
@@ -145,11 +146,13 @@ class DEPENDENCY_BUNDLE {
                         // Hay que aniadir este fichero como dependencia del layout actual.
                         $parsed=0;
                         $url=null;
+                        if(isset($cur[1][3])) {
+                            $this->layoutManager->addDependency($cur[1][3]);
+                        }
 			            if(!defined("DEVELOPMENT") || DEVELOPMENT==0)
 			            {
                             if(isset($cur[1][3]))
                             {
-                                $this->layoutManager->addDependency($cur[1][3]);
                         	    if(!is_file($cur[1][3]))
                         	    {
                             		var_dump($cur);
@@ -229,11 +232,11 @@ tras cada regeneracion de cache, puede ocurrir lo siguiente:
 
 		***/
 		
-			if(!isset(DEPENDENCY_BUNDLE::$bundlePaths[$this->basePath]))
+			if(!isset(DEPENDENCY_BUNDLE::$bundlePaths[$this->name][$this->basePath]))
 			{
-				$baseText="<?php \$__serialized__bundle__".$this->name."=file_get_contents('".$this->documentRoot."/".$this->basePath."/bundle_".$this->name.".srl');?>";
-				file_put_contents($this->documentRoot."/".$this->basePath."/bundle_".$this->name.".srl",$cTime);	
-				DEPENDENCY_BUNDLE::$bundlePaths[$this->basePath]="__serialized__bundle__".$this->name;
+				$baseText="<?php \$__serialized__bundle__".$this->name."=file_get_contents('".$this->basePath."/bundle_".$this->name.".srl');?>";
+				file_put_contents($this->basePath."/bundle_".$this->name.".srl",$cTime);
+				DEPENDENCY_BUNDLE::$bundlePaths[$this->name][$this->basePath]="__serialized__bundle__".$this->name;
 			}
 			$includeCode="<?php echo \$__serialized__bundle__".$this->name.";?>";
 		/****/	
@@ -286,6 +289,9 @@ class DEPENDENCY extends Plugin {
     static $bundles=null;
     static $usedWidgets=null;
     static $usedModels=null;
+    var $documentRoot;
+    var $webRoot;
+    var $projectRoot;
     function __construct($parentWidget,$layoutContents,$layoutManager)
     {
         $this->parentWidget=$parentWidget;
@@ -303,6 +309,9 @@ class DEPENDENCY extends Plugin {
                 DEPENDENCY::$bundles[$key]->setManager($this->layoutManager);
             }
         }
+        $this->documentRoot=$this->params["DOCUMENT_ROOT"];
+        $this->webRoot=$this->params["WEB_ROOT"];
+        $this->projectRoot=$this->params["PROJECT_ROOT"];
     }
 
 
@@ -320,7 +329,7 @@ class DEPENDENCY extends Plugin {
         $bundle=$this->getNodesByTagName("BUNDLE",$spec);
         if(count($bundle)>0)
         {
-            $currentNode["TEXT"].="<!-- @DEPENDENCY LIST-->";
+            //$currentNode["TEXT"].="<!-- @DEPENDENCY LIST-->";
             $returnValue=array($currentNode);
 
             $this->currentBundle=$bundle[0];
@@ -360,6 +369,11 @@ class DEPENDENCY extends Plugin {
         $info=$this->parse_file($spec,"SCRIPT");
         if(!$info[2])
             $info[2]="HEADERS";
+        if(!isset(DEPENDENCY::$bundles[$bundle]))
+        {
+            // TODO: Throw exception
+            die("Unknown bundle:$bundle");
+        }
         DEPENDENCY::$bundles[$bundle]->addResource("SCRIPT",$info[0],$info[1],$info[2]);
         return array();
     }
@@ -530,26 +544,40 @@ class DEPENDENCY extends Plugin {
         }
         else
         {
-             $srcFile=$spec["FILE"][0];
+             $srcFile=$this->projectRoot."/".$spec["FILE"][0];
             if(!is_file($srcFile))
             {
                 die("Widget no encontrado : Path:".$srcFile);
             }
         }
-        if(DEPENDENCY::$usedWidgets[$srcFile])
+        if(isset(DEPENDENCY::$usedWidgets[$srcFile]))
             return array(new \CHTMLElement(""),"",new \CHTMLElement(""));
 
+        $this->layoutManager->addDependency($srcFile);
         DEPENDENCY::$usedWidgets[$srcFile]=1;
         $srcContents=file_get_contents($srcFile);
-        $oParser=new CWidgetGrammarParser("subwidgetFile",1,null,$this->layoutManager);
+        $oParser=new CWidgetGrammarParser("subwidgetFile",1,null,$this->layoutManager,new SubwidgetFileContext());
         $result=$oParser->compile($srcContents,$this->layoutManager->getLang(),$this->layoutManager->getTargetProtocol());
 
+        // Se unen todos los resultados.
+        $resultContents=$result["CONTENTS"];
+        $text="";
+        for($k=0;$k<count($resultContents);$k++)
+        {
+            $c=$resultContents[$k];
+            if($c["TYPE"]!="HTML")
+            {
+                continue;
+            }
+            $text.=$c["TEXT"];
+        }
 
         // Se crean dos nodos html para despues poder cortar el contenido, y moverlo a su fase correspondiente.
         $uuid=uniqid();
-        $pre=array("TYPE"=>"HTML","TEXT"=>"<!-- HTML_DEPENDENCY $bundle BODYSTART $uuid -->");
+        $pre=array("TYPE"=>"HTML","TEXT"=>"<!-- HTML_DEPENDENCY $bundle WIDGETSTART $uuid -->");
         $post=array("TYPE"=>"HTML","TEXT"=>"<!-- HTML DEPENDENCY END $uuid -->");
-        $layout=array("TYPE"=>"HTML","TEXT"=>$result);
+
+        $layout=array("TYPE"=>"HTML","TEXT"=>$text);
         return array($pre,$layout,$post);
     }
 
@@ -569,18 +597,24 @@ class DEPENDENCY extends Plugin {
             $info=$this->__getFileHash($type);
             $code=$this->__getUntaggedContents($spec["CODE"][0],$type=="CSS"?"style":"script");
         }
-        $macros=$this->params["MACROS"];
+        $macros=isset($this->params["MACROS"])?$this->params["MACROS"]:array();
         $mkeys=array_keys($macros);
         $mvalues=array_values($macros);
+        // Si hay un file, se supone que tambien hay una url.
         if(isset($spec["FILE"]))
         {
             $file=str_replace($mkeys,$mvalues,$spec["FILE"][0]);
+            $url=$this->webRoot."/".$file;
+            $file=$this->documentRoot."/".$file;
+
             if(!is_file($file))
             {
                 die("No se encuentra la dependencia ".$file);
             }
             $info=$this->__getFileHash($type,$file);
-            // El path tiene que ser absoluto
+            $info[]=$url;
+            return array($code,$info,$phase);
+
         }
         // Si no hay especificado un FILE, sino solo una URL, $info tendra solo 1 elemento.
         if(isset($spec["URL"]))

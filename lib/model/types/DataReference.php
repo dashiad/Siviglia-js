@@ -10,6 +10,8 @@ namespace lib\model\types;
 include_once(LIBPATH."/model/types/BaseType.php");
 class DataReferenceException extends BaseTypeException {
     const ERR_CANT_FIND_REFERENCE=100;
+
+    const TXT_CANT_FIND_REFERENCE="No se encuentra la referencia a %model%::%field% ";
 }
 class DataReference extends BaseType{
 

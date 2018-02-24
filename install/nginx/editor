@@ -10,7 +10,6 @@ server {
 
     location / {
         try_files $uri /index.php?site=editor&subpath=$uri&$args;
-        rewrite ^/action$ ../../../html/action.php?site=editor last;
         fastcgi_param PHP_VALUE "include_path=/var/www/config:/var/www/adtopy:.";
     }
 

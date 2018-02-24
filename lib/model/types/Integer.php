@@ -4,6 +4,13 @@
       const ERR_TOO_SMALL=100;
       const ERR_TOO_BIG=101;
       const ERR_NOT_A_NUMBER=102;
+
+      const TXT_TOO_SMALL='Valor demasiado pequeño';
+      const TXT_TOO_BIG='Valor demasiado grande';
+      const TXT_NOT_A_NUMBER='Debes introducir un número';
+
+      const REQ_TOO_SMALL='MIN';
+      const REQ_TOO_BIG='MAX';
   }
   class Integer extends BaseType
   {

@@ -37,7 +37,7 @@ class NotPs_feature_value_langDs
                            'JOIN'=>array('id_lang'=>'id_lang')
                            )
                      ),
-               'PERMISSIONS'=>array('_PUBLIC_'),
+               'PERMISSIONS'=>array('PUBLIC'),
                'FIELDS'=>array(
                      'id_lang'=>array(
                            'MODEL'=>'backoffice\ps_product\ps_feature_value_lang',

@@ -86,7 +86,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * RETURNS:
 	 */
-	 function validate( $params, $actionResult, $user)
+	 function validate ( $actionResult )
 	{
 
 
