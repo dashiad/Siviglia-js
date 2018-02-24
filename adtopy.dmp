@@ -36,7 +36,7 @@ CREATE TABLE `_permission_group_items` (
 
 LOCK TABLES `_permission_group_items` WRITE;
 /*!40000 ALTER TABLE `_permission_group_items` DISABLE KEYS */;
-INSERT INTO `_permission_group_items` VALUES (5,1),(6,2),(9,3),(10,4),(13,5),(14,6),(15,7),(18,8);
+INSERT INTO `_permission_group_items` VALUES (16,1),(16,2),(16,3),(16,4),(16,5),(16,6),(16,7),(16,8),(16,9),(17,10);
 /*!40000 ALTER TABLE `_permission_group_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -53,10 +53,12 @@ CREATE TABLE `_permission_groups` (
   `group_type` smallint(2) DEFAULT NULL,
   `group_parent` smallint(8) DEFAULT '0',
   `group_path` varchar(200) DEFAULT NULL,
+  `group_charPath` char(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `group_charPath` (`group_charPath`),
   KEY `group_type` (`group_type`,`group_name`,`group_parent`) USING HASH,
   KEY `group_name` (`group_name`,`group_path`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,7 +67,7 @@ CREATE TABLE `_permission_groups` (
 
 LOCK TABLES `_permission_groups` WRITE;
 /*!40000 ALTER TABLE `_permission_groups` DISABLE KEYS */;
-INSERT INTO `_permission_groups` VALUES (1,'AllObjects',2,0,',1'),(2,'Sys',2,1,',1,2'),(3,'Lang',2,2,',1,2,3'),(4,'LangModules',2,3,',1,2,3,4'),(5,'Lang',2,4,',1,2,3,4,5'),(6,'translations',2,4,',1,2,3,4,6'),(7,'Page',2,2,',1,2,7'),(8,'PageModules',2,7,',1,2,7,8'),(9,'Page',2,8,',1,2,7,8,9'),(10,'PageResource',2,8,',1,2,7,8,10'),(11,'Site',2,2,',1,2,11'),(12,'SiteModules',2,11,',1,2,11,12'),(13,'Site',2,12,',1,2,11,12,13'),(14,'WebsiteCountries',2,12,',1,2,11,12,14'),(15,'WebsiteUrls',2,12,',1,2,11,12,15'),(16,'WebUser',2,2,',1,2,16'),(17,'WebUserModules',2,16,',1,2,16,17'),(18,'WebUser',2,17,',1,2,16,17,18');
+INSERT INTO `_permission_groups` VALUES (1,'AllModules',2,0,',1','/AllModules'),(2,'Sys',2,1,',1,2','/AllModules/Sys'),(3,'AllUsers',0,0,',3','/AllUsers'),(4,'Sys',0,3,',3,4','/AllUsers/Sys'),(5,'AllPermissions',1,0,',5','/AllPermissions'),(6,'Sys',1,5,',5,6','/AllPermissions/Sys'),(7,'web',2,2,',1,2,7','/AllModules/Sys/web'),(8,'Lang',2,7,',1,2,7,8','/AllModules/Sys/web/Lang'),(9,'translations',2,8,',1,2,7,8,9','/AllModules/Sys/web/Lang/translations'),(10,'Page',2,7,',1,2,7,10','/AllModules/Sys/web/Page'),(11,'PageResource',2,10,',1,2,7,10,11','/AllModules/Sys/web/Page/PageResource'),(12,'Site',2,7,',1,2,7,12','/AllModules/Sys/web/Site'),(13,'WebsiteCountries',2,12,',1,2,7,12,13','/AllModules/Sys/web/Site/WebsiteCountries'),(14,'WebsiteUrls',2,12,',1,2,7,12,14','/AllModules/Sys/web/Site/WebsiteUrls'),(15,'WebUser',2,7,',1,2,7,15','/AllModules/Sys/web/WebUser'),(16,'default',1,6,',5,6,16','/AllPermissions/Sys/default'),(17,'God',0,4,',3,4,17','/AllUsers/Sys/God'),(18,'adtopy',2,2,',1,2,18','/AllModules/Sys/adtopy'),(19,'editor',2,2,',1,2,19','/AllModules/Sys/editor'),(20,'reflection',2,2,',1,2,20','/AllModules/Sys/reflection');
 /*!40000 ALTER TABLE `_permission_groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -83,7 +85,7 @@ CREATE TABLE `_permission_items` (
   `item_value` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `item_type` (`item_type`,`item_name`,`item_value`) USING HASH
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -92,7 +94,7 @@ CREATE TABLE `_permission_items` (
 
 LOCK TABLES `_permission_items` WRITE;
 /*!40000 ALTER TABLE `_permission_items` DISABLE KEYS */;
-INSERT INTO `_permission_items` VALUES (2,2,'','modelLang	ranslations'),(1,2,'','modelLang'),(3,2,'','modelPage'),(4,2,'','modelPagePageResource'),(5,2,'','modelSite'),(6,2,'','modelSiteWebsiteCountries'),(7,2,'','modelSiteWebsiteUrls'),(8,2,'','modelWebUser');
+INSERT INTO `_permission_items` VALUES (10,0,'USER','USER_1'),(2,1,'PERMISSION','Admin'),(5,1,'PERMISSION','Create'),(6,1,'PERMISSION','Destroy'),(7,1,'PERMISSION','Disable'),(3,1,'PERMISSION','Edit'),(8,1,'PERMISSION','List'),(1,1,'PERMISSION','Reflection'),(9,1,'PERMISSION','Report'),(4,1,'PERMISSION','View');
 /*!40000 ALTER TABLE `_permission_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,7 +118,7 @@ CREATE TABLE `_permissions` (
   `ACLDATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `aro_type` (`aro_type`,`aro_id`,`aco_type`,`aco_id`,`axo_type`,`axo_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,6 +127,7 @@ CREATE TABLE `_permissions` (
 
 LOCK TABLES `_permissions` WRITE;
 /*!40000 ALTER TABLE `_permissions` DISABLE KEYS */;
+INSERT INTO `_permissions` VALUES (1,1,1,17,5,1,1,1,1,'2018-01-31 12:47:26');
 /*!40000 ALTER TABLE `_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -179,8 +182,9 @@ CREATE TABLE `page` (
   `title` varchar(200) DEFAULT NULL,
   `tags` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
+  `role` enum('View','List','Edit','Create','Generic') DEFAULT NULL,
   PRIMARY KEY (`id_page`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -189,7 +193,7 @@ CREATE TABLE `page` (
 
 LOCK TABLES `page` WRITE;
 /*!40000 ALTER TABLE `page` DISABLE KEYS */;
-INSERT INTO `page` VALUES (1,'index',1,'Index','2017-11-18 16:36:21','2017-11-18 16:36:21',1,0,'index','Index','',''),(2,'index',2,'Index','2017-11-26 18:56:11','2017-11-26 18:56:11',1,0,'index','Index','',''),(4,'index',3,'Index','2017-11-27 02:33:05','2017-11-27 02:33:05',1,0,'index','Index','',''),(5,'login',2,'Login','2017-12-10 16:22:52','2017-12-10 16:22:52',1,0,'User/Login','Login',NULL,NULL),(6,'error',2,'Error','2017-12-26 16:51:08','2017-12-26 16:51:08',1,0,'error','Error',NULL,NULL),(7,'editor',2,'Error','2017-12-26 16:51:24','2017-12-26 16:51:24',1,0,'editor','Editor',NULL,NULL),(8,'test',3,'Test','2018-01-26 02:27:48','2018-01-26 02:27:48',1,0,'test','Test',NULL,NULL);
+INSERT INTO `page` VALUES (1,'index',1,'Index','2017-11-18 16:36:21','2017-11-18 16:36:21',1,0,'index','Index','','',NULL),(2,'index',2,'Index','2017-11-26 18:56:11','2017-11-26 18:56:11',1,0,'index','Index','','',NULL),(4,'index',3,'Index','2017-11-27 02:33:05','2017-11-27 02:33:05',1,0,'index','Index','','',NULL),(5,'login',2,'Login','2017-12-10 16:22:52','2017-12-10 16:22:52',1,0,'User/Login','Login',NULL,NULL,NULL),(6,'error',2,'Error','2017-12-26 16:51:08','2017-12-26 16:51:08',1,0,'error','Error',NULL,NULL,NULL),(7,'editor',2,'Error','2017-12-26 16:51:24','2017-12-26 16:51:24',1,0,'editor','Editor',NULL,NULL,NULL),(8,'test',3,'Test','2018-01-26 02:27:48','2018-01-26 02:27:48',1,0,'test','Test',NULL,NULL,NULL),(9,'site',2,'Site',NULL,NULL,1,0,'site','Site',NULL,NULL,NULL),(10,'namespaces',3,'Namespaces',NULL,NULL,1,0,'Reflection/Namespaces','Namespaces',NULL,NULL,NULL),(11,'editDefinitions',3,'EditArrayDefinition',NULL,NULL,1,0,'Reflection/ArrayDefinitions','Edit Definition',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `page` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -209,7 +213,7 @@ CREATE TABLE `translations` (
   `realm` enum('Site','Back','Editor','Reflection') DEFAULT 'Site',
   PRIMARY KEY (`id_translation`),
   KEY `aa` (`id_string`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -218,7 +222,7 @@ CREATE TABLE `translations` (
 
 LOCK TABLES `translations` WRITE;
 /*!40000 ALTER TABLE `translations` DISABLE KEYS */;
-INSERT INTO `translations` VALUES ('USUARIO','es','422560cb24964b0483b703a42bcd7500',1,0,'Site'),('CLAVE','es','230554a3a50cbfa648f233d46df9ca36',2,0,'Site'),('Aceptar','es','d1cdc7bc8e002ceb7405de577046402c',3,0,'Site'),('Elemento no encontrado','es','46c0bea962f74ccf845c7a7a4e75f930',4,0,'Site'),('Usuario/Contraseña incorrectos','es','9036c3b63b31ed00781efc960ff5638b',5,0,'Site');
+INSERT INTO `translations` VALUES ('USUARIO','es','422560cb24964b0483b703a42bcd7500',1,0,'Site'),('CLAVE','es','230554a3a50cbfa648f233d46df9ca36',2,0,'Site'),('Aceptar','es','d1cdc7bc8e002ceb7405de577046402c',3,0,'Site'),('Elemento no encontrado','es','46c0bea962f74ccf845c7a7a4e75f930',4,0,'Site'),('Usuario/Contraseña incorrectos','es','9036c3b63b31ed00781efc960ff5638b',5,0,'Site'),('','es','A',6,1,'Site');
 /*!40000 ALTER TABLE `translations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -237,7 +241,7 @@ CREATE TABLE `websites` (
   `namespace` varchar(45) DEFAULT '',
   `websiteName` varchar(45) DEFAULT '',
   PRIMARY KEY (`id_site`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -246,7 +250,7 @@ CREATE TABLE `websites` (
 
 LOCK TABLES `websites` WRITE;
 /*!40000 ALTER TABLE `websites` DISABLE KEYS */;
-INSERT INTO `websites` VALUES (1,'adtopy','http://www.adtopy.com',0,'adtopy','Adtopy'),(2,'editor','http://editor.adtopy.com',0,'editor','Editor'),(3,'reflection','http://reflection.adtopy.com',0,'reflection','Reflection');
+INSERT INTO `websites` VALUES (1,'adtopy','http://www.adtopy.com',0,'adtopy','Adtopy'),(2,'editor','http://editor.adtopy.com',0,'editor','Editor'),(3,'reflection','http://reflection.adtopy.com',0,'reflection','Reflection'),(4,'statics','http://statics.adtopy.com',0,'statics','Statics');
 /*!40000 ALTER TABLE `websites` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -282,7 +286,7 @@ CREATE TABLE `webuser` (
 
 LOCK TABLES `webuser` WRITE;
 /*!40000 ALTER TABLE `webuser` DISABLE KEYS */;
-INSERT INTO `webuser` VALUES ('admin','$2y$12$p0YxpjCeUuW/YvDI47xqmO4uBuNaawgElD82XWxZ0AXJJoMOP2PCi',1,'admin@admin.com',1,'2018-01-28 19:45:44','2017-12-24 15:07:42',NULL,NULL,NULL,0,'2017-12-24 15:07:42',1);
+INSERT INTO `webuser` VALUES ('admin','$2y$12$p0YxpjCeUuW/YvDI47xqmO4uBuNaawgElD82XWxZ0AXJJoMOP2PCi',1,'admin@admin.com',1,'2018-02-10 21:10:11','2017-12-24 15:07:42',NULL,NULL,NULL,0,'2017-12-24 15:07:42',1);
 /*!40000 ALTER TABLE `webuser` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -295,4 +299,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-29  4:03:08
+-- Dump completed on 2018-02-24  1:05:12
