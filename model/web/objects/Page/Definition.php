@@ -135,7 +135,6 @@ class Definition extends \lib\model\BaseModelDefinition
                             'SHORTLABEL'=>'Role',
                             'DESCRIPTIVE'=>true,
                             'TYPE'=>'Enum',
-                            'REQUIRED'=>true,
                             'VALUES'=>array(
                                 \model\web\Page::PAGE_ROLE_VIEW,
                                 \model\web\Page::PAGE_ROLE_LIST,
@@ -167,7 +166,6 @@ class Definition extends \lib\model\BaseModelDefinition
                         ),
                         'requiredPermission'=>array(
                             'TYPE'=>'ENUM',
-                            'REQUIRED'=>true,
                             'DEFAULT'=>'PUBLIC',
                             'LABEL'=>'Required permission',
                             'VALUES'=>array(

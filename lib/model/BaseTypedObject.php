@@ -162,6 +162,8 @@ class BaseTypedException extends BaseException {
     const ERR_REJECTED_CHANGE_STATE=12;
     const ERR_NOT_EDITABLE_IN_STATE=13;
     const ERR_LOAD_DATA_FAILED=14;
+    const ERR_UNKNOWN_STATE=15;
+    const ERR_INVALID_VALUE=16;
 }
 
 class BaseTypedObject extends PathObject
@@ -275,7 +277,7 @@ class BaseTypedObject extends PathObject
             {
                 if(!isset($data[$key]))
                     continue;
-                $value->getType()->__rawSet($data[$key]);
+                $value->load($data);
                 $this->addDirtyField($key);
             }
             $this->__data=$data;
@@ -381,8 +383,11 @@ class BaseTypedObject extends PathObject
                     }
                 }
                 $checkMethod="check_".$varName;
-                if(method_exists($this,$checkMethod))
-                    $this->$checkMethod($value);
+                if(method_exists($this,$checkMethod)) {
+                    if(!$this->$checkMethod($value))
+                        throw new BaseTypedException(BaseTypedException::ERR_INVALID_VALUE,array("field"=>$varName,"value"=>$value));
+
+                }
 
                 $processName="process_".$varName;
                 $existsProcess=method_exists($this,$processName);

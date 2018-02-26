@@ -1,7 +1,7 @@
 <?php
 namespace lib\model\states;
 
-use lib\model\types\BaseTypeException;
+use \lib\model\BaseTypedException;
 
 /*
  * Ejemplo complejo de defincion de estado:
@@ -212,7 +212,7 @@ class StatedDefinition
         {
             if(!is_string($label))
                 $label=$this->getStateLabel($label);
-            return \io($this->definition["STATES"]["STATES"][$label],"IS_FINAL",false);
+            return \io($this->definition["STATES"]["STATES"][$label],"FINAL",false);
         }
         function getStateLabel($id)
         {
@@ -242,7 +242,7 @@ class StatedDefinition
                 $field=$this->model->__getField($cF);
                 if(!$field->is_set())
                 {
-                    throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_REQUIRED_FIELD,array("field"=>$cF));
+                    throw new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD,array("field"=>$cF));
                 }
             }
 
@@ -315,18 +315,28 @@ class StatedDefinition
     }
     function changeState($next)
     {
+        $orig=$next;
         if(is_string($next))
         {
             $next=$this->getStateId($next);
         }
+        if($next===false)
+            throw new BaseTypedException(BaseTypedException::ERR_UNKNOWN_STATE,array("state"=>$orig));
         $this->changingState=true;
-        if($next==$this->newState)
+        if($next===$this->newState)
             return;
         // por ahora, hacemos esto: Si ya hay un newState, rechanzamos el nuevo cambio.
         if($this->newState)
-            throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_DOUBLESTATECHANGE,array("current"=>$this->getCurrentState(),"new"=>$next,"middle"=>$this->newState));
+            throw new BaseTypedException(BaseTypedException::ERR_DOUBLESTATECHANGE,array("current"=>$this->getCurrentState(),"new"=>$next,"middle"=>$this->newState));
 
         $this->setOldState($this->getOldState());
+
+        if($this->isFinalState($this->oldStateLabel))
+        {
+            $this->changingState=false;
+            throw new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_FINAL_STATE,array("current"=>$this->oldStateLabel,"new"=>$this->newStateLabel));
+        }
+
         $actualState = $this->oldState;
         if($this->oldState===$next && $this->oldState!==null) {
             $this->changingState=false;
@@ -334,7 +344,6 @@ class StatedDefinition
         }
         $this->setNewState($next);
 
-        $oldId=$this->oldState;
         $newId=$this->newState;
         if(!isset($this->definition["STATES"]["STATES"][$this->newStateLabel]))
         {
@@ -344,18 +353,14 @@ class StatedDefinition
         }
         $definition=$this->definition["STATES"]["STATES"][$this->newStateLabel];
         // Se ve si el estado actual es final o no.
-        if($this->isFinalState($this->oldStateLabel))
-        {
-            $this->changingState=false;
-            throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_CANT_CHANGE_FINAL_STATE,array("current"=>$actualState,"new"=>$next));
-        }
+
         if(isset($definition["FIELDS"]["REQUIRED"]))
         {
             $f=$definition["FIELDS"]["REQUIRED"];
             for($n=0;$n<count($f);$n++)
             {
                 if(!$this->model->{"*".$f[$n]}->hasValue())
-                    throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_REQUIRED_FIELD,array("field"=>$f[$n]));
+                    throw new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD,array("field"=>$f[$n]));
             }
         }
         if(isset($definition["ALLOW_FROM"]))
@@ -366,12 +371,12 @@ class StatedDefinition
                 {
                     $this->executeCallbacks("REJECT_TO",$this->newStateLabel,$this->oldStateLabel);
                     $this->changingState=false;
-                    throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_REJECTED_CHANGE_STATE,array("current"=>$actualState,"new"=>$next));
+                    throw new BaseTypedException(BaseTypedException::ERR_REJECTED_CHANGE_STATE,array("current"=>$actualState,"new"=>$next));
                 }
                 else
                 {
                     $this->changingState=false;
-                    throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_CANT_CHANGE_STATE_TO,array("current"=>$actualState,"new"=>$next));
+                    throw new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_STATE_TO,array("current"=>$actualState,"new"=>$next));
                 }
 
             }
@@ -386,7 +391,7 @@ class StatedDefinition
         }
         if(!$result)
         {
-            throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_CANT_CHANGE_STATE,array("current"=>$actualState,"new"=>$next));
+            throw new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_STATE,array("current"=>$actualState,"new"=>$next));
         }
         $this->executeCallbacks("ON_LEAVE",$this->oldStateLabel,$this->newStateLabel);
         $this->executeCallbacks("ON_ENTER",$this->newStateLabel,$this->oldStateLabel);
@@ -396,10 +401,12 @@ class StatedDefinition
 
     function executeCallbacks($type,$state,$refState)
     {
+        if(!isset($this->definition["STATES"]["LISTENER_TAGS"]))
+            return true;
         if(!isset($this->definition["STATES"]['STATES'][$state]["LISTENERS"][$type]))
             return true;
 
-        $cbConnection=new \lib\model\states\CallbackCollection($this->definition["LISTENER_TAGS"]);
+        $cbConnection=new \lib\model\states\CallbackCollection($this->definition["STATES"]["LISTENER_TAGS"]);
 
         $def=$this->definition["STATES"]['STATES'][$state]["LISTENERS"][$type];
         $callbacks=$this->getStatedDefinition($def,$refState);
@@ -407,7 +414,7 @@ class StatedDefinition
         $result=$cbConnection->apply(
             $callbacks,
             $this->model,
-            $type
+            $type=="TESTS"?"TEST":"LINEAR"
             );
         return $result;
     }
@@ -440,7 +447,7 @@ class StatedDefinition
                 return $statedDef["STATES"][$stateToCheck];
             if(isset($statedDef["STATES"]["*"]))
                 return $statedDef["STATES"]["*"];
-            throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NO_STATE_DEFINITION,array("state"=>$stateToCheck));
+            return array();
         }
         return $statedDef;
     }

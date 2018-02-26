@@ -109,7 +109,9 @@ abstract class Page extends \lib\model\BaseModel
     function __get($varName)
     {
         try{
-            return $this->__pageDef->{$varName};
+            if($this->__pageDef)
+                return $this->__pageDef->{$varName};
+            return parent::__get($varName);
         }
         catch(\lib\model\BaseTypedException $e)
         {
@@ -152,10 +154,10 @@ abstract class Page extends \lib\model\BaseModel
     function setPageDefinition($obj,$params)
     {
         $this->__pageDef=$obj;
-        $obj->loadFromArray($params,"HTML");
+
         try
         {
-            $obj->validate();
+            $obj->loadFromArray($params,"HTML");
         }catch(\lib\model\BaseTypedException $e)
         {
             throw new PageException(PageException::ERR_INVALID_PARAMETERS);
@@ -280,6 +282,7 @@ EOT;
     }
     function getLayoutPath($isWork=false)
     {
+        $site=$this->id_site[0];
         return $this->id_site[0]->getPagePath($this->path)."/".$this->getPageName().($isWork==true?"_work":"").".php";
     }
     function getWorkLayoutPath()

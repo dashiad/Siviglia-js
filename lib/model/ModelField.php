@@ -121,7 +121,7 @@ class ModelField
     {
         return $this->name;
     }
-    function load(& $rawModelData,$unserializeType=null)
+    function load(& $rawModelData,$unserializeType="PHP")
     {
         if($this->isComposite)
         {

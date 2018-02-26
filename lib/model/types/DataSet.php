@@ -376,7 +376,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
             $this->currentOffset=$index;                        
             //if($this->parentDs)
             //{
-                $this->rowSet->loadFromArray($this->value[$this->currentOffset],$this->parentDs->getSerializer()->getSerializerType());
+                $this->rowSet->loadFromArray($this->value[$this->currentOffset],$this->parentDs->getSerializer()->getSerializerType(),true);
             //}
         }
         return $this->rowSet;

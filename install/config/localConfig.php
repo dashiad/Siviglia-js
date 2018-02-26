@@ -14,10 +14,10 @@ define("DONT_ENCRYPT_COOKIE",1);
 define("_DB_NAME_","adtopy");
 /* BASE DE DATOS LOCAL */
 define("_DB_USER_","root");
-define("_DB_PASSWORD_","root");
+define("_DB_PASSWORD_","");
 #define("_DB_SERVER_","192.168.253.1");
 //define("_DB_SERVER_","10.0.2.2");
-define("_DB_SERVER_","192.168.99.1");
+define("_DB_SERVER_","192.168.253.1");
 
 define("WEBLOCALPATH","/");
 

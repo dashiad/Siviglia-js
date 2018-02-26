@@ -78,6 +78,7 @@ class CallbackCollection
         $target=$referenceModel;
         if(isset($cdef["PATH"]))
             $target=$referenceModel->getPath($cdef["PATH"],null);
+
         switch($cdef["TYPE"])
         {
             case "METHOD":{
@@ -90,5 +91,6 @@ class CallbackCollection
                 return $this->applyList($cdef["CALLBACKS"],$referenceModel,$mode);
             }break;
         }
+        return true;
     }
 }
