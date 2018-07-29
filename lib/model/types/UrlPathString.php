@@ -8,7 +8,7 @@ class UrlPathString extends _String
 {    
     function __construct($def,$value=null)
     {
-        super::__construct(
+        parent::__construct(
             array("ALLOWHTML"=>false,"TRIM"=>true,"MINLENGTH"=>1,"MAXLENGTH"=>100),
             $value);
 

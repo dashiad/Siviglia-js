@@ -318,13 +318,16 @@ class Form extends \lib\model\BaseTypedObject
         $errored=false;
         if($this->actionResult->isOk())
         {
-            if(!$this->validate($unserializedFields,$this->actionResult,"PHP"))
+            if(!$this->__validate($unserializedFields,$this->actionResult,"PHP"))
             {
                 $this->onError($this->actionResult);
                 $errored=true;
             }
+            $this->__fields=$this->actionResult->getParsedFields();
+            $this->__loaded=true;
         }
-
+        if($this->actionResult->isOk())
+            $this->validate($this->actionResult);
         // _d($this->actionResult);
 
         if ($this->actionResult->isOk()) {
@@ -429,9 +432,9 @@ class Form extends \lib\model\BaseTypedObject
     }
 
     // Los siguientes metodos son para ser sobreescritos en las clases de formulario.
-    function validate($params,$actionResult,$user)
+    function validate( $actionResult)
     {
-
+        return $actionResult->isOk();
     }
 
     function onError($actionResult)

@@ -14,7 +14,7 @@ class DeleteAction extends \lib\action\Action
                'ROLE'=>'Delete',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'PERMISSION'=>'delete'
                            )
                      ),

@@ -300,13 +300,13 @@ class BaseTypedObjectTest extends TestCase
     function test3()
     {
         $obj=$this->getDefinition1();
-        $result=$obj->validate(array("one"=>"hola"));
+        $result=$obj->__validate(array("one"=>"hola"));
         $this->assertEquals(true,$result->isOk());
     }
     function test4()
     {
         $obj=$this->getDefinition1();
-        $result=$obj->validate(array("one"=>"h"));
+        $result=$obj->__validate(array("one"=>"h"));
         $this->assertEquals(false,$result->isOk());
         $fieldErrors=$result->getFieldErrors("one");
         $keys=array_keys($fieldErrors);
@@ -377,7 +377,7 @@ class BaseTypedObjectTest extends TestCase
             "status"=>"Another",
             "two"=>"two"
         );
-        $res=$obj->validate($data,null,"PHP");
+        $res=$obj->__validate($data,null,"PHP");
         $this->assertEquals(false,$res->isOk());
         $ex=$res->getFieldErrors("two");
         $this->assertEquals(true,isset($ex) && $ex!=null);
@@ -401,7 +401,7 @@ class BaseTypedObjectTest extends TestCase
             "status"=>"Other",
             "two"=>"two"
         );
-        $res=$obj->validate($data,null,"PHP");
+        $res=$obj->__validate($data,null,"PHP");
         $this->assertEquals(false,$res->isOk());
         $errs=$res->getFieldErrors();
         $keys=array_keys($errs);

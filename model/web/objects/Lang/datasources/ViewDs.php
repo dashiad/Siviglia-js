@@ -14,7 +14,7 @@ class ViewDs
                'DATAFORMAT'=>'Table',
                'PARAMS'=>array(
                      'id_lang'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'id_lang',
                            'TRIGGER_VAR'=>'id_lang'
                            )
@@ -22,7 +22,7 @@ class ViewDs
                'IS_ADMIN'=>0,
                'INDEXFIELDS'=>array(
                      'id_lang'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'id_lang',
                            'REQUIRED'=>'true'
                            )

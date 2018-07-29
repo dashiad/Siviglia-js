@@ -11,10 +11,21 @@
           $def["TRIM"]=true;
           parent::__construct($def,$value);
       }
-      function encode($configuration)
+      function encode($configuration=null)
       {
-          $passwordEncoding=io($configuration,"PASSWORD_ENCODING","default");
-          $options=array("cost"=>io($configuration,"COST",Password::DEFAULT_COST));
+          if(!$configuration)
+          {
+              $passwordEncoding=$this->definition["PASSWORD_ENCODING"];
+              $options=array("cost"=>$this->definition["COST"]);
+          }
+          else {
+              $passwordEncoding = io($configuration, "PASSWORD_ENCODING", "default");
+              $options = array("cost" => io($configuration, "COST", Password::DEFAULT_COST));
+          }
+          if(!$passwordEncoding)
+              $passwordEncoding="BCRYPT";
+          if(!$options["cost"])
+              $options["cost"]=10;
           switch($passwordEncoding)
           {
               case "PLAINTEXT":{return;}break;

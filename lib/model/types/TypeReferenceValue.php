@@ -26,7 +26,7 @@ class TypeReferenceValue extends Text implements ReferencesModel
         {
             if(!$this->model)
                 throw new TypeReferenceValueException(TypeReferenceValueException::ERR_NO_MODEL);
-            $this->parentType=$model->{"*".$this->definition["DEFINED_BY"]}->getTypeInstance();
+            $this->parentType=$this->model->{"*".$this->definition["DEFINED_BY"]}->getTypeInstance();
         }
         return $this->parentType;
     }

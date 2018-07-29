@@ -47,24 +47,4 @@
       }
   }
 
-
-   class AutoIncrementCASSSerializer extends BaseTypeCASSSerializer{
-      function serialize($type)
-      {        
-          if(!$type->hasValue())
-          {
-              $val=microtime(true);
-              $type->setValue($val);
-          }
-		  return $type->getValue();
-      }    
-      function unserialize($value)
-      {
-          return intval($value);
-      }
-      function getCASSDefinition($name,$definition)
-      {
-          return array("NAME"=>$name,"TYPE"=>"UTF8Type");              
-      }
-  }
 ?>

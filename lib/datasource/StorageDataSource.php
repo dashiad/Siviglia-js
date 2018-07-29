@@ -104,7 +104,7 @@ abstract class StorageDataSource extends TableDataSource
             $this->parentField=$parentField;
         }
         $this->joinType=$joinType;
-        $this->validate();
+        //$this->validate();
     }
     function getStartingRow()
     {
@@ -276,7 +276,6 @@ abstract class StorageDataSource extends TableDataSource
         $this->pagingParameters->__sort=$sortField;
         $this->pagingParameters->__sortDir=$sortDirection;
     }
-
 
     abstract function addConditions($conds);
 }

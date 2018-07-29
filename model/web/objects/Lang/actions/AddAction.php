@@ -14,7 +14,7 @@ class AddAction extends \lib\action\Action
                'ROLE'=>'Add',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'PERMISSION'=>'create'
                            )
                      ),
@@ -23,37 +23,37 @@ class AddAction extends \lib\action\Action
                      'name'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'name',
-                           'MODEL'=>'Lang'
+                           'MODEL'=>'\model\web\Lang'
                            ),
                      'is_rtl'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'is_rtl',
-                           'MODEL'=>'Lang'
+                           'MODEL'=>'\model\web\Lang'
                            ),
                      'language_code'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'language_code',
-                           'MODEL'=>'Lang'
+                           'MODEL'=>'\model\web\Lang'
                            ),
                      'iso_code'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'iso_code',
-                           'MODEL'=>'Lang'
+                           'MODEL'=>'\model\web\Lang'
                            ),
                      'active'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'active',
-                           'MODEL'=>'Lang'
+                           'MODEL'=>'\model\web\Lang'
                            ),
                      'date_format_full'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'date_format_full',
-                           'MODEL'=>'Lang'
+                           'MODEL'=>'\model\web\Lang'
                            ),
                      'date_format_lite'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'date_format_lite',
-                           'MODEL'=>'Lang'
+                           'MODEL'=>'\model\web\Lang'
                            )
                      )
                );

@@ -165,19 +165,40 @@ class ModelName
         function getForms()
         {
             $startPath=$this->getPath("/html/forms");
-            $files=\lib\php\FileTools::getFilesInDirectory($startPath,false,array("php"),$relative=true);
+            try {
+                $files = \lib\php\FileTools::getFilesInDirectory($startPath, false, array("php"), $relative = true);
+            }catch(\lib\php\FileToolsException $e)
+            {
+                if($e->getCode()==\lib\php\FileToolsException::ERR_INVALID_DIRECTORY)
+                    return array();
+                throw $e;
+            }
             return $files;
         }
         function getFormWidgets()
         {
             $startPath=$this->getPath("/html/forms");
-            $files=\lib\php\FileTools::getFilesInDirectory($startPath,false,array("wid"),$relative=true);
+            try {
+                $files=\lib\php\FileTools::getFilesInDirectory($startPath,false,array("wid"),$relative=true);
+            }catch(\lib\php\FileToolsException $e)
+            {
+                if($e->getCode()==\lib\php\FileToolsException::ERR_INVALID_DIRECTORY)
+                    return array();
+                throw $e;
+            }
             return $files;
         }
         function getViews()
         {
             $startPath=$this->getPath("/html/views");
-            $files=\lib\php\FileTools::getFilesInDirectory($startPath,false,".wid",$relative=true);
+            try{
+                $files=\lib\php\FileTools::getFilesInDirectory($startPath,false,".wid",$relative=true);
+            }catch(\lib\php\FileToolsException $e)
+            {
+                if($e->getCode()==\lib\php\FileToolsException::ERR_INVALID_DIRECTORY)
+                    return array();
+                throw $e;
+            }
             return $files;
         }
         function getNamespacedForm($formName)

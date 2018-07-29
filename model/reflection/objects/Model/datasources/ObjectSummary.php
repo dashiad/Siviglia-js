@@ -74,6 +74,7 @@ class ObjectSummary
         $forms=\model\reflection\Html\forms\FormDefinition::getModelForms($class);
         foreach($forms as $key=>$value)
             $result["forms"][$key]=$value->getDefinition();
+        return $result;
     }
 }
 ?>

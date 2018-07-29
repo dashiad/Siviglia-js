@@ -267,7 +267,7 @@ class BaseTypedObject extends PathObject
                 return;
             if(!$raw)
             {
-                $result=$this->validate($data,null,$serializer);
+                $result=$this->__validate($data,null,$serializer);
                 if(!$result->isOk())
                 {
                     throw new BaseTypedException(BaseTypedException::ERR_LOAD_DATA_FAILED);
@@ -277,8 +277,8 @@ class BaseTypedObject extends PathObject
             {
                 if(!isset($data[$key]))
                     continue;
-                $value->load($data);
-                $this->addDirtyField($key);
+                $value->unserialize($data,$serializer);
+                //$this->addDirtyField($key);
             }
             $this->__data=$data;
             $this->__loaded=true;
@@ -354,14 +354,10 @@ class BaseTypedObject extends PathObject
             }
 
         }
-        function getFields($fields)
-        {
-            $names=$this->__getFieldNames();
-            $result=array();
-            foreach($names as $key=>$value)
-                $result[$key]=$value->getValue();
 
-            return $result;
+        function getFields()
+        {
+            return $this->__fields;
         }
 
         function __set($varName,$value) {
@@ -480,7 +476,8 @@ class BaseTypedObject extends PathObject
          function normalizeToAssociativeArray($fields)
          {
              $fieldArray=null;
-             if(is_object($fields) && is_a('\lib\model\BaseTypedObject',$fields))
+
+             if(is_object($fields) && is_a($fields,'\lib\model\BaseTypedObject'))
              {
                  $fieldArray=$fields->getFields();
              }
@@ -506,8 +503,9 @@ class BaseTypedObject extends PathObject
              return $fieldArray;
          }
 
-         function validate($fields,\lib\model\ModelFieldErrorContainer $result=null,$serializer="PHP")
+         function __validate($fields,\lib\model\ModelFieldErrorContainer $result=null,$serializer="PHP")
          {
+
              // Si no se envia un resultado, se crea uno.
              if(!$result)
                  $result=new \lib\model\ModelFieldErrorContainer();
@@ -515,7 +513,8 @@ class BaseTypedObject extends PathObject
              // Si no hay campos...Salimos.
              if(!$this->__fieldDef)
                  return true;
-
+             if(count($result->getParsedFields())>0)
+                 return true;
              // Se normalizan los campos.Queremos solo y exclusivamente un array campo->valir.
              $fieldArray=$this->normalizeToAssociativeArray($fields);
 

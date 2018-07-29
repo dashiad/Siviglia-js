@@ -32,13 +32,10 @@ abstract class Datasource
         $dsDefinition=$ds->getOriginalDefinition();
         if (isset($this->definition["FILTERING_DATASOURCES"]))
             $ds->setFilteringDatasources($this->definition["FILTERING_DATASOURCES"]);
-        if($this->params)
-        {
-            if(is_array($this->params))
-                $ds->loadFromArray($this->params,$this->unserializerType);
-        }
+        if(!$this->params)
+            $this->params=array();
         try {
-            $ds->validate();
+            $ds->loadFromArray($this->params,"HTML");
         }catch(\lib\model\BaseTypedException $e)
         {
             throw $e;

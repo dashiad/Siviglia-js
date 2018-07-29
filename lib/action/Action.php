@@ -7,24 +7,22 @@ class ActionException extends \lib\model\BaseException
     const ERR_REQUIRED_FIELD=2;
 }
 
-class Action
+class Action extends \lib\model\BaseTypedObject
 {
     protected $destModel = null;
 
     function __construct($definition)
     {
-        //$this->definition=$definition;
-	//$this->initialize($definition);
+
+        if(!$definition)
+        {
+            $n=get_class($this);
+            parent::__construct($n::$definition);
+        }
+        else
+            parent::__construct($definition);
     }
-    function initialize($definition=null)
-    {
-        $this->definition = $definition;
-	if(!$definition)
-	{
- 		$n=get_class($this);
-		$this->definition=$n::$definition;	
-	}
-    }
+
 
     static function getAction($object, $name)
     {
@@ -46,35 +44,15 @@ class Action
     {
  	$n=get_class($this);
 	$def=$n::$definition;
-    if(isset($this->definition["FIELDS"]))
-    {
-        foreach ($this->definition["FIELDS"] as $key => $value) {
-            $cDef = $def["FIELDS"][$key];
-            if($cDef["REQUIRED"])
-            {
-                try
-                {
-                    $f=$fields->{"*".$key};
-                    if(!$f->hasOwnValue())
-                    {
-                        $actionResult->addFieldTypeError($key, null, new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_UNSET));
-                        return false;
-                    }
-                }catch(\Exception $e)
-                {
-                    $actionResult->addFieldTypeError($key, null, new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_UNSET));
-                    return false;
-                }
-            }
-        }
-    }
-        try {
-            $this->validate($fields, $actionResult, $user);
-        } catch (\Exception $e) {
-            $actionResult->addGlobalError($e);
-        }
+	$this->__validate($fields,$actionResult,"PHP");
 
-        if ($actionResult->isOk()) {
+	if($actionResult->isOk()) {
+        $this->__fields=$actionResult->getParsedFields();
+        $this->__loaded=true;
+        $this->validate($actionResult);
+    }
+
+	if ($actionResult->isOk()) {
             $oldState = null;
             $newState = null;
             if ($def["ROLE"] != "SEARCH") {
@@ -283,12 +261,6 @@ class Action
     function onError($keys, $params, $actionResult, $user)
     {
         return true;
-    }
-
-    function validate($params, $actionResult, $user)
-    {
-        return true;
-
     }
 
     function completeStateChange($model, $oldstate, $newstate)

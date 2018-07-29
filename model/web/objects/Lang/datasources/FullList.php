@@ -14,67 +14,67 @@ class FullList
                'DATAFORMAT'=>'Table',
                'PARAMS'=>array(
                      'name'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'name',
                            'TRIGGER_VAR'=>'name'
                            ),
                      'dynname'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'name',
                            'PARAMTYPE'=>'DYNAMIC'
                            ),
                      'is_rtl'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'is_rtl',
                            'TRIGGER_VAR'=>'is_rtl'
                            ),
                      'language_code'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'language_code',
                            'TRIGGER_VAR'=>'language_code'
                            ),
                      'dynlanguage_code'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'language_code',
                            'PARAMTYPE'=>'DYNAMIC'
                            ),
                      'iso_code'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'iso_code',
                            'TRIGGER_VAR'=>'iso_code'
                            ),
                      'dyniso_code'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'iso_code',
                            'PARAMTYPE'=>'DYNAMIC'
                            ),
                      'active'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'active',
                            'TRIGGER_VAR'=>'active'
                            ),
                      'id_lang'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'id_lang',
                            'TRIGGER_VAR'=>'id_lang'
                            ),
                      'date_format_full'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'date_format_full',
                            'TRIGGER_VAR'=>'date_format_full'
                            ),
                      'dyndate_format_full'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'date_format_full',
                            'PARAMTYPE'=>'DYNAMIC'
                            ),
                      'date_format_lite'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'date_format_lite',
                            'TRIGGER_VAR'=>'date_format_lite'
                            ),
                      'dyndate_format_lite'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'date_format_lite',
                            'PARAMTYPE'=>'DYNAMIC'
                            )

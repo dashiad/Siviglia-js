@@ -19,6 +19,7 @@
         [_SCRIPT][_FILE]/packages/Siviglia/Model.js[#][#]
         [_SCRIPT][_FILE]/packages/Siviglia/SivigliaStore.js[#][#]
         [_SCRIPT][_FILE]/packages/Siviglia/ModelInstance.js[#][#]
+        [_WIDGET][_FILE]/sites/statics/html/packages/Siviglia/autoui/AutoUI.wid[#][#]
 
     [#]
 [#]
@@ -84,6 +85,9 @@
                     <div class="nav toggle">
                         <a id="menu_toggle"><i class="fa fa-bars"></i></a>
                     </div>
+                    <ul class="nav navbar-nav">
+                        <li><a><h5 id="sectionTitle" style="font-size: 15px;font-weight: bold;color: #73899c;margin-top: 7px;">SECTION TITLE</h5></a></li>
+                    </ul>
 
                     <ul class="nav navbar-nav navbar-right">
                         <li class="">

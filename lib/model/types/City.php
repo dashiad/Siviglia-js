@@ -4,6 +4,6 @@ class City extends _String {
     {
 		$definition['MINLENGTH']=2;
 		$definition['MAXLENGTH']=128;
-        String::__construct($definition,$value);
+        _String::__construct($definition,$value);
     }
 }

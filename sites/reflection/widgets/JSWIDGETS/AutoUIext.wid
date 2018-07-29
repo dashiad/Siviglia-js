@@ -1,0 +1,97 @@
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_CODE]
+<script>
+    Siviglia.Utils.buildClass(
+        {
+            context: 'Siviglia.AutoUI',
+            classes: {
+                "Relationship":
+                    {
+                        "inherits":"Siviglia.AutoUI.ContainerType",
+                        construct: function (definition, parent, value,controller) {
+                            this.ContainerType(
+                                {
+                                    "TYPE":"CONTAINER",
+                                    "LABEL":"Relationship",
+                                    "FIELDS":{
+                                        "MODEL":{
+                                            "TYPE":"SELECTOR",
+                                            "LABEL":"Model",
+                                            "SOURCE":"[BASEURL]ModelInput",
+                                            "SOURCECONFIG": {
+                                                "LABEL": "name",
+                                                "VALUE": "name"
+                                                }
+                                            },
+
+                                        "FIELD":{
+                                            "TYPE":"SELECTOR",
+                                            "LABEL":"Field",
+                                            "SOURCE":"[BASEURL]ModelFieldInput",
+                                            "SOURCECONFIG":{
+                                                "LABEL":"name",
+                                                "VALUE":"name"
+                                            },
+                                            "SOURCEPARAMS":{
+                                                model:"../MODEL"
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+                                ,parent,value,controller);
+
+                            // Se inicializa el painter de este tipo, para que lo encuentre AutoUIPainter2
+                            Siviglia.AutoUI.RegexpSwitcher.prototype.PAINTER="TypeSwitchPainter";
+                        },
+                        methods:
+                            {
+
+                                initSubType: function () {
+                                    this.children = {};
+                                    var k = 0;
+                                    for (k in this.definition["FIELDS"])
+                                        this.children[k] = Siviglia.AutoUI.NodeFactory(this.definition["FIELDS"][k], this,null,this.controller);
+                                }
+                                getTypeFromValue:function(v)
+                                {
+                                    if(v==null)
+                                        return null;
+                                    if(v.constructor.toString().match("Array"))
+                                    {
+                                        if(v[0].constructor.toString().match("String"))
+                                            return "RegexpArray";
+                                        return "RegexpObject";
+
+                                    }
+                                    return null;
+                                },
+                                getAllowedTypes: function () {
+                                    return [{"LABEL":"Lista de Regexp","VALUE":"RegexpArray"},
+                                        {"LABEL":"Include/Exclude","VALUE":"RegexpObject"}];
+                                },
+                                getCurrentType: function () {
+                                    return this.getTypeFromValue(this.getValue())
+                                },
+                                setType: function (typeName) {
+                                    if(typeName=="RegexpObject")
+                                        this.setValue([{"match":".*","dontmatch":""}]);
+                                    else
+                                        this.setValue([".*"]);
+
+                                }
+                            }
+                    }
+            }
+        });
+
+</script>
+            [#]
+        [#]
+    [#]
+[#]

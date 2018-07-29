@@ -71,7 +71,7 @@ class Login extends \lib\action\Action
 	function validate ( $actionResult )
 	{        
             try{
-                $this->newUser=\model\web\WebUser::login($params->LOGIN,$params->PASSWORD);
+                $this->newUser=\model\web\WebUser::login($this->LOGIN,$this->PASSWORD);
    /*             include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
                 $permsManager=\Registry::getPermissionsManager();
 

@@ -14,7 +14,7 @@ class AddAction extends \lib\action\Action
                'ROLE'=>'Add',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'PERMISSION'=>'create'
                            )
                      ),
@@ -23,17 +23,17 @@ class AddAction extends \lib\action\Action
                      'value'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'value',
-                           'MODEL'=>'Lang\translations'
+                           'MODEL'=>'\model\web\Lang\translations'
                            ),
                      'lang'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'lang',
-                           'MODEL'=>'Lang\translations'
+                           'MODEL'=>'\model\web\Lang\translations'
                            ),
                      'id_string'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'id_string',
-                           'MODEL'=>'Lang\translations'
+                           'MODEL'=>'\model\web\Lang\translations'
                            )
                      )
                );

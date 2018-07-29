@@ -18,37 +18,37 @@ class AddAction extends \lib\output\html\Form
                      ),
                'FIELDS'=>array(
                      'name'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'name',
                            'REQUIRED'=>1
                            ),
                      'is_rtl'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'is_rtl',
                            'REQUIRED'=>1
                            ),
                      'language_code'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'language_code',
                            'REQUIRED'=>1
                            ),
                      'iso_code'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'iso_code',
                            'REQUIRED'=>1
                            ),
                      'active'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'active',
                            'REQUIRED'=>1
                            ),
                      'date_format_full'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'date_format_full',
                            'REQUIRED'=>1
                            ),
                      'date_format_lite'=>array(
-                           'MODEL'=>'Lang',
+                           'MODEL'=>'\model\web\Lang',
                            'FIELD'=>'date_format_lite',
                            'REQUIRED'=>1
                            )

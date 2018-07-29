@@ -1,5 +1,9 @@
 <?php
 namespace lib\php;
+class FileToolsException extends \lib\model\BaseException
+{
+    const ERR_INVALID_DIRECTORY=1;
+}
 class FileTools
 {
    static function recurse_copy($src,$dst) { 
@@ -59,6 +63,8 @@ class FileTools
    {
        if(substr($dir,-1,1)!=="/")
            $dir.="/";
+       if(!is_dir($dir))
+           throw new FileToolsException(FileToolsException::ERR_INVALID_DIRECTORY,array("dir"=>$dir));
        return  FileTools::__getFilesInDirectory($dir,$asNested,"",$extensions,$relative);
    }
 }

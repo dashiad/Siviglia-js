@@ -8,7 +8,6 @@
       static function normalize($cad)
       {
           $cad=String::normalize($cad);
-          $cad=str_replace(array("mª","Mª"),array("MARIA","maria"),$cad);
           return $cad;
 
       }

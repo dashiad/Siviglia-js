@@ -78,7 +78,7 @@ class Login extends \lib\output\html\Form
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate()
+	function validate ( $actionResult )
 	{
         $actionResult=new \lib\action\ActionResult();
 
@@ -101,7 +101,7 @@ class Login extends \lib\output\html\Form
 	 * $actionResult: Action Result object	 *
 	 * RETURNS:
 	 */
-	function onSuccess()
+	function onSuccess($actionResult)
 	{
 
 

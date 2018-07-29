@@ -14,27 +14,27 @@ class AdminFullList
                'DATAFORMAT'=>'Table',
                'PARAMS'=>array(
                      'value'=>array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'FIELD'=>'value',
                            'TRIGGER_VAR'=>'value'
                            ),
                      'lang'=>array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'FIELD'=>'lang',
                            'TRIGGER_VAR'=>'lang'
                            ),
                      'dynlang'=>array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'FIELD'=>'lang',
                            'PARAMTYPE'=>'DYNAMIC'
                            ),
                      'id_string'=>array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'FIELD'=>'id_string',
                            'TRIGGER_VAR'=>'id_string'
                            ),
                      'id_translation'=>array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'FIELD'=>'id_translation',
                            'TRIGGER_VAR'=>'id_translation'
                            )
@@ -60,7 +60,7 @@ class AdminFullList
                      ),
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'PERMISSION'=>'adminList'
                            )
                      ),

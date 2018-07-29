@@ -2,6 +2,7 @@
     [_BUNDLE]Page[#]
     [_CONTENTS]
         [_WIDGET][_FILE]/sites/reflection/widgets/JSWIDGETS/Common.wid[#][#]
+        [_WIDGET][_FILE]/sites/reflection/widgets/JSWIDGETS/AutoUIext.wid[#][#]
         [_SCRIPT]
             [_CODE]
             <script>
@@ -28,6 +29,7 @@
                                 },
                                 initialize:function(params)
                                 {
+                                    $('#sectionTitle').html("Namespace "+this.namespace);
                                     /*this.view.theTabs.viewObject.addListener(Components.Tabbar.TAB_CHANGED,function(ev,p){
                                         console.dir(arguments);
                                     })
@@ -96,26 +98,257 @@
                             methods:{
                                 preInitialize:function(params)
                                 {
-                                    debugger;
+
                                     this.object=params.object;
                                     this.controller=params.controller;
-                                    var m=new Siviglia.Model.Model("/model/reflection/Model");
-                                    this.self=this;
-                                    var t=this;
-                                    m.getDataSource("ObjectSummary",{class:this.object.layer+'/'+this.object.class}).then(function(d){
-                                        t.objects=d;
-                                        p.resolve();
+                                    var p=$.Deferred();
+                                    var m=this;
+                                    var model=new Siviglia.Model.Model("/model/reflection/Model");
+                                    model.create({layer:params.object.layer,name:params.object.class}).then(function(i){
+                                        m.model=i;
+                                        m.model.getSummary().then(function(s){
+                                            p.resolve();
+                                        })
                                     });
+                                    this.currentWidget=null;
+                                    this.objectWrap=null;
                                     return p;
+
                                 },
                                 initialize:function(params)
                                 {
+                                    this.setSelected("definition");
+                                },
+                                showUI:function(node,params)
+                                {
+                                    this.setSelected(params.option);
+                                },
 
+                                setSelected:function(type)
+                                {
+                                    if(this.currentWidget) {
+                                        this.currentWidget.destruct();
+
+                                    }
+                                    this.objectWrap=document.createElement("div");
+                                    this.currentWidget=new Reflection.Widgets.DefinitionContainer('Reflection.Widgets.DefinitionContainer',
+                                        {controller:this,model:this.model,type:type},
+                                        {},
+                                        $(this.objectWrap),
+                                        Siviglia.model.Root
+                                    );
+                                    this.objectContainer.append(this.objectWrap);
                                 }
                             }
+                        },
+                        DefinitionContainer:{
+                            inherits:"Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            methods: {
+                                preInitialize: function (params) {
+                                    this.controller = params.controller;
+                                    this.model = params.model;
+                                    this.type = params.type;
+                                    this.list = {};
+                                    this.value=null;
+                                    this.currentWidget = null;
+                                    var m = this;
+                                    return this.model.getSummaryKey(this.type).then(function (l) {
+                                        if(m.type!="definition") {
+                                            m.list = l;
+                                        }
+                                        m.value=l;
+                                        return l;
+                                    });
+                                    //return this.model.getReflectionFormDefinition(this.getFormDefinitionName());
+                                },
+                                initialize: function () {
+                                    if(this.type=="definition")
+                                    {
+                                        this.doShowForm(null);
+                                        $(this.listContainer).css("display","none");
+                                        $(this.viewContainer).attr("class","col col-md-12 col-sm-12")
+                                    }
+                                    /*this.currentWidget=new Reflection.Widgets.Namespace.DefinitionContainer('Reflection.Widgets.Namespace.DefinitionContainer',
+                                     {controller:this,model:this.model,type:type},
+                                     {},
+                                     $(this.objectWrap),
+                                     Siviglia.model.Root
+                                     );*/
+                                },
+                                showForm:function(node,params)
+                                {
+                                    this.doShowForm(params.current)
+                                },
+                                doShowForm:function(key)
+                                {
+                                    if(this.currentWidget) {
+                                        this.currentWidget.destruct();
+                                    }
+                                    var val=null;
+                                    if(this.type=="definition")
+                                        val=this.value;
+                                    else
+                                        val=this.value[key];
+
+                                    this.objectWrap=document.createElement("div");
+                                    var widName=this.type.substr(0,1).toUpperCase()+this.type.substr(1)
+                                    this.currentWidget=new Reflection.Widgets.Namespace[widName](
+                                        'Reflection.Widgets.Namespace.'+widName,
+                                        {controller:this,model:this.model,type:this.type,value:val},
+                                        {},
+                                        $(this.objectWrap),
+                                        Siviglia.model.Root
+                                    );
+                                    this.viewContainer.append(this.objectWrap);
+                                }
+                            }
+
                         }
                     }
                 });
+
+                /*
+                *   Pestañas de gestion de modelo (Definition,Action,Datasource,etc
+                * */
+                Siviglia.Utils.buildClass(
+                    {
+                        context:'Reflection.Widgets.Namespace',
+                        classes:
+                            {
+                                CustomAutoUIController:
+                                    {
+                                      inherits:"Siviglia.AutoUI.AutoUIController",
+                                        methods:
+                                            {
+                                                fetchDatasource:function(dsName,params)
+                                                {
+                                                    var p=$.Deferred();
+                                                    var m=new Siviglia.Model.Model("/model/reflection/Model");
+                                                    m.getDataSource(dsName,params).then(function(d){
+                                                        t.objects=d;
+                                                        p.resolve();
+                                                    });
+                                                    return p;
+                                                }
+                                            }
+                                    },
+                                BaseModelWidget:{
+                                    inherits:"Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                                    methods: {
+                                        preInitialize: function (params) {
+                                            this.controller = params.controller;
+                                            this.model = params.model;
+                                            this.type = params.type;
+                                            this.value=params.value;
+                                            this.definition=null;
+                                            var m=this;
+                                            var p=$.Deferred();
+                                            this.model.getReflectionFormDefinition(this.getFormDefinitionName()).
+                                                then(function(d){m.definition=d.definition;p.resolve(d)})
+                                            return p;
+
+                                        },
+
+                                        initialize: function (params) //data,node)
+                                        {
+                                             this.autoUIcontroller=new Reflection.Widgets.Namespace.CustomAutoUIController(
+                                                 top.page.App.config.baseUrl);
+                                             this.autoUIcontroller.initialize(this.definition,this.value);
+                                             var v=$("<div></div>");
+                                             var B=new Siviglia.AutoUI.Painter.Factory('AUTOUI_FACTORY',
+                                             {parentObject:null,parentNode:this.autoUIcontroller.rootNode,controller:this.controller},
+                                             {},
+                                             v,
+                                             Siviglia.model.Root
+                                             );
+                                             this.autoUINode.append(v);
+                                        }
+
+                                    }
+                                },
+                                Definition:{
+                                    inherits:"BaseModelWidget",
+                                    methods:{
+                                        getFormDefinitionName:function(){return "ModelDefinition";},
+                                        getItemList:function(){return null;}
+                                    }
+                                },
+                                Actions:{
+                                    inherits:"BaseModelWidget",
+                                    methods:{
+                                        getFormDefinitionName:function(){return "ModelAction";},
+                                        getItemList:function(){
+                                            return this.model.getActions();
+                                        }
+                                    }
+
+                                },
+                                Datasources:{
+                                    inherits:"BaseModelWidget",
+                                    methods:{
+                                        getFormDefinitionName:function(){return "ModelDatasource";},
+                                        getItemList:function(){
+                                            return this.model.getDatasources();
+                                        }
+                                    }
+                                },
+                                HtmlForms:{
+                                    inherits:"BaseModelWidget",
+                                    methods:{
+                                        getFormDefinitionName:function(){return "ModelHtmlForm";},
+                                        getItemList:function(){
+                                            return this.model.getHtmlForms();
+                                        }
+                                    }
+                                },
+                                HtmlViews:{
+                                    inherits:"BaseModelWidget",
+                                    methods:{
+                                        getFormDefinitionName:function(){return "ModelHtmlView";},
+                                        getItemList:function(){
+                                            return this.model.getHtmlViews();
+                                        }
+                                    }
+                                },
+                                HtmlWidgets:{
+                                    inherits:"BaseModelWidget",
+                                    methods:{
+                                        getFormDefinitionName:function(){return "ModelHtmlWidget";},
+                                        getItemList:function(){
+                                            return this.model.getHtmlWidgets();
+                                        }
+                                    }
+                                },
+                                JsForms:{
+                                    inherits:"BaseModelWidget",
+                                    methods:{
+                                        getFormDefinitionName:function(){return "ModelJsForm";},
+                                        getItemList:function(){
+                                            return this.model.getJsForms();
+                                        }
+                                    }
+                                },
+                                JsViews:{
+                                    inherits:"BaseModelWidget",
+                                    methods:{
+                                        getFormDefinitionName:function(){return "ModelJsView";},
+                                        getItemList:function(){
+                                            return this.model.getJsViews();
+                                        }
+                                    }
+                                },
+                                JsWidgets:{
+                                    inherits:"BaseModelWidget",
+                                    methods:{
+                                        getFormDefinitionName:function(){return "ModelJsWidget";},
+                                        getItemList:function(){
+                                            return this.model.getJsWidgets();
+                                        }
+                                    }
+                                }
+                            }
+                    }
+                );
             </script>
             [#]
         [#]
@@ -129,10 +362,6 @@
     [#]
 [#]
 <div sivWidget="Reflection.Widgets.Namespace" widgetParams="factoryClass" widgetCode="Reflection.Widgets.Namespace">
-    <div class="page-title">
-        <div class="title_left"><h3>Namespace <span sivValue="/*namespace"></span></h3></div>
-        <div class="title_right"></div>
-    </div>
     <div class="row">
         <div class="col-md-2 col-sm-2 well">
             <div sivId="modelTree" sivView="Reflection.Widgets.ObjectList" sivParams='{"objects":"/*objects","controller":"/*self"}'></div>
@@ -163,33 +392,118 @@
 </div>
 
 <div sivWidget="Reflection.Widgets.NamespaceObject" widgetParams='object,controller' widgetCode="Reflection.Widgets.NamespaceObject">
-    <h1 sivValue="/*object/name"></h1>
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Definicion<span class="sr-only">(current)</span></a></li>
-                    <li class="active"><a href="#">Acciones<span class="sr-only">(current)</span></a></li>
-                    <li class="active"><a href="#">DataSources<span class="sr-only">(current)</span></a></li>
+                    <li class="active"><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"definition"}'><span class="fa fa-gear"></span>Definicion<span class="sr-only">(current)</span></a></li>
+                    <li class="active"><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"actions"}'><span class="fa fa-bolt"></span>Acciones<span class="sr-only">(current)</span></a></li>
+                    <li class="active"><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"datasources"}'><span class="fa fa-database"></span>DataSources<span class="sr-only">(current)</span></a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">HTML<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Forms</a></li>
-                            <li><a href="#">Views</a></li>
-                            <li><a href="#">Widgets</a></li>
+                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"forms"}'><span class="fa fa-tasks"></span>Forms</a></li>
+                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"views"}'><span class="fa fa-th-large"></span>Views</a></li>
+                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"widgets"}'><span class="fa fa-puzzle-piece"></span>Widgets</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Javascript<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Forms</a></li>
-                            <li><a href="#">Views</a></li>
-                            <li><a href="#">Widgets</a></li>
+                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"jsforms"}'><span class="fa fa-tasks"></span>Forms</a></li>
+                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"jsviews"}'><span class="fa fa-th-large"></span>Views</a></li>
+                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"jswidgets"}'><span class="fa fa-puzzle-piece"></span>Widgets</a></li>
                         </ul>
                     </li>
                 </ul>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
+    <div sivId="objectContainer"></div>
+</div>
+<!--
+
+        WIDGETS DE MODELO
+
+-->
+<div sivWidget="Reflection.Widgets.DefinitionContainer" widgetParams="controller,model,type" widgetCode="Reflection.Widgets.DefinitionContainer">
+    <div class="container">
+        <div class="row">
+    <div sivId="listContainer" class="col col-md-2 col-sm-2">
+        <ul class="nav nav-tabs tabs-left" sivLoop="/*list" contextIndex="current">
+            <li>
+                <a href="#" data-toggle="tab" sivValue="/@current-index" sivEvent="click" sivCallback="showForm" sivParams='{"current":"/@current-index"}'></a>
+            </li>
+        </ul>
+    </div>
+
+    <div sivId="viewContainer" class="col col-md-10 col-sm-10">
+
+    </div>
+        </div>
+    </div>
+</div>
+
+<div sivWidget="Reflection.Widgets.Namespace.Definition" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.Definition">
+    <h3>Definition</h3>
+    <div sivId="autoUINode">
+
+    </div>
+</div>
+
+<div sivWidget="Reflection.Widgets.Namespace.Actions" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.Actions">
+    <h3>Action <span sivValue="/*name"></span></h3>
+    <div sivId="autoUINode">
+
+    </div>
+</div>
+
+<div sivWidget="Reflection.Widgets.Namespace.Datasources" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.Datasources">
+    <h3>Datasource <span sivValue="/*name"></span></h3>
+    <div sivId="autoUINode">
+
+    </div>
+</div>
+
+<div sivWidget="Reflection.Widgets.Namespace.HtmlForms" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.HtmlForms">
+    <h3>Form <span sivValue="/*name"></span></h3>
+    <div sivId="autoUINode">
+
+    </div>
+</div>
+
+<div sivWidget="Reflection.Widgets.Namespace.HtmlViews" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.HtmlViews">
+    <h3>View <span sivValue="/*name"></span></h3>
+    <div sivId="autoUINode">
+
+    </div>
+</div>
+
+<div sivWidget="Reflection.Widgets.Namespace.HtmlWidgets" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.HtmlWidgets">
+    <h3>Widget <span sivValue="/*name"></span></h3>
+    <div sivId="autoUINode">
+
+    </div>
+</div>
+
+<div sivWidget="Reflection.Widgets.Namespace.JsForms" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.JsForms">
+    <h3>Form Js <span sivValue="/*name"></span></h3>
+    <div sivId="autoUINode">
+
+    </div>
+</div>
+
+<div sivWidget="Reflection.Widgets.Namespace.JsViews" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.JsViews">
+    <h3>View Js <span sivValue="/*name"></span></h3>
+    <div sivId="autoUINode">
+
+    </div>
+</div>
+
+<div sivWidget="Reflection.Widgets.Namespace.JsWidgets" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.JsWidgets">
+    <h3>Widget Js <span sivValue="/*name"></span></h3>
+    <div sivId="autoUINode">
+
+    </div>
 </div>

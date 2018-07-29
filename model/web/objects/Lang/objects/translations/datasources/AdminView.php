@@ -14,7 +14,7 @@ class AdminView
                'DATAFORMAT'=>'Table',
                'PARAMS'=>array(
                      'id_translation'=>array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'FIELD'=>'id_translation',
                            'TRIGGER_VAR'=>'id_translation'
                            )
@@ -22,7 +22,7 @@ class AdminView
                'IS_ADMIN'=>1,
                'INDEXFIELDS'=>array(
                      'id_translation'=>array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'FIELD'=>'id_translation',
                            'REQUIRED'=>'true'
                            )
@@ -47,7 +47,7 @@ class AdminView
                      ),
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'PERMISSION'=>'adminView'
                            )
                      ),

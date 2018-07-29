@@ -14,7 +14,7 @@ class View
                'DATAFORMAT'=>'Table',
                'PARAMS'=>array(
                      'id_translation'=>array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'FIELD'=>'id_translation',
                            'TRIGGER_VAR'=>'id_translation'
                            )
@@ -22,7 +22,7 @@ class View
                'IS_ADMIN'=>0,
                'INDEXFIELDS'=>array(
                      'id_translation'=>array(
-                           'MODEL'=>'Lang\translations',
+                           'MODEL'=>'\model\web\Lang\translations',
                            'FIELD'=>'id_translation',
                            'REQUIRED'=>'true'
                            )

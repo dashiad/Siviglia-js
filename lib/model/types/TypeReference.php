@@ -28,6 +28,7 @@ class TypeReference extends PHPVariable
             $this->value=$value->definition;
             if($value->hasOwnValue())
             {
+                $f=$this->getTypeInstance();
                 $f->setValue($value->getValue());
             }
         }

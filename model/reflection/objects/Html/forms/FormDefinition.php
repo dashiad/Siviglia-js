@@ -301,7 +301,7 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
 
             $f=$objectName->getFormFileName($part);
             include_once($f);
-            $class=$objectName->getNamespacedForm($f);
+            $class=$objectName->getNamespacedForm($part);
             $formDef=$class::$definition;
             $action=null;
             if(isset($formDef["ACTION"]))

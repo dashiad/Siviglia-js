@@ -4,3 +4,5 @@ vendor/*
 sites/statics/html/node_modules
 adminator/*
 .idea/*
+*/bundles/*
+sites/statics/html/reflection/bundles/*
