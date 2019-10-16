@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace lib\model;
 class ModelField
@@ -11,7 +11,7 @@ class ModelField
     protected $type;
     protected $definition;
     protected $model;
-    protected $state; 
+    protected $state;
     protected $listeners;
     protected $isAlias;
     protected $isComposite;
@@ -20,8 +20,8 @@ class ModelField
     protected $name;
     protected $isMultiple=false;
     function __construct($name,& $model, $definition,$value=false)
-    {   
-        
+    {
+
           $this->name=$name;
           $this->model=& $model;
           // Linea especial para los objetos de tipo "estado".La definicion hay que completarla con datos contenidos en el modelo,
@@ -32,7 +32,7 @@ class ModelField
           }
 
           $this->definition=$definition;
-
+          $this->listeners=[];
           $this->type=types\TypeFactory::getType($this->model,$definition);
 
           if(is_subclass_of($this->type,'\lib\model\types\Composite'))
@@ -55,7 +55,7 @@ class ModelField
         $type=\io($definition,"TYPE","");
         switch($type)
         {
-        
+
         case 'TreeAlias':
             {
                 return new TreeAlias($name,$model,$definition);
@@ -81,7 +81,7 @@ class ModelField
                  return new RelationMxN($name,$model,$definition,$value);
             }break;
         case 'InverseRelation':
-            {                
+            {
                 $obj=new InverseRelation1x1($name,$model,$definition,$value);
                 return $obj;
             }break;
@@ -90,7 +90,7 @@ class ModelField
                 if(!$definition["VALUES"])
                 {
                     $states=$model->getStateDef()->getStates();
-                    $originalDefinition["VALUES"]=$states;                    
+                    $originalDefinition["VALUES"]=$states;
                     $originalDefinition["TYPE"]=$definition["TYPE"];
                 }
                 else
@@ -109,7 +109,7 @@ class ModelField
 
     function getStateDefinition($model,$originalDefinition)
     {
-        
+
         return $originalDefinition;
     }
 
@@ -121,45 +121,7 @@ class ModelField
     {
         return $this->name;
     }
-    function load(& $rawModelData,$unserializeType="PHP")
-    {
-        if($this->isComposite)
-        {
-            // Note on composite types that contain composite types:
-            // Lets suppose we have a "Parallelepipe" composite, that contains 2 coordinates.
-            // So, Parallelepipe has fields "topLeft" and "rightBottom", each one being coordinates.
-            // If a model has a "para" field of type "Parallelepipe", it will expect to have para->topLeft->x and para->topLeft->y
-            // In the db, those fields would have names like 'para_topLeft_x' and 'para_topLeft_y'.To solve this, the data type "para" should report
-            // to the ModelField object, it has actually four fields, topLeft_x,topLeft_y,rightBottom_x,rightBottom_y,so in this class, $this->compositeFields has
-            // 4 entries, and not just two.
-            // At the same time, the ComplexType, should be smart enough to remove those prefixes in its __set and __get methods.
-            // To be completely sure that this kind of path can be constructed, any kind of serialization should remove "_" from field names.            
-            $prefix=$this->name."_";
-            $prefixLen=strlen($prefix);
-            $setVal=null;
-            foreach($rawModelData as $key=>$value)
-            {                
-                    if(strpos($key,$prefix)===0)
-                        $setVal[substr($key,$prefixLen)]=$value;                        
-            }
-            $rawModelData[$this->name]=$setVal;
-        }
 
-        if($unserializeType!=null && $unserializeType!="PHP")
-        {
-             \lib\model\types\TypeFactory::unserializeType($this->type,io($rawModelData,$this->name,null),$unserializeType);
-        }
-        else
-        {
-            if ($this->isMultiple) {
-                \lib\model\types\TypeFactory::unserializeType($this->type,$rawModelData,$unserializeType);
-            }
-            else {
-                \lib\model\types\TypeFactory::unserializeType($this->type,$rawModelData[$this->name],$unserializeType);
-            }
-        }
-        $this->state=ModelField::SET;
-    }
 
     function setAlias($alias)
     {
@@ -174,27 +136,27 @@ class ModelField
         return $this->model;
     }
     function set($value)
-    {        
+    {
         if(is_object($value))
-        {            
+        {
             $h=new \ReflectionClass($value);
             $parent=$h->getParentClass();
-            
-            if(is_a($value,'lib\model\types\BaseType'))    
+
+            if(is_a($value,'lib\model\types\BaseType'))
             {
-                
-                $typeObj=$value;            
+
+                $typeObj=$value;
             }
             else
             {
 
                 if(method_exists($value,"getType"))
-                    $typeObj=$value->getType();                
-            }            
-            
+                    $typeObj=$value->getType();
+            }
+
             if($typeObj)
             {
-                $val=$typeObj;     
+                $val=$typeObj;
                 $value=$typeObj->getValue();
             }
             else
@@ -210,14 +172,14 @@ class ModelField
         if(!is_object($this->type))
         {
             echo "SIN OBJETO::".$this->type;
-            $h=30;
+
         }
         if($this->type->equals($value))
         {
             return;
         }
-        
-        $this->setDirty();        
+
+        $this->setDirty();
         $this->type->set($val);
         $this->model->__setRaw($this->name,$this->type->get());
         $this->notifyListeners();
@@ -226,7 +188,7 @@ class ModelField
     {
         $this->setDirty();
         $this->type->__rawSet($value);
-        
+
     }
     function is_set()
     {
@@ -238,23 +200,23 @@ class ModelField
     }
     function clear()
     {
-        $this->setDirty(); 
+        $this->setDirty();
         $this->type->clear();
         $this->notifyListeners();
     }
 
     function copyField($type)
-    {    
-        $hv1=$this->type->hasOwnValue();       
-        $hv2=$type->hasOwnValue();       
+    {
+        $hv1=$this->type->hasOwnValue();
+        $hv2=$type->hasOwnValue();
         if(!$hv1 && !$hv2) // Ninguno de los dos is_set
             return;
-        
+
         if($hv1 && $hv2)
         {
-            
+
             $val=$type->getValue();
-            
+
             if($this->type->equals($val))
             {
                 return;
@@ -263,10 +225,10 @@ class ModelField
         }
         else
         {
-            
+
             if(!$hv1 && $hv2)
-            {                
-                //$val=$type->getValue();            
+            {
+                //$val=$type->getValue();
                 // El valor se copia a traves del padre, ya que hay algunos tipos de campo (por ejemplo,
                 // los campos STATE), que al cambiar de valor, tienen repercusiones en el padre.
                 $this->model->{$this->name}=$type; //val;
@@ -278,17 +240,17 @@ class ModelField
                 $this->clear();
             }
         }
-        $this->setDirty();            
+        $this->setDirty();
      }
     function setDirty()
     {
        $this->state=ModelField::DIRTY;
        $this->model->addDirtyField($this->name);
     }
-    
+
     function __get($varName)
     {
-        return $this->type->{$varName};        
+        return $this->type->{$varName};
     }
     function __call($fName,$arguments)
     {
@@ -298,7 +260,7 @@ class ModelField
     {
         return $this->state;
     }
-    function getType($typeName=null)
+    function getType()
     {
         return $this->type;
     }
@@ -312,9 +274,9 @@ class ModelField
     }
 
     function get()
-    {                       
+    {
         return $this->type->get();
-        
+
     }
     function is_valid()
     {
@@ -344,44 +306,31 @@ class ModelField
 
     function addListener($obj,$method)
     {
-        if(!$this->listeners)
+        //if($this->listeners)
             $this->listeners[]=array($obj,$method);
     }
 
     function serialize($serializer)
-    {                     
+    {
         //if($this->type->hasValue())
         //{
             try
             {
-                $ser=\lib\model\types\TypeFactory::getSerializer($this->type->definition["TYPE"],$serializer);
-                $data= $ser->serialize($this->type);
-                
+
+                $data=$serializer->serializeType($this->name,$this->type);
+
             }catch(\lib\model\types\BaseTypeException $e)
             {
                 _d($e);
                 throw new BaseModelException(BaseModelException::ERR_INVALID_SERIALIZER,array("fieldName"=>$this->name,"model"=>$this->model->__getObjectName(),"serializer"=>$serializer));
             }
-            
+
             if(!$this->isComposite)
             {
-                return $data;
+                return $data[$this->name];
             }
-            
-            $results=array();
-            foreach($this->compositeFields as $key=>$value)
-            {
-                foreach($data as $key2=>$value2)
-                {
-                    if(strpos($key2,$value)===0)
-                        $results[$this->name."_".$key2]=$data[$key2];
-                }
-            }
-            
-            return $results;
-        //}
-        
-        //return null;
+            return $data;
+
     }
     function unserialize($data,$unserializer=null)
     {
@@ -390,7 +339,7 @@ class ModelField
     function save()
     {
         $flags=$this->type->getFlags();
-        
+
         if($flags & \lib\model\types\BaseType::TYPE_REQUIRES_SAVE)
         {
             $this->type->save($this);
@@ -401,18 +350,18 @@ class ModelField
         {
             if(!$this->type->hasOwnValue())
             {
-                
+
                 $val=$this->type->getValue();
                 $this->model->addDirtyField($this->name);
                 $this->model->__setRaw($this->name,$val);
             }
             return;
         }
-        
+
         if($flags & \lib\model\types\BaseType::TYPE_IS_FILE)
         {
             if($this->isDirty())
-            {                
+            {
                 $this->type->save();
                 $this->model->__setRaw($this->name,$this->type->getValue());
             }
@@ -422,7 +371,7 @@ class ModelField
             $this->model->addDirtyField($this->name);
             $this->model->__setRaw($this->name,$this->type->getValue());
         }*/
-        
+
     }
     function getTypeSerializer($serializerType)
     {
@@ -442,11 +391,11 @@ class ModelField
     {
         $this->set($field->get());
     }
-    
+
     function onModelSaved()
     {
         $this->cleanState();
-        
+
         if($this->type->getFlags() & \lib\model\types\BaseType::TYPE_REQUIRES_SAVE)
             $this->type->onSaved($this);
     }

@@ -1,6 +1,6 @@
 <?php namespace lib\model\types;
 
-  class  DateTimeTypeException extends BaseTypeException{ 
+  class  DateTimeTypeException extends BaseTypeException{
       const ERR_START_YEAR=100;
       const ERR_END_YEAR=101;
       const ERR_WRONG_HOUR=102;
@@ -41,16 +41,16 @@
        function getValue()
       {
           if($this->valueSet)
-            return $this->value; 
+            return $this->value;
           if(isset($this->definition["DEFAULT"]))
           {
               if($this->definition["DEFAULT"]=="NOW")
               {
                   $this->setAsNow();
-                  return $this->value;                  
+                  return $this->value;
               }
           }
-          return null;          
+          return null;
       }
       function setAsNow()
       {
@@ -64,7 +64,7 @@
 
           BaseType::validate($value);
           $asArr=$this->asArray($value);
-          
+
           extract($asArr);
           if($day==0 && $month==0 && $year==0 && (!isset($this->definition["REQUIRED"]) || $this->definition["REQUIRED"]==false))
               return true;
@@ -72,7 +72,7 @@
           {
               throw new BaseTypeException(BaseTypeException::ERR_INVALID);
           }
-          
+
           if(io($this->definition,"STARTYEAR",false))
           {
               if(intval($year)<intval($this->definition["STARTYEAR"]))
@@ -90,7 +90,7 @@
               throw new DateTimeTypeException(DateTimeTypeException::ERR_WRONG_MINUTE);
           if(intval($seconds)<0 || intval($seconds)>59)
               throw new DateTimeTypeException(DateTimeTypeException::ERR_WRONG_SECOND);
-              
+
           $timestamp=$this->getTimestamp($value,$asArr);
           $curTimestamp=time();
           if(io($this->definition,"STRICTLYPAST",false) && $curTimestamp < $timestamp)
@@ -114,7 +114,7 @@
 
           $parts=explode(" ",$val);
           @list($result["year"],$result["month"],$result["day"])=explode("-",$parts[0]);
-          if($parts[1])          
+          if($parts[1])
               @list($result["hour"],$result["minutes"],$result["seconds"])=explode(":",$parts[1]);
           else
               @list($result["hour"],$result["minutes"],$result["seconds"])=array(0,0,0);
@@ -122,10 +122,10 @@
       }
 
       static function getValueFromTimestamp($timestamp=null) {
-        return date(DateTime::DATE_FORMAT, $timestamp?$timestamp:time()); 
-      } 
+        return date(DateTime::DATE_FORMAT, $timestamp?$timestamp:time());
+      }
 
-      
+
       public function getTimestamp($value=null) {
 
 
@@ -137,12 +137,12 @@
           else
               $date = new \DateTime($value);
 
-        $ret = $date->format("U"); 
-        return ($ret < 0 ? 0 : $ret); 
+        $ret = $date->format("U");
+        return ($ret < 0 ? 0 : $ret);
       }
 
-      public static function offsetToLocalDate($date,$offset) 
-      { 
+      public static function offsetToLocalDate($date,$offset)
+      {
           return DateTime::offsetToTimezoneDate($date,$offset,date_default_timezone_get());
       }
 
@@ -151,11 +151,11 @@
           return DateTime::offsetToTimezoneDate($date,$offset,"UTC");
       }
       public static function offsetToTimezoneDate($date,$offset,$timezone)
-      {          
+      {
           $gmtTz=new \DateTimeZone("UTC");
           // first, date + offset are converted to UTC.
           $srcDateTime=new \DateTime($date,$gmtTz);
-         
+
           $secs=$srcDateTime->format('U')+$offset;
           $srcDateTime->setTimestamp($secs);
 
@@ -182,94 +182,5 @@
       function getLocalizedString()
       {
           return date(DateTime::DATE_FORMAT_EU,$this->getTimestamp());
-      }
-  }
-
-  class DateTimeHTMLSerializer extends BaseTypeHTMLSerializer
-  {
-      function serialize($type)
-      {               
-          // Unserialize always will return UTC dates.
-          
-          switch($type->definition["TIMEZONE"])
-          {
-          case "SERVER":
-              {
-                  $val= DateTime::serverToUTCDate($type->getValue());
-                  return $val;
-              }break;
-          case "UTC":
-          case "CLIENT":
-              {
-                  return $type->getValue();
-
-              }break;          
-          }          
-      }
-
-      function unserialize($type,$value)
-      {
-
-          if($value==null)
-              return;
-
-          if($value=='')
-          {
-
-             return $type->clear();
-          }
-
-          // Unserialize a date coming from the client.
-          // Obviously, basic syntax checking is done here.
-          $parts=explode(" ",$value);
-          @list($result["year"],$result["month"],$result["day"])=explode("-",$parts[0]);
-          if($parts[1])          
-              @list($result["hour"],$result["minutes"],$result["seconds"])=explode(":",$parts[1]);
-          else
-              @list($result["hour"],$result["minutes"],$result["seconds"])=array(0,0,0);
-
-          
-          if(!checkdate($result["month"],$result["day"],$result["year"]))
-              throw new BaseTypeException(BaseTypeException::ERR_INVALID);
-          
-          switch($type->definition["TIMEZONE"])
-          {
-          case "SERVER":
-              {                  
-                  global $oCurrentUser;
-                  $newVal=DateTime::offsetToLocalDate($value,$oCurrentUser->getUTCOffset());
-                  $type->validate($newVal);
-                  $type->setValue($newVal);
-              }break;
-          case "UTC":
-              {
-                  global $oCurrentUser;
-                  $newVal=DateTime::offsetToUTCDate($value,$oCurrentUser->getUTCOffset());
-                  $type->validate($newVal);
-                  $type->setValue($newVal);
-              }break;
-          case "CLIENT":
-          default:
-              {
-                  $type->validate($value);
-                  $type->setValue($value);
-              }
-          }
-
-      }
-
-  }
-
-  class DateTimeMYSQLSerializer extends BaseTypeMYSQLSerializer
-  {
-      function serialize($type)
-      {
-          if($type->hasValue())
-              return "'".$type->getValue()."'";
-          return "NULL";
-      }      
-      function getSQLDefinition($name,$definition)
-      {
-          return array("NAME"=>$name,"TYPE"=>"DATETIME");
       }
   }

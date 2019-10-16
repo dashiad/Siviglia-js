@@ -4,10 +4,10 @@ include_once(LIBPATH."/model/types/BaseType.php");
   {
       static $serializers=array();
       static function includeType($type,$suffix="")
-      {          
+      {
           if($type[0]=='\\')
               return $type;
-          if($type=="String")
+          if($type=="String" || $type=="_string")
               $type="_String";
           $cName='\lib\model\types\\'.$type;
           if(is_file(LIBPATH."/model/types/".$type.".php"))
@@ -16,7 +16,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
           }
           else
           {
-                         
+
              // $cName='\app\model\types\\'.$type;
              // if(!class_exists($cName))
              // {
@@ -25,7 +25,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
              // }
           }
           return $cName;
-      }		
+      }
       static function getObjectLayer($objName)
       {
           $classR=new \ReflectionClass($objName);
@@ -38,13 +38,13 @@ include_once(LIBPATH."/model/types/BaseType.php");
       // The $object param is either a model instance, a model name (string), or null.
       // It's required, in case of inherited models.
       static function getType($object,$def,$value=null)
-      {    
+      {
           try
           {
-          
+
             if(!isset($def["TYPE"]))
             {
-            
+
                 if(isset($def["REFERENCES"]))
                 {
                     // Important: The object parameter keeps pointing to the original
@@ -81,10 +81,10 @@ include_once(LIBPATH."/model/types/BaseType.php");
               else
                   $def=$object->getDefinition();
               if($def["EXTENDS"])
-                      return TypeFactory::getType($def["EXTENDS"],$def,$value);              
+                      return TypeFactory::getType($def["EXTENDS"],$def,$value);
           }
       }
-      
+
 
       static function getObjectField($objectName,$fieldName)
       {
@@ -120,7 +120,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
       }
 
       static function getRelationFieldTypeInstance($objectName,$fieldName)
-      {                    
+      {
           $type=\lib\model\types\TypeFactory::getFieldTypeInstance($objectName,$fieldName);
           return $type->getRelationshipType();
       }
@@ -132,7 +132,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
           {
               if(trim($objName)=="")
               {
-                  print_r(debug_backtrace());          
+                  print_r(debug_backtrace());
               }
               $objName=new \model\reflection\Model\ModelName($objName,$layer);
           }
@@ -173,105 +173,9 @@ include_once(LIBPATH."/model/types/BaseType.php");
       }
 
 
-      static function getSerializer($mixedType,$serializer)
-      {
-          if(is_object($mixedType))
-          {
-              $className=get_class($mixedType);
-              $type=substr($className,strrpos($className,'\\')+1);
-          }
-          else
-              $type=$mixedType;
 
-          if(is_object($serializer))
-              $serializerType=$serializer->getSerializerType();
-          else
-              $serializerType=$serializer;
 
-          if(isset(\lib\model\types\TypeFactory::$serializers[$serializerType][$type])) {
-              $cachedType = \lib\model\types\TypeFactory::$serializers[$serializerType][$type];
-              if ($cachedType)
-                  return new $cachedType();
-          }
-          
-          $type=TypeFactory::includeType(ucfirst(strtolower($type)));
-          
-          $name=$type;
-          
-          $typeList=array_values(class_parents($name));
-          $nEls=array_unshift($typeList,$name);
 
-          for($k=0;$k<$nEls;$k++)
-          {
-              if($typeList[$k]=='lib\model\types\BaseType')
-                  break;
-              $sName=$typeList[$k].$serializerType."Serializer";
-              if(@class_exists($sName))              
-              {              
-                  TypeFactory::$serializers[$serializerType][$type]=$sName;
-                  return new $sName();
-              }              
-          }
-
-       //   clean_debug_backtrace(4);
-          throw new BaseTypeException(BaseTypeException::ERR_SERIALIZER_NOT_FOUND,array("name"=>$type,"serializer"=>$serializer));
-          
-      }
-	  
-      static function serializeType($type,$serializerType)
-      {
-          $typeName='\\'.get_class($type);
-          $serObj=\lib\model\types\TypeFactory::getSerializer($typeName,$serializerType);
-          $res=$serObj->serialize($type);          
-          return $res;
-      }
-      static function unserializeType($type,$value,$serializerType)
-      {
-          if($serializerType=="PHP") {
-              $type->set($value);
-              return;
-          }
-          if(!$type)
-          {
-              throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type));
-          }
-
-          $typeName='\\'.get_class($type);          
-          $serObj=\lib\model\types\TypeFactory::getSerializer($typeName,$serializerType);
-          $serObj->unserialize($type,$value);
-      }
-      static function unserializeArray($definition,$arr,$serializerType)
-      {
-          $result=array();
-          foreach($definition["FIELDS"] as $key=>$value)
-          {
-              $result[$key]=TypeFactory::getType(null,$value,null);
-              if(isset($arr[$key]))
-              {
-                  $typeName='\\'.get_class($result[$key]);
-                  $serObj=\lib\model\types\TypeFactory::getSerializer($typeName,$serializerType);
-                  $serObj->unserialize($result[$key],$value);
-              }
-          }
-          return $result;
-      }
-     
-	  
-	  static function serialize($object,$serializerType,$fieldList=null)
-	  {
-	  $definition=& $object->__getObjectDefinition();
-	  if(!$fieldList)
-		   $fieldList=array_keys($definition["FIELDS"]);
-	  
-		$nFields=count($fieldList);
-		   for($k=0;$k<$nFields;$k++)
-		   {								
-				$typeObj=\lib\model\types\TypeFactory::getType(null,$fieldList[$k],$curField);				
-				$result[$fieldList[$k]]=\lib\model\types\TypeFactory::serializeType($object->__data[$fieldList[$k]],$serializerType);
-		   }	
-			
-		   return $result;	
-	  }
       static function isSameField($definition,$model,$value)
       {
           if($definition["MODEL"]==$model)

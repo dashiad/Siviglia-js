@@ -4,10 +4,10 @@
       var $params;
 
     public function __construct($code,$params=null)
-      {           
-          $this->params=$params;       
+      {
+          $this->params=$params;
           parent::__construct("", $code);
-      }    
+      }
     public function getParams()
     {
         return $this->params;
@@ -26,7 +26,7 @@
        print_r($this->getTrace());
         return $cad;
       }
-    
+
     function getCodeString()
     {
         $reflectionClass=new \ReflectionClass($this);
@@ -34,7 +34,7 @@
         // Se obtienen las constantes
         $constants = $reflectionClass->getConstants();
         foreach($constants as $key=>$value)
-        {            
+        {
             if($this->code==$value)
             {
                 if( strpos($key,"ERR_")===0 )
@@ -43,7 +43,7 @@
                 }
                 return $className."::".$key;
             }
-            
+
         }
         return "UNKNOWN::UNKNOWN";
     }
@@ -75,7 +75,7 @@
           }
           // Luego, se obtienen los valores de cadena, y se busca si hace match con
           // alguna de las excepciones anteriores
-          // Hay que tener en cuenta que se obtienen
+
           foreach($constants as $key2=>$value2)
           {
               if( strpos($key2,"TXT_")===0 || strpos($key2,"REQ_")===0 )

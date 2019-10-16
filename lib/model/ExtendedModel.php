@@ -12,10 +12,10 @@ class ExtendedModel extends MultipleModel
 
         function __construct($serializer=null,$definition=null)
         {
-            
-                BaseModel::__construct($serializer,$definition);                
+
+                BaseModel::__construct($serializer,$definition);
                 $this->parentModelName=$this->__objectDef["EXTENDS"];
-                $this->__setRelatedModelName($this->__objectDef["EXTENDS"]);                
+                $this->__setRelatedModelName($this->__objectDef["EXTENDS"]);
         }
 
     function loadFromFields()
@@ -79,12 +79,12 @@ class ExtendedModel extends MultipleModel
                 }
                 $this->relatedModel->__allowRelay(false);
             }
-            return $this->relatedModel;            
+            return $this->relatedModel;
         }
-             
+
         function __saveMembers($serializer) {
 
-            
+
             if($this->__isNew())
             {
                 if(!$this->__key->is_set())
@@ -102,8 +102,8 @@ class ExtendedModel extends MultipleModel
                 if($this->relatedModel)
                     $this->relatedModel->save();
             }
-            
-            BaseModel::__saveMembers($serializer);        
+
+            BaseModel::__saveMembers($serializer);
     }
     function __call($name,$arguments)
     {
@@ -116,3 +116,5 @@ class ExtendedModel extends MultipleModel
         parent::delete();
     }
 }
+
+

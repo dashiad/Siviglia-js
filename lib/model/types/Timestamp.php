@@ -10,17 +10,3 @@ class Timestamp extends DateTime
                 $this->flags |= BaseType::TYPE_NOT_EDITABLE;
         }
 }
-class TimestampMYSQLSerializer extends BaseTypeMYSQLSerializer
-{
-    function serialize($type)
-    {
-        if($type->hasValue())
-            return "'".$type->getValue()."'";
-        else
-            return "'".$type->getValueFromTimestamp()."'";
-    }
-    function getSQLDefinition($name,$definition)
-    {
-        return array("NAME"=>$name,"TYPE"=>"DATETIME");
-    }
-}

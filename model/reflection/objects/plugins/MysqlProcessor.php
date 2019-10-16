@@ -29,11 +29,11 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
         $storageConfig=$modelDef->getStorageConfiguration("MYSQL");
         if(!$storageConfig)
         {
-            $optionsDefinition=\model\reflection\Storage\Mysql\MysqlOptionsDefinition::createDefault($modelDef);
+            $optionsDefinition=\model\reflection\Storage\Mysql\ESOptionsDefinition::createDefault($modelDef);
         }
         else
         {
-            $optionsDefinition=new \model\reflection\Storage\Mysql\MysqlOptionsDefinition($modelDef,$storageConfig);
+            $optionsDefinition=new \model\reflection\Storage\Mysql\ESOptionsDefinition($modelDef,$storageConfig);
         }
 
         $layerObj=\model\reflection\ReflectorFactory::getLayer($layer);

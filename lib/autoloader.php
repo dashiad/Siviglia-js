@@ -12,9 +12,18 @@ function mainAutoloader($name)
     {
         case "lib":
         {
+            $testClass=null;
+            if($parts[1]==="tests")
+            {
+                unset($parts[1]);
+                $testClass=$name;
+                $name=implode('\\',array_values($parts));
+            }
             $fileName=PROJECTPATH.\DIRECTORY_SEPARATOR.str_replace('\\',\DIRECTORY_SEPARATOR,$name).".php";
             if(file_exists($fileName))
                 include_once($fileName);
+            if($testClass!==null)
+                class_alias($name,$testClass);
         }break;
         case "Website":
         {
@@ -26,13 +35,14 @@ function mainAutoloader($name)
         }break;
         case "model":
         {
+
             $direct=PROJECTPATH.str_replace('\\','/',$name.".php");
             if(is_file($direct))
             {
                 include_once($direct);
                 return;
             }
-
+            include_once(PROJECTPATH."/model/reflection/objects/Model/objects/ModelName/ModelName.php");
             $modelDef=new \model\reflection\Model\ModelName($name);
             $destFile=$modelDef->getDestinationFile(array_pop($parts)).".php";
             if(is_file($destFile))

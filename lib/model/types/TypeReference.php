@@ -44,27 +44,3 @@ class TypeReference extends PHPVariable
         $this->value=$value;
     }
 }
-
-class TypeReferenceHTMLSerializer extends BaseTypeHTMLSerializer
-{
-}
-
-class TypeReferenceMYSQLSerializer extends PHPVariableMYSQLSerializer
-{
-    var $typeSer;
-    var $typeInstance;
-
-    function serialize($type)
-    {
-        if($type->hasValue())
-        {
-            return $type->getRawValue();
-        }
-        return "NULL";
-    }
-
-    function unserialize($type,$values)
-    {
-        $type->setRawValue($values[$label]);
-    }
-}

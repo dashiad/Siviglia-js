@@ -9,6 +9,7 @@
 namespace lib\tests\model;
 
 $dirName=__DIR__."/../../../install/config/CONFIG_test.php";
+    //"/../../../install/config/CONFIG_test.php";
 include_once($dirName);
 include_once(LIBPATH."/startup.php");
 include_once(LIBPATH."/autoloader.php");

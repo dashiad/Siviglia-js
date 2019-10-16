@@ -19,7 +19,7 @@ abstract class BaseDefinition extends BaseTypedObject
     {
         parent::__construct($definition);
     }
-    function loadFields($fullData,$serializerType="PHP")
+    function loadFields($fullData,$serializer)
     {
         $def=$this->getDefinition();
         foreach ($def["FIELDS"] as $getKey => $getDef) {
@@ -30,13 +30,13 @@ abstract class BaseDefinition extends BaseTypedObject
                     unset($def["FIELDS"][$getKey]);
             } else {
                 if (is_object($fullData[$getKey])) {
-                    $curVal = $fullData[$getKey]->getValue();
-                } else
-                    $curVal = $fullData[$getKey];
-                if($serializerType=="PHP")
-                    $this->{$getKey}=$curVal;
+                    $this->{"*".$getKey}= $fullData[$getKey]->getValue();
+                    continue;
+                }
+                if($serializer->getSerializerType()=="PHP")
+                    $this->{$getKey}=$fullData[$getKey];
                 else
-                    \lib\model\types\TypeFactory::unserializeType($this->{"*" . $getKey}, $curVal, $serializerType);
+                    $serializer->unserializeType($getKey,$this->{"*" . $getKey}, $fullData);
             }
         }
     }

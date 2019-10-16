@@ -36,16 +36,16 @@
        function getValue()
       {
           if($this->valueSet)
-            return $this->value; 
+            return $this->value;
           if(isset($this->definition["DEFAULT"]))
           {
               if($this->definition["DEFAULT"]=="NOW")
               {
                   $this->setAsNow();
-                  return $this->value;                  
+                  return $this->value;
               }
           }
-          return null;          
+          return null;
       }
       function setAsNow()
       {
@@ -66,28 +66,28 @@
 
           BaseType::validate($value);
           $asArr=$this->asArray($value);
-          
+
           extract($asArr);
           if($day==0 && $month==0 && $year==0 && (!isset($this->definition["REQUIRED"]) || $this->definition["REQUIRED"]==false))
               return true;
           if(!checkdate($month,$day,$year))
               throw new BaseTypeException(BaseTypeException::ERR_INVALID);
-          
-          if($this->definition["STARTYEAR"])
+
+          if(isset($this->definition["STARTYEAR"]))
           {
               if(intval($year)<intval($this->definition["STARTYEAR"]))
                   throw new DateTypeException(DateTypeException::ERR_START_YEAR,array("year"=>$this->definition["STARTYEAR"]));
           }
-          if($this->definition["ENDYEAR"])
+          if(isset($this->definition["ENDYEAR"]))
           {
               if(intval($year)>intval($this->definition["ENDYEAR"]))
                   throw new DateTypeException(DateTypeException::ERR_END_YEAR,array("year"=>$this->definition["ENDYEAR"]));
           }
           $timestamp=$this->getTimestamp($value,$asArr);
           $curTimestamp=time();
-          if($this->definition["STRICTLYPAST"] && $curTimestamp < $timestamp)
+          if(isset($this->definition["STRICTLYPAST"]) && $curTimestamp < $timestamp)
               throw new DateTypeException(DateTypeException::ERR_STRICTLY_PAST);
-          if($this->definition["STRICTLYFUTURE"] && $curTimestamp > $timestamp)
+          if(isset($this->definition["STRICTLYFUTURE"]) && $curTimestamp > $timestamp)
               throw new DateTimeException(DateTypeException::ERR_STRICTLY_FUTURE);
 
           BaseType::postValidate($value);
@@ -105,14 +105,14 @@
       }
 
       static function getValueFromTimestamp($timestamp=null) {
-        return date(DateTime::DATE_FORMAT, $timestamp?$timestamp:time()); 
-      } 
+        return date(DateTime::DATE_FORMAT, $timestamp?$timestamp:time());
+      }
 
-      
+
       public function getTimestamp($value=null) {
 
 
-          if($this->definition["TIMEZONE"]=="UTC")
+          if(isset($this->definition["TIMEZONE"]) && $this->definition["TIMEZONE"]=="UTC")
           {
               $utcTz=new \DateTimeZone("UTC");
               $date=new \DateTime($value,$utcTz);
@@ -120,12 +120,12 @@
           else
               $date = new \DateTime($value);
 
-        $ret = $date->format("U"); 
-        return ($ret < 0 ? 0 : $ret); 
+        $ret = $date->format("U");
+        return ($ret < 0 ? 0 : $ret);
       }
 
-      public static function offsetToLocalDate($date,$offset) 
-      { 
+      public static function offsetToLocalDate($date,$offset)
+      {
           return CDateType::offsetToTimezoneDate($date,$offset,date_default_timezone_get());
       }
 
@@ -134,11 +134,11 @@
           return CDateType::offsetToTimezoneDate($date,$offset,"UTC");
       }
       public static function offsetToTimezoneDate($date,$offset,$timezone)
-      {          
+      {
           $gmtTz=new \DateTimeZone("UTC");
           // first, date + offset are converted to UTC.
           $srcDateTime=new \DateTime($date,$gmtTz);
-         
+
           $secs=$srcDateTime->format('U')+$offset;
           $srcDateTime->setTimestamp($secs);
 
@@ -163,94 +163,3 @@
           return date(CDateType::DATE_FORMAT,$mvDateTime->format("U")-$offset);
       }
   }
-
-  class DateHTMLSerializer extends BaseTypeHTMLSerializer
-  {
-      function serialize($type)
-      {               
-          // Unserialize always will return UTC dates.
-          
-          switch($type->definition["TIMEZONE"])
-          {
-          case "SERVER":
-              {
-                  $val= CDateType::serverToUTCDate($type->getValue());                  
-                  return $val;
-              }break;
-          case "UTC":
-          case "CLIENT":
-              {
-                  return $type->getValue();
-
-              }break;          
-          }          
-      }
-
-      function unserialize($type,$value)
-      {
-
-          if($value==null)
-              return;
-
-          if($value=='')
-          {
-
-             return $type->clear();
-          }
-
-          // Unserialize a date coming from the client.
-          // Obviously, basic syntax checking is done here.
-          $parts=explode(" ",$value);
-          @list($result["year"],$result["month"],$result["day"])=explode("-",$parts[0]);
-
-          
-          if(!checkdate($result["month"],$result["day"],$result["year"]))
-              throw new BaseTypeException(BaseTypeException::ERR_INVALID);
-          
-          switch($type->definition["TIMEZONE"])
-          {
-          case "SERVER":
-              {                  
-                  global $oCurrentUser;
-                  $newVal=Date::offsetToLocalDate($value,$oCurrentUser->getUTCOffset());
-                  $type->validate($newVal);
-                  $type->setValue($newVal);
-              }break;
-          case "UTC":
-              {
-                  global $oCurrentUser;
-                  $newVal=Date::offsetToUTCDate($value,$oCurrentUser->getUTCOffset());
-                  $type->validate($newVal);
-                  $type->setValue($newVal);
-              }break;
-          case "CLIENT":
-          default:
-              {
-                  $type->validate($value);
-                  $type->setValue($value);
-              }
-          }
-
-      }
-
-  }
-
-  class DateMYSQLSerializer extends BaseTypeMYSQLSerializer
-  {
-      function serialize($type)
-      {
-          if($type->hasValue())
-              return "'".$type->getValue()."'";
-          return "NULL";
-      }      
-      function getSQLDefinition($name,$definition)
-      {
-          return array("NAME"=>$name,"TYPE"=>"DATE");
-      }
-  }
-
-      
-         
-      
-   
-?>

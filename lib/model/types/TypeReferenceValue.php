@@ -35,4 +35,3 @@ class TypeReferenceValue extends Text implements ReferencesModel
         $this->parentType=$type;
     }
 }
-

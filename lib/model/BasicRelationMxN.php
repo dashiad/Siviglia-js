@@ -14,29 +14,29 @@ class RelationMxN extends ModelBaseRelation
 	// El formato es <campo remoto> => <campo local>
 
     function __construct($name,& $model, $definition, $value=null,$origDefinition=null)
-	{   
+	{
 
         if($definition["TABLE"])
         {
             $this->interTable=$definition["TABLE"];
-            $definition=$this->setupInterTable($name,$model,$definition,$origDefinition);        
+            $definition=$this->setupInterTable($name,$model,$definition,$origDefinition);
             $this->hasOwnTable=true;
-            $fields=$this->definition["FIELDS"];            
+            $fields=$this->definition["FIELDS"];
         }
         else
         {
             if($definition["RELATION_MODEL"])
-            {                
+            {
                 $origDefinition=$definition;
-                $definition=$this->parseFromModel($name,$model,$definition);                
+                $definition=$this->parseFromModel($name,$model,$definition);
                 $fields=$this->localFields;
             }
         }
         foreach($fields as $key=>$value)
         {
-            $cFields[$key]=$model->{$key};            
+            $cFields[$key]=$model->{$key};
         }
-        $this->origDefinition=$origDefinition;        
+        $this->origDefinition=$origDefinition;
         ModelBaseRelation::__construct($name,$model,$definition,null);
         $this->relation->subSet($cFields);
     }
@@ -47,7 +47,7 @@ class RelationMxN extends ModelBaseRelation
 
     function parseFromModel($name,$model,$def)
     {
-        
+
             $remObject=new \model\reflection\Model\ModelName($def["MODEL"]);
             $this->targetObject=$def["MODEL"];
             $relObject=\lib\model\BaseModel::getModelInstance($def["RELATION_MODEL"]);
@@ -55,7 +55,7 @@ class RelationMxN extends ModelBaseRelation
             $relDef=$relObject->getDefinition();
             $relfields=$relDef["MULTIPLE_RELATION"]["FIELDS"];
             $defFields=array();
-            
+
             foreach($relfields as $value)
             {
                 $relFieldDef=$relDef["FIELDS"][$value];
@@ -81,13 +81,13 @@ class RelationMxN extends ModelBaseRelation
                     $remmodel=\lib\model\BaseModel::getModelInstance($relDef["FIELDS"][$value]["MODEL"]);
                     $this->remoteTable=$remmodel->__getTableName();
                 }
-            }    
-            
+            }
+
             // Se copia la definicion del id de la tabla intermedia, a nuestra definicion.
-            $interTableId=$relDef["INDEXFIELDS"][0];            
+            $interTableId=$relDef["INDEXFIELDS"][0];
             $defFields[$interTableId]=$relDef["FIELDS"][$interTableId];
         $this->remoteDefinition=array(
-                    
+
                     "TABLE"=>$this->interTable,
                     "INDEXFIELDS"=>$relDef["INDEXFIELDS"],
                     "FIELDS"=>$defFields
@@ -99,8 +99,8 @@ class RelationMxN extends ModelBaseRelation
                       "TABLE"=>$this->interTable,
                       "FIELDS"=>$srcFields,
                       "REMOTEDEF"=>$this->remoteDefinition
-                     );     
-        return $newDef;   
+                     );
+        return $newDef;
     }
     function setupInterTable($name,$model,$def,$origDef)
     {
@@ -111,10 +111,10 @@ class RelationMxN extends ModelBaseRelation
             $targetObject=$origDef["MODEL"];
         else
             $targetObject=$def["MODEL"];
-        
-        $this->targetObject=$targetObject; 
+
+        $this->targetObject=$targetObject;
         $remObject=new \model\reflection\Model\ModelName($targetObject);
-        
+
         $remClassName=$remObject->className;
         if($remClassName > $model->__getObjectName())
         {
@@ -129,7 +129,7 @@ class RelationMxN extends ModelBaseRelation
         $this->prefix=$localP;
 
         $localTemp=$def["FIELDS"]["LOCAL"];
-        
+
         $localDefTemp=$model->getDefinition();
 
         if(!$localTemp)
@@ -137,13 +137,13 @@ class RelationMxN extends ModelBaseRelation
 
         $remoteTemp=$def["FIELDS"]["REMOTE"];
         $remoteDefTemp=\lib\model\types\TypeFactory::getObjectDefinition($targetObject);
-        
+
 
         if(!$remoteTemp)
         {
             $remoteTemp=$remoteDefTemp["INDEXFIELDS"];
         }
-        
+
         if(!$isInverse)
         {
             $local=& $localTemp;
@@ -161,7 +161,7 @@ class RelationMxN extends ModelBaseRelation
         $this->remoteFields=$remoteDef;
 
         $this->remoteTable=BaseModel::getTableName($targetObject,$remoteDef);
-        
+
         foreach($local as $key=>$value)
         {
             $fieldName=$localP.$value;
@@ -172,21 +172,21 @@ class RelationMxN extends ModelBaseRelation
         foreach($remote as $key=>$value)
         {
             $fieldName=$remoteP.$value;
-                        
+
             //$fields[$fieldName]=array("TYPE"=>"Relationship","MODEL"=>$def["MODEL"],"FIELDS"=>array($fieldName=>$value));
             $fields["remote"]=array("TYPE"=>"Relationship","MODEL"=>$targetObject,"FIELDS"=>array($fieldName=>$value));
             $this->remoteRelations[$fieldName]=$value;
             //$remoteFields[]=$fieldName;
             $remoteFields[]="remote";
-        }            
+        }
         // Primero, hay que ver si las relaciones son unicas o no.Es decir,
         // si dadas las tablas A(a1) y B(b1), la interTable seria A_B(a1,b1).
         // Hay que ver si esas relaciones son unicas o no.
         // En caso de que no lo sean, hay que aniadir una clave unica a la tabla A_B,
         // para identificar univocamente a los objetos.
-        if($def["RELATIONS_ARE_UNIQUE"])        
+        if($def["RELATIONS_ARE_UNIQUE"])
         {
-            $indexes=array_merge(array_values($localFields),$remoteFields); 
+            $indexes=array_merge(array_values($localFields),$remoteFields);
         }
         else
         {
@@ -194,7 +194,7 @@ class RelationMxN extends ModelBaseRelation
             $indexes=array(str_replace("_","",$indexField));
             $fields[$indexField]=array("TYPE"=>"UUID");
 
-        }        
+        }
         $this->remoteDefinition=array(
                     "TABLE"=>$def["TABLE"],
                     "INDEXFIELDS"=>$indexes,
@@ -212,13 +212,13 @@ class RelationMxN extends ModelBaseRelation
             $newDef["LOAD"]=$def["LOAD"];
         }
         $this->localFields=$localFields;
-        $this->remoteFields=$remoteFields;        
+        $this->remoteFields=$remoteFields;
         return $newDef;
     }
     function copyField($type)
-    {        
-        $this->model->{$this->name}=$type->getValue(); 
-        $this->setDirty();            
+    {
+        $this->model->{$this->name}=$type->getValue();
+        $this->setDirty();
      }
 
 
@@ -226,7 +226,7 @@ class RelationMxN extends ModelBaseRelation
     {
         return new RelationValues($this,$this->definition["LOAD"]?$this->definition["LOAD"]:"LAZY");
     }
-    
+
     function createRelationFields()
     {
         return new MultipleRelationFields($this,$this->definition);
@@ -234,7 +234,7 @@ class RelationMxN extends ModelBaseRelation
     function createRemoteInstance()
     {
 /*            if($this->origDefinition["RELATION_MODEL"])
-            {                
+            {
                 return \lib\model\BaseModel::getModelInstance($this->origDefinition["RELATION_MODEL"]);
             }
             else
@@ -246,24 +246,24 @@ class RelationMxN extends ModelBaseRelation
             //}
     }
 
-	
+
 
     function get()
-    {        
+    {
         return $this;
     }
     function __get($varName)
     {
         return $this->relationValues[0]->{$varName};
     }
-	
+
 	function save()
 	{
         $nSaved=$this->relationValues->save();
         //exit();
         /*if($nSaved==1)
             $this->relation->setFromModel($this->relationValues[0]); */
-	}	
+	}
 
 	function count()
     {
@@ -272,7 +272,7 @@ class RelationMxN extends ModelBaseRelation
 
 	function loadCount()
 	{
-        
+
         if($this->relationValues->isLoaded())
         {
             return $this->relationValues->count();
@@ -280,18 +280,18 @@ class RelationMxN extends ModelBaseRelation
         if($this->relation->state==ModelBaseRelation::UN_SET)
         {
             return 0;
-        }        
+        }
         if(io($this->definition,"LOAD","")=="LAZY")
         {
-            
+
             $this->relationValues->setCount($this->getSerializer()->count($this->getRelationQueryConditions(),$this->model));
         }
-        
+
         else
         {
             $this->loadRemote();
         }
-	}	
+	}
 
 	function __toString()
 	{
@@ -300,32 +300,32 @@ class RelationMxN extends ModelBaseRelation
 
     function onModelSaved()
     {
-        $this->relation->cleanState();        
+        $this->relation->cleanState();
     }
-    
+
 
     function getReverseTableQuery()
-    {        
-        
+    {
+
          $q=$this->getRemoteTableQuery();
          $serializer=$this->getSerializer();
          $serType=$serializer->getSerializerType();
          $q["BASE"]="SELECT rem.*,rel.* FROM ".$this->remoteTable." rem LEFT JOIN ".$this->interTable." rel ON ";
-         
+
          $leftconds=array();
          foreach($this->remoteRelations as $key=>$value)
              $leftconds[]=$key."=".$value;
          foreach($this->localFields as $key=>$value)
              $leftconds[]=$value."=".$this->model->{$key};
-         
+
          $q["BASE"].=implode(" AND ",$leftconds);
 
-         return $q;        
+         return $q;
     }
     function getInverseDatasource()
     {
         $modelName=$this->model->__getObjectName();
-       
+
         $dsName="Not".ucfirst($this->name).ucfirst($this->origDefinition["FIELD"]);
         $ds= \lib\datasource\DataSourceFactory::getDataSource($modelName,
                                                          $dsName,
@@ -334,9 +334,9 @@ class RelationMxN extends ModelBaseRelation
         return $ds;
     }
     function getRelationQueryConditions($dontUseIndexes=false)
-    {        
+    {
         if( $this->interTable)
-        {                
+        {
             if( $this->definition["LOAD"]!="LAZY" )
             {
                 $q=$this->getRemoteTableQuery();
@@ -352,7 +352,7 @@ class RelationMxN extends ModelBaseRelation
                 return $q;
             }
         }
-        return ModelBaseRelation::getRelationQueryConditions($dontUseIndexes);        
+        return ModelBaseRelation::getRelationQueryConditions($dontUseIndexes);
     }
 
     function delete($value)
@@ -383,7 +383,7 @@ class RelationMxN extends ModelBaseRelation
         }
         foreach($fields as $curField)
             $results[$curField]=$this->model->{$curField};
-            
+
         return $results;
     }
     function getLocalFields()
@@ -397,7 +397,7 @@ class RelationMxN extends ModelBaseRelation
     function getRemoteModelName()
     {
         return $this->targetObject;
-    }    
+    }
 }
 
 class RelationInstance extends BaseModel{
@@ -406,10 +406,10 @@ class RelationInstance extends BaseModel{
     var $parentRelation;
     var $isLazy;
     var $remote;
-    
+
 
     function __construct($parentRelation,$serializer)
-    {        
+    {
         $this->parentRelation=$parentRelation;
         $definition=$this->parentRelation->getDefinition();
         $this->isLazy=($definition["LOAD"]=="LAZY");
@@ -417,36 +417,36 @@ class RelationInstance extends BaseModel{
     }
 
     function loadFromArray($data,$serializer)
-    {        
+    {
         BaseModel::loadFromArray($data,$serializer);
         if( !$this->isLazy )
-        {            
+        {
             $this->remote=BaseModel::getModelInstance($this->__objectDef["FIELDS"]["remote"]["MODEL"]);
             $this->remote->loadFromArray($data,$serializer);
             $this->__fields["remote"]->getRelationValues()->load(array($this->remote),1);
-        }        
+        }
     }
     function __get($varName)
-    {                
+    {
         $val=$this->__fields["remote"][0]->{$varName};
         return $val;
     }
     function __set($varName,$value)
     {
-        
+
         $this->__fields["remote"][0]->{$varName}=$value;
-        $this->setDirty($this->__fields["remote"]->isDirty());        
-    }  
+        $this->setDirty($this->__fields["remote"]->isDirty());
+    }
     function isDirty()
-    {                
+    {
         return $this->__fields["remote"][0]->isDirty();
     }
     function save()
     {
         $this->setDirty(false);
-        $this->__fields["remote"]->relationValues->save();      
+        $this->__fields["remote"]->relationValues->save();
     }
-    
+
     function getRemote()
     {
         return $this->__fields["remote"][0];
@@ -457,15 +457,15 @@ class RelationInstance extends BaseModel{
 class MultipleRelationFields extends RelationFields
 {
     function __construct($relObject,$definition)
-    {                       
+    {
         RelationFields::__construct($relObject,$definition);
         $keys=array_keys($this->types);
-        $this->localIndexField=$keys[0];        
+        $this->localIndexField=$keys[0];
     }
     function load($rawModelData)
     {
-    
-        RelationFields::load($rawModelData);      
+
+        RelationFields::load($rawModelData);
     }
     function subSet($data)
     {
@@ -473,16 +473,16 @@ class MultipleRelationFields extends RelationFields
     }
 
     function getIndexesFromValues($value)
-    {                
-        $remFields=$this->definition["REMOTEDEF"]["FIELDS"]["remote"]["FIELDS"];        
+    {
+        $remFields=$this->definition["REMOTEDEF"]["FIELDS"]["remote"]["FIELDS"];
         $serializer=$this->relObject->getSerializer();
         $serType=$serializer->getSerializerType();
 
         if( is_int($value) )
         {
-            $value=$this->relObject->relationValues[$value]->getRemote(); 
+            $value=$this->relObject->relationValues[$value]->getRemote();
         }
-        
+
         if( !is_array($value) || \lib\php\ArrayTools::isAssociative($value))
             $value=array($value);
 
@@ -493,7 +493,7 @@ class MultipleRelationFields extends RelationFields
         for($k=0;$k<$nVals;$k++)
         {
             $curVal=$value[$k];
-            if( is_object($curVal) )            
+            if( is_object($curVal) )
             {
                 //if($curVal->isDirty())
                     $curVal->save($this->relObject->getSerializer());
@@ -507,7 +507,7 @@ class MultipleRelationFields extends RelationFields
                 foreach($remFields as $key=>$value)
                 {
                     $curFields[$value]=\lib\model\types\TypeFactory::serializeType($curVal->__getField($value)->getType(),$serType);
-                }                
+                }
                 $results[]=$curFields;
             }
             else
@@ -521,7 +521,7 @@ class MultipleRelationFields extends RelationFields
                         $curVal[$ivalue]=$curVal[$ikey];
                         unset($curVal[$ikey]);
                     }
-                    $results[]=$curVal; 
+                    $results[]=$curVal;
                 }
             }
         }
@@ -529,12 +529,12 @@ class MultipleRelationFields extends RelationFields
     }
     function getLocalIndexes(& $indexes)
     {
-        
-        $model=$this->relObject->getModel();        
+
+        $model=$this->relObject->getModel();
         $field=$model->__getField($this->localIndexField);
         $types=$field->getTypes();
-                
-        foreach($this->types as $key=>$value)
+
+        foreach($types as $key=>$value)
         {
            $subTypes=$model->__getField($key)->getTypes();
            foreach($subTypes as $key2=>$value2)
@@ -545,7 +545,7 @@ class MultipleRelationFields extends RelationFields
                    $indexes[$ikey][$this->definition["FIELDS"][$key]]=$val;
                }
            }
-        }                        
+        }
     }
 
     function prepareCUDop($value)
@@ -559,6 +559,10 @@ class MultipleRelationFields extends RelationFields
 
     function delete($value)
     {
+        // Esta funcion hay que re-implementarla en los serializadores.
+        // Qué hay en value?
+        // Cómo implementarlo en Mysql y Elasticsearch?
+        throw new Exception("ESTA FUNCION REQUIERE DEBUG");
         $remoteIndexes=$this->prepareCUDop($value);
         $ser=$this->relObject->getSerializer();
         $ser->delete($this->definition["TABLE"],$remoteIndexes);
@@ -566,25 +570,41 @@ class MultipleRelationFields extends RelationFields
 
     function add($value)
     {
+        // Esta funcion hay que re-implementarla en los serializadores.
+        // Qué hay en value?
+        // Cómo implementarlo en Mysql y Elasticsearch?
+        // Especialmente, cuando en elasticsearch, el campo "id", el indice, debe darse por separado.
+        // Aqui se estan enviando los valores directamente, ni siquiera los tipos, por lo que el serializador no
+        // tiene info para serializar los campos...Todo esto hay que mirarlo..
+
+        throw new Exception("ESTA FUNCION REQUIERE DEBUG");
         $remoteIndexes=$this->prepareCUDop($value);
         $ser=$this->relObject->getSerializer();
         $ser->add($this->definition["TABLE"],$remoteIndexes);
-        
+
     }
 
 
     function set($values)
-    {                
+    {
+        // Esta funcion hay que re-implementarla en los serializadores.
+        // Qué hay en value?
+        // Cómo implementarlo en Mysql y Elasticsearch?
+        // Especialmente, cuando en elasticsearch, el campo "id", el indice, debe darse por separado.
+        // Aqui se estan enviando los valores directamente, ni siquiera los tipos, por lo que el serializador no
+        // tiene info para serializar los campos...Todo esto hay que mirarlo..
+
+        throw new Exception("ESTA FUNCION REQUIERE DEBUG");
         $lIndex=array(array());
         $this->getLocalIndexes($lIndex);
         $ser=$this->relObject->getSerializer();
         $ser->delete($this->definition["TABLE"],$lIndex);
         if( !$values )
-            return;        
+            return;
         if(!is_array($values))
-            $values=array($values);        
+            $values=array($values);
         $remoteIndexes=$this->prepareCUDop($values);
-        // Values puede ser un array de ids, o un array de objetos.        
+        // Values puede ser un array de ids, o un array de objetos.
         $ser->add($this->definition["TABLE"],$remoteIndexes);
     }
 

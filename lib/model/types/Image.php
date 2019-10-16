@@ -1,12 +1,12 @@
 <?php
 namespace lib\model\types;
 include_once(LIBPATH."/model/types/File.php");
- class  ImageException extends FileException{ 
+ class  ImageException extends FileException{
       const ERR_NOT_AN_IMAGE=120;
       const ERR_TOO_SMALL=121;
       const ERR_TOO_WIDE=122;
       const ERR_TOO_SHORT=123;
-      const ERR_TOO_TALL=124; 
+      const ERR_TOO_TALL=124;
   }
 
 class Image extends File
@@ -49,10 +49,10 @@ class Image extends File
         parent::save();
         // Se restaura el valor anterior de dirty, para crear thumbnails y watermarks.
         $this->dirty=$savedDirty;
-        if(isset($this->definition["THUMBNAIL"]))        
+        if(isset($this->definition["THUMBNAIL"]))
           $this->makeThumbNail($this->definition["THUMBNAIL"]);
         if(isset($this->definition["WATERMARK"]))
-          $this->addWatermark($this->definition["WATERMARK"]);        
+          $this->addWatermark($this->definition["WATERMARK"]);
         // Finalmente, se pone dirty a false.
         $this->dirty=false;
     }
@@ -76,7 +76,7 @@ class Image extends File
             $mode=1;
 
         $dwidth=isset($def["WIDTH"])?$def["WIDTH"]:100;
-        $dheight=isset($def["HEIGHT"])?$def["HEIGHT"]:100;       
+        $dheight=isset($def["HEIGHT"])?$def["HEIGHT"]:100;
 
         if(!isset($def["KEEPASPECT"]) || $def["KEEPASPECT"])
         {
@@ -150,7 +150,7 @@ class Image extends File
         $wttype=image_type_to_extension($wtSize[2],false);
         $funcName="imagecreatefrom".$wttype;
         $wtimg=$funcName($def["FILE"]);
-        
+
         $srctype=image_type_to_extension($srcSize[2],false);
         $funcName="imagecreatefrom".$srctype;
         $srcimg=$funcName($dstFile);
@@ -188,8 +188,3 @@ class Image extends File
         return '';
     }
 }
-
-class ImageHTMLSerializer extends FileHTMLSerializer {}
-class ImageMYSQLSerializer extends FileMYSQLSerializer {}
-
-?>

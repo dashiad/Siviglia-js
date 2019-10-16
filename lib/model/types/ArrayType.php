@@ -4,11 +4,11 @@
   {
       var $subTypeDef;
       const TYPE_NOT_MODIFIED_ON_NULL=0x20;
-          
+
       function __construct($def,$neutralValue=null)
       {
           $this->subTypeDef=$def["ELEMENTS"];
-          parent::__construct($def,$neutralValue);          
+          parent::__construct($def,$neutralValue);
       }
       function getSubTypeDef()
       {
@@ -22,27 +22,27 @@
               $this->value=null;
           }
           $this->valueSet=true;
-          $this->value=$val;      
-      }            
+          $this->value=$val;
+      }
       function validate($value)
-      {     
+      {
         if(!is_array($value))
-                $value=array($value);                            
+                $value=array($value);
          $remoteType=TypeFactory::getType(null,$this->subTypeDef,null);
          for($k=0;$k<count($value);$k++)
          {
                 if(!$remoteType->validate($value[$k]))
                         return false;
-         }           
-         return true;                                            
-      }                      
+         }
+         return true;
+      }
       function getValue()
-      {         
+      {
           if($this->valueSet)
-            return $this->value; 
+            return $this->value;
           if(isset($this->definition["DEFAULT"]))
             return explode(",",$this->definition["DEFAULT"]);
-          return null;          
+          return null;
       }
       function count()
       {
@@ -52,19 +52,19 @@
       }
       function __toString()
       {
-         return implode(",",$this->value);              
+         return implode(",",$this->value);
       }
 
       function offsetExists($index)
       {
           if(!$this->valueSet)
               return false;
-          return isset($this->value[$index]);        
+          return isset($this->value[$index]);
       }
 
       function offsetGet($index)
       {
-          return $this->value[$index];        
+          return $this->value[$index];
       }
       function offsetSet($index,$newVal)
       {
@@ -94,62 +94,4 @@
       }
   }
 
-  class ArrayTypeHTMLSerializer
-  {
-      function serialize($type)
-      {
-          if($type->hasValue())return $type->getValue();
-		  return "";
-      }
-      function unserialize($type,$value)
-      {
-          $type->validate($value);
-          $type->setValue($value);
-      }
-  }
 
-  class ArrayTypeMYSQLSerializer
-  {
-      var $typeSer;
-      var $typeInstance;
-      function getTypeSerializer($type)
-      {
-          if($this->typeSer!=null)
-              return $this->typeSer;
-          $this->typeInstance=TypeFactory::getType(null,$type->subTypeDef);
-          $this->typeSer=TypeFactory::getSerializer($this->typeInstance,"MYSQL");
-          return $this->typeSer;
-      }
-      function serialize($type)
-      {
-         if(!is_array($type->getValue())){
-             return $type->getValue();
-         }
-         $remoteSerializer=$this->getTypeSerializer($type);
-         $nItems=$type->count();
-         if($nItems==0)
-                return "NULL";
-         for($k=0;$k<$nItems;$k++)         
-         {
-             // TODO : Esto aniade bastante carga..Habria que poder serializar por valor
-             $val = $type->value;
-             if (is_array($val)) {
-                 $this->typeInstance->setValue($val[$k]);
-             }
-             else {
-                 $this->typeInstance->setValue($val);
-             }
-             $results[]=$remoteSerializer->serialize($this->typeInstance);
-         }
-         return implode(",",$results);          
-      }
-
-      function unserialize($type,$value)
-      {
-          $type->setValue(explode(",",$value));          
-      }
-      function getSQLDefinition($name,$definition)
-      {
-          return array("NAME"=>$name,"TYPE"=>"TEXT");
-      }
-  }

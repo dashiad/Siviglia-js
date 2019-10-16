@@ -1,85 +1,15 @@
 <?php
 namespace lib\storage\Mysql;
-class QueryBuilder
+class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 {
-    var $definition;
+
     var $findRows;
     var $data;
     var $sqlData;
-    var $nonParams = array("__start", "__count", "__sort", "__sortDir", "__sort1", "__sortDir1");
-
-    function __construct($definition, $params = null, $pagingParams = null)
-    {
-        $this->definition = $definition;
-        $this->findRows = false;
-        $this->data = $params ? $params : new \lib\model\BaseTypedObject(array("FIELDS" => array()));
-
-        if (isset($definition["REFERENCE"])) {
-            include_once(OBJECTSPATH . "/objects/" . $definition["REFERENCE"]["MODEL"] . "/SQL/Queries.php");
-            global $Queries;
-            $this->definition = $Queries[$definition["REFERENCE"]["MODEL"]][$definition["REFERENCE"]["NAME"]];
-        }
-        if ($pagingParams) {
-            $fields = $pagingParams->__getFields();
-            if ($fields) {
-                foreach ($fields as $cKey => $val) {
-                    switch ($cKey) {
-                        case "__start":
-                        {
-                            if ($val->hasValue())
-                                $this->setStartingRow($val->getValue());
-
-                        }
-                            break;
-                        case "__count":
-                        {
-                            if ($val->hasValue())
-                                $this->setPageSize($val->getValue());
-                        }
-                            break;
-                        case "__sort":
-                        {
-                            if ($val->hasValue()) {
-                                $sortDir = $fields["__sortDir"] ? $fields["__sortDir"]->getLabel() : "ASC";
-
-                                $this->setDefaultOrder($val->getValue(), $sortDir);
-                            }
-                        }
-                            break;
-                    }
-                }
-
-            }
-        }
-
-
-    }
-
-    function setStartingRow($row)
-    {
-        $this->definition["STARTINGROW"] = $row;
-    }
-
-    function setPageSize($pageSize)
-    {
-        $this->definition["PAGESIZE"] = $pageSize;
-    }
-
-    function setDefaultOrder($field, $direction = "ASC")
-    {
-        $this->definition["DEFAULT_ORDER"] = $field;
-        $this->definition["DEFAULT_ORDER_DIRECTION"] = $direction;
-    }
 
     function makeRegExp($val)
     {
         return "/@@" . mysql_escape_string($val) . "@@/";
-    }
-
-    function findFoundRows($doit = true)
-    {
-        $this->findRows = $doit;
-
     }
 
     function build($onlyConditions = false)
@@ -112,9 +42,9 @@ class QueryBuilder
         {
             $queryText .= " GROUP BY " . $curQuery["GROUPBY"];
         }
-        $orderBy = $curQuery["DEFAULT_ORDER"] ? $curQuery["DEFAULT_ORDER"] : $curQuery["ORDERBY"];
-        $orderDirection = $curQuery["DEFAULT_ORDER_DIRECTION"] ? $curQuery["DEFAULT_ORDER_DIRECTION"] : $curQuery["ORDERTYPE"];
-        if($orderBy)
+        $orderBy = isset($curQuery["DEFAULT_ORDER"]) ? $curQuery["DEFAULT_ORDER"] : (isset($curQuery["ORDERBY"])?$curQuery["ORDERBY"]:null);
+        $orderDirection = isset($curQuery["DEFAULT_ORDER_DIRECTION"]) ? $curQuery["DEFAULT_ORDER_DIRECTION"] : (isset($curQuery["ORDERTYPE"])?$curQuery["ORDERTYPE"]:null);
+        if($orderBy!==null)
         {
             if(is_array($orderBy))
             {
@@ -314,7 +244,6 @@ class QueryBuilder
                 $tVar = $curCondition["TRIGGER_VAR"];
                 $default = (isset($curCondition["DEFAULT"]) ? (empty($curCondition["DEFAULT"]) ? "false" : "true") : "true");
 
-                $addCondition = false;
                 try {
                     $curField = $this->data->__getField($tVar);
                 } catch (\Exception $e) {
@@ -323,11 +252,6 @@ class QueryBuilder
                     continue;
                 }
 
-                if(!$curField->getType())
-                {
-                    $k=11;
-                    $n=12;
-                }
                 if (!$curField->getType()->hasOwnValue()) {
                     $hasDefaultValue=$curField->getType()->getDefaultValue();
                     if(!$hasDefaultValue)
@@ -340,8 +264,6 @@ class QueryBuilder
 
 
                 $val = $curField->getValue();
-                $fdef=$curField->getDefinition();
-
 
 
                 $inEnable = in_array($val, (array)$curCondition["ENABLE_IF"]);
@@ -402,6 +324,21 @@ class QueryBuilder
         }
 
         return false;
+    }
+    function getSerializerType()
+    {
+        // TODO: Implement getSerializerType() method.
+        return \lib\storage\Mysql\MysqlSerializer::MYSQL_SERIALIZER_TYPE;
+    }
+    function getDynamicParamValue($paramValue, $paramType)
+    {
+
+        $val=$paramValue.'%';
+        if($paramType=="BOTH")
+        {
+            $val='%'.$val;
+        }
+        return $val;
     }
 
 }

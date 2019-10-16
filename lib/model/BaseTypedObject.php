@@ -28,17 +28,17 @@ class PathObject {
     // La siguiente funcion gestiona paths dentro de paths.
    function parseString($str,$context)
    {
-       $this->tempContext=$context;       
+       $this->tempContext=$context;
        return preg_replace_callback("/{\%([^%]*)\%}/",array($this,"psCallback"),$str);
    }
 
    static function _getPath(& $obj,$path,$index,$context,& $origPath,$pathLength=-1)
-   {              
+   {
        if(!isset($obj))
-           throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND,array("path"=>$origPath,"index"=>$index));       
+           throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND,array("path"=>$origPath,"index"=>$index));
       if($index+1==$pathLength)
             return $obj;
-       
+
       if(is_string($path[$index+1]))
       {
         $c=$path[$index+1][0];
@@ -54,13 +54,13 @@ class PathObject {
             $caller=$context->getCaller();
             $path[$index+1]=substr($path[$index+1],1);
             $onListener=$caller->{$path[$index+1]};
-            
+
             if($onListener)
                 $tempObj=$caller;
             else
                 $tempObj=$context;
 
-            
+
 
             if(is_array($tempObj))
             {
@@ -86,40 +86,40 @@ class PathObject {
             }
             if(is_object($val) || is_array($val))
             {
-                
+
                  $index++;
                  $obj=$val;
             }
             else
             {
                 $path[$index+1]=$val;
-            }            
+            }
             return PathObject::_getPath($obj,$path,$index,$context,$origPath,$pathLength);
         }
     }
     if(is_array($obj) || is_a($obj,"ArrayAccess"))
     {
-        
+
         if(isset($obj[$path[$index+1]]))
         {
             return PathObject::_getPath($obj[$path[$index+1]],$path,$index+1,$context,$origPath,$pathLength);
         }
         throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND,array("path"=>$origPath,"index"=>$index+1));
     }
-    
+
     if(is_object($obj))
-    {   
-             
+    {
+
         $propName=$path[$index+1];
         $val=$obj->{$propName};
         if(!(is_object($val) || is_array($val)))
         {
             if(method_exists($obj,$val))
             {
-                $result=$obj->{$val}();                
+                $result=$obj->{$val}();
                 return PathObject::_getPath($result,$path,$index+1,$context,$origPath,$pathLength);
             }
-            return $val;        
+            return $val;
         }
         else
              return PathObject::_getPath($val,$path,$index+1,$context,$origPath,$pathLength);
@@ -131,11 +131,11 @@ class PathObject {
 }
 }
 
- class SimpleContext  
+ class SimpleContext
  {
         var $caller;
         var $currentModel=null;
-        function setCaller($obj){$this->caller=$obj;}  
+        function setCaller($obj){$this->caller=$obj;}
         function getCaller(){return $this->caller;}
  }
 
@@ -171,7 +171,7 @@ class BaseTypedObject extends PathObject
         protected $__fieldDef;
         protected $__data;
         protected $__fields;
-        protected $__objectDef;        
+        protected $__objectDef;
         protected $__loaded=0;
         protected $__serializer=null;
         protected $__isDirty=false;
@@ -179,6 +179,7 @@ class BaseTypedObject extends PathObject
         protected $__stateDef;
         protected $__oldState=null;
         protected $__newState=null;
+        protected $__key=null;
 
         // referencedModel indica sobre que modelo tenemos que calcular operaciones, cuando este
         // baseTypedObject nerecsita referenciar a otro para ejecutar esas operaciones.
@@ -189,15 +190,34 @@ class BaseTypedObject extends PathObject
         protected $__referencedModel;
         function __construct($definition)
         {
-            
+
                 $this->__objectDef=$definition;
                 $this->__fieldDef=& $this->__objectDef[$this->getFieldsKey()];
                 $this->__stateDef=new \lib\model\states\StatedDefinition($this);
                 $this->__referencedModel=$this;
+                $this->__key=null;
+                if (isset($this->__objectDef["INDEXFIELDS"]))
+                    $this->__key = new ModelKey($this, $this->__objectDef);
+
+
         }
         function getFieldsKey()
         {
             return "FIELDS";
+        }
+        function __getKeys()
+        {
+            return $this->__key;
+        }
+        function getIndexFields()
+        {
+            if(!$this->__key)
+                return [];
+            return $this->__key->getKeyNames();
+        }
+        function __hasKey()
+        {
+            return $this->__key!==null;
         }
         function getDefinition() {
                 return $this->__objectDef;
@@ -205,11 +225,11 @@ class BaseTypedObject extends PathObject
 
         function __getFields()
         {
-               foreach($this->__fieldDef as $key=>$value)    
+               foreach($this->__fieldDef as $key=>$value)
                     $this->__getField($key);
                return $this->__fields;
         }
-        
+
 
         function __getField($fieldName)
         {
@@ -234,7 +254,7 @@ class BaseTypedObject extends PathObject
                     throw new \lib\model\BaseTypedException(BaseTypedException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
                 }
             }
-            return $this->__fields[$fieldName];            
+            return $this->__fields[$fieldName];
         }
         function __getFieldNames()
         {
@@ -261,10 +281,19 @@ class BaseTypedObject extends PathObject
         }
         // Si raw es true, el valor se asigna incluso si la validacion da un error.
         function loadFromArray($data,$serializer,$raw=false)
-        {   
+        {
             $fields=$this->__getFields();
             if(!$fields)
                 return;
+
+
+            foreach ($fields as $key => $value)
+            {
+                // El valor se copia a una instancia temporal del mismo tipo que el campo.
+                // Esto es para prevenir que se introduzcan tipos no validos.
+                $serializer->unserializeType($key,$value->getType(),$data);
+            }
+
             if(!$raw)
             {
                 $result=$this->__validate($data,null,$serializer);
@@ -277,14 +306,29 @@ class BaseTypedObject extends PathObject
             {
                 if(!isset($data[$key]))
                     continue;
-                $value->unserialize($data,$serializer);
+                $serializer->unserializeType($key,$value->getType(),$data);
                 //$this->addDirtyField($key);
             }
             $this->__data=$data;
             $this->__loaded=true;
         }
+        function getAsDictionary($nonSetAsNull=true)
+        {
+            $fields=$this->__getFields();
+            $result=[];
+            if(!$fields)
+                return $result;
+
+            foreach($fields as $key=>$value) {
+                if(!$value->is_set() && $nonSetAsNull==true)
+                    $result[$key]=null;
+                else
+                    $result[$key]=$value->getValue();
+            }
+            return $result;
+        }
         /*function load($data)
-        {            
+        {
              if(is_object($data))
              {
                  $this->unserialize($data);
@@ -293,16 +337,16 @@ class BaseTypedObject extends PathObject
              $this->__loaded=true;
         }*/
 
-        function isLoaded() 
-        {        
+        function isLoaded()
+        {
             return $this->__loaded;
         }
-        function __get($varName) 
+        function __get($varName)
         {
             if($varName[0]=="*")
             {
                 $varName=substr($varName,1);
-                
+
                 return $this->__getField($varName)->getType();
             }
             if(isset($this->__fieldDef[$varName]))
@@ -428,7 +472,7 @@ class BaseTypedObject extends PathObject
 
         function copy(& $remoteObject)
         {
-                  
+
              $remFields=$remoteObject->__getFields();
              if($this->__stateDef->hasState)
                  $stateField=$this->getStateField();
@@ -436,8 +480,8 @@ class BaseTypedObject extends PathObject
                  $stateField='';
              foreach($remFields as $key=>$value)
              {
-                 
-                 $types=$value->getTypes();                 
+
+                 $types=$value->getTypes();
                  foreach($types as $tKey=>$tValue)
                  {
 
@@ -457,12 +501,12 @@ class BaseTypedObject extends PathObject
                          else
                              throw $e;
                      }
-                 }                 
+                 }
              }
-             
+
              $this->__dirtyFields=$remoteObject->__dirtyFields;
-                          
-             $this->__isDirty=$remoteObject->__isDirty;             
+
+             $this->__isDirty=$remoteObject->__isDirty;
          }
 
          function setReferencedModel($model)
@@ -522,14 +566,13 @@ class BaseTypedObject extends PathObject
              // para tener en cuenta el estado.
              foreach ($this->__fieldDef as $key => $value) {
                  if(isset($fieldArray[$key])) {
-                     $curVal = $fieldArray[$key];
+
                      $newType = \lib\model\types\TypeFactory::getType($this, $value);
                      try {
-
-                         \lib\model\types\TypeFactory::unserializeType($newType, $curVal, $serializer);
+                         $serializer->unserializeType($key,$newType, $fieldArray);
                      }catch(\Exception $e)
                      {
-                         $result->addFieldTypeError($key,$curVal,$e);
+                         $result->addFieldTypeError($key,$fieldArray[$key],$e);
                      }
                      $result->addParsedField($key,$newType);
                  }
@@ -566,7 +609,7 @@ class BaseTypedObject extends PathObject
                              }
                          }
                          // Aunque haya dado error, asignamos el tipo.
-                         \lib\model\types\TypeFactory::unserializeType($stateType, $fieldArray[$stateFieldName], $serializer);
+                         $serializer->unserializeType($stateFieldName,$stateType, $fieldArray);
 
                          // El estado a tener en cuenta es el estado al que vamos.
                          $nextState=$targetModel->getStateDef()->getStateLabel($newState);
@@ -655,7 +698,7 @@ class BaseTypedObject extends PathObject
 
          function isDirty()
          {
-             return $this->__isDirty;                
+             return $this->__isDirty;
          }
 
          function setDirty($dirty)
@@ -765,6 +808,5 @@ class BaseTypedObject extends PathObject
         }
 
     }
-
 
 }

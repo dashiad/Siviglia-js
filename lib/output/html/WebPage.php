@@ -53,7 +53,7 @@ class WebPage extends \lib\model\BaseTypedObject
                     $curVal = $fullData[$getKey]->getValue();
                 } else
                     $curVal = $fullData[$getKey];
-
+                // FIXME
                 \lib\model\types\TypeFactory::unserializeType($this->{"*" . $getKey}, $curVal, "HTML");
             }
         }

@@ -29,7 +29,7 @@ class BaseModel extends BaseTypedObject
 
     protected $__aliasDef;
     protected $__filterConditions;
-    protected $__key;
+
     protected $__inherits;
     protected $__inheritedModel;
     //protected $__nextState;
@@ -52,10 +52,7 @@ class BaseModel extends BaseTypedObject
 
         BaseTypedObject::__construct($this->__def->getDefinition());
 
-        $this->__aliasDef = & $this->__objectDef["ALIASES"];     
-
-        if (isset($this->__objectDef["INDEXFIELDS"]))
-            $this->__key = new ModelKey($this, $this->__objectDef);
+        $this->__aliasDef = & $this->__objectDef["ALIASES"];
 
         if ($serializer)
         {
@@ -97,7 +94,7 @@ class BaseModel extends BaseTypedObject
                 }
             }
 
-            return $this->__fields[$aliasName];            
+            return $this->__fields[$aliasName];
     }
     function getAliases()
     {
@@ -115,7 +112,7 @@ class BaseModel extends BaseTypedObject
     }
 
     function loadFromArray($data, $serializer,$raw=false)
-    {        
+    {
         BaseTypedObject::loadFromArray($data, $serializer,$raw);
         $this->__new = false;
         $this->__loaded=true;
@@ -129,10 +126,7 @@ class BaseModel extends BaseTypedObject
 
 
 
-    function __getKeys()
-    {
-        return $this->__key;
-    }
+
 
     function __getField($fieldName)
     {
@@ -143,26 +137,26 @@ class BaseModel extends BaseTypedObject
             return parent::__getField($fieldName);
         }
         catch(\lib\model\BaseTypedException $e)
-        {        
-            
+        {
+
             if ($this->__aliasDef && isset($this->__aliasDef[$fieldName]))
             {
                 $newField=$this->__addField($fieldName,$this->__aliasDef[$fieldName]);
                 return $newField;
-            }            
+            }
             include_once(PROJECTPATH."/lib/model/BaseModel.php");
             throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
-        }        
+        }
     }
     function & __getFieldDefinition($fieldName)
     {
             if(isset($this->__fieldDef[$fieldName]))
                 return $this->__fieldDef[$fieldName];
             else
-            {        
+            {
                 if ($this->__aliasDef && isset($this->__aliasDef[$fieldName]))
                     return $this->__aliasDef[$fieldName];
-            }            
+            }
             include_once(PROJECTPATH."/lib/model/BaseModel.php");
             throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
    }
@@ -256,20 +250,20 @@ class BaseModel extends BaseTypedObject
 
         foreach($remFields as $key=>$value)
         {
-            $types=$value->getTypes();                 
+            $types=$value->getTypes();
             foreach($types as $tKey=>$tValue)
             {
                 if(isset($this->__fieldDef[$tKey]))
                     $field=$this->__getField($tKey);
-                else                
+                else
                 {
-                    $field=$this->__getAlias($tKey);                    
+                    $field=$this->__getAlias($tKey);
                 }
-                $field->copyField($tValue);                                     
-            }                 
+                $field->copyField($tValue);
+            }
         }
-        //$this->__dirtyFields=$remoteObject->__dirtyFields;             
-        //$this->__isDirty=$remoteObject->__isDirty;             
+        //$this->__dirtyFields=$remoteObject->__dirtyFields;
+        //$this->__isDirty=$remoteObject->__isDirty;
         $this->__new=!$this->__key->is_set();
         if(!$this->__new)
             $this->__loaded=true;
@@ -288,7 +282,7 @@ class BaseModel extends BaseTypedObject
         {
             if ($value->isDirty())
             {
-                $filters[] = array("FILTER" => array("F" => $key, "OP" => "=", "V" => \lib\model\types\TypeFactory::serializeType($value->getType(), $serializer->getSerializerType())));                
+                $filters[] = array("FILTER" => array("F" => $key, "OP" => "=", "V" => \lib\model\types\TypeFactory::serializeType($value->getType(), $serializer->getSerializerType())));
             }
         }
         if (count($filters) == 0)
@@ -315,7 +309,7 @@ class BaseModel extends BaseTypedObject
 
     }
     function __call($name,$arguments)
-    {        
+    {
         if(strpos($name,"fetchBy")==0)
         {
             $fieldName= str_replace("fetchBy", "", $name);
@@ -327,14 +321,14 @@ class BaseModel extends BaseTypedObject
             $cField->set($arguments[0]);
             $serializer=$this->__getSerializer();
             $filters[] = array("FILTER" => array("F" => $fieldName, "OP" => "=", "V" => \lib\model\types\TypeFactory::serializeType($cField->getType(), $serializer->getSerializerType())));
-            
+
             $serializer->fetchAll(array("BASE"=>array("*"),"TABLE"=>$this->__getTableName(),"CONDITIONS"=>$filters),$data,$nRows, $matchingRows, null);
-        
+
             if($nRows==0)
                 return null;
-            return $data; 
+            return $data;
         }
-        
+
         throw new BaseModelException(BaseModelException::ERR_NO_SUCH_METHOD,array("method"=>$name));
     }
 
@@ -352,7 +346,7 @@ class BaseModel extends BaseTypedObject
         if($this->__saving || $this->__stateDef->isChangingState())
             return;
         $this->__saving=true;
-        // Ahora, cualquier relacion que tuviera este objeto con otro, a traves de un campo definido en este objeto, 			
+        // Ahora, cualquier relacion que tuviera este objeto con otro, a traves de un campo definido en este objeto,
         if (!$serializer)
             $serializer = $this->__getSerializer("WRITE");
         if($this->mustSelfNuke())
@@ -406,9 +400,9 @@ class BaseModel extends BaseTypedObject
     }
 
     static function getModelInstance($objectName, $serializer = null, $definition = null)
-    {        
+    {
         $objName = new \model\reflection\Model\ModelName($objectName);
-        $objName->includeModel();        
+        $objName->includeModel();
         $namespacedName=$objName->getNamespaced();
         $obj=new $namespacedName($serializer);
         return $obj;
@@ -438,7 +432,7 @@ class BaseModel extends BaseTypedObject
     }
 
     function __saveMembers($serializer)
-    {        
+    {
         $dFields = array();
         // Se establece este modelo en el contexto global, para que sea accedido por las columnas
         // de este mismo modelo, que requiren acceder a el, desde los tipos de dato.
@@ -496,7 +490,7 @@ class BaseModel extends BaseTypedObject
             }
             unset($this->__dirtyFields[$key]);
         }
-        $isNew = $this->__isNew();        
+        $isNew = $this->__isNew();
         if (count($dFields) > 0 || $isNew)
         {
             // Guardamos el estado del objeto.
@@ -516,12 +510,7 @@ class BaseModel extends BaseTypedObject
         $globalContext->currentModel=$curSaved;
     }
 
-    function getIndexes()
-    {
-        if ($this->__key)
-            return $this->__key;
-        return null;
-    }
+
 
     function getDefaultPermissions()
     {
@@ -596,6 +585,12 @@ class BaseModel extends BaseTypedObject
 
         return $this->__writeSerializer;
     }
+    function __getSerializerOptions($serializerName)
+    {
+        if(isset($this->__objectDef["SERIALIZERS"]) && isset($this->__objectDef["SERIALIZERS"][$serializerName]))
+            return $this->__objectDef["SERIALIZERS"][$serializerName];
+        return null;
+    }
     function __setSerializerFilters($serType,$data)
     {
         $this->__filters[$serType]=$data;
@@ -610,7 +605,7 @@ class BaseModel extends BaseTypedObject
         $this->__relayAllowed=$allow;
     }
     function __getAliasPointingTo($model,$field)
-    {        
+    {
         foreach($this->__aliasDef as $key=>$value)
         {
             if(isset($value["MODEL"]) && isset($value["FIELD"]))

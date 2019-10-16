@@ -5,7 +5,7 @@ namespace lib\storage\Mysql;
 class MysqlSerializerException extends \lib\model\BaseException
 {
 
-    const NO_ID_FOR_OBJECT = 1;
+
     const ERR_NO_CONNECTION_DETAILS = 2;
     const ERR_MULTIPLE_JOIN = 3;
     const ERR_NO_SUCH_OBJECT = 4;
@@ -18,10 +18,11 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
     var $conn;
     var $currentDataSpace;
     var $storageManager;
+    const MYSQL_SERIALIZER_TYPE="MYSQL";
     function __construct($definition,$useDataSpace=true)
     {
 
-        if (!$definition["ADDRESS"])
+        if (!isset($definition["ADDRESS"]))
             throw new MysqlSerializerException(MysqlSerializerException::ERR_NO_CONNECTION_DETAILS);
         $this->storageManager = new Mysql($definition["ADDRESS"]);
         $this->conn = $this->storageManager;
@@ -29,12 +30,12 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         if($useDataSpace)
             $this->useDataSpace($definition["ADDRESS"]["database"]["NAME"]);
 
-        \lib\storage\StorageSerializer::__construct($definition, "MYSQL");
+        \lib\storage\StorageSerializer::__construct($definition, MysqlSerializer::MYSQL_SERIALIZER_TYPE);
 
     }
 
     function unserialize($object, $queryDef = null, $filterValues = null)
-    {        
+    {
         $object->__setSerializer($this);
         if ($queryDef)
         {
@@ -49,7 +50,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         }
         else
         {
-            //$q="SELECT * FROM ".$object->__getTableName()." WHERE ";	
+            //$q="SELECT * FROM ".$object->__getTableName()." WHERE ";
             $queryDef = array("BASE" => array("*"),
                 "TABLE" => $object->__getTableName(),
                 "CONDITIONS" => $this->getIndexExpression($object));
@@ -65,154 +66,71 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
 
         if (isset($arr[0]))
         {
-            $fieldList = $object->__getFields();            
-            foreach ($fieldList as $key => $value) 
+            $fieldList = $object->__getFields();
+            foreach ($fieldList as $key => $value)
             {
-                $value->unserialize($arr[0],"MYSQL");            
+                $value->unserialize($arr[0],"MYSQL");
             }
         }
         else
             throw new MysqlSerializerException(MysqlSerializerException::ERR_NO_SUCH_OBJECT, array("MODEL" => $object->__getTableName()));
     }
 
-    function getIndexExpression($object)
+
+    function delete($objects,$basedOnFields=null)
     {
+        if($objects!=null && !is_array($objects))
+            $objects=[$objects];
 
-        $keys = $object->__getKeys();
-        if (!$keys)
-            return null;
-        $fields = $keys->serialize($this->getSerializerType());
-
-        $expr = "";
-
-        foreach ($fields as $key => $value)
-        {
-            $conditions[] = array(
-                "FILTER" => array(
-                    "F" => $key,
-                    "V" => $value,
-                    "OP" => "="
-                )
-            );
-        }
-        return $conditions;
-    }
-
-    function _store($object, $isNew, $dirtyFields)
-    {
-        $results = array();
-        if($isNew)
-            $tFields=$object->__getFields();
-        else
-            $tFields=$dirtyFields;
-        foreach ($tFields as $key => $value)
-        {
-            if(!$value->is_set())
-            {
-                if(!isset($dirtyFields[$key]))
-                {
-                    continue;
-                }
-                if($isNew && $value->getType()->hasDefaultValue())
-                    $value->getType()->setValue($value->getType()->getValue());
-            }
-            if(($isNew && ($value->getType()->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_SAVE)) || $value->isAlias())
-                continue;
-
-            $subVals = $value->serialize($this->getSerializerType());
-
-            // Los tipos compuestos pueden devolver un array
-            if (is_array($subVals))
-            {
-                if(count($subVals)==0)
-                    $results[$key]='NULL';
-                else
-                {
-                foreach($subVals as $resKey=>$resValue)
-                    $results[$resKey]=($resValue===null?'NULL':$resValue);
-                }
-            }
-            else
-                 $results[$key] = ($subVals===null?'NULL':$subVals);            
-        }        
-
-       // Aunque $results sea cero, si es nuevo, se guarda.
-        if(count($results)==0 && !$isNew)
+        if(count($objects)==0)
             return;
-        
-        if ($isNew)
+        if($basedOnFields==null)
+            $basedOnFields=$objects[0]->getIndexFields();
+
+        // TODO : Permitir tipos multiples aqui.
+        $keys=[];
+        $types=[];
+
+        foreach($basedOnFields as $key=>$value)
         {
-            $id = $this->conn->insertFromAssociative($object->__getTableName(), $results);
-            // Se busca algun campo que sea de tipo AutoIncrement, y se le asigna el valor.	
-            // Se va a suponer que forma parte de la key..
-            if ($id)
-            {
-                $key = $object->__getKeys();
-                $key->assignAutoincrement($id);
-            }
+            $keys[]=$key;
+            $types[]=$this->getTypeSerializer($value->getType());
+        }
+        $ser = $this;
+        // Solo es 1 campo. Podemos hacer un operador "in"
+        if(count($keys)==1) {
+            $typeSerializer = $types[0];
+            $vals = [];
+
+            $serializedValues = array_map(function ($item) use ($typeSerializer, $ser) {
+                return $typeSerializer->unserialize($item->getValue(), $ser);
+            },$objects);
+            $q = $keys[0]." IN (".implode(",",$serializedValues).")";
         }
         else
         {
-            $conds = $this->getIndexExpression($object);
-            
-            if (!$conds)
-                $conds = array();
-            
-            $filters = $object->__getFilter($this->getSerializerType());
-            if ($filters)
-            {
-                $conds = array_merge($conds, $filters["DEF"]["CONDITIONS"]);
-            }
 
-            if (count($conds) == 0)
-            {
+            // Si es mas de un campo, la query tiene que ser del tipo (a=b && c=d) || (a=b1 && c=d1) || ...
+            $subParts=array_map(function($item) use ($keys,$types,$ser){
 
-                throw new MysqlSerializerException(MysqlSerializerException::NO_ID_FOR_OBJECT);
-            }
-
-            $builder = new QueryBuilder(array("BASE"=>array("*"),"CONDITIONS" => $conds), null);
-            $q=$builder->build(true);
-            if(strpos($q," WHERE ")===0)
-                $q=substr($q,strlen(" WHERE "));
-
-            if (is_string($results['value']) && $results['value'][0]!="'") {
-                $results['value'] = "'".$results['value']."'";
-            }
-            $this->conn->updateFromAssociative($object->__getTableName(), $results, $q, false);
+                $result=array_map(function($item,$key,$type) use (& $result,$ser) {
+                    return $key."=".$type->unserialize($item->getValue(),$ser);
+                },$item,$keys,$types);
+                return "(".implode(" AND ",$result);
+            },$objects);
+            $q=implode(" OR ",$subParts);
         }
-
-        foreach ($dirtyFields as $key => $value)
-            $value->onModelSaved();
+        $this->deleteByQuery($q);
     }
 
-    function delete($table, $keyValues=null)
+    function deleteByQuery($q,$params=null)
     {
-        if (is_object($table))
-        {
-            $destTable = $table->__getTableName();
-            $keyValues=array($table->__getKeys()->get());
-        }
-        else
-            $destTable=$table;
+        $qb=$this->getQueryBuilder($q,$params);
+        $this->conn->delete($qb->build());
 
-        $q = "DELETE FROM $destTable WHERE ";
-        $nVals = count($keyValues);
-        for ($k = 0; $k < $nVals; $k++)
-        {
-            $parts = array();
-            foreach ($keyValues[$k] as $key => $value)
-            {                
-                $parts[] = $key . "=" .$value;
-            }
-            $subParts[] = "(" . implode(" AND ", $parts) . ")";
-        }
-        $q.=implode(" OR ", $subParts);
-
-        $this->conn->delete($q);
     }
-
     function add($table, $keyValues, $extraValues = null)
-    {         
+    {
         if (is_object($table))
             $table = $table->__getTableName();
 
@@ -234,7 +152,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         }
 
         $q.="(" . implode(",", $fieldNames) . ") VALUES " . implode(",", $inserts);
-        
+
         $this->conn->insert($q);
     }
 
@@ -270,7 +188,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
             $q.=$key."=".$value;
         }
         if(count($variableSides)==1)
-        {            
+        {
             $variableSideName=$variableSides[0];
             if(count($srcValues[$variableSideName])>0)
                 $q.=" AND ".$variableSides[0]." NOT IN (".implode(",",$srcValues[$variableSideName]).')';
@@ -287,13 +205,13 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         $insExpr="INSERT IGNORE INTO ".$table." (".implode(",",$keys).") VALUES ";
         $doInsert=false;
         while(isset($srcValues[$variableSideName][$k]))
-        {           
+        {
             $parts=array();
             foreach($keys as $value)
             {
                 $parts[]=$srcValues[$value][$k];
             }
-            $insExpr.=($k>0?",":"")."(".implode(",",$parts).")";            
+            $insExpr.=($k>0?",":"")."(".implode(",",$parts).")";
             $k++;
             $doInsert=true;
         }
@@ -334,7 +252,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
     {
         if (!$extraDef)
         {
-            $mysqlDesc = \model\reflection\Storage\Mysql\MysqlOptionsDefinition::createDefault($modelDef);
+            $mysqlDesc = \model\reflection\Storage\Mysql\ESOptionsDefinition::createDefault($modelDef);
             $extraDef = $mysqlDesc->getDefinition();
         }
         $extraDefinition = $extraDef;
@@ -345,7 +263,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         else
             $fields = $definition["FIELDS"];
 
-        // Los objetos privados tienen como prefijo el objeto publico.        
+        // Los objetos privados tienen como prefijo el objeto publico.
         $tableName = str_replace('\\','_',$modelDef->getTableName());
         $fields = $modelDef->fields;
 
@@ -378,7 +296,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
 
             foreach ($serializers as $type => $typeSerializer)
             {
-                $columnDef = $typeSerializer->getSQLDefinition($type, $types[$type]->getDefinition());
+                $columnDef = $typeSerializer->getSQLDefinition($type, $types[$type]->getDefinition(),$this);
 
                 if (\lib\php\ArrayTools::isAssociative($columnDef))
                     $columnDef = array($columnDef);
@@ -476,7 +394,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
     function useDataSpace($dataSpace)
     {
         if ($this->currentDataSpace != $dataSpace)
-        {            
+        {
             $this->conn->selectDb($dataSpace);
             $this->currentDataSpace = $dataSpace;
         }
@@ -539,7 +457,14 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         $q = $qB->build();
         $this->conn->doQ($q);
     }
-
+    function getTypeNamespace()
+    {
+        return '\lib\storage\Mysql\types';
+    }
+    function getQueryBuilder($conds,$params)
+    {
+        return new QueryBuilder($conds,$params);
+    }
 }
 
 

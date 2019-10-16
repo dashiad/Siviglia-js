@@ -3,8 +3,8 @@
   {
       const DEFAULT_COST=12;
       function __construct($def=array(),$value=false)
-      {     
-          $def["TYPE"]="Password";   
+      {
+          $def["TYPE"]="Password";
           $def["MINLENGTH"]=io($def,"MINLENGTH",6);
           $def["MAXLENGTH"]=io($def,"MAXLENGTH",16);
           $def["REGEXP"]=io($def,"REGEXP",'/^[a-zA-Z0-9\d_]{'.$def["MINLENGTH"].','.$def["MAXLENGTH"].'}$/i');
@@ -49,7 +49,7 @@
           $this->setValue($passwd);
           return $passwd;
       }
-      
+
 
       function check($string)
       {
@@ -65,4 +65,3 @@ class PasswordMeta extends \lib\model\types\BaseTypeMeta
           return $def;
       }
   }
-?>

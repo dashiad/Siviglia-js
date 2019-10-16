@@ -15,15 +15,3 @@ class Decimal extends BaseType
         }
     }
 }
-class DecimalMYSQLSerializer extends BaseTypeMYSQLSerializer
-{
-	function getSQLDefinition($name,$def)
-	{
-		$nDecimals=$def["NDECIMALS"];
-		$nIntegers=$def["NINTEGERS"];
-		return array("NAME"=>$name,"TYPE"=>"DECIMAL(".($nDecimals+$nIntegers).",".$nDecimals.")");
-	}
-}
-class DecimalHTMLSerializer extends BaseTypeHTMLSerializer{}
-
-?>

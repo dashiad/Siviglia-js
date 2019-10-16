@@ -1,25 +1,9 @@
 <?php namespace lib\model\types;
 
-  class BaseTypeException extends \lib\model\BaseException{
-      
-      const ERR_UNSET=1;
-      const ERR_INVALID=2;
-      const ERR_TYPE_NOT_FOUND=3;
-      const ERR_INCOMPLETE_TYPE=4;
-      const ERR_SERIALIZER_NOT_FOUND=7;
-      const ERR_TYPE_NOT_EDITABLE=8;
-
-      var $params;
-      public function __construct($code,$params=null)
-      {           
-          $this->params=$params;       
-          parent::__construct($code,$params);
-      }      
-  }
 
 
   abstract class BaseType
-  {      
+  {
       var $valueSet=false;
       var $value;
       var $definition;
@@ -35,14 +19,14 @@
       const TYPE_NOT_EDITABLE=0x10;
       const TYPE_NOT_MODIFIED_ON_NULL=0x20;
       const TYPE_REQUIRES_UPDATE_ON_NEW=0x40;
-          
+
       function __construct($def,$neutralValue=null)
       {
           $this->typeReference=false;
           $this->definition=$def;
-          if($neutralValue!==null)          
-            $this->setValue($neutralValue);                    
-      }      
+          if($neutralValue!==null)
+            $this->setValue($neutralValue);
+      }
 
       function setFlags($flags)
       {
@@ -65,7 +49,7 @@
             else
             {
               $this->valueSet=true;
-              $this->value=$val;      
+              $this->value=$val;
             }*/
           //}
           if($this->validate($val)) {
@@ -73,10 +57,10 @@
               $this->value = $val;
           }
       }
-      
+
       function validate($value)
-      {                       
-            return true;                                            
+      {
+            return true;
       }
 
       function postValidate($value)
@@ -93,7 +77,7 @@
       }
       function copy($type)
       {
-          
+
           if($type->hasValue())
           {
 
@@ -110,7 +94,7 @@
           }
       }
       function equals($value)
-      {          
+      {
           if($this->value===null)
               return false;
           return $this->value==$value;
@@ -152,14 +136,14 @@
       function getValue()
       {
           if($this->valueSet)
-            return $this->value; 
+            return $this->value;
           if($this->hasDefaultValue())
             return $this->getDefaultValue();
-          return null;          
+          return null;
       }
       function __toString()
       {
-          
+
           if(!$this->valueSet)
           {
               return "";
@@ -245,50 +229,6 @@ class BaseTypeMeta
         return $type->getDefinition();
     }
 }
-
-
-  class BaseTypeHTMLSerializer
-  {
-      function serialize($type)
-      {
-          if($type->hasValue())return $type->getValue();
-		  return "";
-      }
-      function unserialize($type,$value)
-      {
-          if($value!==null)
-          {
-            $type->validate($value);
-            $type->setValue($value);
-          }
-      }
-  }
-
-  abstract class BaseTypeMYSQLSerializer {
-      function serialize($type)
-      {
-          if($type->hasValue())return $type->getValue();
-          return "NULL";
-      }
-      function unserialize($type,$value)
-      {
-          $type->__rawSet($value);
-      }
-      abstract function getSQLDefinition($name,$definition);
-  }
-
-    abstract class BaseTypeCASSSerializer {
-      function serialize($type)
-      {
-          if($type->hasValue())return $type->getValue();
-          return "NULL";
-      }
-      function unserialize($value)
-      {
-          return $value;
-      }
-      abstract function getCASSDefinition($name,$definition);
-  }
 
   interface ISaveableType
   {

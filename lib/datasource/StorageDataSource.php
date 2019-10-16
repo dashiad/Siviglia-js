@@ -23,9 +23,10 @@ abstract class StorageDataSource extends TableDataSource
     protected $originalDefinition=null;
     protected $data;
     protected $__returnedFields;
+    protected $__loaded;
     protected $grouped=false;
     function __construct($objName,$dsName,$definition,$serializer)
-    {           
+    {
         // Se hace un merge de indices y params.Esto deberia ser cambiado.
         // TODO: hacer que la generacion de codigo genere INDEXFIELDS como solo nombres de campo, estando la definicion en PARAMS.
         $this->originalDefinition=$definition;
@@ -71,14 +72,14 @@ abstract class StorageDataSource extends TableDataSource
         ));
         // Lo que son los parametros, pasan a ser los fields de este campo.
         // Y lo que son los FIELDS, lo guardamos en $returnedFields, para su uso con los resultados de la query.
-
+        $this->__loaded=false;
         $this->__returnedFields=$definition["FIELDS"];
         $definition["FIELDS"]=$localFields;
-        parent::__construct($definition);         
+        parent::__construct($definition);
         $this->objName=$objName;
         $this->dsName=$dsName;
         // Se necesita el serializador propio para el objeto que nos han pasado, y no el serializador que
-        // hemos recibido como parametro, ya que el objeto padre podria ser "web", y esta accediendo a un 
+        // hemos recibido como parametro, ya que el objeto padre podria ser "web", y esta accediendo a un
         // datasource de un objeto de tipo "app".
         if(!$serializer)
         {
@@ -92,7 +93,7 @@ abstract class StorageDataSource extends TableDataSource
     }
 
     function initialize(& $parentDs=null,$joinBy=null,$parentField=null,$joinType=null)
-    {                    
+    {
         $this->parentDs=$parentDs;
         //$this->joinBy=$joinBy;
         if($joinBy!=null)
@@ -105,6 +106,14 @@ abstract class StorageDataSource extends TableDataSource
         }
         $this->joinType=$joinType;
         //$this->validate();
+    }
+    function addConditions($conds)
+    {
+        $conds=array_map(function($it){return array("FILTER"=>$it);},$conds);
+        if(!$this->serializerDefinition["DEFINITION"]["CONDITIONS"])
+            $this->serializerDefinition["DEFINITION"]["CONDITIONS"]=$conds;
+        else
+            $this->serializerDefinition["DEFINITION"]["CONDITIONS"]=array_merge($this->serializerDefinition["DEFINITION"]["CONDITIONS"],$conds);
     }
     function getStartingRow()
     {
@@ -180,7 +189,7 @@ abstract class StorageDataSource extends TableDataSource
             $this->serializer= \lib\storage\StorageFactory::getDefaultSerializer($this->objName);
         return $this->serializer;
     }
-    
+
 
     function fetchAll()
     {
@@ -193,7 +202,40 @@ abstract class StorageDataSource extends TableDataSource
         }
         return $this->doFetch();
     }
-    abstract function doFetch();
+    function getBuiltQuery($getRows=true)
+    {
+        return $this->serializer->buildQuery($this->serializerDefinition["DEFINITION"], $this->parameters?$this->parameters:$this, $this->pagingParameters,$getRows);
+    }
+
+    function doFetch()
+    {
+        // Chequear aqui la cache.
+        if($this->isLoaded())
+            return;
+        $this->serializer->fetchAll($this->serializerDefinition["DEFINITION"],$this->data,$this->nRows,$this->matchingRows,$this->parameters?$this->parameters:$this,$this->pagingParameters);
+        $this->matchingRows=intval($this->matchingRows);
+        $this->iterator=new \lib\model\types\DataSet(array("FIELDS"=>$this->__returnedFields),$this->data,$this->nRows, $this->matchingRows,$this,$this->mapField);
+        $this->__loaded=true;
+        return $this->iterator;
+    }
+
+    function fetchCursor()
+    {
+        // Chequear aqui la cache.
+        if($this->isLoaded())
+            return;
+        $this->__loaded=true;
+        return $this->serializer->fetchCursor($this->serializerDefinition["DEFINITION"],$this->data,$this->nRows,$this->matchingRows,$this->parameters?$this->parameters:$this,$this->pagingParameters);
+    }
+    function next()
+    {
+        return $this->serializer->next();
+    }
+    function setEmpty()
+    {
+        $this->__loaded=true;
+        $this->iterator=new \lib\model\types\DataSet(array("FIELDS"=>$this->__returnedFields),array(),0, 0,$this,$this->mapField);
+    }
 
     function getSubDataSources()
     {
@@ -219,8 +261,8 @@ abstract class StorageDataSource extends TableDataSource
             throw new \lib\datasource\DataSourceException(\lib\datasource\DataSourceException::ERR_DATASOURCE_IS_GROUPED);
         $include=$this->__objectDef["INCLUDE"][$name];
         $subDs=$this->getSubDataSourceInstance($name);
-                        
-        // TODO : El siguiente codigo solo permite 1 campo JOIN.Se nota en que la variable parentField, que es la que se le va a 
+
+        // TODO : El siguiente codigo solo permite 1 campo JOIN.Se nota en que la variable parentField, que es la que se le va a
         // pasar al subdatasource, es sobreescrita por cada paso por el bucle.
         // Tambien hay que fijarse en que los campos por los que se hace join, son columnas, pero sus valores se estan asignando a
         // parametros del datasource hijo, por lo que los nombres deben coincidir.
@@ -253,7 +295,7 @@ abstract class StorageDataSource extends TableDataSource
         {
             $subDs->sortBy($include["SORT"]["FIELD"],isset($include["SORT"]["DIRECTION"])?$include["SORT"]["DIRECTION"]:'ASC');
         }
-        return $subDs;       
+        return $subDs;
     }
     // Se sobreescribe este metodo de BaseTypedObject
     function isRequired($fieldName)
@@ -277,7 +319,7 @@ abstract class StorageDataSource extends TableDataSource
         $this->pagingParameters->__sortDir=$sortDirection;
     }
 
-    abstract function addConditions($conds);
+
 }
 
 ?>

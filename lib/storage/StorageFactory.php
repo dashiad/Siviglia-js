@@ -6,6 +6,8 @@ class StorageFactoryException extends \lib\model\BaseException {
     const ERR_SERIALIZER_NOT_FOUND=1;
 }
 
+
+
 class StorageFactory
 {
     static $defaultSerializer;
@@ -20,7 +22,7 @@ class StorageFactory
 
     static function addSerializer($definition)
     {
-        
+
         $ser=StorageFactory::getSerializer($definition);
         if($definition["NAME"])
             StorageFactory::$defaultSerializers[$definition["NAME"]]=$ser;
@@ -63,19 +65,19 @@ class StorageFactory
 
         $name=$definition["NAME"];
         if($name && isset(StorageFactory::$defaultSerializers[$name]))
-            return StorageFactory::$defaultSerializers[$name];        
+            return StorageFactory::$defaultSerializers[$name];
         if(!$definition["ADDRESS"])
             throw new StorageFactoryException(StorageFactoryException::ERR_SERIALIZER_NOT_FOUND,array("name"=>$name));
 
         $type=ucfirst(strtolower($definition["TYPE"]));
-        $serClass='\lib\storage\\'.$type.'\\'.$type."Serializer";        
+        $serClass='\lib\storage\\'.$type.'\\'.$type."Serializer";
         $serializer = new $serClass($definition,$useDataSpace);
         if($name)
             StorageFactory::$defaultSerializers[$name]=$serializer;
 
-        return $serializer;                
+        return $serializer;
     }
-   
+
 }
 
 ?>

@@ -6,11 +6,6 @@ function printWarning($cad)
 {
     echo $cad;
 }
-// $object='backoffice\bag'
-
-//$query="SELECT id_bag,id_bag_request FROM bag  WHERE [%dyn_id_bag:id_bag LIKE '{%dyn_id_bag%}%'%]";
-
-// Se busca el objeto.
 
 // Se busca ahora el modelo.
 include_once(PROJECTPATH."/model/reflection/ReflectorFactory/ReflectoFactory.php");

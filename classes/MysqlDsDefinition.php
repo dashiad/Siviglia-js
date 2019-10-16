@@ -4,13 +4,13 @@ class MysqlDsDefinition extends ClassFileGenerator
 {
         function __construct($parentModel,$dsName,$parentDs,$definition)
         {
-            
+
                 $this->parentModel=$parentModel;
                 $this->definition=$definition;
                 $this->parentDs=$parentDs;
                 $this->dsName=$dsName;
-                
-                ClassFileGenerator::__construct($this->dsName, $this->parentModel->objectName->layer, 
+
+                ClassFileGenerator::__construct($this->dsName, $this->parentModel->objectName->layer,
                         $this->parentModel->objectName->getNamespace()."\\datasources\\MYSQL",
                         $this->parentModel->objectName->getPath()."datasources/MYSQL/".$this->dsName.".php",
                         '\lib\storage\Mysql\MysqlDataSource');
@@ -27,7 +27,7 @@ class MysqlDsDefinition extends ClassFileGenerator
                     $fieldColumns=array();
                     if($meta)
                     {
-                        
+
                         foreach($meta as $metaK=>$metaD)
                         {
                             $field=$modelDef->fields[$metaD["FIELD"]];
@@ -40,10 +40,10 @@ class MysqlDsDefinition extends ClassFileGenerator
                             }
 
                             //$def=$value->getDefinition();
-                            
+
                             foreach($serializers as $type=>$typeSerializer)
                             {
-                                $columnDef=$typeSerializer->getSQLDefinition($type,$types[$type]->getDefinition());
+                                $columnDef=$typeSerializer->getSQLDefinition($type,$types[$type]->getDefinition(),$this->serializer);
 
                                 if(\lib\php\ArrayTools::isAssociative($columnDef))
                                       $columnDef=array($columnDef);
@@ -67,11 +67,11 @@ class MysqlDsDefinition extends ClassFileGenerator
                         foreach($def["PARAMS"]["FIELDS"] as $keyP=>$valP)
                         {
                             $condition=array("FILTER"=>$valP["FIELD"]."={%".$keyP."%}");
-                            
+
                                 $condition["TRIGGER_VAR"]=$keyP;
                                 $condition["DISABLE_IF"]="0";
                                 $condition["FILTERREF"]=$keyP;
-                            _d($condition);    
+                            _d($condition);
                             $conditions[]=$condition;
                         }
                     }
@@ -80,7 +80,7 @@ class MysqlDsDefinition extends ClassFileGenerator
                             "TABLE"=>$tableName,
                             "BASE"=>$baseDef,
                             "CONDITIONS"=>$conditions
-                                )               
+                                )
                             );
                     return new MysqlDsDefinition($parentModel,$dsKey,$dsValue,$baseDef);
 
@@ -89,7 +89,7 @@ class MysqlDsDefinition extends ClassFileGenerator
         public function discoverFields()
         {
             $definition=$this->getDefinition();
-            
+
             // Hay que eliminar todos los filtros que haya sobre la query, ya que solo
             // nos interesan los campos.
 
@@ -97,7 +97,7 @@ class MysqlDsDefinition extends ClassFileGenerator
             $definition["CONDITIONS"]=array();
             $minDef["TABLE"]=$definition["DEFINITION"]["TABLE"];
             $minDef["BASE"]=$definition["DEFINITION"]["BASE"];
-            
+
             $qb=new \lib\storage\Mysql\QueryBuilder($minDef);
             $q=$qb->build();
 
@@ -108,9 +108,9 @@ class MysqlDsDefinition extends ClassFileGenerator
             $res=mysql_query($q,$connRes);
             if(!$res)
             {
-                debug("Error al probar la query asociada al datasource ".$this->dsName." del objeto ".$this->parentModel->objectName->className);                
+                debug("Error al probar la query asociada al datasource ".$this->dsName." del objeto ".$this->parentModel->objectName->className);
                 _d(mysql_error($connRes));
-                
+
                 exit();
             }
 
@@ -132,10 +132,10 @@ class MysqlDsDefinition extends ClassFileGenerator
                 }
 
                 //$def=$value->getDefinition();
-             
+
                 foreach($serializers as $type=>$typeSerializer)
                 {
-                    $columnDef=$typeSerializer->getSQLDefinition($type,$types[$type]->getDefinition());
+                    $columnDef=$typeSerializer->getSQLDefinition($type,$types[$type]->getDefinition(),$this->serializer);
 
                     if(\lib\php\ArrayTools::isAssociative($columnDef))
                         $columnDef=array($columnDef);
@@ -167,14 +167,14 @@ class MysqlDsDefinition extends ClassFileGenerator
                     // Es decir, para el $sourceField "coordinate", habra 2 $fName, "coordinate_x" y "coordinate_y".
                     // Sin embargo, en la metadata, solo hay que incluirlo una vez.Por eso se comprueba si el $sourceField ya ha sido
                     // incluido.
-                    if($fieldColumns[$fName]) 
+                    if($fieldColumns[$fName])
                     {
                         if(!$returnedFields[$sourceField])
                             $returnedFields[$sourceField]=array("MODEL"=>$modelName,"FIELD"=>$sourceField);
-                        continue;                        
+                        continue;
                     }
                     // Si la columna es de la tabla actual, pero no se ha encontrado el campo del modelo al que pertenece
-                    // esa columna, se continua la evaluacion.(debe ser un campo calculado) 
+                    // esa columna, se continua la evaluacion.(debe ser un campo calculado)
                 }
 
                 // El campo no pertenece a este modelo.Hay que hacer 2 cosas:
@@ -187,7 +187,7 @@ class MysqlDsDefinition extends ClassFileGenerator
                         continue;
                     }
                     // Vemos si tiene alguna tabla.
-                    
+
                         // O no tiene tabla, o la tabla es la generada por este modelo.
                         // Se obtiene su metadata.
                         $fieldData=mysql_field_type($res,$k);
@@ -207,18 +207,18 @@ class MysqlDsDefinition extends ClassFileGenerator
                         {
                             printWarning("Atencion.En el datasource ".$this->dsName." del objeto ".$modelName." devuelve el campo ".$fName.",de tipo ".$parts[0].", que pertenece a la tabla $fTable.<br>Se crea una metadata generica para el campo.");
                         }
-   
+
             }
-            return $returnedFields;       
+            return $returnedFields;
         }
 
 
         function save()
         {
-            
+
             if($this->parentModel->config->mustRebuild("mysqlds",$this->dsName,$this->filePath))
-            {                
-            $this->addProperty(array("NAME"=>"serializerDefinition",                                     
+            {
+            $this->addProperty(array("NAME"=>"serializerDefinition",
                                      "DEFAULT"=>$this->getDefinition()));
             $this->generate();
             }
@@ -226,7 +226,6 @@ class MysqlDsDefinition extends ClassFileGenerator
         function getDefinition()
         {
             return $this->definition;
-        }        
-    
+        }
+
 }
- 

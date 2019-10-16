@@ -22,74 +22,6 @@ include_once(LIBPATH."/datasource/DataSource.php");
 
 
         }
-        function parseUsing()
-        {
-            if($this->usingParsed)
-                return;
-            $this->usingParsed=true;
-	    if(!isset($this->serializerDefinition["DEFINITION"]["USING"]))
-		return;
-            foreach($this->serializerDefinition["DEFINITION"]["USING"] as $key=>$value)
-            {
-                $subDs=\getDataSource($value["MODEL"],$value["DATASOURCE"]);
-                if(isset($value["PARAMS"]))
-                {
-                    foreach($value["PARAMS"] as $key1=>$value1)
-                    {
-                        $subDs->{$key1}=$this->parseString($value1,null);
-                    }
-                }
-                $subQ=$subDs->getBuiltQuery(false);
-                // reemplazamos sobre la marcha.
-                $this->serializerDefinition["DEFINITION"]["BASE"]=str_replace("[%".$key."%]",$subQ,$this->serializerDefinition["DEFINITION"]["BASE"]);
-            }
-        }
-        function addConditions($conds)
-        {
-            $conds=array_map(function($it){return array("FILTER"=>$it);},$conds);
-            if(!$this->serializerDefinition["DEFINITION"]["CONDITIONS"])
-                $this->serializerDefinition["DEFINITION"]["CONDITIONS"]=$conds;
-            else
-                $this->serializerDefinition["DEFINITION"]["CONDITIONS"]=array_merge($this->serializerDefinition["DEFINITION"]["CONDITIONS"],$conds);
-        }
-        function getBuiltQuery($getRows=true)
-        {
-            return $this->serializer->buildQuery($this->serializerDefinition["DEFINITION"], $this->parameters?$this->parameters:$this, $this->pagingParameters,$getRows);
-        }
-
-        function doFetch()
-        {
-            
-            // Chequear aqui la cache.
-            if($this->isLoaded())
-                return;
-            $this->parseUsing();
-            $this->serializer->fetchAll($this->serializerDefinition["DEFINITION"],$this->data,$this->nRows,$this->matchingRows,$this->parameters?$this->parameters:$this,$this->pagingParameters);
-            $this->matchingRows=intval($this->matchingRows);
-            // TODO: Faltan columns y metadata            
-            $this->iterator=new \lib\model\types\DataSet(array("FIELDS"=>$this->__returnedFields),$this->data,$this->nRows, $this->matchingRows,$this,$this->mapField);
-            //$this->iterator=new \lib\datasource\StorageTableDataSet($this, $this->data,null,null,$this->nRows,$this->matchingRows,$cols?$cols[0]:null);
-            $this->__loaded=true;            
-            return $this->iterator;            
-        }
-        function fetchCursor()
-        {
-            // Chequear aqui la cache.
-            if($this->isLoaded())
-                return;
-            $this->parseUsing();
-            $this->__loaded=true;
-            return $this->serializer->fetchCursor($this->serializerDefinition["DEFINITION"],$this->data,$this->nRows,$this->matchingRows,$this->parameters?$this->parameters:$this,$this->pagingParameters);
-        }
-        function next()
-        {
-            return $this->serializer->next();
-        }
-        function setEmpty()
-        {
-            $this->__loaded=true;
-            $this->iterator=new \lib\model\types\DataSet(array("FIELDS"=>$this->__returnedFields),array(),0, 0,$this,$this->mapField);
-        }
         function fetchGrouped($groupingField=null,$groupingParam=null)
         {
             // Para crear agrupaciones,basadas en 1 campo, necesitamos tanto el campo,como el modo de agrupacion.
@@ -263,23 +195,23 @@ include_once(LIBPATH."/datasource/DataSource.php");
         }
 
         function getIterator($rowInfo=null)
-        {            
+        {
             if(!$this->iterator)
-            {                                
+            {
                 $this->iterator=$this->fetchAll();
-            }            
+            }
             if($this->mapField)
-            {            
+            {
                 // TODO : Solo permite hacer join por el primer campo del joinBy
                 //$keys=array_keys($this->joinBy);
                 $this->iterator->setIndex($rowInfo[$this->parentField]);
             }
-            return $this->iterator;            
+            return $this->iterator;
         }
         function count(){
             return $this->matchingRows;
         }
-        function countColumns(){}        
+        function countColumns(){}
         function getMetaData(){}
 
         static function getRecursiveDsDescendantDsDefinition($tableName,$idField,$treeField,$treeValue,$idValue,$fieldList,$separator)
