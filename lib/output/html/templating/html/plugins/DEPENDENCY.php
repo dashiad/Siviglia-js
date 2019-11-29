@@ -231,7 +231,7 @@ tras cada regeneracion de cache, puede ocurrir lo siguiente:
 	Por ello, lo que se hace, es meter ese numero (1 o 2), en un fichero, y hacer que las plantillas carguen ese fichero para ver cual es el sufijo actual
 
 		***/
-		
+
 			if(!isset(DEPENDENCY_BUNDLE::$bundlePaths[$this->name][$this->basePath]))
 			{
 				$baseText="<?php \$__serialized__bundle__".$this->name."=file_get_contents('".$this->basePath."/bundle_".$this->name.".srl');?>";
@@ -239,7 +239,7 @@ tras cada regeneracion de cache, puede ocurrir lo siguiente:
 				DEPENDENCY_BUNDLE::$bundlePaths[$this->name][$this->basePath]="__serialized__bundle__".$this->name;
 			}
 			$includeCode="<?php echo \$__serialized__bundle__".$this->name.";?>";
-		/****/	
+		/****/
                         $this->cleanOldFiles($destPath,$newName,$suffix);
 
                         $fileNameToInclude=$baseNewFileName.$includeCode.$suffix;
@@ -383,7 +383,7 @@ class DEPENDENCY extends Plugin {
         $objName=$spec["MODEL"][0];
         // Cuando se carga un modelo, hay que meter tanto su meta, como la instancia del fichero.
         include_once(PROJECTPATH."/lib/reflection/model/ObjectDefinition.php");
-        $Obj=new \model\reflection\Model\ModelName($objName);
+        $Obj=\lib\model\ModelService::getModelDescriptor($objName);
         $srcFile=$Obj->getDestinationFile("/js/Model.js");
 
         // Se marca este modelo como ya usado.
@@ -524,7 +524,7 @@ class DEPENDENCY extends Plugin {
         {
             $obj=$spec["MODEL"][0];
             include_once(PROJECTPATH."/lib/reflection/model/ObjectDefinition.php");
-            $obj=new \model\reflection\Model\ModelName($obj);
+            $obj=\lib\model\ModelService::getModelDescriptor($obj);
             if(isset($this->params["WIDGET_PATH"]))
                 $path=$this->params["WIDGET_PATH"];
             else
@@ -749,4 +749,4 @@ class DEPENDENCY extends Plugin {
         return $contents;
     }
 
-} 
+}

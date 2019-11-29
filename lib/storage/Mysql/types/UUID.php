@@ -1,6 +1,6 @@
 <?php namespace lib\storage\Mysql\types;
 class UUID extends BaseType {
-    function serialize($name,$type,$serializer)
+    function serialize($name,$type,$serializer,$model=null)
     {
         $val=$type->getValue();
         return [$name=>"'".$val."'"];

@@ -11,19 +11,19 @@
       var $localMapping;
       var $remoteMapping;
       var $datasources=null;
-      function __construct($name,$parentModel,$definition) 
+      function __construct($name,$parentModel,$definition)
       {
-          
-          parent::__construct($name,$parentModel,$definition); 
+
+          parent::__construct($name,$parentModel,$definition);
           $this->targetModel=$this->getRemoteModel();
           $remNames=array_values($this->getRemoteFieldNames());
           $remFName=$remNames[0];
-          
-          $this->targetField=$this->targetModel->getField($remFName); 
+
+          $this->targetField=$this->targetModel->getField($remFName);
       }
-       
+
       function isAlias(){ return true;}
-      
+
       function createInverseRelation($name,$parentModel,$targetObject,$relName)
       {
           echo "Creando relacion inversa $relName para ".$parentModel->objectName->className."<br>";
@@ -34,7 +34,7 @@
           $field=$remModel->getField($relName);
           $role=$field->getRole();
           $multiplicity=$field->getMultiplicity();
-          
+
           if($role!="HAS_MANY")
           {
               if($multiplicity=="1:1")
@@ -53,15 +53,15 @@
               }
           }
           return new InverseRelation($name,$parentModel,$def);
-          
+
       }
-      
+
       function getMultiplicity()
       {
           $mult=$this->targetField->getMultiplicity();
           return implode(":",array_reverse(explode(":",$mult)));
       }
-      
+
         function getLocalFieldInstances()
         {
             // La relacion puede ser simple o multiple.
@@ -75,29 +75,29 @@
             return $result;
         }
         function getRemoteFieldInstances()
-        {        
+        {
                 $fields=$this->targetField->getLocalFieldNames();
                 foreach($fields as $curF)
                     $result[$curF]=$this->targetModel->getField($curF);
                 return $result;
         }
-                
+
         function createDerivedRelation()
         {
             return null;
         }
         function pointsTo($modelName,$fieldName)
        {
-          $remObj=new \model\reflection\Model\ModelName($this->definition["MODEL"]);
-          
+          $remObj=\lib\model\ModelService::getModelDescriptor($this->definition["MODEL"]);
+
           if($modelName!=$remObj->equals($modelName))
               return false;
-          
+
           if(!is_array($fieldName))
               $fieldName=array($fieldName);
           $remoteNames=array_keys($this->getRemoteFieldInstances());
           $int=\lib\php\ArrayTools::compare($remoteNames,$fieldName);
-          return $int===0;          
+          return $int===0;
       }
       function generateActions()
       {
@@ -106,7 +106,7 @@
       }
       function getDataSourceCreationCallback()
       {
-            return "createFromInverseRelation";           
+            return "createFromInverseRelation";
       }
 
       function getDataSources()
@@ -124,7 +124,7 @@
             {
                 $innerDs=new \model\reflection\DataSource($this->name,$this->parentModel);
 
-                  if($innerDs->mustRebuild())            
+                  if($innerDs->mustRebuild())
                       $innerDs->$callbackName($this,"MxNlist","INNER",$isadmin,$perms);
                   $this->datasources[]=$innerDs;
 
@@ -138,9 +138,9 @@
                   $fullDs->$callbackName($this,"MxNlist","LEFT",$isadmin,$perms);
 
               $this->datasources[]=$fullDs;
-         
+
               $notName="Not".ucfirst($this->name);
-            
+
               $notDs=new \model\reflection\DataSource($notName,$this->parentModel);
               if($notDs->mustRebuild())
                   {
@@ -157,20 +157,20 @@
       }
 
       function getFormInput($form,$name,$fieldDef,$inputDef=null)
-      {          
+      {
           // Se supone que aqui solo se llama, si esta inverse relationship apunta a un objeto
           // con el rol "MULTIPLE_RELATION".
           $remoteModel=$this->getRemoteModel();
           $role=$remoteModel->getRole();
-          if($role!="MULTIPLE_RELATION")          
+          if($role!="MULTIPLE_RELATION")
               return "";
-            
+
           $formClass=$form->parentModel->objectName->getNormalizedName();
           if(!$inputDef["TYPE"])
                 $inputDef["TYPE"]="/types/inputs/".$this->getDefaultInputName();
 
           $relDef["MODEL"]=$this->parentModel->objectName->getNormalizedName();
-          $remfields=array_values($this->definition["FIELDS"]);                   
+          $remfields=array_values($this->definition["FIELDS"]);
           $remoteField=$remfields[0];
           $relDef["FIELD"]=$this->name;
 
@@ -180,16 +180,16 @@
           foreach($mult as $curF)
           {
               if($curF==$remoteField)continue;
-              // Este es el campo en el modelo intermedio, que apunta a la tabla remota.   
+              // Este es el campo en el modelo intermedio, que apunta a la tabla remota.
                  $remRemField=$curF;
           }
 
           if(!$inputDef["PARAMS"]["LABEL"])
                $inputDef["PARAMS"]["LABEL"]=$this->getDefaultInputLabels($remoteModel,$remRemField);
-          
+
           if(!$inputDef["PARAMS"]["VALUE"])
                 $inputDef["PARAMS"]["VALUE"]=array($remRemField);
-                           
+
             return parent::getFormInput($form,$name,$relDef,$inputDef);
         }
 
@@ -200,18 +200,18 @@
       function getDefaultInputParams($form=null,$actDef=null)
         {
             $p=$this->definition;
-            $remfields=array_values($this->definition["FIELDS"]);                   
+            $remfields=array_values($this->definition["FIELDS"]);
             $remoteField=$remfields[0];
             $remoteModel=$this->getRemoteModel();
             $role=$remoteModel->getRole();
-            if($role!="MULTIPLE_RELATION")          
+            if($role!="MULTIPLE_RELATION")
                 return "";
             $def=$remoteModel->getDefinition();
             $mult=$def["MULTIPLE_RELATION"]["FIELDS"];
             foreach($mult as $curF)
             {
               if($curF==$remoteField)continue;
-              // Este es el campo en el modelo intermedio, que apunta a la tabla remota.   
+              // Este es el campo en el modelo intermedio, que apunta a la tabla remota.
                  $remRemField=$curF;
             }
           $params["LABEL"]=$this->getDefaultInputLabels($remoteModel,$remRemField);
@@ -220,7 +220,7 @@
         }
       function getDefaultInputLabels($remoteModel,$remField)
       {
-            // remoteModel es el objeto intermedio.remRemModel es el objeto remoto.               
+            // remoteModel es el objeto intermedio.remRemModel es el objeto remoto.
                $remRemModel=$remoteModel->getField($remField)->getRemoteModel();
                $remkeys=array_keys($remRemModel->getIndexFields());
                $labels=array_keys($remRemModel->getLabelFields());
@@ -236,6 +236,6 @@
           include_once(__DIR__."/ModelMeta.php");
           return new \model\reflection\Model\ModelMeta($objectName);
       }
-      
+
   }
-  
+

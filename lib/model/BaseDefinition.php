@@ -36,7 +36,7 @@ abstract class BaseDefinition extends BaseTypedObject
                 if($serializer->getSerializerType()=="PHP")
                     $this->{$getKey}=$fullData[$getKey];
                 else
-                    $serializer->unserializeType($getKey,$this->{"*" . $getKey}, $fullData);
+                    $serializer->unserializeType($getKey,$this->{"*" . $getKey}, $fullData,$this);
             }
         }
     }

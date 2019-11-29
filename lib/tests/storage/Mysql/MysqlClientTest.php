@@ -1,5 +1,5 @@
 <?php
-namespace lib\tests\storage\ES;
+namespace lib\tests\storage\Mysql;
     $dirName=__DIR__."/../../../../install/config/CONFIG_test.php";
     include_once($dirName);
     include_once(LIBPATH."/startup.php");
@@ -11,162 +11,206 @@ namespace lib\tests\storage\ES;
     use lib\model\BaseTypedObject;
 
 
-class ESClientTest extends TestCase
+class MysqlClientTest extends TestCase
 {
-    const TEST_INDEX_NAME="testIndex";
+    const TEST_TABLE="TestTable";
+    const SAMPLE_QUERY="SELECT * from lineitemsummary where costType=\"CPC\"";
+
+    var $client=null;
     function connect()
     {
-        $client=new \lib\storage\ES\ESClient(["servers"=>[ES_TEST_SERVER],"port"=>ES_TEST_PORT,"index"=>ES_TEST_INDEX]);
-        return $client;
-    }
-    function createTestIndex($client)
-    {
-        if($client->indexExists(ESClientTest::TEST_INDEX_NAME)) {
-            $client->destroyIndex(ESClientTest::TEST_INDEX_NAME);
+        if($this->client==null) {
+            $client = new \lib\storage\Mysql\Mysql(["host" => _DB_SERVER_, "user" => _DB_USER_, "password" => _DB_PASSWORD_]);
+            $client->connect();
+            $client->selectDb(_DB_NAME_);
+            $this->client=$client;
         }
-        $client=$this->connect();
-        $index = $client->createIndex(ESClientTest::TEST_INDEX_NAME, ["_doc"=>["properties"=>[
-            "a_string" => ["type" => "keyword"],
-            "a_integer" => ["type" => "integer"],
-            "a_byte" => ["type" => "byte"],
-            "a_long" => ["type" => "long"],
-            "a_float" => ["type" => "float"],
-            "a_date" => ["type" => "date"]
-
-        ]
-    ]
-        ]);
+        return $this->client;
     }
-    function resetTestIndex($client)
-    {
-        if($client->indexExists(ESClientTest::TEST_INDEX_NAME))
-        {
-            $client->destroyIndex(ESClientTest::TEST_INDEX_NAME);
-            $this->assertEquals(false,$client->indexExists(ESClientTest::TEST_INDEX_NAME));
-        }
-        $this->createTestIndex($client);
-    }
-
-    function testCreateIndex()
+    function createTestTable()
     {
         $client=$this->connect();
-            try{
-            $this->createTestIndex($client);
-            $exists=$client->indexExists(ESClientTest::TEST_INDEX_NAME);
-            $this->assertEquals(true,$exists);
-        }catch(\Exception $e)
-        {
-            $this->fail("Excepcion Elasticsearch".$e->getMessage());
-        }
+        if($client->tableExists(MysqlClientTest::TEST_TABLE))
+            $client->deleteTable(MysqlClientTest::TEST_TABLE);
+        $index = $client->doQ("CREATE TABLE ".MysqlClientTest::TEST_TABLE." (
+            a_string VARCHAR(10),
+            a_integer INT,
+            a_byte CHAR(1),
+            a_long LONG,
+            a_float FLOAT,
+            a_date DATE)");
 
     }
-    function testDropIndex()
+    function importSampleData()
     {
         $client=$this->connect();
-        try{
-            if($client->indexExists(ESClientTest::TEST_INDEX_NAME))
-            {
-                $client->destroyIndex(ESClientTest::TEST_INDEX_NAME);
-                $this->assertEquals(false,$client->indexExists(ESClientTest::TEST_INDEX_NAME));
-            }
-        }catch(\Exception $e)
-        {
-            $this->fail("Excepcion Elasticsearch:".$e->getMessage());
-        }
-    }
-    function testCreateIndexAlias()
-    {
-        $client=$this->connect();
-
-        try{
-            $this->createTestIndex($client);
-            $client->createIndexAlias(ESClientTest::TEST_INDEX_NAME,ESClientTest::TEST_INDEX_NAME."_alias");
-            $this->assertEquals(true,$client->indexExists(ESClientTest::TEST_INDEX_NAME."_alias"));
-        }catch(\Exception $e)
-        {
-            $this->fail("Excepcion Elasticsearch:".$e->getMessage());
-        }
-    }
-    function testBulkInsert()
-    {
-        $client=$this->connect();
-        try {
-            $this->resetTestIndex($client);
-            $sampleData=[
-                [
-                "a_string" => "hola","a_integer"=>2,"a_long"=>897987987,"a_float"=>3.2,"a_date"=>time()
-                ]
-            ];
-            $client->insertBulk($sampleData);
-            sleep(1);
-            $n=$client->getCount();
-            $this->assertEquals(1,$n);
-        }catch(\Exception $e)
-        {
-            $this->fail("Excepcion Elasticsearch:".$e->getMessage());
-        }
+        $client->importDump(__DIR__."/res/test.dmp");
     }
 
-    /**
-     * Debe dar 1 error, que va a ser ignorado, y al final, el numero de lineas insertadas debe ser dos.
-     */
-    function testBulkInsert2()
+    function testCreateTable()
     {
-        $client=$this->connect();
-        try {
-            $this->resetTestIndex($client);
-            $sampleData=[
-                [
-                    "a_string" => "hola","a_integer"=>2,"a_long"=>897987987,"a_float"=>3.2,"a_date"=>time()
-                ],
-                [
-                    "a_string" => "hola","a_integer"=>2,"a_byte"=>'c',"a_long"=>897987987,"a_float"=>3.2,"a_date"=>time()
-                ],
-                [
-                    "a_string" => "hola","a_integer"=>2,"a_long"=>897987987,"a_float"=>3.2,"a_date"=>time()
-                ]
-            ];
-            $client->insertBulk($sampleData,true);
-            sleep(1);
-            $n=$client->getCount();
-            $this->assertEquals(3,$n);
-        }catch(\Exception $e)
-        {
-            $this->fail("Excepcion Elasticsearch:".$e->getMessage());
-        }
+        $this->createTestTable();
+        $this->assertEquals(true, $this->client->tableExists(MysqlClientTest::TEST_TABLE));
+        $this->client->deleteTable(MysqlClientTest::TEST_TABLE);
+        $this->assertEquals(false, $this->client->tableExists(MysqlClientTest::TEST_TABLE));
+
+    }
+    function testSelect()
+    {
+        $this->importSampleData();
+        $results=$this->client->select("SELECT count(*) as N from lineitemsummary where costType=\"CPC\"");
+        $this->assertEquals(21,$results[0]["N"]);
+        $results2=$this->client->select("SELECT * from lineitemsummary where costType=\"CPC\"","status");
+        $this->assertEquals(1,count($results2["DELIVERING"]));
+        $this->assertEquals(1,count($results2["COMPLETED"]));
+    }
+    function testFieldIndexedSelect()
+    {
+        $this->importSampleData();
+        $n=0;
+        $res=[];
+        $indexedArr=[];
+        $reindexBy="status";
+        $t=$this->client->fieldIndexedSelect(
+            $res,
+            "SELECT * from lineitemsummary where costType=\"CPC\"",
+            $n,
+            "status",
+            $indexedArr
+        );
+        // En el primer parametro, pasado a la funcion, se devuelve un diccionario
+        // con una key por cada columna que hay en la tabla.
+        $columns=array_keys($res);
+        // EL resultado no indexado tiene como clave, cada una de las columnas.
+        $this->assertEquals(57,count($columns));
+        // Y como valor, un array con el valor de esa columna en cada linea.
+        $this->assertEquals(21,count($res[$columns[0]]));
+
+        // En el array indexado por el campo "status", tendremos, por cada valor
+        // distinto de "status", las filas que contienen ese valor.
+        $diffStatus=array_keys($indexedArr);
+        $this->assertEquals(3,count($diffStatus));
+        $this->assertEquals(19,count($indexedArr["DRAFT"]));
+    }
+    function testSelectColumn()
+    {
+        $this->importSampleData();
+        $res=$this->client->selectColumn(MysqlClientTest::SAMPLE_QUERY." ORDER BY status","status");
+        $this->assertEquals(21,count($res));
+        $this->assertEquals("DELIVERING",$res[0]);
+    }
+    /* En selectIndexed, se indexa primero por el campo indicado, y  luego, por
+    cada columna */
+    function testSelectIndexed()
+    {
+        $this->importSampleData();
+        $res=$this->client->selectIndexed(MysqlClientTest::SAMPLE_QUERY,"status");
+        $this->assertEquals(true,isset($res["DRAFT"]));
+        $this->assertEquals(true,isset($res["DRAFT"]["id"]));
+        $this->assertEquals(19,count($res["DRAFT"]["id"]));
+    }
+    function testSelectAll()
+    {
+        $this->importSampleData();
+        $n=0;
+        $res=$this->client->selectAll(MysqlClientTest::SAMPLE_QUERY,$n);
+        $this->assertEquals(21,$n);
+        $this->assertEquals(21,count($res));
+    }
+
+    function testDoQ()
+    {
+        $this->importSampleData();
+        $n=0;
+        $res=$this->client->doQ("UPDATE lineitemsummary SET costType=\"OTHER\" where costType=\"CPC\"");
+        $res=$this->client->selectAll(MysqlClientTest::SAMPLE_QUERY,$n);
+        $this->assertEquals(0,$n);
+        $this->assertEquals(0,count($res));
     }
     function testQuery()
     {
-        $client=$this->connect();
-        try {
-            $this->resetTestIndex($client);
-            $n=$client->getCount();
-            $sampleData=[
-                [
-                    "a_string" => "hola","a_integer"=>2,"a_long"=>897987987,"a_float"=>3.2,"a_date"=>time()
-                ],
-                [
-                    "a_string" => "adios","a_integer"=>2,"a_long"=>897987987,"a_float"=>3.2,"a_date"=>time()
-                ]
-            ];
-            $client->insertBulk($sampleData,true);
-            sleep(1);
-            $res=$client->query([
+        $this->importSampleData();
+        $n=0;
+        $n=$this->client->query("UPDATE lineitemsummary SET costType=\"OTHER\" where costType=\"CPC\"");
+        $this->assertEquals(21,$n);
+    }
+    function testCursor()
+    {
+        $this->importSampleData();
+        $cr=$this->client->cursor(MysqlClientTest::SAMPLE_QUERY);
+        $n=0;
+        while($this->client->fetch($cr))
+            $n++;
+        $this->assertEquals(21,$n);
+    }
+    function testDelete()
+    {
+        $this->importSampleData();
+        $n=0;
+        $res=$this->client->delete("DELETE FROM lineitemsummary WHERE costType=\"CPC\"");
+        $res=$this->client->selectAll(MysqlClientTest::SAMPLE_QUERY,$n);
+        $this->assertEquals(0,$n);
+        $this->assertEquals(0,count($res));
+    }
+    function testUpdateFromAssociative()
+    {
+        $this->importSampleData();
+        $this->client->updateFromAssociative(
+            "lineitemsummary",
+            [
+                "costType"=>"OTHER"
+            ],
+            "costType='CPC'"
+        );
+        $n=0;
+        $res=$this->client->selectAll(MysqlClientTest::SAMPLE_QUERY,$n);
+        $this->assertEquals(0,$n);
+        $this->assertEquals(0,count($res));
+    }
 
-                    'index' => ESClientTest::TEST_INDEX_NAME,
-                    'body' => [
-                        'query' => [
-                            'match' => [
-                                'a_float' => 3.2
-                            ]
-                        ]
-                    ]
-            ]);
-            $this->assertEquals(2,$res["hits"]["total"]["value"]);
-        }catch(\Exception $e)
-        {
-            $this->fail("Excepcion Elasticsearch:".$e->getMessage());
-        }
+    function testInsertFromAssociative()
+    {
+        $this->importSampleData();
+        $n=0;
+        $res=$this->client->selectAll(MysqlClientTest::SAMPLE_QUERY,$n);
+        $data=$res[0];
+        $data["viewabilityProviderCompanyId"]=555;
+        unset($data["id"]);
+        $this->client->insertFromAssociative(
+            "lineitemsummary",
+            $data
+        );
+        $res=$this->client->selectAll("SELECT * from lineitemsummary where viewabilityProviderCompanyId=555",$n);
+
+        $this->assertEquals(1,$n);
+        $this->assertEquals(1,count($res));
+    }
+    function testGetTableSchema()
+    {
+        $this->importSampleData();
+        $sch=$this->client->getTableSchema("lineitemsummary");
+        $this->assertEquals(57,$sch["NCOLUMNS"]);
+        $this->assertEquals(57,count(array_keys($sch["FIELDS"])));
+    }
+    function testSelectCallback()
+    {
+        $this->importSampleData();
+        $n=0;
+        $this->client->selectCallback(
+            MysqlClientTest::SAMPLE_QUERY,
+            function($arr) use(& $n)
+            {
+                $n++;
+            }
+        );
+        $this->assertEquals(21,$n);
+    }
+    function testGetFullStatus()
+    {
+        $this->connect();
+        $st=$this->client->getFullStatus();
+        $this->assertEquals(true,isset($st["mysql"]));
+        $this->assertEquals(true,isset($st["slave"]));
     }
 }
 

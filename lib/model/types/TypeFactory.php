@@ -2,13 +2,28 @@
 include_once(LIBPATH."/model/types/BaseType.php");
   class TypeFactory
   {
-      static $serializers=array();
+      static $typeProviders=array();
+      static $typeProviderCache=array();
+
       static function includeType($type,$suffix="")
       {
-          if($type[0]=='\\')
-              return $type;
+
+          $parts=explode('\\',$type);
+          $n=count($parts);
+          if($n>1)
+          {
+              if($parts[0]!="lib")
+              {
+                  return $type;
+              }
+              $type=$parts[$n-1];
+          }
+
+          $type=ucfirst(strtolower($type));
           if($type=="String" || $type=="_string")
               $type="_String";
+          if($type=="Array" || $type=="_array")
+              $type="_Array";
           $cName='\lib\model\types\\'.$type;
           if(is_file(LIBPATH."/model/types/".$type.".php"))
           {
@@ -26,17 +41,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
           }
           return $cName;
       }
-      static function getObjectLayer($objName)
-      {
-          $classR=new \ReflectionClass($objName);
-          $namespace=$classR->getNamespaceName();
-          $pos=strpos($namespace,'\\');
-          if($pos===false)
-              return $namespace;
-          return substr($namespace,0,$pos);
-      }
-      // The $object param is either a model instance, a model name (string), or null.
-      // It's required, in case of inherited models.
+
       static function getType($object,$def,$value=null)
       {
           try
@@ -44,14 +49,13 @@ include_once(LIBPATH."/model/types/BaseType.php");
 
             if(!isset($def["TYPE"]))
             {
-
                 if(isset($def["REFERENCES"]))
                 {
                     // Important: The object parameter keeps pointing to the original
                     // object.
                     return TypeFactory::getType($object,$def["REFERENCES"],$value);
                 }
-                if($def["MODEL"])
+                if(isset($def["MODEL"]))
                 {
 
                     $newType=TypeFactory::getType(null,TypeFactory::getObjectField($def["MODEL"],$def["FIELD"]),$value);
@@ -65,23 +69,35 @@ include_once(LIBPATH."/model/types/BaseType.php");
                 }
                 throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def));
             }
-            $type=ucfirst(strtolower($def["TYPE"]));
-            $targetType=TypeFactory::includeType($type);
-            $t= new $targetType($def,$value);
-            return $t;
+
+            $type=$def["TYPE"];
+            if($type[0]!=='\\') {
+                $type=ucfirst(strtolower($type));
+                $targetType = TypeFactory::includeType($type);
+                $t = new $targetType($def, $value);
+                return $t;
+            }
+            else
+            {
+
+                return new $type($def,$value);
+            }
           }
           catch(\Exception $e)
           {
               if($object==null)
                   throw($e);
+
               if(is_string($object))
               {
                   $def=TypeFactory::getObjectDefinition($object);
               }
               else
                   $def=$object->getDefinition();
-              if($def["EXTENDS"])
+              if(isset($def["EXTENDS"]))
                       return TypeFactory::getType($def["EXTENDS"],$def,$value);
+              else
+                  throw($e);
           }
       }
 
@@ -134,7 +150,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
               {
                   print_r(debug_backtrace());
               }
-              $objName=new \model\reflection\Model\ModelName($objName,$layer);
+              $objName=\lib\model\ModelService::getModelDescriptor($objName,$layer);
           }
 
           $objName->getDefinition();
@@ -196,6 +212,28 @@ include_once(LIBPATH."/model/types/BaseType.php");
           }
           return false;
 
+      }
+      static function addTypeProvider($path,$provider)
+      {
+          TypeFactory::$typeProviders[$path]=$provider;
+      }
+      private static function resolveType($typeName)
+      {
+          $maxLength=0;
+          $provider=null;
+          foreach(TypeFactory::$typeProviders as $key=>$value)
+          {
+              if(strpos($typeName,$key)===0)
+              {
+                  $l=strlen($key);
+                  if($l>$maxLength)
+                  {
+                      $maxLength=$l;
+                      $resolver=$value;
+                  }
+              }
+          }
+          return $resolver->getTypeClass($typeName);
       }
   }
 ?>

@@ -1,10 +1,10 @@
 <?php
   namespace model\reflection\Html\pages;
   class ViewWebPageDefinition extends WebPageDefinition
-  {  
+  {
       var $dsName;
       var $dsDef;
-      var $codeManager=null;          
+      var $codeManager=null;
       function create($dsName,$dsDef,$key,$value)
       {
           $this->dsName=$dsName;
@@ -24,15 +24,15 @@
           if( $isadmin )
           {
               $path="/admin".$path;
-          }       
+          }
           $origDef=$dsDef->getDefinition();
           $indexes=isset($origDef["INDEXFIELDS"])?$origDef["INDEXFIELDS"]:array();
           $params=isset($origDef["PARAMS"])?$origDef["PARAMS"]:array();
-          
+
 
           $role=$dsDef->getRole();
 
-          
+
 
           $def=array(
               "NAME"=>$dsName,
@@ -42,7 +42,7 @@
                   "TYPE"=>"NO-CACHE"
                   ),
               'INHERIT_PARAMS_FROM_URL'=>true,
-              "ENCODING"=>"utf8",    
+              "ENCODING"=>"utf8",
               "ADD_STATE"=>array(),
               "REQUIRE_STATE"=>array(),
               "REMOVE_STATE"=>array(),
@@ -69,7 +69,7 @@
       function getCodeManager()
       {
           return $this->codeManager;
-      }          
+      }
       function setupPath()
       {
           //$actionName=$name
@@ -81,9 +81,9 @@
                 "MODEL"=>$this->parentModel->objectName->getNamespaced(),
                 "DATASOURCE"=>$this->dsName
           );
-          $pathContents["LAYOUT"]=$this->definition["LAYOUT"];          
+          $pathContents["LAYOUT"]=$this->definition["LAYOUT"];
           $parentModel=$this->srcObject->parentModel;
-          $parentName=$parentModel->objectName;          
+          $parentName=$parentModel->objectName;
 
           $pathContents["NAME"]=str_replace("\\","-",$parentName)."_".$this->definition["NAME"];
           $this->pathContents=$pathContents;
@@ -100,7 +100,7 @@
               {
                   if($value["MODEL"])
                   {
-                      $objName=new \model\reflection\Model\ModelName($value["MODEL"]);
+                      $objName=\lib\model\ModelService::getModelDescriptor($value["MODEL"]);
                       $normalizedParams[$objName->getNamespaced()][$value["FIELD"]]=$key;
                   }
               }

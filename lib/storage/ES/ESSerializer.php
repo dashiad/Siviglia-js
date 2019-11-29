@@ -113,8 +113,7 @@ class ESSerializer extends \lib\storage\StorageSerializer
 
         if (isset($arr["hits"]) && $arr["hits"]["total"]["value"]==1 && isset($arr["hits"]["hits"][0]))
         {
-            $object->loadFromArray($arr["hits"]["hits"][0]["_source"],$this);
-
+            $this->unserializeObjectFromData($object,$arr["hits"]["hits"][0]["_source"]);
         }
         else
             throw new ESSerializerException(\lib\storage\StorageSerializerException::ERR_NO_SUCH_OBJECT, array("model" => $this->currentIndex));
@@ -165,7 +164,9 @@ class ESSerializer extends \lib\storage\StorageSerializer
                 $result=[];
 
                 array_map(function($item,$key,$type) use (& $result,$ser) {
-                    $result[$key]=$type->unserialize($key,$item->getValue(),$ser);
+                    // Aqui estamos pasando null como modelo, lo cual deberia ser seguro, a menos que la key fuera un composite.
+
+                    $result[$key]=$type->unserialize($key,$item->getValue(),$ser,null);
                 },$item,$keys,$types);
                 return ["bool"=>["must"=>["term"=>[$result]]]];
             },$objects);
@@ -216,7 +217,9 @@ class ESSerializer extends \lib\storage\StorageSerializer
         $func=function($item) use ($indexField,$typeSerializers,$ser){
             $data=[];
                 foreach($typeSerializers as $k=>$v) {
-                    $data=array_merge($data,$typeSerializers[$k]->serialize($k, $item->{"*" . $k}, $ser));
+                    $serialized=$typeSerializers[$k]->serialize($k, $item->{"*" . $k}, $ser);
+                    if($serialized!==null)
+                        $data=array_merge($data,$serialized);
                 }
                 if($indexField)
                 $data["_id"]=$data[$indexField];
@@ -262,25 +265,44 @@ class ESSerializer extends \lib\storage\StorageSerializer
                     }
 
                     $serIdx=$typeSerializers[$idx]->serialize($idx,$item->{"*".$idx},$conn);
-                    $conn->update($serIdx[$idx],$data);
+                    $conn->updateFromAssociative($serIdx[$idx],$data);
                 };
                 }
             else
             {
+
                 $func = function ($item) use ($indexField,$fields,$typeSerializers,$conn){
                     $queryPart=[];
                     foreach($indexField as $k=>$v)
                     {
-                        $serX=$typeSerializers[$k]->serialize($k,$item->{$k},$conn);
+                        $serX=$typeSerializers[$v]->serialize($v,$item->{"*".$v},$conn);
                         foreach($serX as $k1=>$v1)
-                            $queryPart[$k1]=$v1;
+                            $queryPart[]=["match"=>[$k1=>$v1]];
                     }
+                    if($fields==null)
+                        $fields=$item->getDirtyFields();
+
+                    // Aqui vamos a necesitar updateByQuery...Y updateByQuery no soporta cambios en el documento,
+                    // sólo por scripting..Esto es un problema, ya que hay que serializar de forma distinta.
+                    // Hay que serializar usando javascript. Para eso, hay que hacer un json_encode y un decode.
+                    // Lo que se hace es asignar el valor del tipo a un objeto con una key: {"s":....}, y lo encodeamos a json,
+                    // que escapea.
+                    // A esa string, le quitamos los caracteres que componen la key, y nos quedamos con el valor serializado.
                     $data=[];
                     foreach ($fields as $k => $v) {
-                        $data=array_merge($data, $typeSerializers[$k]->serialize($k, $item->{$k}, $conn));
-
+                        $serX=$typeSerializers[$k]->serialize($k, $item->{"*".$k}, $conn);
+                        foreach($serX as $k1=>$v1) {
+                            $encoded = json_encode(["s" => $serX[$k1]]);
+                            $encoded = substr($encoded, 5);
+                            $encoded = substr($encoded, 0, -1);
+                            $data[] = "ctx._source." . $k1 . "=" . $encoded . ";";
+                        }
                     }
-                    $conn->conn->update(null,$data,["filtered"=>["filter"=>["bool"=>["must"=>["match"=>$queryPart]]]]]);
+                    $alldata=[
+                        "inline"=>implode("",$data),
+                        "lang"=>"painless"
+                        ];
+                    $conn->updateByQuery($alldata,["bool"=>["must"=>$queryPart]]);
                 };
             }
             array_map($func,$objects);
@@ -322,7 +344,13 @@ class ESSerializer extends \lib\storage\StorageSerializer
         $conn=$this->getConnection($model,$index);
         $q=null;
         if($definition!==null) {
-            $builder = new QueryBuilder($definition);
+            if($index!==null)
+                $definition["INDEX"]=$index;
+            else {
+                if (!isset($definition["INDEX"]))
+                    $definition["INDEX"] = $this->currentIndex;
+            }
+            $builder = new QueryBuilder($this,$definition);
             $q = $builder->build();
         }
 
@@ -373,7 +401,8 @@ class ESSerializer extends \lib\storage\StorageSerializer
             if ($indexOptions && isset($indexOptions["INDEX"]))
                 $options = $indexOptions["INDEX"];
         }
-
+        if($index!==null)
+            $this->currentIndex=$index;
         $conn->createIndex($this->currentIndex,$mapping,null,$options);
     }
 
@@ -457,6 +486,16 @@ class ESSerializer extends \lib\storage\StorageSerializer
     function getQueryBuilder($conds,$params)
     {
         return new QueryBuilder($conds,$params);
+    }
+
+    function insertFromAssociative($target, $data)
+    {
+        return $this->conn->insertFromAssociative($target,$data);
+
+    }
+    function updateFromAssociative($target, $fields, $query)
+    {
+        return $this->conn->updateFromAssociative($target,$fields,$query);
     }
 
 }

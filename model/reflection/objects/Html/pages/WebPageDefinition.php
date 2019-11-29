@@ -3,10 +3,10 @@
   abstract class WebPageDefinition extends \model\reflection\base\BaseDefinition
   {
       function __construct()
-      {          
+      {
       }
       abstract function create($dsName,$dsDef,$key,$value);
-      
+
       abstract function getCodeManager();
 
       function initialize($name,$srcObject,$definition)
@@ -33,7 +33,7 @@
       {
           return $this->name;
       }
-      
+
       function setupPath()
       {
           $this->path="";
@@ -41,48 +41,48 @@
           if(isset($this->definition["FIELDS"]))
               $pathContents["PARAMS"]=$this->definition["FIELDS"];
           $pathContents["LAYOUT"]=$this->definition["LAYOUT"];
-          
-          
+
+
           $this->pathContents=$pathContents;
           // Primero hay que ver si esta pagina depende de algun objeto.
           if(!$this->definition["MODEL"])
           {
               $pathContents["NAME"]=$this->definition["NAME"];
-              $this->path="/".$this->definition["NAME"];              
+              $this->path="/".$this->definition["NAME"];
               return;
           }
           else
           {
-          
+
              $this->pathContents["NAME"]=str_replace("\\","/",$this->definition["MODEL"])."_".$this->definition["NAME"];
           }
           $srcModel=\model\reflection\ReflectorFactory::getModel($this->definition["MODEL"]);
           $isPrivate=$srcModel->objectName->isPrivate();
-          
-          
+
+
           // Si es una pagina de administracion, se poner por delante "admin".
           if($this->srcObject->isAdmin())
               $this->path="/admin".$this->path;
-          
+
           $isViewDef=false;
           // If there's an object, the name of this page will be composed by ObjectName-View/List/Form name
           // This is dangerous, as duplicates may appear.
-                    
+
           if(isset($this->definition["SOURCES"]))
           {
               if(!\lib\php\ArrayTools::isAssociative($this->definition["SOURCES"]))
               {
                   $firstDef=$this->definition["SOURCES"][0];
-                  
+
                   if($firstDef["ROLE"]=="view" && ((!$this->srcObject->isAdmin() && $firstDef["NAME"]=="View") ||
                                                     ($this->srcObject->isAdmin() && $firstDef["NAME"]=="AdminView")))
                   {
-                      $isViewDef=true;                      
+                      $isViewDef=true;
                   }
               }
-          }          
+          }
           // Se recogen todos los parametros requeridos, y se mira si pertenecen a un modelo, en cuyo caso,
-          // hay que ver si completan la clave requerida de dicho modelo, para incluir ese modelo en el path, y en 
+          // hay que ver si completan la clave requerida de dicho modelo, para incluir ese modelo en el path, y en
           // el calculo de permisos.
           $probableKeys=array();
           $myFields=$this->definition["FIELDS"];
@@ -95,8 +95,8 @@
                   {
                     if(!$pValue["REQUIRED"])continue;
                     if(!$pValue["MODEL"])continue;
-                    $objName=new \model\reflection\Model\ModelName($pValue["MODEL"]);
-                    $field=$pValue["FIELD"];           
+                    $objName=\lib\model\ModelService::getModelDescriptor($pValue["MODEL"]);
+                    $field=$pValue["FIELD"];
                     $probableKeys[$objName->getNormalizedName()][]=$field;
                     // Se almacena el nombre que se le ha dado al parametro.
                     $paramNames[$objName."_".$field]=$pKey;
@@ -107,13 +107,13 @@
           $this->path="/".str_replace("\\","/",$this->definition["MODEL"]);
           $objects=array_keys($probableKeys);
           // Si no se han encontrado parametros...
-          
-          
+
+
           if(count($objects)==0)
-          {   
+          {
               $this->path.="/".$this->definition["NAME"];
-              $this->path=$this->simplifyPath($this->path);              
-              return;                            
+              $this->path=$this->simplifyPath($this->path);
+              return;
           }
 
           $subPaths=array();
@@ -121,7 +121,7 @@
 
           foreach($probableKeys as $key=>$value)
           {
-              
+
               if($isPrivate)
                   {
                   $n=1;
@@ -142,21 +142,21 @@
               }
 
               if($hasFullKey)
-              { 
+              {
                 $paramPath=array();
                 foreach($value as $fieldName)
                 {
                     $paramName=$paramNames[$key."_".$fieldName];
                     $this->definition["MODELIDS"][$key][]=$paramName;
-                    $paramPath[]="{".$paramName."}";        
+                    $paramPath[]="{".$paramName."}";
                 }
                 $newPath=implode("/",$paramPath);
                 $fullKeys[$key]=$newPath;
                 // No habia diferencias.Se tienen todas las keys de este modelo.
                 // Lo siguiente a saber si este modelo es el del que deriva esta pagina. Es decir, si esta pagina
                 // es el formulario "Edit" de "Section", hay que saber si esta key completa es del mismo objeto Section,
-                // o de cualquier otro, ya que si es de Section, debe aparecer en primer lugar.                
-              }              
+                // o de cualquier otro, ya que si es de Section, debe aparecer en primer lugar.
+              }
           }
 
           if($isPrivate)
@@ -175,7 +175,7 @@
               if($isPrivate)
               {
                   $parentNamespaceModel=$srcModel->objectName->getNamespaceModel();
-                  $parentNamespaceName=new \model\reflection\Model\ModelName($parentNamespaceModel);
+                  $parentNamespaceName=\lib\model\ModelService::getModelDescriptor($parentNamespaceModel);
                   $parentNamespaceFull=$parentNamespaceName->getNormalizedName();
                   $this->path="/".$parentNamespaceName->className;
                   if($fullKeys[$parentNamespaceFull])
@@ -184,15 +184,15 @@
               $this->path.="/".$srcModel->objectName->className;
               $fullSrcName=$srcModel->objectName->getNormalizedName();
               if($fullKeys[$fullSrcName])
-                  $this->path.="/".$fullKeys[$fullSrcName];                  
+                  $this->path.="/".$fullKeys[$fullSrcName];
               $this->path.="/".$this->definition["NAME"];
           }
           $this->path=$this->simplifyPath($this->path);
-          
+
           if($isViewDef)
               $this->extraPaths["/".implode("/",$paramPath)."/*"]=array("PATH"=>"/".$fullSubPath);
       }
-      
+
 
       function hasCompleteKey($modelName,& $normalizedParams,& $path,& $extraParams)
       {
@@ -210,13 +210,13 @@
                   if(!isset($subKeys[$value]))
                       return false;
               }
-              
+
               foreach($indexes as $value)
               {
                   $path.="/{".$subKeys[$value]."}";
                   unset($subKeys[$value]);
-              }              
-              $extraParams=$subKeys; 
+              }
+              $extraParams=$subKeys;
               return true;
       }
       // Este metodo es para objetos privados.Obtiene el campo del objeto privado, que apunta al objeto
@@ -236,14 +236,14 @@
                   $remModelName=$value->getRemoteModelName();
                   $equals=$publicModel->objectName->equals($remModelName);
                   $diff=array_diff($indexes,$value->getRemoteFieldNames());
-                  if($value->getRole()=="BELONGS_TO" && $equals 
+                  if($value->getRole()=="BELONGS_TO" && $equals
                      && count($diff)==0)
-                  {                      
+                  {
                       return array($key=>array("MODEL"=>$value->getRemoteModelName(),
                                                "FIELD"=>$indexes[0],
                                                'REQUIRED'=>1,
                                                'MAP_TO'=>$key));
-                  }                  
+                  }
           }
           return null;
       }
@@ -272,14 +272,14 @@
       {
           return $this->extraPaths;
       }
-      
+
       function getDefinition()
       {
           return $this->definition;
       }
       function save()
       {
-          if($this->srcObject->isAdmin())          
+          if($this->srcObject->isAdmin())
           {
               $admin="admin/";
               $adminNamespace="admin\\";
@@ -309,9 +309,9 @@
            echo "GUARDANDO EN PATH::$dir<br>";
            $text="<?php\r\n\tnamespace ".$namespace.";\nclass $className extends \\lib\\output\\html\\WebPage\n".
                       " {\n".
-                      "        var \$definition=";                                      
+                      "        var \$definition=";
              $text.=$this->dumpArray($this->getDefinition(),5);
-             $text.=";\n}\n?>";             
+             $text.=";\n}\n?>";
              @mkdir(dirname($dir),0777,true);
              file_put_contents($dir,$text);
        }
@@ -320,22 +320,22 @@
       {
             include_once(LIBPATH."/output/html/templating/TemplateParser.php");
             include_once(LIBPATH."/output/html/templating/TemplateHTMLParser.php");
-  
+
             $oLParser=new \CLayoutHTMLParserManager();
 
             $widgetPath=$this->definition["WIDGETPATH"];
 
             $oManager=new \CLayoutManager("html",$widgetPath,array("L"=>array("lang"=>DEFAULT_LANGUAGE)));
 
-            
+
             $definition=array("LAYOUT"=>WEBROOT."/Website/".$this->definition["PATH"].".wid",
                               "CACHE_SUFFIX"=>"php");
-  
+
 
             $oManager->renderLayout($definition,$oLParser,false);
       }
 
-            
+
   }
 
 ?>

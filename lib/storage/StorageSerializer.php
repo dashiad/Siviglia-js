@@ -3,11 +3,10 @@ namespace lib\storage;
 use lib\model\types\TypeFactory;
 use lib\storage\ES\ESSerializerException;
 use lib\storage\ES\QueryBuilder;
-
-class StorageSerializerException extends \lib\model\BaseException
+include_once(__DIR__."/TypeSerializer.php");
+class StorageSerializerException extends \lib\storage\TypeSerializerException
 {
-    const ERR_TYPE_SERIALIZER_NOT_FOUND=1;
-    const TXT_TYPE_SERIALIZER_NOT_FOUND="No encotrado serializador de [%serializer%] para el tipo [%name%]";
+
     const ERR_NO_ID_FOR_OBJECT = 2;
     const TXT_NO_ID_FOR_OBJECT="No se ha recibido un identificador para el objeto";
     const ERR_NO_SUCH_OBJECT = 3;
@@ -15,41 +14,26 @@ class StorageSerializerException extends \lib\model\BaseException
     const ERR_NO_CONNECTION_DETAILS=4;
     const TXT_NO_CONNECTION_DETAILS="No se han proporcionado detalles de conexion";
 }
-abstract class StorageSerializer
+abstract class StorageSerializer extends TypeSerializer
 {
     protected $storageManager;
-    protected $serializerType;
-    protected $name;
-    protected $typeSerializers=[];
+
     protected $definition;
     protected $innerDefinition;
-    function __construct($definition,$serType)
-    {
-        $this->serializerType=$serType;
-        $this->definition=$definition;
-        $this->name=$definition["NAME"];
-        if(isset($definition[$serType]))
-            $this->innerDefinition=$definition[$serType];
-    }
+
     function getStorageManager()
     {
         return $this->storageManager;
     }
 
-    function getSerializerType()
-	{
-		return $this->serializerType;
-	}
+
 
 	function serialize($object)
 	{
 		$object->setSerializer($this);
 		$object->save();
 	}
-	function setName($name)
-    {
-        $this->name=$name;
-    }
+
     function getName()
     {
         return $this->name;
@@ -58,49 +42,9 @@ abstract class StorageSerializer
     {
         return $this->definition;
     }
-    function getTypeSerializer($mixedType)
-    {
-        $className=get_class($mixedType);
-        if(isset($this->typeSerializers[$className]))
-            return $this->typeSerializers[$className];
-
-        $type=substr($className,strrpos($className,'\\')+1);
-
-
-        $baseNamespace=$this->getTypeNamespace();
-        $typeClass=TypeFactory::includeType(ucfirst(strtolower($type)));
-        $name=$type;
-
-        $typeList=array_values(class_parents($typeClass));
-        $nEls=array_unshift($typeList,$name);
-        for($k=0;$k<$nEls;$k++)
-        {
-            if($typeList[$k]=='lib\model\types\BaseType')
-                break;
-
-            $sName=$baseNamespace.'\\'.$typeList[$k];
-            if(@class_exists($sName))
-            {
-                return new $sName();
-            }
-        }
-            //   clean_debug_backtrace(4);
-        throw new StorageSerializerException(StorageSerializerException::ERR_TYPE_SERIALIZER_NOT_FOUND,array("name"=>$type,"serializer"=>$this->getName()));
-    }
-    function serializeType($name,$mixedType)
-    {
-        $typeSerializer=$this->getTypeSerializer($mixedType);
-        return $typeSerializer->serialize($name,$mixedType,$this);
-    }
-    function unserializeType($name,$mixedType,$value)
-    {
-        $typeSerializer=$this->getTypeSerializer($mixedType);
-        return $typeSerializer->unserialize($name,$mixedType,$value,$this);
-    }
 
     function getIndexExpression($object)
     {
-
         $keys = $object->__getKeys();
         if (!$keys)
             return null;
@@ -144,18 +88,19 @@ abstract class StorageSerializer
             $subVals = $value->serialize($this->getSerializerType());
 
             // Los tipos compuestos pueden devolver un array
+
             if (is_array($subVals))
             {
                 if(count($subVals)==0)
-                    $results[$key]=null;
+                    $results[$this->getDestinationColumn($key)]=null;
                 else
                 {
                     foreach($subVals as $resKey=>$resValue)
-                        $results[$resKey]=($resValue===null?null:$resValue);
+                        $results[$this->getDestinationColumn($key.".".$resKey)]=($resValue===null?null:$resValue);
                 }
             }
             else
-                $results[$key] = ($subVals===null?null:$subVals);
+                $results[$this->getDestinationColumn($key)] = ($subVals===null?null:$subVals);
         }
 
         // Aunque $results sea cero, si es nuevo, se guarda.
@@ -164,7 +109,7 @@ abstract class StorageSerializer
 
         if ($isNew)
         {
-            $this->conn->insertFromAssociative($object->__getTableName(), $results);
+            $this->insertFromAssociative($object->__getTableName(), [$results]);
         }
         else
         {
@@ -188,22 +133,13 @@ abstract class StorageSerializer
             $builder = $this->getQueryBuilder(array("BASE"=>array("*"),"CONDITIONS" => $conds), null);
             $q=$builder->build(true);
 
-            $this->conn->updateFromAssociative($object->__getTableName(), $results, $q, false);
+            $this->updateFromAssociative($object->__getTableName(), $results, $q, false);
         }
 
         foreach ($dirtyFields as $key => $value)
             $value->onModelSaved();
     }
-    function getSerializersForObject($obj)
-    {
-        $fields=$obj->__getFields();
-        $result=array();
-        foreach($fields as $key=>$value)
-        {
-            $result[$key]=$this->getTypeSerializer($value->getType());
-        }
-        return $result;
-    }
+
     function serializeToArray($objects,$fields=null)
     {
         if(!is_array($objects))
@@ -230,6 +166,7 @@ abstract class StorageSerializer
         return array_map($func,$objects);
     }
 
+
     // modeldef es una instancia de \lib\reflection\classes\ModelDefinition.
     // extradef es una instancia de \lib\reflection\classes\MysqlOptionsDefinition
     abstract function createStorage($modelDef,$extraDef=null);
@@ -246,12 +183,9 @@ abstract class StorageSerializer
     abstract function fetchAll($queryDef, & $data, & $nRows, & $matchingRows, $params,$pagingParams);
     abstract function fetchCursor($queryDef, & $data, & $nRows, & $matchingRows, $params,$pagingParams);
     abstract function next();
-    abstract function getTypeNamespace();
     abstract function getQueryBuilder($definition,$params);
-
-
-
-
+    abstract function insertFromAssociative($target,$data);
+    abstract function updateFromAssociative($target,$fields,$query);
 }
 
 ?>

@@ -1,7 +1,7 @@
 <?php
  namespace lib\model;
  class RelationMxN extends InverseRelation1x1
- {        
+ {
     protected $relationModelName;
     protected $remoteModelName;
     protected $relationModelDefinition;
@@ -11,13 +11,13 @@
     protected $relationModelMapping;
     protected $localModelMapping;
     protected $remoteModelMapping;
-    protected $relationIndexType;    
+    protected $relationIndexType;
     protected $relationModelIndexes;
     protected $uniqueRelations;
     function __construct($name,& $model, $definition, $value=null)
     {
-        $this->relationModelName=new \model\reflection\Model\ModelName($definition["MODEL"]);
-        $this->remoteModelName=new \model\reflection\Model\ModelName($definition["REMOTE_MODEL"]);
+        $this->relationModelName=\lib\model\ModelService::getModelDescriptor($definition["MODEL"]);
+        $this->remoteModelName=\lib\model\ModelService::getModelDescriptor($definition["REMOTE_MODEL"]);
         // Se necesita la definicion del objeto relacion.
         $this->uniqueRelations=isset($definition["RELATIONS_ARE_UNIQUE"])?$definition["RELATIONS_ARE_UNIQUE"]:false;
         $this->relationModelInstance=\lib\model\BaseModel::getModelInstance($definition["MODEL"]);
@@ -32,7 +32,7 @@
             {
                  $this->relationModelMapping["local"]=$value;
                  $this->localModelMapping[$ff[0]]=$value;
-            }            
+            }
             else
             {
                 $relationModelMapping["remote"]=$f;
@@ -54,12 +54,12 @@
     {
         return $this->relationModelName;
     }
-    
+
     function getRemoteModelName()
     {
         return $this->remoteModelName;
     }
-    
+
     function getRelationModelMapping()
     {
         return $this->relationModelMapping;
@@ -89,7 +89,7 @@
     }
     function onModelSaved()
     {
-        $this->relation->cleanState();        
+        $this->relation->cleanState();
     }
     function relationsAreUnique()
     {
@@ -115,10 +115,10 @@
 class MultipleRelationValues extends RelationValues
 {
     function delete($value)
-    {        
+    {
         // TODO: Optimizar para hacer el minimo numero de queries posibles.
         $type=$this->recognizeType($value);
-        
+
         if(!is_array($type))
         {
             $type=array($type);
@@ -136,7 +136,7 @@ class MultipleRelationValues extends RelationValues
                     // Tengamos A y B, relacionadas por C.
                     // Se nos pasa a borrar, una instancia de B.
                     // Por lo tanto, no tenemos los campos indice de C.Lo que podemos tener son los campos de C que relacionan A con B.
-                    // Esto significa que se borran *todas* las relaciones entre A y B que existen en C.                    
+                    // Esto significa que se borran *todas* las relaciones entre A y B que existen en C.
                     $remFields=$this->relField->getRemoteMapping();
                     foreach($remFields as $key2=>$value2)
                     {
@@ -173,7 +173,7 @@ class MultipleRelationValues extends RelationValues
                     // Por lo tanto, eliminamos solo esa relacion entre A y C.
                     $index=$value[$k]->getIndexes()->getKeyNames();
                     $firstIndex=$index[0];
-                    $deleteKeys[$k][$firstIndex]=$value[$k]->__getField($firstIndex)->serialize($serializer);                    
+                    $deleteKeys[$k][$firstIndex]=$value[$k]->__getField($firstIndex)->serialize($serializer);
                 }break;
             case "value":
                 {
@@ -193,12 +193,12 @@ class MultipleRelationValues extends RelationValues
     {
         // TODO : Optimizar para hacer el minimo numero de queries posibles.
         // Al aniadir, hay 2 casos: que el objeto relacion sea nuevo, o que ya exista.
-        // Que ya exista es muy raro, pero por 
+        // Que ya exista es muy raro, pero por
         $relInstance=$this->relField->getRelationModelInstance();
         $serializer=$relInstance->__getSerializer();
         $uniques=$this->relField->relationsAreUnique();
          $type=$this->recognizeType($value);
-        
+
         if(!is_array($type))
         {
             $type=array($type);
@@ -214,15 +214,15 @@ class MultipleRelationValues extends RelationValues
                     // Si el objeto a relacionar (B) esta sucio, hay que guardarlo.
                     if($value[$k]->isDirty())
                         $value[$k]->save();
-                    
-                    $newInstance=\lib\model\BaseModel::getModelInstance($this->relField->getRelationModelName());                    
+
+                    $newInstance=\lib\model\BaseModel::getModelInstance($this->relField->getRelationModelName());
                     // Por lo tanto, no tenemos los campos indice de C.Lo que podemos tener son los campos de C que relacionan A con B.
-                    // Esto significa que se borran *todas* las relaciones entre A y B que existen en C.                    
+                    // Esto significa que se borran *todas* las relaciones entre A y B que existen en C.
                     $remFields=$this->relField->getRemoteMapping();
-                    foreach($remFields as $key2=>$value2)                    
-                        $newInstance->{$value2}=$value[$k]->{$key2};                                        
+                    foreach($remFields as $key2=>$value2)
+                        $newInstance->{$value2}=$value[$k]->{$key2};
                     $locFields=$this->relField->getLocalMapping();
-                    foreach($locFields as $key2=>$value2)                    
+                    foreach($locFields as $key2=>$value2)
                         $newInstance->{$value2}=$this->relField->getModel()->{$key2};
                     $newInstance->save();
                 }break;
@@ -230,7 +230,7 @@ class MultipleRelationValues extends RelationValues
                 {
                     // Se ha recibido una instancia de la relacion.Hay que asignar el campo que apunta a este objeto.
                     $locFields=$this->relField->getLocalMapping();
-                    foreach($locFields as $key2=>$value2)                    
+                    foreach($locFields as $key2=>$value2)
                         $value[$k]->{$value2}=$this->relField->getModel()->{$key2};
                     $value[$k]->save();
                 }break;
@@ -240,13 +240,13 @@ class MultipleRelationValues extends RelationValues
                     $instance->setId($value[$k]);
                     $instance->unserialize();
                     $locFields=$this->relField->getLocalMapping();
-                    foreach($locFields as $key2=>$value2)                    
+                    foreach($locFields as $key2=>$value2)
                         $value[$k]->{$value2}=$this->relField->getModel()->{$key2};
                     $value[$k]->save();
                 }break;
             }
         }
-           
+
     }
     function recognizeType($value,$allowArray=true)
     {
@@ -259,11 +259,11 @@ class MultipleRelationValues extends RelationValues
             {
                 return "remote";
             }
-            $remName=$this->relField->getRelationModelName()->getNamespaced(); 
+            $remName=$this->relField->getRelationModelName()->getNamespaced();
             if($type==substr($remName,1))
             {
                 return "relation";
-            }            
+            }
         }
         if(is_array($value))
         {
@@ -278,20 +278,20 @@ class MultipleRelationValues extends RelationValues
             }
             return $results;
         }
-        return "value";                
+        return "value";
     }
     // $extra son campos extra (ademas de los exclusivamente referidos a la relacion) que hay que asignar a los objetos de
     // relacion.
     function set($srcValues,$extra=null)
     {
-        
+
         // Set solo tiene sentido en caso de que las relaciones sean unicas.
         // Ademas, set tiene que estar expresado en terminos de los campos relacionados, no segun los id's del modelo
         // intermedio.
         // Por lo tanto, los campos van a ser un array de id's de la tabla remota.
         // Esto a su vez tiene el problema de que si las tablas relacion tienen que ser manualmente definidas, y tienen un id
         // propio, y ese id no es autonumerico (ej, UUID), hay que generarlo tambien, para aquellos elementos que haya que crear.
-        // Porque ya no podemos borrar todo lo existente, y luego insertar lo que nos haya llegado, 
+        // Porque ya no podemos borrar todo lo existente, y luego insertar lo que nos haya llegado,
         // ya que si hay (por algun motivo) campos propios, habriamos perdido sus valores.Hay que hacer primero un delete where not in
         // y un insert de las nuevas relaciones.
 
@@ -308,7 +308,7 @@ class MultipleRelationValues extends RelationValues
         $localKeys=array_keys($local);
         $localMap=$local[$localKeys[0]];
         $curValueSer=$this->relField->serialize($serializer);
-        
+
         $curValue=$curValueSer[$localMap]=$curValueSer[$localKeys[0]];
 
         // Se crea un array de serializadores, para el resto de los campos.
@@ -350,16 +350,16 @@ class MultipleRelationValues extends RelationValues
                     $eVals[$eKey]=$serializers[$eKey]->serialize($types[$eKey]);
                 }
             }
-        }        
+        }
         $isUUID=false;
         // Vemos si es un UUID.
-        if($type->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_ACCESS) 
+        if($type->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_ACCESS)
         {
             $isUUID=true;
             $uuidSerializer=new \lib\model\types\UUIDMYSQLSerializer();
         }
 
-        $nVals=count($srcValues);        
+        $nVals=count($srcValues);
         for($k=0;$k<$nVals;$k++)
         {
             $curVal=$srcValues[$k];
@@ -399,7 +399,7 @@ class MultipleRelationValues extends RelationValues
                                  array($localMap=>$curValue),
                                  array_values($remoteMapping),
                                  $results
-                                 );        
+                                 );
      /*   DELETE FROM xx WHERE id NOT IN (SELECT id FROM zz WHERE a=b AND c IN (.....))
         1) T*/
     }

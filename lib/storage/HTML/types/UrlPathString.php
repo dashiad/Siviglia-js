@@ -7,7 +7,7 @@ namespace lib\storage\HTML\types;
 
 class UrlPathString extends _String
 {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           // Aqui habria que meter escapeado si la definition lo indica.
           if($type->valueSet)

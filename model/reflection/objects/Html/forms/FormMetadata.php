@@ -14,7 +14,7 @@ class FormMetaData extends \model\reflection\base\BaseMetadata {
     function __construct($objName,$formName)
     {
 
-        $Obj=new \model\reflection\Model\ModelName($objName);
+        $Obj=\lib\model\ModelService::getModelDescriptor($objName);
         $basePath=$Obj->getDestinationFile("/html/forms/$formName.php");
         $fileName=realpath($basePath);
         if(strstr($basePath,PROJECTPATH)===false || !is_file($basePath))

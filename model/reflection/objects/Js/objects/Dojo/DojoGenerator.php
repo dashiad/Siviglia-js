@@ -1,6 +1,6 @@
 <?php
 namespace model\reflection\Js\dojo;
-class DojoGenerator 
+class DojoGenerator
 {
     var $model;
     var $parentModel;
@@ -9,7 +9,7 @@ class DojoGenerator
     var $stores;
     function __construct($model)
     {
-        $this->model=$model;      
+        $this->model=$model;
         $this->parentModel=$model;
         $this->jsClassName="Model.".$this->normalizeJsName($model);
         $this->stores=array();
@@ -17,7 +17,7 @@ class DojoGenerator
     function normalizeJsName($model)
     {
         $cad="";
-        if($model->objectName->isPrivate())        
+        if($model->objectName->isPrivate())
             $cad=$model->objectName->getNamespaceModel().".";
         return $cad.$model->objectName->className;
     }
@@ -57,10 +57,10 @@ CLASS;
                 continue;
 
             $formCode=$this->generateForm($key,$forms[0]);
-            if(!$formCode) 
+            if(!$formCode)
                 continue;
             $this->saveForm($forms[0]->name,$formCode);
-            
+
         }
         $relDs=$this->model->getDataSources();
         foreach($relDs as $key=>$value)
@@ -91,8 +91,8 @@ CLASS;
         file_put_contents($targetDir."/templates/".$formName.".html",$code["formTemplate"]);
     }
     function generateForm($name,$form)
-    {        
-        
+    {
+
         /*if(!$this->mustRebuild())
             return;*/
         $this->currentAction=$form;
@@ -102,7 +102,7 @@ CLASS;
         {
             return null;
         }
-            
+
         // Se genera primero la template.Esto es asi, porque de esta forma es posible detectar que modulos
         // va a ser necesario cargar en la clase del formulario.
         $formClass=$this->model->objectName->getUnderNamespaced();
@@ -150,7 +150,7 @@ TEMPLATE;
       case "AddRelation":
           {
               $keys=$form->getIndexFields();
-              $defaultInput="AddRelationMxN";                           
+              $defaultInput="AddRelationMxN";
           }break;
       case "SetRelation":
           {
@@ -197,7 +197,7 @@ TEMPLATE;
                   $label=$curField->getLabel();
               }
               else
-              {                  
+              {
                   $curField=$form->getField($key);
                   $fieldExpr=$this->getFormInput($key,$curField,$form,$requires);
                   $label=$curField->getLabel();
@@ -218,7 +218,7 @@ TEMPLATE;
 </div>
              </div>
 TEMPLATE;
-         // Ahora se prepara el codigo de la clase 
+         // Ahora se prepara el codigo de la clase
 
          // Se obtiene la lista de dependencias.
 
@@ -265,7 +265,7 @@ CLASSCODE;
             $extra = $fDef["INPUTS"][$name]["PARAMS"];
             if ($extra) {
                 if ($extra["DATASOURCE"]) {
-                    $objName = new \model\reflection\Model\ModelName($extra["DATASOURCE"]["MODEL"]);
+                    $objName = \lib\model\ModelService::getModelDescriptor($extra["DATASOURCE"]["MODEL"]);
                     $extra["DATASOURCE"]["MODEL"] = $objName->getNormalizedName();
 
 
@@ -306,8 +306,8 @@ CLASSCODE;
             //return "<input name=\"".$name."\" data-dojo-type=\"".$path."\" data-dojo-attach-point=\"".$name."\" $paramData>";
         /*}
         else
-        {           
-            $inputName=$def->getDefaultInputName();            
+        {
+            $inputName=$def->getDefaultInputName();
             $path="Siviglia/forms/inputs/".$inputName;
              if(!in_array($path,$requires)) {
                 $requires[]=$path;
@@ -330,26 +330,26 @@ CLASSCODE;
         $destPath=$this->model->objectName->getActionFileName($actionName);
         if(!is_file($destPath))
                 return;
-        include_once($destPath);        
+        include_once($destPath);
         $exceptionClass=$this->model->objectName->getNamespacedActionException($actionName);
-        
+
         if( !class_exists($exceptionClass) )
             return;
-        
-        
+
+
         $reflectionClass=new \ReflectionClass($exceptionClass);
 
         // Se obtienen las constantes
         $constants = $reflectionClass->getConstants ();
         foreach($constants as $key=>$value)
-        {        
+        {
          if( strpos($key,"ERR_")===0 )
             {
                 $key=substr($key,4);
             }
             $errors[$key]=$value;
         }
-    }  
+    }
     function getRole()
     {
         return $this->currentAction->getRole();

@@ -44,7 +44,7 @@ class BaseModel extends BaseTypedObject
     protected $__def;
     function __construct($serializer = null, $definition = null)
     {
-        $this->__objName = new \model\reflection\Model\ModelName('\\'.get_class($this));
+        $this->__objName = \lib\model\ModelService::getModelDescriptor('\\'.get_class($this));
         if (!$definition)
             $this->__def=BaseModelDefinition::loadDefinition($this);
         else
@@ -111,29 +111,11 @@ class BaseModel extends BaseTypedObject
         $this->__key->set($id);
     }
 
-    function loadFromArray($data, $serializer,$raw=false)
-    {
-        BaseTypedObject::loadFromArray($data, $serializer,$raw);
-        $this->__new = false;
-        $this->__loaded=true;
-    }
-
-    function load($data)
-    {
-        BaseTypedObject::load($data);
-        $this->__new = false;
-    }
-
-
-
-
-
     function __getField($fieldName)
     {
 
         try
         {
-
             return parent::__getField($fieldName);
         }
         catch(\lib\model\BaseTypedException $e)
@@ -217,27 +199,9 @@ class BaseModel extends BaseTypedObject
             return $alias->get();
         }
     }
-    function unserialize($serializer = null)
+    function unserialize($serializer,$data)
     {
-        if (!$serializer)
-            $serializer = $this->__getSerializer();
-        if (!$serializer)
-        {
-            $layer = $this->__objName->layer;
-            global $SERIALIZERS;
-            $serializer = \lib\storage\StorageFactory::getSerializer($SERIALIZERS[$layer]);
-            //$serializer->useDataSpace($SERIALIZERS[$layer]["ADDRESS"]["database"]["NAME"]);
-        }
-        if (!$serializer)
-            throw new BaseModelException(BaseModelException::ERR_NO_SERIALIZER);
-        try
-        {
-            $serializer->unserialize($this);
-        }
-        catch(\Exception $e)
-        {
-            throw new BaseModelException(BaseModelException::ERR_UNKNOWN_OBJECT);
-        }
+        $serializer->unserializeObjectFromData($this,$data);
         $this->__new = false;
         $this->__loaded=true;
         $this->cleanDirtyFields();
@@ -399,38 +363,20 @@ class BaseModel extends BaseTypedObject
         return false;
     }
 
-    static function getModelInstance($objectName, $serializer = null, $definition = null)
-    {
-        $objName = new \model\reflection\Model\ModelName($objectName);
-        $objName->includeModel();
-        $namespacedName=$objName->getNamespaced();
-        $obj=new $namespacedName($serializer);
-        return $obj;
-    }
-    static function getModel($objectName,$fields=null)
-    {
-        $instance=BaseModel::getModelInstance($objectName);
-        // La inicializacion del objeto puede hacer que se acceda a campos.No queremos esto.
-        $instance->__fields=array();
-        $instance->__key = new ModelKey($instance, $instance->__objectDef);
-        if($fields)
-        {
-            foreach($fields as $key => $value)
-                $instance->{$key}=$value;
-            $instance->loadFromFields();
-        }
-        return $instance;
-    }
+
 
     static function getTableName($objectName, $def)
     {
 
         if ($def["TABLE"])
             return $def["TABLE"];
-        $objDef = new \model\reflection\Model\ModelName($objectName);
+        $objDef = \lib\model\ModelService::getModelDescriptor($objectName);
         return $objDef->className;
     }
-
+    function __getDirtyFields()
+    {
+        return $this->__dirtyFields;
+    }
     function __saveMembers($serializer)
     {
         $dFields = array();
@@ -661,7 +607,7 @@ class BaseModel extends BaseTypedObject
                 // modelo que tambien tiene ownership, encadenar ambos.
                 $r["FIELD"]=$keys[0];
                 $r["REMOTEFIELD"]=$def["FIELDS"][$keys[0]];
-                $curModel=BaseModel::getModel($def["OBJECT"]);
+                $curModel=BaseModel::getModelInstance($def["OBJECT"]);
                 $r["REMOTETABLE"]=$curModel->__getTableName();
             }
             else

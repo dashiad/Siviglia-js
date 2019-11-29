@@ -6,8 +6,6 @@ class StorageFactoryException extends \lib\model\BaseException {
     const ERR_SERIALIZER_NOT_FOUND=1;
 }
 
-
-
 class StorageFactory
 {
     static $defaultSerializer;
@@ -38,7 +36,7 @@ class StorageFactory
             return StorageFactory::getSerializerByName(DEFAULT_SERIALIZER);
         else
         {
-            $objNameClass=new \model\reflection\Model\ModelName($objName);
+            $objNameClass=\lib\model\ModelService::getModelDescriptor($objName);
 
                 $Cserializer=$objNameClass->getDefaultSerializer();
             if($Cserializer)
@@ -79,5 +77,3 @@ class StorageFactory
     }
 
 }
-
-?>

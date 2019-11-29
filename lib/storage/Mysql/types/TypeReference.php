@@ -6,7 +6,7 @@ class TypeReference extends PHPVariable
     var $typeSer;
     var $typeInstance;
 
-    function serialize($name,$type,$serializer)
+    function serialize($name,$type,$serializer,$model=null)
     {
         if($type->hasValue())
         {
@@ -15,7 +15,7 @@ class TypeReference extends PHPVariable
         return [$name=>"NULL"];
     }
 
-    function unserialize($name,$type,$value,$serializer)
+    function unserialize($name,$type,$value,$serializer,$model=null)
     {
         $type->setRawValue($value[$name]);
     }

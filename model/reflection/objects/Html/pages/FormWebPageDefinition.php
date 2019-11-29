@@ -2,7 +2,7 @@
   namespace model\reflection\Html\pages;
   class FormWebPageDefinition extends WebPageDefinition
   {
-      
+
       function create($actionName,$actionDef,$key,$value)
       {
 
@@ -20,16 +20,16 @@
           {
               $path="/admin".$path;
           }
-          
+
           $forms=$actionDef->getForms();
           $form=$forms[0];
           $def=$form->getDefinition();
           $origDef=$actionDef->getDefinition();
-          /*                                
+          /*
           // El tema de los parametros funciona asi:
           if($actionDef->getRole()=="Add")
           {
-              // Si es un add, buscamos alguna relacion de tipo "BELONGS_TO".Si existe, 
+              // Si es un add, buscamos alguna relacion de tipo "BELONGS_TO".Si existe,
               // obtenemos el campo, y lo ponemos como parametro.El path de este objeto va a cambiar.
               $fields=$parentModel->getFields();
               foreach($fields as $key=>$value)
@@ -49,15 +49,15 @@
                       $path="/admin".$path;
               }
           }*/
-          
+
           $wdef=array(
-              "NAME"=>$actionName,    
+              "NAME"=>$actionName,
               "TYPE"=>"HTML",
               "MODEL"=>$key,
               "CACHING"=>array(
                   "TYPE"=>"NO-CACHE"
                   ),
-              "ENCODING"=>"utf8",    
+              "ENCODING"=>"utf8",
               "ADD_STATE"=>array(),
               "REQUIRE_STATE"=>array(),
               "REMOVE_STATE"=>array(),
@@ -81,7 +81,7 @@
 
           $this->codeManager=new FormWebPageLayout($this,$actionName,$actionDef);
           $this->initialize($actionName,$actionDef,$wdef);
-          
+
       }
 
       function setupPath()
@@ -95,11 +95,11 @@
           $pathContents["LAYOUT"]=$this->definition["LAYOUT"];
 
           $parentModel=$this->srcObject->parentModel;
-          $parentName=$parentModel->objectName;  
-          
+          $parentName=$parentModel->objectName;
+
           $pathContents["NAME"]=str_replace("\\","-",$parentName)."_".$this->definition["NAME"];
-          $this->pathContents=$pathContents;        
-                    
+          $this->pathContents=$pathContents;
+
           $role=$this->srcObject->getRole();
           $srcDef=$this->srcObject->getDefinition();
           $params=$srcDef["INDEXFIELDS"];
@@ -110,7 +110,7 @@
               {
                   if($value["MODEL"])
                   {
-                      $objName=new \model\reflection\Model\ModelName($value["MODEL"]);
+                      $objName=\lib\model\ModelService::getModelDescriptor($value["MODEL"]);
                       $normalizedParams[$objName->getNamespaced()][$value["FIELD"]]=$key;
                   }
               }
@@ -129,7 +129,7 @@
           }
 
           $path="";
-          
+
           if($this->hasCompleteKey($parentName->getNormalizedName(),$normalizedParams,$path,$extraParams))
           {
               $ownParams=$normalizedParams[$parentName->getNamespaced()];
@@ -148,7 +148,7 @@
       {
           return $this->codeManager;
       }
-          
+
   }
 
 ?>

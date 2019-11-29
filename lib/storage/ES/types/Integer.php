@@ -3,7 +3,7 @@
 
   class Integer extends BaseType
   {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           if($type->hasValue())
           {

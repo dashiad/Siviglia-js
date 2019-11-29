@@ -30,17 +30,17 @@
                 return;
           }
           $isViewDef=false;
-          
+
           if(isset($this->definition["SOURCES"]))
           {
               if(!\lib\php\ArrayTools::isAssociative($this->definition["SOURCES"]))
               {
                   $firstDef=$this->definition["SOURCES"][0];
-                  
+
                   if($firstDef["ROLE"]=="view" && ((!$this->isadmin && $firstDef["NAME"]=="View") ||
                                                     ($this->isadmin && $firstDef["NAME"]=="AdminView")))
                   {
-                      $isViewDef=true;                      
+                      $isViewDef=true;
                   }
               }
           }
@@ -48,7 +48,7 @@
           $path=$this->definition["MODEL"];
 
           // Se recogen todos los parametros requeridos, y se mira si pertenecen a un modelo, en cuyo caso,
-          // hay que ver si completan la clave requerida de dicho modelo, para incluir ese modelo en el path, y en 
+          // hay que ver si completan la clave requerida de dicho modelo, para incluir ese modelo en el path, y en
           // el calculo de permisos.
           $probableKeys=array();
           if( $this->definition["FIELDS"] )
@@ -57,8 +57,8 @@
               {
                 if(!$pValue["REQUIRED"])continue;
                 if(!$pValue["MODEL"])continue;
-                
-                $objName=new \model\reflection\Model\ModelName($pValue["MODEL"]);
+
+                $objName=\lib\model\ModelService::getModelDescriptor($pValue["MODEL"]);
                 $field=$pValue["FIELD"];
                 $probableKeys[$objName->className][]=$field;
                 // Se almacena el nombre que se le ha dado al parametro.
@@ -69,14 +69,14 @@
           // Si no se han encontrado parametros...
           if(count($objects)==0)
           {
-              
+
                 $base=array("/".$this->definition["MODEL"]=>array("SUBPAGES"=>array("/".$this->definition["NAME"]=>array())));
                 if(!$this->isadmin)
                     $this->path=$base;
                 else
                     $this->path=array("/admin"=>array('SUBPAGES'=>$base));
                 return;
-           
+
           }
           $subPaths=array();
           // Si habia parametros, hay que encontrar de que modelos son, y si completan las keys de dichos modelos.
@@ -87,13 +87,13 @@
               $indexes=$modelDef["INDEXFIELD"];
               $diff=array_diff($value,$indexes);
               if(count($diff)==0)
-              {                          
+              {
                 $paramPath=array();
                 foreach($value as $fieldName)
                 {
                     $paramName=$paramNames[$key."_".$fieldName];
                     $this->definition["MODELIDS"][$key][]=$paramName;
-                    $paramPath[]="{".$paramName."}";        
+                    $paramPath[]="{".$paramName."}";
                 }
                 $newPath=implode("/",$paramPath);
 
@@ -103,11 +103,11 @@
                 // o de cualquier otro, ya que si es de Section, debe aparecer en primer lugar.
                 if($key!=$this->definition["MODEL"])
                 {
-                    $newPath=$key."/".$newPath;    
+                    $newPath=$key."/".$newPath;
                     $subPaths[]=$newPath;
                 }
                 else
-                    array_unshift($subPaths,$newPath);                
+                    array_unshift($subPaths,$newPath);
               }
           }
 
@@ -126,12 +126,12 @@
           {
               $subPathArray["/".implode("/",$paramPath)."/*"]=array("PATH"=>"/".$fullSubPath);
           }
-          
+
           $subPath=array("/".$this->definition["MODEL"]=>array("SUBPAGES"=>$subPathArray));
           if($this->isadmin)
           {
               $this->path=array("/admin"=>array('SUBPAGES'=>$subPath));
-              
+
           }
           else
             $this->path=$subPath;
@@ -153,21 +153,21 @@
           }
           $form=$actionDef->getForm();
           $def=$actionDef->getDefinition();
-          
-          
-          
-          
-          
+
+
+
+
+
           // El tema de los parametros funciona asi:
-          
+
           $def=array(
-              "NAME"=>$actionName,    
+              "NAME"=>$actionName,
               "TYPE"=>"HTML",
               "MODEL"=>$key,
               "CACHING"=>array(
                   "TYPE"=>"NO-CACHE"
                   ),
-              "ENCODING"=>"utf8",    
+              "ENCODING"=>"utf8",
               "ADD_STATE"=>array(),
               "REQUIRE_STATE"=>array(),
               "REMOVE_STATE"=>array(),
@@ -178,7 +178,7 @@
               "SOURCES"=>array(array('ROLE'=>'action',"MODEL"=>$key,"NAME"=>$actionName)),
               "WIDGETPATH"=>array(
                   "/html/Website"
-                  )              
+                  )
               );
           global $APP_NAMESPACES;
           foreach($APP_NAMESPACES as $val)
@@ -196,26 +196,26 @@
          {
             $prefix="ADMIN";
             $prefix2="admin";
-            
+
             $pageprefix="/admin/".$objName."/ADMIN";
          }
          $code="[*".$pageprefix."PAGE]\n\t[_CONTENT]\n\t\t[*".$formCodePath."][#]\n\t[#]\n[#]";
-         
-         
+
+
          return new WebPageDefinition($def,$code,
                                 $parentModel->config->mustRebuild($prefix2."webpage",$actionName,WEBROOT."/".$path.".php"),
                                 $parentModel->config->mustRebuild($prefix2."webpageWidget",$actionName,WEBROOT."/".$path.".wid"),$isadmin
                   );
 
       }
-      
+
       function getDefinition()
       {
           return $this->definition;
       }
       function save()
       {
-          
+
           if($this->regenDef)
           {
           $basePath=dirname($this->definition["PATH"]);
@@ -232,9 +232,9 @@
        {
            $text="<?php\r\n\tnamespace ".$namespace.";\nclass $className extends \\lib\\output\\html\\WebPage\n".
                       " {\n".
-                      "        var \$definition=";                                      
+                      "        var \$definition=";
              $text.=$this->dumpArray($this->getDefinition(),5);
-             $text.=";\n}\n?>";             
+             $text.=";\n}\n?>";
              @mkdir($dir,0777,true);
              file_put_contents($dir."/".$className.".php",$text);
        }
@@ -243,22 +243,22 @@
       {
             include_once(LIBPATH."/output/html/templating/TemplateParser.php");
             include_once(LIBPATH."/output/html/templating/TemplateHTMLParser.php");
-  
+
             $oLParser=new \CLayoutHTMLParserManager("sampleLayout");
 
             $widgetPath=$this->definition["WIDGETPATH"];
 
             $oManager=new \CLayoutManager("html",$widgetPath,array("L"=>array("lang"=>"en")));
 
-            
+
             $definition=array("LAYOUT"=>WEBROOT."/Website/".$this->definition["PATH"].".wid",
                               "CACHE_SUFFIX"=>"php");
-  
+
 
             $oManager->renderLayout($definition,$oLParser,false);
       }
 
-      
+
       function generateFromDataSource($dsName,$dsDef,$key,$value)
       {
           if($dsDef->isAdmin())
@@ -266,21 +266,21 @@
           // Un action, en principio, no tiene parametros.
           $parentModel=$dsDef->parentModel;
           $path="/".$key."/".$dsName;
-          
+
           if( $isadmin )
           {
               $path="/admin".$path;
-          }       
+          }
           $origDef=$dsDef->getDefinition();
 
           $def=array(
-              "NAME"=>$dsName, 
+              "NAME"=>$dsName,
               "MODEL"=>$key,
               "TYPE"=>"HTML",
               "CACHING"=>array(
                   "TYPE"=>"NO-CACHE"
                   ),
-              "ENCODING"=>"utf8",    
+              "ENCODING"=>"utf8",
               "ADD_STATE"=>array(),
               "REQUIRE_STATE"=>array(),
               "REMOVE_STATE"=>array(),
@@ -304,7 +304,7 @@
             $prefix2="admin";
             $pageprefix="/admin/".$dsDef->parentModel->objectName->className."/ADMIN";
           }
-          
+
           $code="[*".$pageprefix."PAGE]\n\t[_CONTENT]\n\t\t[*".$listCodePath."][#]\n\t[#]\n[#]";
           return new WebPageDefinition($def,$code,
                                 $parentModel->config->mustRebuild($prefix2."webpage",$dsName,WEBROOT."/".$path.".php"),

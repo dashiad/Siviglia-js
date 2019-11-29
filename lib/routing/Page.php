@@ -8,6 +8,8 @@
 
 namespace lib\routing;
 
+use Registry;
+
 class Page
 {
     var $request;
@@ -27,7 +29,7 @@ class Page
         if($this->pageInstance!=null)
         {
             $currentPage = $this->pageInstance;
-            \Registry::addService("page", $this->pageInstance);
+            Registry::$registry[Registry::SERVICE_CONTAINER]->addService("page",$this->pageInstance);
             \Registry::store("currentPage", $this->pageInstance);
         }
 

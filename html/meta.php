@@ -10,7 +10,7 @@ class BaseMetadata
     var $definition;
     function __construct($basePath, $namespaced, $variableName, $isStatic,$fieldResolution, $fieldHiding,$removeKeys,$definition=null)
     {
-        
+
         $fileName=realpath($basePath);
         if(strstr($basePath,PROJECTPATH)===false || !is_file($basePath))
         {
@@ -19,7 +19,7 @@ class BaseMetadata
         if($definition==null)
         {
             include_once($basePath);
-        
+
             if($isStatic)
             {
                 $inst = new $namespaced();
@@ -83,7 +83,7 @@ class BaseMetadata
 class ModelMetaData extends BaseMetadata {
     function __construct($objName)
     {
-        $Obj=new \model\reflection\Model\ModelName($objName);
+        $Obj=\lib\model\ModelService::getModelDescriptor($objName);
         $path=$Obj->getDestinationFile("Definition.php");
         parent::__construct($path, $Obj->getNamespaced().'\Definition', "definition", true ,array(), false,array('STORAGE'));
         $this->definition["layer"]=$Obj->layer;
@@ -117,7 +117,7 @@ class FormMetaData extends BaseMetadata {
     function __construct($objName,$formName)
     {
 
-        $Obj=new \model\reflection\Model\ModelName($objName);
+        $Obj=\lib\model\ModelService::getModelDescriptor($objName);
         $path=$Obj->getDestinationFile("/html/forms/$formName.php");
         parent::__construct($path, $Obj->getNamespaced().'\html\forms\\'.$formName, "definition", false ,array(), false,array());
     }
@@ -138,7 +138,7 @@ switch($params["type"])
     case "datasource":
     {
        $obj=new DataSourceMetaData(trim($params["model"],". "),trim($params["name"],". "));
-       echo json_encode(array("error"=>0,"datasource"=>$obj->definition));       
+       echo json_encode(array("error"=>0,"datasource"=>$obj->definition));
     }break;
     case "form":
     {

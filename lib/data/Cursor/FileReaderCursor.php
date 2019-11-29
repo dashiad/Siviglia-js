@@ -20,8 +20,9 @@ class FileReaderCursor  extends ReaderCursor
     }
     function produce()
     {
-        $buffer = fgets($this->op, 1000000);
+        $buffer = trim(fgets($this->op, 1000000));
         if(!$buffer) {
+            parent::end();
             fclose($this->op);
             return false;
         }

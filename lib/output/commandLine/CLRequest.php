@@ -16,7 +16,7 @@ class CLRequest extends \lib\output\html\HTMLRequest
     function __construct()
     {
         $params=$this->parseParameters();
-        
+
         $this->site=isset($params["site"])?$params["site"]:"default";
         $this->isSSL=false;
         if(!isset($params["subpath"]))
@@ -95,7 +95,7 @@ class CLRequest extends \lib\output\html\HTMLRequest
             $this->userId=intval($params["userId"]);
         }
         $session=new \lib\storage\Persistence\NullSession();
-        \Registry::addService("session",$session);
+        \Registry::$registry[Registry::SERVICE_CONTAINER]->addService("session",$session);
         \Registry::initialize($this);
     }
 

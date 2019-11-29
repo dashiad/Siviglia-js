@@ -14,6 +14,7 @@ class PathObject {
    {
        if($path[0]!='/')
            $path='/'.$path;
+       $path=$this->parseString($path,$context);
        if($context)
            $context->setCaller($this);
 
@@ -74,7 +75,7 @@ class PathObject {
                 {
                     $val=$tempObj->{$path[$index+1]};
                     if(!isset($val) || $val===null)
-                    if($tempObj instanceof ArrayAccess)
+                    if($tempObj instanceof \ArrayAccess)
                     {
                         $val=$tempObj[$path[$index+1]];
                         if(!isset($val))
@@ -237,7 +238,6 @@ class BaseTypedObject extends PathObject
             {
                 if(isset($this->__fieldDef[$fieldName]))
                 {
-
                     $this->__fields[$fieldName]=\lib\model\ModelField::getModelField($fieldName,$this,$this->__fieldDef[$fieldName]);
                 }
                 else
@@ -280,35 +280,34 @@ class BaseTypedObject extends PathObject
             $this->__serializer=$serializer;
         }
         // Si raw es true, el valor se asigna incluso si la validacion da un error.
-        function loadFromArray($data,$serializer,$raw=false)
+        function loadFromArray($data,$raw=false)
         {
             $fields=$this->__getFields();
             if(!$fields)
                 return;
 
-
             foreach ($fields as $key => $value)
-            {
-                // El valor se copia a una instancia temporal del mismo tipo que el campo.
-                // Esto es para prevenir que se introduzcan tipos no validos.
-                $serializer->unserializeType($key,$value->getType(),$data);
-            }
+                $value->setValue(isset($data[$key])?$data[$key]:null);
 
             if(!$raw)
             {
-                $result=$this->__validate($data,null,$serializer);
+                $result=$this->__validateArray($data,null);
                 if(!$result->isOk())
                 {
                     throw new BaseTypedException(BaseTypedException::ERR_LOAD_DATA_FAILED);
                 }
             }
+            $this->disableStateChecks();
+            // TODO : Tener en cuenta el campo estado.
             foreach($fields as $key=>$value)
             {
                 if(!isset($data[$key]))
                     continue;
-                $serializer->unserializeType($key,$value->getType(),$data);
-                //$this->addDirtyField($key);
+
+                $this->{$key}=$data[$key];
+
             }
+            $this->enableStateChecks();
             $this->__data=$data;
             $this->__loaded=true;
         }
@@ -327,15 +326,6 @@ class BaseTypedObject extends PathObject
             }
             return $result;
         }
-        /*function load($data)
-        {
-             if(is_object($data))
-             {
-                 $this->unserialize($data);
-                 return;
-             }
-             $this->__loaded=true;
-        }*/
 
         function isLoaded()
         {
@@ -517,7 +507,7 @@ class BaseTypedObject extends PathObject
          {
              return $this->__referencedModel;
          }
-         function normalizeToAssociativeArray($fields)
+         function normalizeToAssociativeArray($fields=null)
          {
              $fieldArray=null;
 
@@ -527,6 +517,8 @@ class BaseTypedObject extends PathObject
              }
              else
              {
+                 if($fields==null)
+                     $fields=$this->__fields;
                  if(is_array($fields))
                  {
                      foreach($fields as $key=>$value)
@@ -534,20 +526,23 @@ class BaseTypedObject extends PathObject
                          // Si no es un campo nuestro, continuamos.
                          if(!isset($this->__fieldDef[$key]))
                              continue;
-                         if(is_a('\lib\model\types\BaseType',$value))
+                         if(is_a($value,'\lib\model\types\BaseType'))
                          {
                              if($value->hasValue())
                                  $fieldArray[$key]=$value->getValue();
                          }
                          else
-                             $fieldArray[$key]=$value;
+                             $fieldArray[$key]=$value->getValue();
                      }
                  }
              }
              return $fieldArray;
          }
-
-         function __validate($fields,\lib\model\ModelFieldErrorContainer $result=null,$serializer="PHP")
+         function __validateArray($fields,\lib\model\ModelFieldErrorContainer $result=null)
+         {
+             return $this->__validate($fields,$result,true);
+         }
+         function __validate($fields,\lib\model\ModelFieldErrorContainer $result=null,$fromArray=false)
          {
 
              // Si no se envia un resultado, se crea uno.
@@ -557,10 +552,15 @@ class BaseTypedObject extends PathObject
              // Si no hay campos...Salimos.
              if(!$this->__fieldDef)
                  return true;
-             if(count($result->getParsedFields())>0)
+
+             if (count($result->getParsedFields()) > 0)
                  return true;
+
              // Se normalizan los campos.Queremos solo y exclusivamente un array campo->valir.
-             $fieldArray=$this->normalizeToAssociativeArray($fields);
+             if($fromArray==false)
+                $fieldArray=$this->normalizeToAssociativeArray($fields);
+             else
+                 $fieldArray=$fields;
 
              // Primero se normalizan todos los tipos, porque lo vamos a necesitar
              // para tener en cuenta el estado.
@@ -568,12 +568,12 @@ class BaseTypedObject extends PathObject
                  if(isset($fieldArray[$key])) {
 
                      $newType = \lib\model\types\TypeFactory::getType($this, $value);
-                     try {
-                         $serializer->unserializeType($key,$newType, $fieldArray);
-                     }catch(\Exception $e)
-                     {
-                         $result->addFieldTypeError($key,$fieldArray[$key],$e);
-                     }
+
+                         try {
+                                 $newType->setValue($fieldArray[$key]);
+                         } catch (\Exception $e) {
+                             $result->addFieldTypeError($key, $fieldArray[$key], $e);
+                         }
                      $result->addParsedField($key,$newType);
                  }
                  else {
@@ -598,7 +598,7 @@ class BaseTypedObject extends PathObject
                          $newState = $stateType->get();
                          if($oldState!=$newState) {
                              if (isset($targetModel->__dirtyFields[$stateFieldName]))
-                                 $result->addFieldTypeError($stateFieldName, null, new BaseTypeException(BaseTypedException::ERR_DOUBLESTATECHANGE));
+                                 $result->addFieldTypeError($stateFieldName, null, new BaseTypedException(BaseTypedException::ERR_DOUBLESTATECHANGE));
                              else
                              {
                                  if($targetModel->getStateDef()->isFinalState($oldState))
@@ -608,15 +608,13 @@ class BaseTypedObject extends PathObject
                                      $result->addFieldTypeError($stateFieldName,null,new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_STATE_TO));
                              }
                          }
-                         // Aunque haya dado error, asignamos el tipo.
-                         $serializer->unserializeType($stateFieldName,$stateType, $fieldArray);
-
-                         // El estado a tener en cuenta es el estado al que vamos.
                          $nextState=$targetModel->getStateDef()->getStateLabel($newState);
                      } catch (\Exception $e) {
                          $result->addFieldTypeError($stateFieldName, null, $e);
                      }
                  }
+                 else
+                     $nextState=$targetModel->{"*".$stateFieldName}->getLabel();
              }
 
              foreach ($this->__fieldDef as $key => $value) {
@@ -660,15 +658,19 @@ class BaseTypedObject extends PathObject
                      $required = $targetModel->isRequired($key);
 
                  if ($required && !$isset) {
-                     $e=new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, array("name" => $key));
-                         $result->addFieldTypeError($key,$curVal,$e);
+                     if (!$this->__fields[$key]->is_set()) {
+                         $e = new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, array("name" => $key));
+                         $result->addFieldTypeError($key, $curVal, $e);
                      }
                  }
+             }
              return $result;
          }
          function save()
          {
              $this->__saveState();
+             $this->__isDirty=false;
+             $this->__dirtyFields=[];
          }
          function checkTransition()
          {
@@ -689,13 +691,7 @@ class BaseTypedObject extends PathObject
          function __saveState()
          {
              $this->__stateDef->reset();
-             /*
-              *
-              $this->__oldState=null;
-              $this->__newState=null;
-             */
          }
-
          function isDirty()
          {
              return $this->__isDirty;
@@ -785,28 +781,13 @@ class BaseTypedObject extends PathObject
 
     function __setRaw($fieldName,$data)
     {
+        $field=$this->__getField($fieldName);
+        $field->__rawSet($data);
         $this->__data[$fieldName]=$data;
     }
     function __getRaw()
     {
         return $this->__data;
-    }
-
-    function mergeObject(BaseTypedObject $obj)
-    {
-        if(!is_a($obj,'\lib\model\BaseTypedObject'))
-            return;
-        $source=$obj->__getFields();
-        if(!$source)
-            return;
-        foreach($source as $key=>$value)
-        {
-            $this->__fields[$key]=$value;
-            $this->__fieldDef[$key]=$obj->__fieldDef[$key];
-            $this->__fieldDef[$key]["MERGED"]=true;
-            $this->__objectDef[$this->getFieldsKey()][$key]=$this->__fieldDef[$key];
-        }
-
     }
 
 }

@@ -48,7 +48,7 @@ class CacheFileCursor extends Cache
         if(!is_dir($this->directory))
         {
             if(!@mkdir($this->directory,0777,true))
-                throw new CacheFileCursorException(FileCacheControllerException::CANT_CREATE_DIRECTORY);
+                throw new CacheFileCursorException(FileCacheControllerException::ERR_CANT_CREATE_DIRECTORY);
         }
     }
     function getFileName($timeSpec)

@@ -14,12 +14,12 @@
       var $definition;
       var $relationModelName;
       var $relationsAreUnique;
-      
+
        function __construct($name,$parentModel,$definition)
        {
            parent::__construct($parentModel,$definition);
            if(!isset($this->definition["ROLE"]))
-              $this->definition["ROLE"]="HAS_MANY";   
+              $this->definition["ROLE"]="HAS_MANY";
            $this->relationModelName=$this->definition["MODEL"];
            $this->definition=$definition;
            $this->relationsAreUnique=$definition["UNIQUE_RELATIONS"];
@@ -43,16 +43,16 @@
                $relationsAreUnique=$relDef["MULTIPLE_RELATION"]["UNIQUE_RELATIONS"];
            else
                $relationsAreUnique=true;
-           
+
            $diff=array_values(array_diff($relFields,array($relationshipName)));
-           
+
                $remField=$relationshipObj->getField($diff[0]);
                $remModel=$remField->getRemoteModelName();
            $def["REMOTE_MODEL"]=$remModel;
            $def["ROLE"]="HAS_MANY";
            $def["MULTIPLICTY"]="M:N";
            $def["CARDINALITY"]=100;
-           $def["UNIQUE_RELATIONS"]=$relationsAreUnique?true:false;           
+           $def["UNIQUE_RELATIONS"]=$relationsAreUnique?true:false;
            return new Relationship($name,$sourceObj,$def);
        }
        // No genera ninguna relacion derivada.
@@ -86,7 +86,7 @@
                if(is_a($value,'model\reflection\Model\Relationship\MultipleRelationship'))
                {
                    $def=$value->getDefinition();
-                   $tempObjName=new \model\reflection\Model\ModelName($def["REMOTE_MODEL"]);
+                   $tempObjName=\lib\model\ModelService::getModelDescriptor($def["REMOTE_MODEL"]);
                    if($def["TYPE"]=="RelationMxN" && $tempObjName->getNamespaced()==$this->parentModel->__objName->getNamespaced())
                    {
                        // Teoricamente, son el mismo objeto.
@@ -106,9 +106,9 @@
             {
                 $info[$key]=$instance->getField($key);
             }
-            return $info;            
+            return $info;
         }
-       
+
         function getLocalMappedFields()
         {
             $vals=array();
@@ -151,7 +151,7 @@
         }
         function getRemoteObjectName()
         {
-            $obj=new \model\reflection\Model\ModelName($this->definition["REMOTE_MODEL"]);
+            $obj=\lib\model\ModelService::getModelDescriptor($this->definition["REMOTE_MODEL"]);
             return $obj->className;
         }
 
@@ -173,9 +173,9 @@
             return array_keys($this->getRelationTableRemoteFields());
         }
         function pointsTo($modelName,$fieldName)
-        {            
+        {
 
-            $objDef=new \model\reflection\Model\ModelName($this->definition["MODEL"]);
+            $objDef=\lib\model\ModelService::getModelDescriptor($this->definition["MODEL"]);
             if(!$objDef->equals($fieldName))
                 return false;
 
@@ -186,18 +186,18 @@
             if(count(array_diff($remoteFields,$fieldName))==0)
                 return true;
             return false;
-            
+
         }
         function getRelationTable()
         {
             return $this->relationTable;
         }
-       
+
         function parseFromModel()
         {
             $def=$this->definition;
-            $remObject=new \model\reflection\Model\ModelName($def["REMOTE_MODEL"]);
-            
+            $remObject=\lib\model\ModelService::getModelDescriptor($def["REMOTE_MODEL"]);
+
             $relObject=\model\reflection\ReflectorFactory::getModel($def["MODEL"]);
             $this->remoteObjectName=$remObject->getNormalizedName();
             $this->relationTable=$relObject->getTableName();
@@ -220,9 +220,9 @@
                     $this->relationTableRemoteFields[$pointedField]=$value;
                     $def["FIELDS"]["REMOTE"][]=$pointedField;
                 }
-            }            
+            }
         }
-        
+
         function getDefaultInputName()
         {
             return "RelationMxN";
@@ -236,27 +236,27 @@
         {
             // The field definition is ignored, and rebuilt.
             $formClass=$form->parentModel->objectName->getNormalizedName();
-         
+
             if(!$inputDef["TYPE"])
                 $inputDef["TYPE"]="/types/inputs/".$this->getDefaultInputName();
             $relDef["MODEL"]=$this->parentModel->objectName->getNormalizedName();
             $relDef["FIELD"]=$this->getName();
-             
+
 
             return parent::getFormInput($form,$name,$relDef,$inputDef);
         }
         function getDefaultInputParams($form,$actDef)
         {
             $role=$form->getRole();
-            
+
             $remoteModel= $this->getRemoteInstance();
              if($remoteModel)
-             {              
-                $remkeys=array_keys($remoteModel->getIndexFields());                   
+             {
+                $remkeys=array_keys($remoteModel->getIndexFields());
                 $labels=array_keys($remoteModel->getLabelFields());
                 $labels=array_values(array_diff($labels,$remkeys));
                 $params["LABEL"]=$labels;
-                
+
                 if($role=="DeleteRelation")
                 {
                     // Si el rol es DeleteRelation, los valores son el campo indice del objeto relacion.
@@ -285,7 +285,7 @@
             // La clave de Add y Set, son el campo de la tabla relacion, que apunta al modelo actual.
             // Eso esta en el campo FIELD.
             $relField=$this->definition["FIELD"];
-            
+
             $localFields = $this->parentModel->getIndexFields();
             $requiredFields=array($this->name=>$this);
             $baseName=ucfirst($relField);
@@ -299,44 +299,44 @@
             // Es importante para Add, saber si en la relacion multiple estan permitidas las repeticiones o no.
             // Esto determinara que tipo de  listado va a ser necesario.
             $action=new \model\reflection\Action($prefixU."Add".$baseName,$targetModel);
-            if($action->mustRebuild())          
+            if($action->mustRebuild())
             {
-                  $newActions[]=$action->create("AddRelationAction", 
+                  $newActions[]=$action->create("AddRelationAction",
                                      $localFields, $requiredFields,
                                      $optionalFields,null,$isAdmin,array("MODEL"=>$this->parentModel->objectName->getNormalizedName(),
                                                                          "FIELD"=>$this->name));
-            }*/            
+            }*/
             if($this->relationsAreUnique())
             {
                 $action=new \model\reflection\Action($prefixU."Set".$baseName,$this->parentModel);
-                if($action->mustRebuild())          
+                if($action->mustRebuild())
                 {
-                      $newActions[]=$action->create("SetRelationAction", 
+                      $newActions[]=$action->create("SetRelationAction",
                                          $localFields, $requiredFields,
                                          array(),null,$isAdmin,$this->name);
                 }
             }
-            
+
             if(!$this->relationsAreUnique())
             {
                 // Accion Delete
                 $action=new \model\reflection\Action($prefixU."Delete".$baseName,$targetModel);
-                if($action->mustRebuild())          
+                if($action->mustRebuild())
                 {
-                      $newActions[]=$action->create("DeleteRelationAction", 
+                      $newActions[]=$action->create("DeleteRelationAction",
                                          $localFields, $requiredFields,
                                          array(),null,$isAdmin,$this->name);
                 }
             }
-            
+
           return $newActions;
         }
       function getDataSourceCreationCallback()
       {
-            return "createFromMxNRelation";           
+            return "createFromMxNRelation";
       }
       function getRemoteFieldInstances()
-      {            
+      {
             return $this->getRemoteMappedFields();
       }
       function getRelationFields()
@@ -345,7 +345,7 @@
       }
       function getRemoteModelName()
       {
-      
+
           return $this->getRemoteObjectName();
       }
       function getDataSources($targetModel=null,$baseName=null)

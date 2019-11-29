@@ -4,11 +4,11 @@ include_once(PROJECTPATH."/model/reflection/objects/base/ConfiguredObject.php");
 class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFileGenerator
 {
     function __construct($name,$parentAction)
-    {                
+    {
         $parentModel=$parentAction->parentModel;
         $this->name=$name;
         $this->action=$parentAction;
-        
+
         parent::__construct($name,
                             $parentModel,
                             "\\html\\forms",
@@ -25,7 +25,7 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
             $this->action->addForm($this);
         $this->widget=new FormWidget($this->className,$this);
     }
-    
+
     function create()
     {
         $modelDef=$this->parentModel;
@@ -54,24 +54,24 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
                 $def["INDEXFIELDS"] = $indexes;
             }
         }
-        
+
         $fields=$actionDef->getFields();
         if($fields)
-        {            
-            
+        {
+
             $srcModel=$this->parentModel;
-            
+
             $fromPrivateObject=$srcModel->objectName->isPrivate();
-            
+
             foreach($fields as $key=>$value)
-            {         
+            {
                 // El parentModel del field actual es la Action, no es una modeldefinition.
 
                 $targetDef=$value->getRawDefinition();
                 // Esta presuponiendo que el modelo es siempre el modelo padre de la accion, y no otro.
                 $origField=$value->parentModel->parentModel->getFieldOrAlias($key);
-                
-                
+
+
                 // En caso de que estemos editando un objeto privado, y tenemos una relacion con el objeto publico al que
                 // pertenece, se incluye el campo de la relacion como parametro requerido.
                 if($fromPrivateObject)
@@ -79,10 +79,10 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
                     if($origField->isRelation())
                     {
                         $targetObject=$origField->getRemoteModel();
-                        
+
                         $role=$origField->getRole();
                         // Se comprueba si la relacion apunta al objeto que es el que define el namespace donde se encuentra este objeto.
-                        if($role=="BELONGS_TO" && 
+                        if($role=="BELONGS_TO" &&
                            $targetObject->objectName->equals($srcModel->objectName->getNamespaceModel()))
                         {
                             $remFields=$origField->getRemoteFieldNames();
@@ -97,7 +97,7 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
                 $def["FIELDS"][$key]=array("MODEL"=>$parent->objectName->getNormalizedName(),
                                            "FIELD"=>$targetDef["FIELD"],
                                            "REQUIRED"=>(isset($targetDef["REQUIRED"])?$targetDef["REQUIRED"]:0)
-                                           );              
+                                           );
                 $targetRelation=$value->getTargetRelation();
                 if($targetRelation!="")
                 {
@@ -124,19 +124,19 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
                         $params=$fieldInstance->getDefaultInputParams($this,$value);
                         if($params)
                             $def["INPUTS"][$key]["PARAMS"]=$params;
-                    }                               
+                    }
                 }
-                
-                        
-            }            
+
+
+            }
         }
         else
         {
             $def["NOFORM"]=true;
         }
-        
+
         $this->initialize($def);
-     
+
     }
 
     function getFormClass()
@@ -162,7 +162,7 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
         $name=$this->name;
         return '/'.$objName.'/html/forms/'.$name;
     }
-    
+
     function getDefinition()
     {
         if( !isset($this->definition["INDEXFIELDS"] ))
@@ -174,7 +174,7 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
     function saveModelMethods()
     {
         $def=$this->getDefinition();
-    
+
         $this->addProperty(array("NAME"=>"definition",
                                       "ACCESS"=>"static",
                                       "DEFAULT"=>$def
@@ -224,19 +224,19 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
                     "NAME"=>"onError",
                     "COMMENT"=>" Callback executed when this action had an error".$this->name,
                     "PARAMS"=>array(
-                        
+
                         "actionResult"=>array("COMMENT"=>"\\lib\\action\\ActionResult instance.Errors found while validating this action must be notified to this object"
                             )
                         ),
                     "CODE"=>"\n/"."* Insert callback code here *"."/\n\nreturn true;\n"
-                ));        
+                ));
     }
 
     function saveDefinition()
     {
         $definition=$this->getDefinition();
-           
-        $this->addProperty(array("NAME"=>"definition",                                  
+
+        $this->addProperty(array("NAME"=>"definition",
                                       "DEFAULT"=>$this->getDefinition()
                                       ));
         $this->saveModelMethods();
@@ -291,7 +291,7 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
     }
     static function getModelForms($className)
     {
-        $objectName=new \model\reflection\Model\ModelName($className);
+        $objectName=\lib\model\ModelService::getModelDescriptor($className);
         $model=\model\reflection\ReflectorFactory::getModel($className);
         $forms=$objectName->getForms();
         $result=array();
@@ -312,5 +312,5 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
         }
         return $result;
     }
-    
+
 }

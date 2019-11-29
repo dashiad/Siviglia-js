@@ -27,7 +27,7 @@
 
             if($targetDef["TABLE"])
                 $def["TABLE"]=$targetDef["TABLE"];
-            
+
             $fields=$targetDef["FIELD"];
             if(!$fields)
                 $fields=$targetDef["FIELDS"];
@@ -75,7 +75,7 @@
         function parseDefinition()
         {
 
-           
+
             // Se tienen que calcular que campos hay que crear.Se usa el mismo codigo (copiado) de la clase RelationMxN
 
              // Se miran los campos involucrados.
@@ -83,7 +83,7 @@
             //  Si no existe alguno de ellos, se usan las claves del modelo local o remoto.
             $def=$this->definition;
 
-            $remObject=new \model\reflection\Model\ModelName($def["MODEL"]);
+            $remObject=\lib\model\ModelService::getModelDescriptor($def["MODEL"]);
             $this->remoteObject=$remObject;
             $remClassName=$remObject->className;
 
@@ -99,7 +99,7 @@
             }
 
             $local=$def["FIELDS"]["LOCAL"];
-        
+
             $localDef=$this->parentModel->getDefinition();
 
             if(!$local)
@@ -116,7 +116,7 @@
             $remote=$def["FIELDS"]["REMOTE"];
             $remoteDef=\lib\model\types\TypeFactory::getObjectDefinition($def["MODEL"]);
 
-            
+
 
             if(!$remote)
             {
@@ -129,7 +129,7 @@
                 $fields[$fieldName]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($remObject->getNamespaced(),$value)->getDefinition();
                 $indexes[]=$fieldName;
                 $this->remoteFields[]=$value;
-            }            
+            }
 
 
         // Primero, hay que ver si las relaciones son unicas o no.Es decir,
@@ -139,12 +139,12 @@
         // para identificar univocamente a los objetos.
 
 
-        if(!$def["RELATIONS_ARE_UNIQUE"])        
+        if(!$def["RELATIONS_ARE_UNIQUE"])
         {
             $indexField=$def["TABLE"]."idx";
             $indexes=array(str_replace("_","",$indexField));
-            $fields[$indexField]=array("TYPE"=>"UUID");            
-        }        
+            $fields[$indexField]=array("TYPE"=>"UUID");
+        }
 
         $this->remoteDefinition=array(
                 "TABLE"=>$def["TABLE"],
@@ -161,7 +161,7 @@
                    'COLLATE'=>'utf8_general_ci',
                  'INDEXES'=>array(array('UNIQUE'=>true,
                                   'FIELDS'=>$indexes
-                                  ))               
+                                  ))
                 );
         /*}
         else
@@ -181,7 +181,7 @@
         }
         function createStorage($serializer)
         {
-            
+
             if( ! $this->hasImplicitTable())
             {
                 return;
@@ -192,6 +192,6 @@
 
 
             $serializer->createStorage($obj,$this->extraDefinition);
-            
+
         }
   }

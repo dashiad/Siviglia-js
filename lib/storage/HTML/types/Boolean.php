@@ -2,7 +2,7 @@
 
    class Boolean extends BaseType
    {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           if($type->getValue())
               return [$name=>"on"];

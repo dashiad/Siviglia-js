@@ -2,7 +2,7 @@
 
   class Boolean extends BaseType
   {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           if($type->hasValue())
           {
@@ -13,7 +13,7 @@
           }
           return NULL;
       }
-      function unserialize($name,$type,$value,$serializer)
+      function unserialize($name,$type,$value,$serializer,$model=null)
       {
 			if($value[$name])
                 $type->setValue(true);

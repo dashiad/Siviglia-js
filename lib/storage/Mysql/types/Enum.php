@@ -5,7 +5,7 @@ namespace lib\storage\Mysql\types;
 
   class Enum extends BaseType
   {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           if($type->hasValue())
           {
@@ -16,7 +16,7 @@ namespace lib\storage\Mysql\types;
           }
           return [$name=>"NULL"];
       }
-      function unserialize($name,$type,$value,$serializer)
+      function unserialize($name,$type,$value,$serializer,$model=null)
       {
           $type->setValue($value[$name]);
       }

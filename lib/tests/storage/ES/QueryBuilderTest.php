@@ -15,6 +15,7 @@ include_once(PROJECTPATH."/vendor/autoload.php");
 
 use PHPUnit\Framework\TestCase;
 use lib\model\BaseTypedObject;
+use lib\storage\ES\QueryBuilder;
 
 
 class QueryBuilderTest extends TestCase
@@ -150,7 +151,7 @@ class QueryBuilderTest extends TestCase
                         'OP'=>'=',
                         'V'=>'{%Unified_pricing_rule%}'
                     ),
-                    'FILTERREF'=>'Unified_pricing_rule'
+                    'TRIGGER_VAR'=>'Unified_pricing_rule'
                 )
             )
         );
@@ -160,12 +161,13 @@ class QueryBuilderTest extends TestCase
         $qb=new QueryBuilder($serializer,$def,$params);
         $t=$qb->build();
         $res=json_encode($t);
-
-        $this->assertEquals("{\"index\":\"".QueryBuilderTest::TEST_INDEX_NAME."\",\"_source\":[\"Date\",\"Ad_Unit\",\"Ad_Exchange_impressions\"],\"timeout\":\"30000ms\",\"body\":{\"query\":{\"bool\":{\"must\":{\"terms\":{\"Unified_pricing_rule\":[\"SC_KIBANA_FFLR_2.75EUR\"]}}}}}}",
-            $res
-        );
         $conn=$this->getDefaultSerializer()->getConnection();
         $data=$conn->query($t);
+
+        $this->assertEquals("{\"index\":\"SampleData\",\"_source\":[\"Date\",\"Ad_Unit\",\"Ad_Exchange_impressions\"],\"timeout\":\"30000ms\",\"body\":{\"query\":{\"bool\":{\"must\":[{\"term\":{\"Unified_pricing_rule\":\"SC_KIBANA_FFLR_2.75EUR\"}}]}}}}",
+            $res
+        );
+
         $this->assertEquals($data["hits"]["total"]["value"],3);
     }
 
@@ -195,7 +197,7 @@ class QueryBuilderTest extends TestCase
                         'OP'=>'!=',
                         'V'=>'{%Unified_pricing_rule%}'
                     ),
-                    'FILTERREF'=>'Unified_pricing_rule'
+                    'TRIGGER_VAR'=>'Unified_pricing_rule'
                 )
             )
         );
@@ -206,12 +208,14 @@ class QueryBuilderTest extends TestCase
         $t=$qb->build();
         $res=json_encode($t);
 
-        $this->assertEquals("{\"index\":\"".QueryBuilderTest::TEST_INDEX_NAME."\",\"_source\":[\"Date\",\"Ad_Unit\",\"Ad_Exchange_impressions\"],\"timeout\":\"30000ms\",\"body\":{\"query\":{\"bool\":{\"must_not\":{\"terms\":{\"Unified_pricing_rule\":[\"SC_KIBANA_FFLR_2.75EUR\"]}}}}}}",
-            $res
-        );
         $conn=$this->getDefaultSerializer()->getConnection();
         $data=$conn->query($t);
         $this->assertEquals($data["hits"]["total"]["value"],190);
+
+        $this->assertEquals("{\"index\":\"SampleData\",\"_source\":[\"Date\",\"Ad_Unit\",\"Ad_Exchange_impressions\"],\"timeout\":\"30000ms\",\"body\":{\"query\":{\"bool\":{\"must_not\":[{\"term\":{\"Unified_pricing_rule\":\"SC_KIBANA_FFLR_2.75EUR\"}}]}}}}",
+            $res
+        );
+
 
 
     }
@@ -267,9 +271,85 @@ class QueryBuilderTest extends TestCase
         $t=$qb->build();
         $res=json_encode($t);
 
- //       $client=new \lib\storage\ES\ESClient(["192.168.56.102"]);
- //       $res2=$client->query($t);
-        $this->assertEquals('{"index":"SampleData","_source":["Total_impressions","Unified_pricing_rule","Date"],"timeout":"30000ms","body":{"query":{"bool":{"must":{"range":{"Total_impressions":{"gt":100}}}}}}}',
+        $conn=$this->getDefaultSerializer()->getConnection();
+        $data=$conn->query($t);
+        $this->assertEquals('{"index":"SampleData","_source":["Total_impressions","Unified_pricing_rule","Date"],"timeout":"30000ms","body":{"query":{"bool":{"must":[{"range":{"Total_impressions":{"gt":100}}}]}}}}',
+            $res
+        );
+    }
+    function testRangedDoubleCondition()
+    {
+        /*
+         * "Date"=,"Ad_unit","Unified_pricing_rule","Ad_unit_ID","Unified_pricing_rule_ID",
+            "Total_impressions","Total_CTR","Ad_Exchange_impressions"=>["type"=>"long"],
+            "Ad_Exchange_revenue"=>["type"=>"float"]
+         */
+
+        $params=new BaseTypedObject(
+            array(
+                "FIELDS"=>array(
+                    "MIN_IMPRESSIONS"=>array("TYPE"=>"Decimal"),
+                    "MAX_IMPRESSIONS"=>array("TYPE"=>"Decimal"),
+                    "MIN_REVENUE"=>array("TYPE"=>"DECIMAL"),
+                    "MAX_REVENUE"=>array("TYPE"=>"DECIMAL")
+                )
+            )
+        );
+        $def=array(
+            "INDEX"=>QueryBuilderTest::TEST_INDEX_NAME,
+            'PARAMS'=>array(
+                'MIN_IMPRESSIONS'=>array("TYPE"=>"Decimal","REQUIRED"=>true),
+                'MAX_IMPRESSIONS'=>array("TYPE"=>"Decimal","REQUIRED"=>false),
+                "MIN_REVENUE"=>array("TYPE"=>"DECIMAL","REQUIRED"=>false),
+                "MAX_REVENUE"=>array("TYPE"=>"DECIMAL","REQUIRED"=>false)
+            ),
+            'BASE'=>['Total_impressions','Unified_pricing_rule','Ad_Exchange_revenue'],
+            'CONDITIONS'=>array(
+                array(
+                    'FILTER'=>array(
+                        'F'=>'Total_impressions',
+                        'OP'=>'>',
+                        'V'=>'{%MIN_IMPRESSIONS%}'
+                    ),
+                    'TRIGGER_VAR'=>'MIN_IMPRESSIONS'
+                ),
+                array(
+                    'FILTER'=>array(
+                        'F'=>'Total_impressions',
+                        'OP'=>'<=',
+                        'V'=>'{%MAX_IMPRESSIONS%}'
+                    ),
+                    'TRIGGER_VAR'=>'MAX_IMPRESSIONS'
+                ),
+                array(
+                    'FILTER'=>array(
+                        'F'=>'Ad_Exchange_revenue',
+                        'OP'=>'>',
+                        'V'=>'{%MIN_REVENUE%}'
+                    ),
+                    'TRIGGER_VAR'=>'MIN_REVENUE'
+                ),
+                array(
+                    'FILTER'=>array(
+                        'F'=>'Ad_Exchange_revenue',
+                        'OP'=>'<=',
+                        'V'=>'{%MAX_REVENUE%}'
+                    ),
+                    'TRIGGER_VAR'=>'MAX_REVENUE'
+                )
+            )
+        );
+
+        $params->MIN_IMPRESSIONS=10000;
+        $params->MIN_REVENUE=2;
+        $serializer=$this->getDefaultSerializer();
+        $qb=new QueryBuilder($serializer,$def,$params);
+        $t=$qb->build();
+        $res=json_encode($t);
+
+        $conn=$this->getDefaultSerializer()->getConnection();
+        $data=$conn->query($t);
+        $this->assertEquals('{"index":"SampleData","_source":["Total_impressions","Unified_pricing_rule","Ad_Exchange_revenue"],"timeout":"30000ms","body":{"query":{"bool":{"must":[{"range":{"Total_impressions":{"gt":10000}}},{"range":{"Ad_Exchange_revenue":{"gt":2}}}]}}}}',
             $res
         );
     }
@@ -285,13 +365,13 @@ class QueryBuilderTest extends TestCase
                 "FIELDS"=>array(
                     "MIN_IMPRESSIONS"=>array("TYPE"=>"Integer"),
                     "MAX_IMPRESSIONS"=>array("TYPE"=>"Integer"),
-                    'AD_EXCHANGE_PRICING_RULE_NAME'=>array("TYPE"=>"String","REQUIRED"=>true)
+                    'Unified_pricing_rule'=>array("TYPE"=>"String","REQUIRED"=>true)
                 )
             )
         );
         $def=array(
             "INDEX"=>QueryBuilderTest::TEST_INDEX_NAME,
-            'BASE'=>['AD_EXCHANGE_IMPRESSIONS','AD_EXCHANGE_MATCHED_REQUESTS','AD_EXCHANGE_AD_ECPM','AD_EXCHANGE_PRICING_RULE_NAME'],
+            'BASE'=>['Total_impressions','Unified_pricing_rule','Ad_Exchange_revenue'],
             'CONDITIONS'=>array(
                 array(
                     'FILTER'=>array(
@@ -311,28 +391,27 @@ class QueryBuilderTest extends TestCase
                 ),
                 array(
                     'FILTER'=>array(
-                        'F'=>'AD_EXCHANGE_PRICING_RULE_NAME',
+                        'F'=>'Unified_pricing_rule',
                         'OP'=>'!=',
-                        'V'=>'{%AD_EXCHANGE_PRICING_RULE_NAME%}'
+                        'V'=>'{%Unified_pricing_rule%}'
                     ),
-                    'TRIGGER_VAR'=>'AD_EXCHANGE_PRICING_RULE_NAME'
+                    'TRIGGER_VAR'=>'Unified_pricing_rule'
                 )
             )
         );
 
         $params->MIN_IMPRESSIONS=20000;
        // $params->MIN_AD_EXCHANGE_AD_ECPM=1;
-        $params->AD_EXCHANGE_PRICING_RULE_NAME="SC_KIBANA_FFLR_0.50EUR";
+        $params->Unified_pricing_rule="SC_KIBANA_FFLR_0.50EUR";
         $serializer=$this->getDefaultSerializer();
         $qb=new QueryBuilder($serializer,$def,$params);
         $t=$qb->build();
         $res=json_encode($t);
-        //$ser=$this->getDefaultSerializer();
-        //$client=$ser->getConnection();
-        //$res2=$client->query($t);
-        $this->assertEquals("{\"index\":\"SampleData\",\"_source\":[\"AD_EXCHANGE_IMPRESSIONS\",\"AD_EXCHANGE_MATCHED_REQUESTS\",\"AD_EXCHANGE_AD_ECPM\",\"AD_EXCHANGE_PRICING_RULE_NAME\"],\"timeout\":\"30000ms\",\"body\":{\"query\":{\"bool\":{\"must\":{\"range\":{\"Total_impressions\":{\"gt\":20000}}},\"must_not\":{\"terms\":{\"AD_EXCHANGE_PRICING_RULE_NAME\":[\"SC_KIBANA_FFLR_0.50EUR\"]}}}}}}",
-            $res
-        );
+        $ser=$this->getDefaultSerializer();
+        $client=$ser->getConnection();
+        $res2=$client->query($t);
+        $this->assertEquals('{"index":"SampleData","_source":["Total_impressions","Unified_pricing_rule","Ad_Exchange_revenue"],"timeout":"30000ms","body":{"query":{"bool":{"must":[{"range":{"Total_impressions":{"gt":20000}}}],"must_not":[{"term":{"Unified_pricing_rule":"SC_KIBANA_FFLR_0.50EUR"}}]}}}}',
+            $res);
     }
     // Mismo test anterior, pero hacemos que una condicion de rango no ponga ninguna condicion.
     // El resultado es que el procesador de elementos vacios de QueryBuilder debe eliminar completamente el elemento "must", ya que las condiciones de rango estan vacias.
@@ -344,13 +423,14 @@ class QueryBuilderTest extends TestCase
                 "FIELDS"=>array(
                     "MIN_IMPRESSIONS"=>array("TYPE"=>"Integer"),
                     "MAX_IMPRESSIONS"=>array("TYPE"=>"Integer"),
-                    'AD_EXCHANGE_PRICING_RULE_NAME'=>array("TYPE"=>"String","REQUIRED"=>true)
+                    'Unified_pricing_rule'=>array("TYPE"=>"String","REQUIRED"=>true),
+                    'Ad_unit'=>array("TYPE"=>"STRING")
                 )
             )
         );
         $def=array(
             "INDEX"=>QueryBuilderTest::TEST_INDEX_NAME,
-            'BASE'=>['AD_EXCHANGE_IMPRESSIONS','AD_EXCHANGE_MATCHED_REQUESTS','AD_EXCHANGE_AD_ECPM','AD_EXCHANGE_PRICING_RULE_NAME'],
+            'BASE'=>['Total_impressions','Unified_pricing_rule','Ad_Exchange_revenue'],
             'CONDITIONS'=>array(
                 array(
                     'FILTER'=>array(
@@ -370,25 +450,34 @@ class QueryBuilderTest extends TestCase
                 ),
                 array(
                     'FILTER'=>array(
-                        'F'=>'AD_EXCHANGE_PRICING_RULE_NAME',
-                        'OP'=>'!=',
-                        'V'=>'{%AD_EXCHANGE_PRICING_RULE_NAME%}'
+                        'F'=>'Unified_pricing_rule',
+                        'OP'=>'=',
+                        'V'=>'{%Unified_pricing_rule%}'
                     ),
-                    'TRIGGER_VAR'=>'AD_EXCHANGE_PRICING_RULE_NAME'
+                    'TRIGGER_VAR'=>'Unified_pricing_rule'
+                ),
+                array(
+                    'FILTER'=>array(
+                        'F'=>'Ad_unit',
+                        'OP'=>'=',
+                        'V'=>'{%Ad_unit%}'
+                    ),
+                    'TRIGGER_VAR'=>'Ad_unit'
                 )
             )
         );
 
 
-        $params->AD_EXCHANGE_PRICING_RULE_NAME="SC_KIBANA_FFLR_0.50EUR";
+        $params->Unified_pricing_rule="SC_KIBANA_FFLR_0.50EUR";
+        $params->Ad_unit="HOGARUTIL.ES#ES000085";
         $serializer=$this->getDefaultSerializer();
         $qb=new QueryBuilder($serializer,$def,$params);
         $t=$qb->build();
         $res=json_encode($t);
-        //$ser=$this->getDefaultSerializer();
-        //$client=$ser->getConnection();
-        //$res2=$client->query($t);
-        $this->assertEquals("{\"index\":\"SampleData\",\"_source\":[\"AD_EXCHANGE_IMPRESSIONS\",\"AD_EXCHANGE_MATCHED_REQUESTS\",\"AD_EXCHANGE_AD_ECPM\",\"AD_EXCHANGE_PRICING_RULE_NAME\"],\"timeout\":\"30000ms\",\"body\":{\"query\":{\"bool\":{\"must_not\":{\"terms\":{\"AD_EXCHANGE_PRICING_RULE_NAME\":[\"SC_KIBANA_FFLR_0.50EUR\"]}}}}}}",
+        $ser=$this->getDefaultSerializer();
+        $client=$ser->getConnection();
+        $res2=$client->query($t);
+        $this->assertEquals('{"index":"SampleData","_source":["Total_impressions","Unified_pricing_rule","Ad_Exchange_revenue"],"timeout":"30000ms","body":{"query":{"bool":{"must":[{"term":{"Unified_pricing_rule":"SC_KIBANA_FFLR_0.50EUR"}},{"term":{"Ad_unit":"HOGARUTIL.ES#ES000085"}}]}}}}',
             $res
         );
     }
@@ -396,21 +485,22 @@ class QueryBuilderTest extends TestCase
     function testAggregation()
     {
         $def=array(
-            "INDEX"=>"adx_floor_rules",
+            "INDEX"=>QueryBuilderTest::TEST_INDEX_NAME,
             'PARAMS'=>array(
                 'type'=>array("TYPE"=>"Decimal","REQUIRED"=>true)
             ),
-            'BASE'=>['AD_EXCHANGE_IMPRESSIONS','AD_EXCHANGE_MATCHED_REQUESTS','AD_EXCHANGE_AD_ECPM','AD_EXCHANGE_PRICING_RULE_NAME'],
-            'GROUPBY'=>"AD_EXCHANGE_PRICING_RULE_NAME => (100)AD_EXCHANGE_IMPRESSIONS => (0.5)AD_EXCHANGE_AD_ECPM"
+            'BASE'=>['Total_impressions','Unified_pricing_rule','Ad_Exchange_revenue'],
+            'GROUPBY'=>"Unified_pricing_rule => (1000)Total_impressions => (10)Ad_Exchange_revenue"
 
         );
         $serializer=$this->getDefaultSerializer();
         $qb=new QueryBuilder($serializer,$def,null);
         $t=$qb->build();
         $res=json_encode($t);
-//        $client=new \lib\storage\ES\ESClient(["192.168.56.102"]);
-//        $res2=$client->query($t);
-        $this->assertEquals("{\"index\":\"adx_floor_rules\",\"_source\":[\"AD_EXCHANGE_IMPRESSIONS\",\"AD_EXCHANGE_MATCHED_REQUESTS\",\"AD_EXCHANGE_AD_ECPM\",\"AD_EXCHANGE_PRICING_RULE_NAME\"],\"timeout\":\"30000ms\",\"body\":{\"aggs\":{\"AD_EXCHANGE_PRICING_RULE_NAME\":{\"terms\":{\"field\":\"AD_EXCHANGE_PRICING_RULE_NAME\",\"size\":1000},\"aggs\":{\"AD_EXCHANGE_IMPRESSIONS\":{\"histogram\":{\"field\":\"AD_EXCHANGE_IMPRESSIONS\",\"interval\":\"100\"},\"aggs\":{\"AD_EXCHANGE_AD_ECPM\":{\"histogram\":{\"field\":\"AD_EXCHANGE_AD_ECPM\",\"interval\":\"0.5\"}}}}}}}}}",
+        $ser=$this->getDefaultSerializer();
+        $client=$ser->getConnection();
+        $res2=$client->query($t);
+        $this->assertEquals('{"index":"SampleData","_source":["Total_impressions","Unified_pricing_rule","Ad_Exchange_revenue"],"timeout":"30000ms","body":{"aggs":{"Unified_pricing_rule":{"terms":{"field":"Unified_pricing_rule","size":1000},"aggs":{"Total_impressions":{"histogram":{"field":"Total_impressions","interval":"1000"},"aggs":{"Ad_Exchange_revenue":{"histogram":{"field":"Ad_Exchange_revenue","interval":"10"}}}}}}}}}',
             $res
         );
     }
@@ -420,6 +510,12 @@ class QueryBuilderTest extends TestCase
      */
     function testPaging()
     {
+        /*
+         * "Date"=,"Ad_unit","Unified_pricing_rule","Ad_unit_ID","Unified_pricing_rule_ID",
+            "Total_impressions","Total_CTR","Ad_Exchange_impressions"=>["type"=>"long"],
+            "Ad_Exchange_revenue"=>["type"=>"float"]
+         */
+
         $params=new BaseTypedObject(
 
             array(
@@ -430,41 +526,25 @@ class QueryBuilderTest extends TestCase
             )
         );
         $def=array(
-            "INDEX"=>"adx_floor_rules",
-            'PARAMS'=>array(
-                'type'=>array("TYPE"=>"Decimal","REQUIRED"=>true)
-            ),
-            'BASE'=>['AD_EXCHANGE_IMPRESSIONS','AD_EXCHANGE_MATCHED_REQUESTS','AD_EXCHANGE_AD_ECPM','AD_EXCHANGE_PRICING_RULE_NAME'],
-            'CONDITIONS'=>array(
-                array(
-                    'FILTER'=>array(
-                        'F'=>'AD_EXCHANGE_AD_ECPM',
-                        'OP'=>'>',
-                        'V'=>'{%MIN_AD_EXCHANGE_AD_ECPM%}'
-                    ),
-                    'TRIGGER_VAR'=>'MIN_AD_EXCHANGE_AD_ECPM'
-                ),
-                array(
-                    'FILTER'=>array(
-                        'F'=>'AD_EXCHANGE_AD_ECPM',
-                        'OP'=>'<=',
-                        'V'=>'{%MAX_AD_EXCHANGE_AD_ECPM%}'
-                    ),
-                    'TRIGGER_VAR'=>'MAX_AD_EXCHANGE_AD_ECPM'
+            "INDEX"=>QueryBuilderTest::TEST_INDEX_NAME,
+            'PARAMS'=>            array(
+                "FIELDS"=>array(
+                    "MIN_AD_EXCHANGE_AD_ECPM"=>array("TYPE"=>"Decimal"),
+                    "MAX_AD_EXCHANGE_AD_ECPM"=>array("TYPE"=>"Decimal")
                 )
             ),
+            'BASE'=>['Total_impressions','Unified_pricing_rule','Ad_Exchange_revenue'],
             "LIMIT"=>100
         );
 
-        $params->MAX_AD_EXCHANGE_AD_ECPM=2;
-        $params->MIN_AD_EXCHANGE_AD_ECPM=1;
         $serializer=$this->getDefaultSerializer();
         $qb=new QueryBuilder($serializer,$def,$params);
         $t=$qb->build();
         $res=json_encode($t);
-    //           $client=new \lib\storage\ES\ESClient(["192.168.56.102"]);
-    //           $res2=$client->query($t);
-        $this->assertEquals("{\"index\":\"adx_floor_rules\",\"_source\":[\"AD_EXCHANGE_IMPRESSIONS\",\"AD_EXCHANGE_MATCHED_REQUESTS\",\"AD_EXCHANGE_AD_ECPM\",\"AD_EXCHANGE_PRICING_RULE_NAME\"],\"timeout\":\"30000ms\",\"size\":100,\"body\":{\"query\":{\"bool\":{\"must\":{\"range\":{\"AD_EXCHANGE_AD_ECPM\":{\"gt\":1,\"lte\":2}}}}}}}",
+        $ser=$this->getDefaultSerializer();
+        $client=$ser->getConnection();
+        $res2=$client->query($t);
+        $this->assertEquals('{"index":"SampleData","_source":["Total_impressions","Unified_pricing_rule","Ad_Exchange_revenue"],"timeout":"30000ms","size":100,"body":[]}',
             $res
         );
     }
@@ -474,51 +554,54 @@ class QueryBuilderTest extends TestCase
     function testPaging2()
     {
         $params=new BaseTypedObject(
-
             array(
                 "FIELDS"=>array(
-                    "MIN_AD_EXCHANGE_AD_ECPM"=>array("TYPE"=>"Decimal"),
-                    "MAX_AD_EXCHANGE_AD_ECPM"=>array("TYPE"=>"Decimal")
+                    "MIN_AD_EXCHANGE_REVENUE"=>array("TYPE"=>"Decimal"),
+                    "MAX_AD_EXCHANGE_REVENUE"=>array("TYPE"=>"Decimal")
                 )
             )
         );
         $def=array(
-            "INDEX"=>"adx_floor_rules",
+            "INDEX"=>QueryBuilderTest::TEST_INDEX_NAME,
             'PARAMS'=>array(
-                'type'=>array("TYPE"=>"Decimal","REQUIRED"=>true)
+                "FIELDS"=>array(
+                    "MIN_AD_EXCHANGE_REVENUE"=>array("TYPE"=>"Decimal"),
+                    "MAX_AD_EXCHANGE_REVENUE"=>array("TYPE"=>"Decimal")
+                )
             ),
-            'BASE'=>['AD_EXCHANGE_IMPRESSIONS','AD_EXCHANGE_MATCHED_REQUESTS','AD_EXCHANGE_AD_ECPM','AD_EXCHANGE_PRICING_RULE_NAME'],
+            'BASE'=>['Total_impressions','Unified_pricing_rule','Ad_Exchange_revenue'],
             'CONDITIONS'=>array(
                 array(
                     'FILTER'=>array(
-                        'F'=>'AD_EXCHANGE_AD_ECPM',
+                        'F'=>'Ad_Exchange_revenue',
                         'OP'=>'>',
-                        'V'=>'{%MIN_AD_EXCHANGE_AD_ECPM%}'
+                        'V'=>'{%MIN_AD_EXCHANGE_REVENUE%}'
                     ),
-                    'TRIGGER_VAR'=>'MIN_AD_EXCHANGE_AD_ECPM'
+                    'TRIGGER_VAR'=>'MIN_AD_EXCHANGE_REVENUE'
                 ),
                 array(
                     'FILTER'=>array(
-                        'F'=>'AD_EXCHANGE_AD_ECPM',
+                        'F'=>'Ad_Exchange_revenue',
                         'OP'=>'<=',
-                        'V'=>'{%MAX_AD_EXCHANGE_AD_ECPM%}'
+                        'V'=>'{%MAX_AD_EXCHANGE_REVENUE%}'
                     ),
-                    'TRIGGER_VAR'=>'MAX_AD_EXCHANGE_AD_ECPM'
+                    'TRIGGER_VAR'=>'MAX_AD_EXCHANGE_REVENUE'
                 )
             ),
             "STARTINGROW"=>100,
             "PAGESIZE"=>200
         );
 
-        $params->MAX_AD_EXCHANGE_AD_ECPM=2;
-        $params->MIN_AD_EXCHANGE_AD_ECPM=1;
+        $params->MAX_AD_EXCHANGE_REVENUE=2000;
+        $params->MIN_AD_EXCHANGE_REVENUE=1;
         $serializer=$this->getDefaultSerializer();
         $qb=new QueryBuilder($serializer,$def,$params);
         $t=$qb->build();
         $res=json_encode($t);
-        //$client=new \lib\storage\ES\ESClient(["192.168.56.102"]);
-        //$res2=$client->query($t);
-        $this->assertEquals("{\"index\":\"adx_floor_rules\",\"_source\":[\"AD_EXCHANGE_IMPRESSIONS\",\"AD_EXCHANGE_MATCHED_REQUESTS\",\"AD_EXCHANGE_AD_ECPM\",\"AD_EXCHANGE_PRICING_RULE_NAME\"],\"timeout\":\"30000ms\",\"size\":200,\"from\":100,\"body\":{\"query\":{\"bool\":{\"must\":{\"range\":{\"AD_EXCHANGE_AD_ECPM\":{\"gt\":1,\"lte\":2}}}}}}}",
+        $ser=$this->getDefaultSerializer();
+        $client=$ser->getConnection();
+        $res2=$client->query($t);
+        $this->assertEquals('{"index":"SampleData","_source":["Total_impressions","Unified_pricing_rule","Ad_Exchange_revenue"],"timeout":"30000ms","size":200,"from":100,"body":{"query":{"bool":{"must":[{"range":{"Ad_Exchange_revenue":{"gt":1,"lte":2000}}}]}}}}',
             $res
         );
     }

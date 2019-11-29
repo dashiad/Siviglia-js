@@ -6,15 +6,15 @@ class Composite extends BaseType
 {
       var $__types;
       var $__definition;
-      var $__subTypeDef;
+
       var $__fields;
       var $__dirty=false;
       function __construct($definition,$subTypeDef,$values=array())
       {
-         $this->__subTypeDef=$subTypeDef;
-         $this->__fields=& $this->__subTypeDef["FIELDS"];
+
+         $this->__fields=$definition["FIELDS"];
          foreach($this->__fields as $key=>$value)
-             $this->__types[$key]=\lib\model\types\TypeFactory::getType(null,$value,isset($values[$key])?$values[$key]:false);
+             $this->__types[$key]=\lib\model\types\TypeFactory::getType(null,$value,isset($values[$key])?$values[$key]:null);
          $definition["FIELDS"]=$subTypeDef["FIELDS"];
          BaseType::__construct($definition,false);
       }
@@ -25,23 +25,33 @@ class Composite extends BaseType
 
       function __set($fieldName,$value)
       {
-
-
           if(!$this->__types[$fieldName])
               throw new BaseTypeException(BaseModelException::ERR_NOT_A_FIELD,array("field"=>$fieldName));
           if($this->__types[$fieldName]->equals($value))
               return;
           $this->__dirty=true;
+          $this->valueSet=true;
           $this->__types[$fieldName]->setValue($value);
       }
       function __get($fieldName)
       {
-
           return $this->__types[$fieldName]->get();
       }
       function get()
       {
           return $this;
+      }
+      // Si él mismo tiene valor, o alguno de sus hijoz tiene valor, el resultado es true.
+      function hasOwnValue()
+      {
+          if($this->valueSet==true)
+              return true;
+          foreach($this->__types as $key=>$value)
+          {
+              if($value->hasOwnValue())
+                return true;
+          }
+          return false;
       }
 
       function setValue($arr)
@@ -93,7 +103,17 @@ class Composite extends BaseType
       }
       function equals($values)
       {
-
+          if(is_a($values,'\lib\model\types\Composite'))
+          {
+              foreach($this->__types as $key=>$value)
+              {
+                  if(!$value->equals($values->{$key}))
+                  {
+                      return false;
+                  }
+              }
+              return true;
+          }
           foreach($this->__types as $key=>$value)
           {
               if(!$value->equals($values[$key]))
@@ -103,6 +123,7 @@ class Composite extends BaseType
           }
           return true;
       }
+
       function hasValue()
       {
           foreach($this->__types as $key=>$value)
@@ -155,7 +176,7 @@ class Composite extends BaseType
                                 $results[$key]=$value->getValue();
                             }
                             else
-                                BaseTypeException(BaseTypeException::INCOMPLETE_TYPE,array("field"=>$key));
+                                throw new \lib\model\BaseTypeException(\lib\model\BaseTypeException::INCOMPLETE_TYPE,array("field"=>$key));
                         }
                   }
               }

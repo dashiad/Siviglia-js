@@ -20,6 +20,8 @@ class MysqlOptionsDefinition
             "ROW_FORMAT"=>"FIXED"
             )
         );
+        if(!is_a($parentModel,'\lib\model\BaseModel'))
+            return new MysqlOptionsDefinition($parentModel,$defaultDefinition);
         $ownershipField=$parentModel->getOwnershipField();
         if($ownershipField)
         {
@@ -45,12 +47,12 @@ class MysqlOptionsDefinition
         {
             $defaultDefinition["ALIASES"][$key]=array("LAZY_LOAD"=>"true");
         }
-        return new ESOptionsDefinition($parentModel,$defaultDefinition);
+        return new MysqlOptionsDefinition($parentModel,$defaultDefinition);
     }
     function getDefinition()
     {
         $def=$this->definition;
-        $modelFields=$this->parentModel->fields;
+        $modelFields=$this->parentModel->__getFields();
         // Se comprueba que todos los campos que existen en los INDEXES, existen en los campos del objeto.
         $indexes=array();
         if(isset($def["INDEXES"]))

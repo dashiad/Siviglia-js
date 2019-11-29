@@ -32,7 +32,12 @@ abstract class StorageDataSource extends TableDataSource
         $this->originalDefinition=$definition;
         $localFields=array_merge(isset($definition["INDEXFIELDS"])?$definition["INDEXFIELDS"]:array(),
                                  isset($definition["PARAMS"])?$definition["PARAMS"]:array());
+        if(isset($definition["COVER_MODEL"]))
+        {
+            $modelName=$definition["COVER_MODEL"];
+            $model=\lib\model\types\TypeFactory::getObjectDefinition($modelName);
 
+        }
         $pagingParams=array(
             "__start"=>array("TYPE"=>"Integer"),
             "__count"=>array("TYPE"=>"Integer"),
@@ -106,6 +111,10 @@ abstract class StorageDataSource extends TableDataSource
         }
         $this->joinType=$joinType;
         //$this->validate();
+    }
+    function getParametersInstance()
+    {
+        return new \lib\model\BaseTypedObject($this->originalDefinition["PARAMS"]);
     }
     function addConditions($conds)
     {
@@ -272,7 +281,7 @@ abstract class StorageDataSource extends TableDataSource
         {
             $field=$subDs->__getField($key);
             $parentField=$value;
-            $arrayType=array("TYPE"=>"ArrayType","ELEMENTS"=>$field->getDefinition());
+            $arrayType=array("TYPE"=>"Array","ELEMENTS"=>$field->getDefinition());
             $newField=$subDs->__addField($key,$arrayType);
             $val=$this->iterator->getColumn($value);
             if(!(count($val)==1 && $val[0]==null))
@@ -318,7 +327,6 @@ abstract class StorageDataSource extends TableDataSource
         $this->pagingParameters->__sort=$sortField;
         $this->pagingParameters->__sortDir=$sortDirection;
     }
-
 
 }
 

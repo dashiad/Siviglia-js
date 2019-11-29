@@ -35,7 +35,7 @@ class ModelField
           $this->listeners=[];
           $this->type=types\TypeFactory::getType($this->model,$definition);
 
-          if(is_subclass_of($this->type,'\lib\model\types\Composite'))
+          if(is_a($this->type,'\lib\model\types\Composite'))
           {
               $this->isComposite=true;
               $this->compositeFields=$this->type->getFields();
@@ -214,7 +214,6 @@ class ModelField
 
         if($hv1 && $hv2)
         {
-
             $val=$type->getValue();
 
             if($this->type->equals($val))

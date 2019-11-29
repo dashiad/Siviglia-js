@@ -13,12 +13,12 @@ function mainAutoloader($name)
         case "lib":
         {
             $testClass=null;
-            if($parts[1]==="tests")
+           /* if($parts[1]==="tests")
             {
                 unset($parts[1]);
                 $testClass=$name;
                 $name=implode('\\',array_values($parts));
-            }
+            }*/
             $fileName=PROJECTPATH.\DIRECTORY_SEPARATOR.str_replace('\\',\DIRECTORY_SEPARATOR,$name).".php";
             if(file_exists($fileName))
                 include_once($fileName);
@@ -35,18 +35,9 @@ function mainAutoloader($name)
         }break;
         case "model":
         {
+            include_once(LIBPATH."/model/ModelService.php");
+            \lib\model\ModelService::includeClass($name);
 
-            $direct=PROJECTPATH.str_replace('\\','/',$name.".php");
-            if(is_file($direct))
-            {
-                include_once($direct);
-                return;
-            }
-            include_once(PROJECTPATH."/model/reflection/objects/Model/objects/ModelName/ModelName.php");
-            $modelDef=new \model\reflection\Model\ModelName($name);
-            $destFile=$modelDef->getDestinationFile(array_pop($parts)).".php";
-            if(is_file($destFile))
-                $modelDef->includeModel();
         }break;
         default:
         {
@@ -54,7 +45,7 @@ function mainAutoloader($name)
             if($p===false)
                 return false;
             $name=str_replace("Exception","",$name);
-            $def=new \model\reflection\Model\ModelName($name);
+            $def=\lib\model\ModelService::getModelDescriptor($name);
             $fName=$parts[count($parts)-1];
             $fName=str_replace("Exception","",$fName);
             $dest=$def->getDestinationFile($fName).".php";

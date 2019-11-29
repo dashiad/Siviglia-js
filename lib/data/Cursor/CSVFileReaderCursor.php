@@ -17,7 +17,7 @@ class CSVFileReaderCursor extends ReaderCursor
     function init($params)
     {
         if (!is_file($params["fileName"]))
-            throw new CursorException(CursorException::SOURCE_DOESNT_EXIST);
+            throw new CursorException(CursorException::ERR_SOURCE_DOESNT_EXIST);
         $this->params=$params;
         $this->op=fopen($this->params["fileName"],"r");
         $this->headers=null;
@@ -32,13 +32,26 @@ class CSVFileReaderCursor extends ReaderCursor
     function produce()
     {
         if ($this->isFirst) {
-            $this->headers=fgetcsv($this->op);
+            do {
+                $r = fgetcsv($this->op);
+                if (!$r) {
+                    parent::end();
+                    return false;
+                }
+            }while($r[0]==null);
+            $this->headers=array_values($this->mapColumnNames($r));
             $this->isFirst = false;
         }
 
-        $r=fgetcsv($this->op);
-        if(!$r)
-            return false;
+        do {
+            $r = fgetcsv($this->op);
+            if (!$r) {
+                parent::end();
+                return false;
+            }
+        }while($r[0]==null);
+
+
         $this->push(array_combine($this->headers,$r));
         return true;
 

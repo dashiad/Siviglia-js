@@ -54,7 +54,7 @@ class AutoUIDefinition
     }
     static function getInstance($object,$fileName)
     {
-        $mName=new \model\reflection\Model\ModelName('\model\reflection\\'.$object);
+        $mName=\lib\model\ModelService::getModelDescriptor('\model\reflection\\'.$object);
         include_once($mName->getDestinationFile("/autoui/".$fileName.".php"));
         $className='\model\reflection\\'.$object.'\autoui\\'.str_replace('/','\\',$fileName);
         return new $className();

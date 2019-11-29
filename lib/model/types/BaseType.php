@@ -82,7 +82,7 @@
           {
 
               $this->valueSet=true;
-              $this->value=$type->getValue();
+              $this->setValue($type->getValue());
 
           }
           else

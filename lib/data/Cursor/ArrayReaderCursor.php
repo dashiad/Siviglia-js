@@ -16,15 +16,17 @@ class ArrayReaderCursor extends ReaderCursor
     var $nRows=0;
     function init($params)
     {
-        $this->arr=$params["ARRAY"];
+        $this->arr=$params["array"];
         $this->nRows=count($this->arr);
         $this->curIndex=0;
         parent::init($params);
     }
     function produce()
     {
-        if($this->curIndex >= $this->nRows)
+        if($this->curIndex >= $this->nRows) {
+            parent::end();
             return false;
+        }
         $this->push($this->arr[$this->curIndex]);
         $this->curIndex++;
         return true;

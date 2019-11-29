@@ -10,12 +10,12 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
 
         // Una relacion simple, siempre apunta a 1 solo registro de una tabla remota.
         if(!isset($this->definition["ROLE"]))
-        {                 
-            if($this->parentModel->getOwnershipField()==$name)            
-                $role="BELONGS_TO";                 
+        {
+            if($this->parentModel->getOwnershipField()==$name)
+                $role="BELONGS_TO";
             else
-               $role="HAS_ONE";                     
-             $this->definition["ROLE"]=$role; 
+               $role="HAS_ONE";
+             $this->definition["ROLE"]=$role;
         }
         else {
             if ($this->definition["ROLE"] == "BELONGS_TO")
@@ -23,9 +23,9 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
         }
 
         if(!isset($this->definition["CARDINALITY"]))
-            $this->definition["CARDINALITY"]=1;            
-        
-             
+            $this->definition["CARDINALITY"]=1;
+
+
     }
     function getDefaultInputName()
     {
@@ -33,7 +33,7 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
         // TODO : tener en cuenta las cardinalidades a la hora de seleccionar el input.
         $remModel=$this->getRemoteModel();
         if($remModel->getRole()=="MULTIPLE_RELATION")
-            $multiplicity="M:N";        
+            $multiplicity="M:N";
         else
             $multiplicity=$this->definition["MULTIPLICITY"];
         return "Relation".($multiplicity?str_replace(":","x",$multiplicity):"1x1");
@@ -74,10 +74,10 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
         // el datasource.
         $modelLabelFields=array_keys($targetModel->getLabelFields());
         $labelFields=array();
-        $datasourceModelName=new \model\reflection\Model\ModelName($datasource["MODEL"]);
+        $datasourceModelName=\lib\model\ModelService::getModelDescriptor($datasource["MODEL"]);
         foreach($dsFields as $key=>$value)
         {
-            $fieldModelName=new \model\reflection\Model\ModelName($value["MODEL"]);
+            $fieldModelName=\lib\model\ModelService::getModelDescriptor($value["MODEL"]);
 
             if($datasourceModelName==$fieldModelName && in_array($value["FIELD"],$modelLabelFields))
                 $labelFields[]=$key;
@@ -85,8 +85,8 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
         }
         // Si la interseccion era nula, los $labelFields van a ser todos los campos del datasource.
         if(count($labelFields)==0)
-            $labelFields=array_keys($dsFields);        
-        
+            $labelFields=array_keys($dsFields);
+
 
 
         // NULL_RELATION son los valores de relacion que significa establecer la relacion a 0.
@@ -128,24 +128,24 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
                 }
                 else
                     $def["FIELDS"][$relationName]=$targetField[$fieldKeys[0]];
-                
+
             }
         }
 
-        
-        $objNameClass = new \model\reflection\Model\ModelName($targetObject);
+
+        $objNameClass = \lib\model\ModelService::getModelDescriptor($targetObject);
         $objLayer = $objName->layer;
         $objName = $objName->className;
         $def["MODEL"] = $objNameClass->getNamespaced("compiled");
         return new Relationship($name, $parentModel, $def);
     }
-    
 
- 
+
+
     function createDerivedRelation()
-    {  
-        
-        $targetModel=$this->getRemoteModel();        
+    {
+
+        $targetModel=$this->getRemoteModel();
         // En caso de que la relacion sea declarada por un objeto A, que es privado de B, la relacion derivada solo se
         // creara si esta relacion apunta a B, o a otro objeto privado de B.
         $localName=$this->parentModel->objectName;
@@ -159,11 +159,11 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
                  ($targetName->className==$namespaceModel)
                  )
               )
-            {             
+            {
                 return; // No hay que generar la relacion inversa.
             }
         }*/
-        $aliases=$targetModel->getAliases();        
+        $aliases=$targetModel->getAliases();
         $parentName=$this->parentModel->objectName->getNamespaced();
         foreach($aliases as $key=>$value)
         {
@@ -174,8 +174,8 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
             }
         }
 
-        
-       // Si el objeto que contiene la relacion, es un subtipo del objeto target, 
+
+       // Si el objeto que contiene la relacion, es un subtipo del objeto target,
        // Y la relacion actual apunta a un campo que es indice del objeto remoto,
        // el nombre del alias es exactamente el nombre del tipo actual.
        // Este caso es el siguiente : El objeto A tiene subtipos, y un indice (ai).Uno de los subtipos es B.
@@ -198,7 +198,7 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
                $fullIndexAliasName="parent";
            }
        }
-       
+
            if($shouldCheckIndexes)
            {
                // Estos son los campos de A, apuntados por este campo de B.
@@ -211,7 +211,7 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
                    $aliasName=$fullIndexAliasName;
                }
            }
-       
+
        if($aliasName=="")
        {
            // Hay que generar un nombre para este alias.
@@ -237,16 +237,16 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
            {
                $newAlias=\model\reflection\Model\Relationship\MultipleRelationship::createFromRelationship($aliasName,$this->name,$this->parentModel,$this->getRemoteModel());
                $targetModel->addAlias($aliasName,$newAlias);
-               $aliasName.="_".$this->name;               
+               $aliasName.="_".$this->name;
            }
        }
 
        $newAlias=\model\reflection\Model\Alias\InverseRelation::createInverseRelation($aliasName,
                                                                                           $targetModel,
                                                                                            $parentName,
-                                                                                           $this->name);       
+                                                                                           $this->name);
        $targetModel->addAlias($aliasName,$newAlias);
-       
+
     }
     function getType()
     {
@@ -274,12 +274,12 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
     {
 
         $type=$this->getType();
-        
-        foreach($this->definition["FIELDS"] as $key=>$value)   
+
+        foreach($this->definition["FIELDS"] as $key=>$value)
         {
             $type2= \lib\model\types\TypeFactory::getType(null,$type[$key]->getDefinition());
         }
-        
+
         return array($this->name=>$type2->getRelationshipType());
     }
 }

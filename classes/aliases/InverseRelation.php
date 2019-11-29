@@ -8,7 +8,7 @@
         }
         function pointsTo($objName,$fieldName)
         {
-            $o2=new \model\reflection\Model\ModelName($this->definition["MODEL"]);
+            $o2=\lib\model\ModelService::getModelDescriptor($this->definition["MODEL"]);
             if($o2->className==$objName &&
                $this->definition["FIELD"]==$fieldName)
                 return true;
@@ -27,8 +27,8 @@
         }
         function isRelation()
         {
-            // Aunque este objeto representa una relacion, no debe ser tenida como tal 
+            // Aunque este objeto representa una relacion, no debe ser tenida como tal
             return false;
         }
   }
-  
+

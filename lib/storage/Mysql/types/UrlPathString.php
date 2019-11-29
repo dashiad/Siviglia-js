@@ -7,7 +7,7 @@ namespace lib\storage\Mysql\types;
 
   class UrlPathString extends _String
   {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
          $v= $type->hasValue()?"'".mysql_escape_string($type->getValue())."'":"NULL";
          return [$name=>$v];

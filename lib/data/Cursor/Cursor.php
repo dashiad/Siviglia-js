@@ -5,8 +5,10 @@
  * Date: 27/09/2016
  * Time: 15:49
  */
-
 namespace lib\data\Cursor;
+
+
+
 include_once(__DIR__."/BaseCursor.php");
 
 class Cursor extends BaseCursor
@@ -15,26 +17,47 @@ class Cursor extends BaseCursor
     var $nRows=0;
     var $callback;
     var $currentData;
+    var $metadata=null;
+    var $state=0;
 
 
     function init($params)
     {
         parent::init($params);
         $this->callback=$params["callback"];
-
         $this->nRows=isset($params["nRows"])?$params["nRows"]:1;
-        if(isset($params["endCallback"]))
-            $this->setEndCallback($params["endCallback"]);
+        parent::init($params);
+    }
+    function setMetaData($metadata)
+    {
+        $this->metadata=$metadata;
     }
     function push($data)
     {
+        if($this->state==0)
+        {
+            // Si este cursor tiene metadata, la "empuja" a sus hijos.
+            if($this->metadata!==null) {
+                for ($j = 0; $j < count($this->subCursors); $j++)
+                    $this->subCursors[$j]->setMetaData($this->metadata);
+            }
+            $this->state=1;
+        }
         $this->currentData[]=$data;
         if($this->nRows==1 || count($this->currentData) >= $this->nRows)
             $this->process();
     }
     function mpush($data)
     {
-
+        if($this->state==0)
+        {
+            // Si este cursor tiene metadata, la "empuja" a sus hijos.
+            if($this->metadata!==null) {
+                for ($j = 0; $j < count($this->subCursors); $j++)
+                    $this->subCursors[$j]->setMetaData($this->metadata);
+            }
+            $this->state=1;
+        }
         $this->currentData=array_merge($this->currentData?$this->currentData:[],$data);
         if($this->nRows==1 || count($this->currentData) >= $this->nRows)
             $this->process();
@@ -47,20 +70,15 @@ class Cursor extends BaseCursor
     }
     function process()
     {
-        if(!is_array($this->currentData))
-        {
-            $r=11;
-        }
         $n=count($this->currentData);
         if($n==0)
             return;
-        $newRows = call_user_func($this->callback,$this->currentData);
+        $newRows=[];
+        for($k=0;$k<count($this->currentData);$k++)
+            $newRows[] = call_user_func($this->callback,$this->currentData[$k],$this);
         if(!is_array($newRows))
         {
-            $ss=11;
-            echo "CURSOR: CALLBACK RETURN VALUE SHOULD BE AN ARRAY, GOT:<br>";
-            var_dump($newRows);
-            die();
+            throw new CursorException(CursorException::ERR_CALLBACK_RETURN_VALUE_MUST_BE_AN_ARRAY);
         }
         for($k=0;$k<count($newRows);$k++)
         {
@@ -71,6 +89,9 @@ class Cursor extends BaseCursor
     }
     function end()
     {
+        // Si se habian quedado elementos sin procesar, antes de que el productor llegara al final, se procesan ahora.
+        if(count($this->currentData)>0)
+            $this->process();
         parent::end();
     }
 }

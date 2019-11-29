@@ -41,7 +41,7 @@ class BaseModelDefinition
     }
     static function loadDefinition($model)
     {
-        $objName = new \model\reflection\Model\ModelName('\\'.get_class($model));
+        $objName = \lib\model\ModelService::getModelDescriptor('\\'.get_class($model));
         $defname = $objName->getNamespaced() . "\\Definition";
         include_once($objName->getDestinationFile()."/Definition.php");
         // Se hace new() por si la definicion requiere inicializacion de constantes.

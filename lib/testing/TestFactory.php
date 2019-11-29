@@ -24,7 +24,7 @@ class TestFactory
             $this->lineSeparator="\n";
         }
 
-        $obj=new \model\reflection\Model\ModelName($modelName);
+        $obj=\lib\model\ModelService::getModelDescriptor($modelName);
         $this->basePath=$obj->getDestinationFile("tests/Tests.php");
         require_once($this->basePath);
 

@@ -2,7 +2,7 @@
 
   class Text extends BaseType
   {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           $v= $type->hasValue()?$type->getValue():null;
           return array($name=>$v);

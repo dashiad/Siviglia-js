@@ -26,7 +26,7 @@ class Action extends \lib\model\BaseTypedObject
 
     static function getAction($object, $name)
     {
-        $objName = new \model\reflection\Model\ModelName($object);
+        $objName = \lib\model\ModelService::getModelDescriptor($object);
         include_once($objName->getActionFileName($name));
         $className = $objName->getNamespacedAction($name);
         $instance = new $className();
@@ -112,7 +112,7 @@ class Action extends \lib\model\BaseTypedObject
                                 $cDef = $def["FIELDS"][$key];
                                 if (isset($cDef["MODEL"])) {
 
-                                    $mT = new \model\reflection\Model\ModelName($cDef["MODEL"]);
+                                    $mT = \lib\model\ModelService::getModelDescriptor($cDef["MODEL"]);
                                     if ($mT->getNamespaced() == $namespaced) {
                                         // $key es el campo del formulario, $targetField es el campo del modelo.
                                         $targetField = $cDef["FIELD"];
@@ -201,10 +201,10 @@ class Action extends \lib\model\BaseTypedObject
         // En este momento, ya se tiene el modelo.Ahora ya es posible comprobar permisos.
         if ($def["PERMISSIONS"]) {
             /* $permissionDef=new \lib\reflection\classes\PermissionRequirementsDefinition($def["PERMISSIONS"]);
-             $requirements=$permissionDef->getRequiredPermissions($fields);             
+             $requirements=$permissionDef->getRequiredPermissions($fields);
              include_once(PROJECTPATH."/lib/model/permissions/PermissionsManager.php");
              $oPerms=new \PermissionsManager($ser);
-             $canAccess=$oPerms->canAccess($fields,$requirements,$user);                                                                                  
+             $canAccess=$oPerms->canAccess($fields,$requirements,$user);
              if(!$canAccess)
              {
                 // Error, no existen permisos para acceder a este objeto.

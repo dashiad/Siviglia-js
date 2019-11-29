@@ -17,11 +17,11 @@ class DataSourceFactory
 {
         static function getDataSource($objName,$dsName,&$serializer=null)
         {
-                $objNameClass=new \model\reflection\Model\ModelName($objName);
+                $objNameClass=\lib\model\ModelService::getModelDescriptor($objName);
                 require_once($objNameClass->getDataSourceFileName($dsName));
                 $objName=$objNameClass->getNamespaced();
                 $csN=$objName.'\datasources\\'.$dsName;
-                
+
                 if(!class_exists($csN))
                 {
                     throw new DataSourceException(DataSourceException::ERR_NO_SUCH_DATASOURCE,array("object"=>$objName,"datasource"=>$dsName));

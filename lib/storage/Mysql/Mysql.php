@@ -1,18 +1,20 @@
 <?php
 namespace lib\storage\Mysql;
-/* 
-Set global log en servidores 
+/*
+Set global log en servidores
 1) execute "SET GLOBAL general_log = 'ON';"
  2) execute "SET GLOBAL log_output = 'TABLE';"
- 3) take a look at the table mysql.general_log 
- 
- 
+ 3) take a look at the table mysql.general_log
+
+
 */
 class MysqlException extends \lib\model\BaseException
 {
 	const ERR_NO_CONNECTION=1;
 	const ERR_NO_DB=2;
-	const ERR_QUERY_ERROR=3;    
+	const ERR_QUERY_ERROR=3;
+	const ERR_NO_TABLE=4;
+	const TXT_QUERY_ERROR="Error en query {%query%}: {%error%}";
 }
 class Mysql
 {
@@ -33,10 +35,10 @@ class Mysql
 
         $this->definition=$definition;
     }
-    
+
 
     function connect()
-    {        
+    {
         extract($this->definition);
 
         // Siempre se abre una nueva conexion
@@ -48,18 +50,19 @@ class Mysql
             // Por ahora, un simple "die".La aplicacion no debe
             // intentar recuperarse de un error al conectar a la bd.
             throw new MysqlException(MysqlException::ERR_NO_CONNECTION,array("host"=>$host));
-            
+
         }
         mysqli_query($conn,'set names "utf8"');
         mysqli_query
             ($conn,'set character set "utf8"');
         mysqli_query($conn,'set character_set_server="utf8"');
         mysqli_query($conn,'set collation_connection="utf8_general_ci"');
+
         $this->conn=$conn;
         $this->debugLevel=isset($debugLevel)?$debugLevel:null;
     }
 
-    function getConnectionResource()
+    function getConnection()
     {
         return $this->conn;
     }
@@ -73,43 +76,34 @@ class Mysql
         }
         $this->currentDb=$database;
     }
-    
+
     function showSqlErrors($q)
     {
-        ob_start();
-        //clean_debug_backtrace();
-        echo $q."<br>\n\n";
-        echo mysqli_error($this->conn);
-        echo "\n*************************************************************************************\n";
-        $buf=ob_get_clean();
-        $op=fopen("/tmp/sqlErrors.txt","a");
-        fputs($op,$buf);
-        fclose($op);
-        echo $buf;
-   //     debug(mysqli_error($this->conn));
-        throw new MysqlException(MysqlException::ERR_QUERY_ERROR);
+        $error=mysqli_error($this->conn);
+
+        throw new MysqlException(MysqlException::ERR_QUERY_ERROR,array("query"=>$q,"error"=>$error));
     }
-    
+
     function lastId()
     {
         return mysqli_insert_id($this->conn);
     }
-    
+
     /**
      * select
      * Si solo se pasa una query, esta funcion retorna un array de filas.
      * Si se pasa, ademas, un campo, la funcion retorna un array asociativo, cuyas
      * keys son el valor del campo, y los values son la fila asociada a ese valor.
-     * 
+     *
      * Esto sirve, por ejemplo, para que una query venga indexada por el campo clave de la tabla.
-     * 
+     *
      * Hay que tener en cuenta que si la query retorna mas de una fila para el mismo valor del
      * campo clave, solo se devolvera el ultimo, por lo cual solo debe usarse con primary keys.
-     * 
+     *
      * @param string $q : Query a ejecutar
      * @param string $field : Campo por el que indexar los resultados
      * @return type : array de filas, indexadas en su caso por el valor del campo pasado como parametro.
-     * 
+     *
      */
 
     function select($q,$field="")
@@ -120,12 +114,11 @@ class Mysql
         if(!$res)
         {
             $this->showSqlErrors($q);
-            return array();
         }
         if($field!="")
         {
             while($arr=mysqli_fetch_assoc($res))
-            $results[$arr[$field]]=$arr;
+            $results[$arr[$field]][]=$arr;
         }
         else
         {
@@ -142,25 +135,25 @@ class Mysql
  * y value, un array con los valores de ese campo que se han obtenido de todas las filas.
  * - Tanto totalRows, como el valor retornado, es el numero de filas que se han procesado
  *   (que coincide con el numero de elementos de todos los arrays que existen en $result).
- * 
+ *
  * Si se le pasa el parametro "reindexBy", se rellena el array "indexedArr", con campos
  * clave/valor, donde la clave son los diferentes valores del campo indicado por "reindexBy",
  * y el valor son arrays con los indices de las filas (en $results) asociadas a ese valor de campo.
  * En este caso, el valor devuelto, nRows, es un array indexado por cada valor de campo, que indica
  * el numero de filas encontradas con ese valor de campo.
- * 
- * 
+ *
+ *
  * @param array $results : Array donde devolver los resultados
  * @param string $q
  * @param int $totalRows
  * @param string $reindexBy
  * @param int $indexedArr
- * @return int 
+ * @return int
  */
 
-function & fieldIndexedSelect(& $results, $q,& $totalRows,$reindexBy="",& $indexedArr=array())
+function  fieldIndexedSelect( & $results, $q,& $totalRows,$reindexBy="",& $indexedArr=array())
 {
-	
+
     //echo "<b>".$reindexBy.": ".$q."</b><br>";
     $res=mysqli_query($this->conn,$q);
     if(!$res)
@@ -168,7 +161,7 @@ function & fieldIndexedSelect(& $results, $q,& $totalRows,$reindexBy="",& $index
         $this->showSqlErrors($q);
         return 0;
     }
-    
+
     $keys=0;
     $results=array();
     $totalRows=0;
@@ -214,18 +207,24 @@ function selectColumn($q,$field)
 	$results[]=$arr[$field];
    return $results;
 }
+
+/*
+ * SelectIndexed indexa:
+ * Primero por el campo indicado como parametro.
+ * Luego, por cada columna de la query.
+ */
 function selectIndexed($q,$field="")
 {
     $results=array();
     $res=mysqli_query($this->conn,$q);
-    
+
     $keys=null;
     if(!$res)
     {
         $this->showSqlErrors($q);
         return array();
     }
-    
+
     if($field=="")
     {
         while($arr=mysqli_fetch_assoc($res))
@@ -238,7 +237,7 @@ function selectIndexed($q,$field="")
     {
         while($arr=mysqli_fetch_assoc($res))
         {
-            
+
             foreach($arr as $key=>$value)
                 $results[$arr[$field]][$key][]=$value;
         }
@@ -251,14 +250,14 @@ function selectIndexed($q,$field="")
 
     function selectAll($q,& $nRows)
     {
-        
-        $results=array();        
+
+        $results=array();
         $res=mysqli_query($this->conn,$q);
         if(!$res)
         {
             echo $q;
-            //_d($q);       
-	     
+            //_d($q);
+
             throw new MysqlException(MysqlException::ERR_QUERY_ERROR,array("message"=>mysqli_error($this->conn),"query"=>$q));
         }
         $nRows=0;
@@ -270,7 +269,7 @@ function selectIndexed($q,$field="")
         return $results;
     }
 
-
+    // doQ retorna un descriptor.
     function doQ($q,$ignoreErrors=0)
     {
         if(is_array($q))
@@ -280,19 +279,19 @@ function selectIndexed($q,$field="")
                 $this->doQ($q[$k],$ignoreErrors);
             return;
         }
-        
+
         $res=mysqli_query($this->conn,$q);
-        
+
         if(!$res && $ignoreErrors==0)
-        {            
+        {
             $this->showSqlErrors($q);
         }
         return $res;
     }
-    
+    // query retorna affected_rows
     function query($q)
     {
-        
+
         $res=mysqli_query($this->conn,$q);
         if(mysqli_error($this->conn))
         {
@@ -318,19 +317,19 @@ function selectIndexed($q,$field="")
         else
             return mysqli_fetch_assoc($res);
     }
-    
+
     function delete($q)
     {
         return $this->query($q);
     }
-    
+
     function update($q)
     {
         return $this->query($q);
     }
-    
+
     function insert($q)
-    {        
+    {
         $res=mysqli_query($this->conn,$q);
         //var_dump($res);
         if(mysqli_error($this->conn))
@@ -341,13 +340,13 @@ function selectIndexed($q,$field="")
         return mysqli_insert_id($this->conn);
     }
 
-       
-   
+
+
    function updateFromAssociative($table,$assocValueArray,$wherePart,$autoQuote=true)
    {
-       
+
        $sqlStr="UPDATE ".$table." SET ";
-	          
+
        $c=($autoQuote?"'":"");
        $sets=array();
        foreach($assocValueArray as $key=> $value)
@@ -355,60 +354,97 @@ function selectIndexed($q,$field="")
             $sets[]="`".$key."`=".$c.$value.$c." ";
        }
        $sqlStr.=implode(",",$sets);
-           
+
        if($wherePart)
        {
            $wheres=array();
 		    if(is_array($wherePart))
 			{
 				foreach($wherePart as $key=>$value)
-					$wheres[]=$key."=".$c.$value.$c;				                				
+					$wheres[]=$key."=".$c.$value.$c;
 				$sqlStr.=" WHERE ".implode(" AND ",$wheres);
 			}
 			else
-				$sqlStr.=" WHERE ".$wherePart;				
+				$sqlStr.=" WHERE ".$wherePart;
        }
 
        Mysql::$lastWhere=$wherePart;
 
        return $this->update($sqlStr);
    }
-   
+
    function insertFromAssociative($table,$data)
    {
-       $q="INSERT INTO ".$table." (`".implode("`,`",array_keys($data))."`) VALUES (".implode(",",array_values($data)).")";
+       if (\lib\php\ArrayTools::isAssociative($data))
+           $data=[$data];
+        $fields=array_keys($data[0]);
+        $values=array_map(function($d){
+            return "(".implode(",",array_values($d)).")";
+        },$data);
+
+
+       $q="INSERT INTO ".$table." (`".implode("`,`",$fields)."`) VALUES ".implode(",",$values);
        //echo $q;
        return $this->insert($q);
    }
-   
-   
+
+
     function insertQ($table,$fields,$autoQuote=true)
     {
         $c=($autoQuote?"'":"");
         return $this->doQ("INSERT INTO ".$table." (`".implode("`,`",array_keys($fields))."`) VALUES (".$c.implode($c.",".$c,array_values($fields)).$c.")");
     }
-    
-    
-    static function getCreateTableSQL(& $obj)
+
+
+    static function getCreateTableSQL(& $obj,$tableName=null)
     {
-        if(!is_a($obj,'\lib\model\DescribedClass'))
+        if(!is_a($obj,'\lib\model\BaseTypedObject'))
             return "";
-        
-        include_once(LIBPATH."/datatypes/TypeFactory.php");    
-        $sqlStr="CREATE TABLE ".$obj->name." (";
-        $fields=& $obj->definition["FIELDS"];        
-        $sql=& $obj->definition["STORAGE"]["MYSQL"];
+        $modelName=null;
+        if(is_a($obj,'\lib\model\BaseModel'))
+        {
+            $modelName=$obj->__getFullObjectName();
+        }
+        $table=$tableName==null?$obj->__getTableName():$tableName;
+        include_once(LIBPATH."/model/types/TypeFactory.php");
+        $sqlStr="CREATE TABLE ".$table." (";
+        $definition=$obj->getDefinition();
+        $fields=$definition["FIELDS"];
+
+        $sql="";
+        if(isset($definition["STORAGE"]) && isset($definition["STORAGE"]["MYSQL"]))
+            $sql=$definition["STORAGE"]["MYSQL"];
+
         $fieldNames=array_keys($fields);
         $nFields=count($fieldNames);
+
         for($k=0;$k<$nFields;$k++)
         {
             $sqlStr.=$k>0?',':'';
             $curFieldName=$fieldNames[$k];
-            $type=\lib\model\types\TypeFactory::getType($obj->definition["MODEL"],$curFieldName,$fields[$curFieldName]);
-            $sqlStr.=$type->getSQLDefinition();            
+
+            $type=\lib\model\types\TypeFactory::getType($modelName,$fields[$curFieldName]);
+            $sqlStr.=$type->getSQLDefinition();
         }
         $sqlStr.=")";
         return $sqlStr;
+    }
+    function tableExists($tableName)
+    {
+        $q="SELECT COUNT(*) as N FROM information_schema.tables WHERE table_schema = '".$this->currentDb."' AND table_name = '$tableName'";
+
+        $data=$this->selectAll($q,$n);
+        return $data[0]["N"]==1;
+    }
+    function deleteTable($tableName)
+    {
+        $q="DROP TABLE $tableName";
+        $this->doQ($q);
+    }
+    function deleteDatabase($database)
+    {
+        $q="DROP DATABASE $database";
+        $this->doQ($q);
     }
 
     function getSequenceQuery($maxNumber)
@@ -444,7 +480,7 @@ function selectIndexed($q,$field="")
         $q.=implode($subQuery," CROSS JOIN ");
         $q.=") SEQ WHERE SEQ.v < ".$maxNumber." ORDER BY v";
         return $q;
-        
+
     }
 
     function getTableSchema($table)
@@ -465,21 +501,21 @@ function selectIndexed($q,$field="")
                 $cField["TYPE"]=substr($rawType,0,$carPos);
                 $endCarPos=strpos($rawType,')');
                 $contents=substr($rawType,$carPos+1,$endCarPos-$carPos-1);
-                
+
                 if($cField["TYPE"]=="enum")
                     $cField["VALUES"]=explode(",",str_replace("'","",$contents));
                 else
                 {
-                    $parts=explode(",",$contents);                    
+                    $parts=explode(",",$contents);
                     $cField["SIZE"]=$parts[0];
                     if($parts[1])
-                        $cField["DECIMALS"]=$parts[1];                    
+                        $cField["DECIMALS"]=$parts[1];
                 }
                 $cField["TYPE_EXTRA"]=substr($rawType,$endCarPos+1);
             }
             else
                 $cField["TYPE"]=$rawType;
-            
+
            $cField["NULL"]=($current["Null"]=="NO"?0:1);
            $cField["KEY"]=$current["Key"];
            $cField["DEFAULT"]=$current["Default"];
@@ -496,7 +532,7 @@ function selectIndexed($q,$field="")
         {
             $res=mysqli_query($this->conn,$value);
             if(!$res && $ignoreErrors==false)
-            {         
+            {
                  throw new MysqlException(MysqlException::ERR_QUERY_ERROR,array("query"=>$value,"message"=>mysqli_error($this->conn)));
             }
         }
@@ -518,6 +554,14 @@ function selectIndexed($q,$field="")
         $status=$this->selectAll("SHOW GLOBAL STATUS WHERE Variable_name IN ('Threads_connected','Threads_running','Created_tmp_disk_tables','Max_used_connections','Open_tables','Select_full_join','Slow_queries');",$nRows);
         return $status;
     }
+    function importDump($filePath)
+    {
+        $this->doQ("SET GLOBAL max_allowed_packet=16777216");
+        $command = file_get_contents($filePath);
+        $this->conn->multi_query($command);
+        while (mysqli_next_result($this->conn)); // Flush out the results.
+    }
+
     function getSlaveStatus()
     {
         $status=$this->selectAll("SHOW SLAVE STATUS",$nRows);

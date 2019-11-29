@@ -3,7 +3,7 @@
 
 class Composite
 {
-    function serialize($name,$type,$serializer)
+    function serialize($name,$type,$serializer,$model=null)
     {
         $subTypes=$type->getSubTypes();
         $results=array();
@@ -15,12 +15,12 @@ class Composite
         }
         return $results;
     }
-    function unserialize($name,$type,$value,$serializer)
+    function unserialize($name,$type,$value,$serializer,$model=null)
     {
         $subTypes=$type->getSubTypes();
         foreach($subTypes as $keyT=>$valueT)
         {
-            $serializer->unserializeType($name."_".$keyT,$valueT,$value);
+            $serializer->unserializeType($name."_".$keyT,$valueT,$value,$model);
         }
     }
 

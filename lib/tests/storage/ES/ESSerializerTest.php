@@ -26,10 +26,9 @@ class ESSerializerTest extends TestCase
             $this->serializer=new \lib\storage\ES\ESSerializer(["NAME"=>"MAIN_ES","ES"=>["servers"=>[ES_TEST_SERVER],"port"=>ES_TEST_PORT,"index"=>ES_TEST_INDEX]]);
         return $this->serializer;
     }
-    function getSimpleDefinedObject()
+    function getSimpleDefinedObject($includeIndex=1)
     {
-        return new \lib\model\BaseTypedObject([
-            "INDEXFIELDS"=>["id"],
+        $def=[
             "FIELDS"=>[
                 "id"=>[
                     "TYPE"=>"Integer"
@@ -37,11 +36,19 @@ class ESSerializerTest extends TestCase
                 "name"=>[
                     "TYPE"=>"String"
                 ],
+                "name2"=>[
+                    "TYPE"=>"String"
+                ],
                 "data"=>[
                     "TYPE"=>"Integer"
                 ]
     ]
-        ]);
+        ];
+        if($includeIndex==1)
+            $def["INDEXFIELDS"]=["id"];
+        if($includeIndex==2)
+            $def["INDEXFIELDS"]=["name","name2"];
+        return new \lib\model\BaseTypedObject($def);
     }
     function createTestIndex($obj)
     {
@@ -133,15 +140,44 @@ class ESSerializerTest extends TestCase
         $ser->unserialize($obj2,["CONDITIONS"=>[["FILTER"=>["F"=>"id","OP"=>"=","V"=>1]]]]);
         $this->assertEquals(2001,$obj2->data);
     }
+    // Update con dos campos key.
+    function testUpdate2()
+    {
+        // Almacenado del dato 1
+        $obj=$this->getSimpleDefinedObject(2);
+        $obj->id=1;
+        $obj->name="name1";
+        $obj->name2="name2";
+        $obj->data=1;
+        $this->createTestIndex($obj);
+        $ser=$this->getDefaultSerializer();
+        $ser->add([$obj]);
+        sleep(1);
+        $this->assertEquals(1,$obj->data);
+        // Update basado en dos campos clave.
+        $obj2=$this->getSimpleDefinedObject(2);
+        $obj2->name="name1";
+        $obj2->name2="name2";
+        $obj2->data=2;
+        $ser->update([$obj2]);
+        // Se deserializa.
+        sleep(1);
+        $obj3=$this->getSimpleDefinedObject(2);
+        $obj3->name="name1";
+        $obj3->name2="name2";
+        $ser->unserialize($obj3);
+        $this->assertEquals(2,$obj3->data);
+
+
+
+    }
     function testDelete()
     {
         $obj=$this->getSimpleDefinedObject();
         $obj->id=1;
         $obj->name="pepito";
         $obj->data=2000;
-        $obj->save();
         $this->createTestIndex($obj);
-
         $ser=$this->getDefaultSerializer();
         $ser->add([$obj]);
 
@@ -156,4 +192,30 @@ class ESSerializerTest extends TestCase
         $this->expectExceptionCode(\lib\storage\ES\ESSerializerException::ERR_NO_SUCH_OBJECT);
         $ser->unserialize($obj3);
     }
+    function testCount()
+    {
+        $obj=$this->getSimpleDefinedObject(1);
+        $obj->id=1;
+        $obj->name="name1";
+        $obj->name2="name2";
+        $obj->data=1;
+        $this->createTestIndex($obj);
+        $ser=$this->getDefaultSerializer();
+        $ser->add([$obj]);
+        sleep(1);
+        $this->assertEquals(1,$obj->data);
+        // Update basado en dos campos clave.
+        $obj2=$this->getSimpleDefinedObject(2);
+        $obj2->id=2;
+        $obj2->name="name1";
+        $obj2->name2="name2";
+        $obj2->data=2;
+        $ser->add([$obj2]);
+        sleep(1);
+        $n=$ser->count(null,$obj2);
+        $this->assertEquals(2,$n);
+        $n=$ser->count(["CONDITIONS"=>[["FILTER"=>["F"=>"data","OP"=>"=","V"=>2]]]],$obj2);
+        $this->assertEquals(1,$n);
+    }
+
 }

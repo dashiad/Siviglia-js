@@ -45,7 +45,7 @@ class Form extends \lib\model\BaseTypedObject
     {
         if(isset($definition["ACTION"]) && isset($definition["ACTION"]["INHERIT"]) && $definition["ACTION"]["INHERIT"])
         {
-            $obj=new \model\reflection\Model\ModelName($definition["ACTION"]["MODEL"]);
+            $obj=\lib\model\ModelService::getModelDescriptor($definition["ACTION"]["MODEL"]);
             $clName=$obj->getNamespacedAction($definition["ACTION"]["ACTION"]);
             include_once($obj->getActionFileName($definition["ACTION"]["ACTION"]));
 
@@ -110,7 +110,7 @@ class Form extends \lib\model\BaseTypedObject
             return $modelInstance;
         }
 
-        $objName=new \model\reflection\Model\ModelName(str_replace("/",'\\',$object));
+        $objName=\lib\model\ModelService::getModelDescriptor(str_replace("/",'\\',$object));
         include_once($objName->getFormFileName($name));
         $formClass=$objName->getNamespacedForm($name);
         $actionResult=new \lib\action\ActionResult();
@@ -214,15 +214,15 @@ class Form extends \lib\model\BaseTypedObject
     {
 /*        if($this->srcModelInstance!=null)
             return $this->srcModelInstance;
-                
-        $this->srcModelInstance=\lib\model\BaseModel::getModelInstance($this->srcModelName);        
+
+        $this->srcModelInstance=\lib\model\BaseModel::getModelInstance($this->srcModelName);
         if($keys)
         {
             try
-            {                                                   
+            {
                 $serializer=$this->srcModelInstance->__getSerializer();
                 $this->srcModelInstance->setId($keys);
-                $this->srcModelInstance->unserialize($serializer);                
+                $this->srcModelInstance->unserialize($serializer);
             }
             catch(\Exception $e)
             {
@@ -391,7 +391,7 @@ class Form extends \lib\model\BaseTypedObject
     {
         return $this->actionResult;
     }
-    
+
     function unserializeValue($field,$inputObj,$definition,$formValues,$actionResult)
     {
 
@@ -424,11 +424,11 @@ class Form extends \lib\model\BaseTypedObject
 
         return $this->{$field};
     }
-   
+
     function getDataSet($field,$definition,$values)
     {
         // Para obtener 1 dataset,necesitamos recrear el formato del array.
-        
+
     }
 
     // Los siguientes metodos son para ser sobreescritos en las clases de formulario.
@@ -461,8 +461,8 @@ class Form extends \lib\model\BaseTypedObject
              }
              else
                  $keys=null;
-             
-            global $oCurrentUser;            
+
+            global $oCurrentUser;
             $action=\lib\action\Action::getAction($this->formDefinition["ACTION"]["MODEL"],$this->formDefinition["ACTION"]["ACTION"]);
             $action->process($keys,$this,$this->actionResult,$oCurrentUser);
             return $this->actionResult->isOk();
@@ -475,7 +475,7 @@ class Form extends \lib\model\BaseTypedObject
     {
         if(!isset(\Registry::$registry["lastForm"]))
             return false;
-        $lastForm=\Registry::$registry["lastForm"];        
+        $lastForm=\Registry::$registry["lastForm"];
         if ( $lastForm && $lastForm["MODEL"]==$object && $lastForm["NAME"]==$name)
         {
             return true;
@@ -485,7 +485,7 @@ class Form extends \lib\model\BaseTypedObject
 
     static function getLastForm()
     {
-        
+
         $lastForm=\Registry::$registry["lastForm"];
         if(! $lastForm )
             return null;
@@ -503,12 +503,12 @@ class Form extends \lib\model\BaseTypedObject
             foreach($formClass->formDefinition["INDEXFIELDS"] as $key=>$value)
                 $formClass->srcModelKeys[$key]=$lastForm["DATA"][$key];
         }
-        return $formClass;        
+        return $formClass;
     }
 
     static function getFormPath($object,$name)
     {
-        $objName=new \model\reflection\Model\ModelName($object);
+        $objName=\lib\model\ModelService::getModelDescriptor($object);
 
         return array("CLASS"=>$objName->getNamespacedForm($name),
                      "PATH"=>$objName->getFormFileName($name));
@@ -524,7 +524,7 @@ class Form extends \lib\model\BaseTypedObject
         $objName=$this->__getObjectName();
         if(!$objName)
             return null;
-        
+
         $instance=\lib\model\BaseModel::getModelInstance($objName);
         return $instance->__getSerializer();
     }
@@ -536,7 +536,7 @@ class Form extends \lib\model\BaseTypedObject
     function copy(& $remoteObject)
     {
              $remFields=$remoteObject->__getFields();
-             
+
              foreach($remFields as $key=>$value)
              {
                  // Preguntamos 2 cosas: si existe el campo, y si hemos accedido a el previamente, lo que
@@ -549,11 +549,11 @@ class Form extends \lib\model\BaseTypedObject
                      {
                          $field=$this->__getField($tKey);
                          $field->copyField($tValue);
-                     }                 
+                     }
                  }
              }
-             $this->__dirtyFields=$remoteObject->__dirtyFields;             
-             $this->__isDirty=$remoteObject->__isDirty;             
+             $this->__dirtyFields=$remoteObject->__dirtyFields;
+             $this->__isDirty=$remoteObject->__isDirty;
     }
 
 }

@@ -11,11 +11,11 @@ define('_COOKIE_IV_', 'Bdno0qQD');
 define("_COOKIE_DOMAIN_",$curServer);
 define("DONT_ENCRYPT_COOKIE",1);
 
-define("_DB_NAME_","adtopy_test");
+define("_DB_NAME_","test");
 /* BASE DE DATOS LOCAL */
 define("_DB_USER_","root");
 define("_DB_PASSWORD_","");
-define("_DB_SERVER_","192.168.253.1");
+define("_DB_SERVER_","127.0.0.1");
 
 define("WEBLOCALPATH","/");
 
@@ -63,7 +63,12 @@ $EMAILERS=array(
         "MAIL_TYPE"=>1 // 1: HTML ,2 : TEXT, 3: Ambos
     )
 );
-
+/*
+ *  SETTINGS PARA ELASTICSEARCH
+ */
+define("ES_TEST_SERVER","127.0.0.1");
+define("ES_TEST_PORT",9200);
+define("ES_TEST_INDEX","testIndex");
 
 $TESTS_SERIALIZERS=array(
     "default"=>array("NAME"=>"default","TYPE"=>"MYSQL","ADDRESS"=>array("host"=>"192.168.253.1","user"=>"root","password"=>"delea","database"=>array("NAME"=>"backoffice_ordertest"))),

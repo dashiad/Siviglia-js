@@ -5,7 +5,7 @@ namespace lib\storage\ES\types;
 
   class Enum extends BaseType
   {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           if($type->hasValue())
           {
@@ -13,7 +13,7 @@ namespace lib\storage\ES\types;
           }
           return null;
       }
-      function unserialize($name,$type,$value,$serializer)
+      function unserialize($name,$type,$value,$serializer,$model=null)
       {
           $v=$type->getValueFromLabel($name[$value]);
           $type->setValue($v);

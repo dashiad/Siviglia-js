@@ -6,21 +6,22 @@
  */
 
 
-namespace model\reflection\Model\ModelName\tests;
-$dirName=__DIR__."/../../../../../../../install/config/CONFIG_test.php";
+namespace lib\tests\model;
+$dirName= __DIR__ . "/../../../install/config/CONFIG_test.php";
 include_once($dirName);
 include_once(LIBPATH."/startup.php");
 include_once(LIBPATH."/autoloader.php");
-include_once(PROJECTPATH."/lib/model/BaseTypedObject.php");
-include_once(PROJECTPATH."/vendor/autoload.php");
+include_once(PROJECTPATH . "/lib/model/BaseTypedObject.php");
+include_once(PROJECTPATH . "/vendor/autoload.php");
 
 use PHPUnit\Framework\TestCase;
-class ModelNameTest extends TestCase
+class ModelDescriptorTest extends TestCase
 {
 
     function testSimple()
     {
-        $obj=new \model\reflection\Model\ModelName('\model\reflection\Model');
+        $package=new \lib\model\DefaultPackage();
+        $obj=new \lib\model\ModelDescriptor('\model\reflection\Model',null,$package);
         $layer=$obj->getLayer();
         $class=$obj->getClassName();
         $namespace=$obj->getParentNamespace();
@@ -37,7 +38,7 @@ class ModelNameTest extends TestCase
     }
     function testPrivate()
     {
-        $obj=new \model\reflection\Model\ModelName('\model\reflection\Model\ModelName');
+        $obj=\lib\model\ModelService::getModelDescriptor('\model\reflection\Model\ModelName');
         $layer=$obj->getLayer();
         $class=$obj->getClassName();
         $namespace=$obj->getParentNamespace();
@@ -53,7 +54,7 @@ class ModelNameTest extends TestCase
     }
     function testDoublePrivate()
     {
-        $obj=new \model\reflection\Model\ModelName('\model\reflection\Storage\ES\ESOptionsDefinition');
+        $obj=\lib\model\ModelService::getModelDescriptor('\model\reflection\Storage\ES\ESOptionsDefinition');
         $layer=$obj->getLayer();
         $class=$obj->getClassName();
         $namespace=$obj->getParentNamespace();
@@ -69,7 +70,7 @@ class ModelNameTest extends TestCase
     }
     function testSimpleDefaultPaths()
     {
-        $obj=new \model\reflection\Model\ModelName('\model\web\Page');
+        $obj=\lib\model\ModelService::getModelDescriptor('\model\web\Page');
         $dsPath=$obj->getDataSourceFileName("View");
         $this->assertEquals(realpath($dsPath),realpath(PROJECTPATH."/model/web/objects/Page/datasources/View.php"));
 
@@ -85,7 +86,7 @@ class ModelNameTest extends TestCase
 
     function testPrivateDefaultPaths()
     {
-        $obj=new \model\reflection\Model\ModelName('\model\web\Site\WebsiteUrls');
+        $obj=\lib\model\ModelService::getModelDescriptor('\model\web\Site\WebsiteUrls');
         $dsPath=$obj->getDataSourceFileName("View");
         $this->assertEquals(realpath($dsPath),realpath(PROJECTPATH."/model/web/objects/Site/objects/WebsiteUrls/datasources/View.php"));
 

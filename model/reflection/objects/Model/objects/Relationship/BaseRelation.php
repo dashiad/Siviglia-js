@@ -15,10 +15,10 @@ class BaseRelation extends \model\reflection\Model\ModelComponent
              $this->targetObject = $definition["MODEL"];
              parent::__construct($name,$parentModel,$definition);
              if(isset($this->definition["FIELD"])) {
-                                 
+
                      $this->definition["FIELDS"]=array($name=>$this->definition["FIELD"]);
                      unset($this->definition["FIELD"]);
-             }             
+             }
      }
 
      function isRelation()
@@ -37,11 +37,11 @@ class BaseRelation extends \model\reflection\Model\ModelComponent
      {
          return isset($this->definition["UNIQUE"])?$this->definition["UNIQUE"]:false;
      }
-     function isState() 
+     function isState()
      {
                  return false;
      }
-     
+
      function getRemoteModelName()
      {
          //return $this->parentModel->objectName->getNormalizedName();
@@ -84,7 +84,7 @@ class BaseRelation extends \model\reflection\Model\ModelComponent
      {
              return $this->definition["FIELDS"];
      }
-     
+
      function isLocalMultiple() {
          $mult = $this->definition["MULTIPLICITY"];
          if ($mult == "M:N")
@@ -100,26 +100,26 @@ class BaseRelation extends \model\reflection\Model\ModelComponent
      }
 
      function getRelationTypes() {
-         $targetObj=new \model\reflection\Model\ModelName($this->getTargetObject());
+         $targetObj=\lib\model\ModelService::getModelDescriptor($this->getTargetObject());
          foreach($this->definition["FIELDS"] as $key=>$value)
              $types[$key]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($targetObj->className, $value);
          return $types;
      }
 
      function pointsTo($modelName,$fieldName)
-      {          
+      {
 
-          $remObj=new \model\reflection\Model\ModelName($this->definition["OBJECT"]);
-          
+          $remObj=\lib\model\ModelService::getModelDescriptor($this->definition["OBJECT"]);
+
           if($modelName!=$remObj->getNormalizedName())
               return false;
           if(!is_array($fieldName))
               $fieldName=array($fieldName);
-          
+
           $remoteNames=array_keys($this->getRemoteMapping());
           $int=\lib\php\ArrayTools::compare($remoteNames,$fieldName);
-          return $int===0;          
+          return $int===0;
       }
-  
+
 }
 ?>

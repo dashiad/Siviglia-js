@@ -18,8 +18,11 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 
         $curQuery = $this->definition;
         if ($onlyConditions == false) {
-            if (is_array($curQuery["BASE"]))
+            if (is_array($curQuery["BASE"])) {
+                if(!isset($curQuery["TABLE"]))
+                    throw new MysqlException(MysqlException::ERR_NO_TABLE);
                 $selectStr = "SELECT " . ($this->findRows ? "SQL_CALC_FOUND_ROWS " : "") . implode(",", $curQuery["BASE"]) . " FROM " . $curQuery["TABLE"];
+            }
             else
                 $selectStr = trim($curQuery["BASE"]);
             if ($this->findRows)
@@ -112,9 +115,9 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 }
                 $curField->setValue($val);
             }
-            $serializedVal = $curField->serialize("MYSQL");
+            $serializedVal = $this->serializer->serializeType($key,$curField->getType());
             $keys[] = $matches[0][$key];
-            $values[] = $serializedVal;
+            $values[] = $serializedVal[$key];
         }
         $qText = str_replace($keys, $values, $queryText);
         //echo $qText;

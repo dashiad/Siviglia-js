@@ -1,7 +1,7 @@
 <?php namespace lib\storage\Mysql\types;
 
   class AutoIncrement extends BaseType{
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           if(!$type->hasValue())
               return NULL;

@@ -32,7 +32,7 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
        static function getModel($modelName,$layer=null)
        {
            //echo "MODEL:$modelName";
-           $nameObj=new \model\reflection\Model\ModelName($modelName,$layer);
+           $nameObj=\lib\model\ModelService::getModelDescriptor($modelName,$layer);
            $layer=$nameObj->layer;
            $className=$nameObj->className;
            if($nameObj->isPrivate())
@@ -134,7 +134,7 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
 
                    if(isset($cur->definition["EXTENDS"]))
                    {
-                       $objName=new \model\reflection\Model\ModelName($cur->definition["EXTENDS"]);
+                       $objName=\lib\model\ModelService::getModelDescriptor($cur->definition["EXTENDS"]);
                        $normalized=$objName->getNormalizedName();
                        if(!$parsedModels[$normalized])
                        {

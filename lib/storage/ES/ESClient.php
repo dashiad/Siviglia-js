@@ -58,6 +58,8 @@ class ESClient
         else
             $q["index"]=$this->index;
         $patterns=[];
+        if(!isset($q["size"]))
+            $q["size"]=10000;
         $client=$this->getConnection();
         if($subs!=null)
         {
@@ -67,7 +69,7 @@ class ESClient
         }
         return $client->search($q);
     }
-    function update($key,$fields,$q=null,$isUpsert=false){
+    function updateFromAssociative($key,$fields,$q=null,$isUpsert=false){
         $conf=[
             "index"=>$this->index,
             "id"=>$key,
@@ -79,7 +81,20 @@ class ESClient
             $conf["id"]=$key;
         if($q!=null)
             $conf["body"]["query"]=$q;
-        $response=$this->getConnection()->update($conf);
+        return $this->getConnection()->update($conf);
+
+    }
+    // Nota: updateByQuery solo soporta update by script, no por doc.
+    function updateByQuery($scriptExpression,$q)
+    {
+        $conf=[
+            "index"=>$this->index,
+            "body"=>[
+                "script"=>$scriptExpression
+            ]
+        ];
+        $conf["body"]["query"]=$q;
+        return $this->getConnection()->updateByQuery($conf);
     }
 
 
@@ -195,7 +210,11 @@ class ESClient
         $client=$this->getConnection();
         return $client->indices()->exists(array("index"=>$this->normalizeIndexName($name)));
     }
-
+    function insertFromAssociative($index,$lines)
+    {
+        $this->index=$this->normalizeIndexName($index);
+        $this->insertBulk($lines);
+    }
 
     function insertBulk($lines,$noErrors=false)
     {
@@ -381,11 +400,15 @@ class ESClient
     function getCount($query=null,$index=null)
     {
         $client=$this->getConnection();
-        $params=["index"=>$index==null?$this->index:$index];
-        if($query!=null) {
-            $params["body"]=["track_total_hits"=>true];
-            $params["body"]["query"] = $query;
+        if($query==null)
+            $params=["index"=>$this->normalizeIndexName($index==null?$this->index:$index)];
+        else {
+            $params = $query;
+            $params["index"]=$this->normalizeIndexName($params["index"]);
         }
+        // Count no soporta timeout
+        if(isset($params["timeout"]))
+            unset($params["timeout"]);
         $result=$client->count(
             $params
         );

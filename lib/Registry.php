@@ -8,6 +8,7 @@ class Registry
 {
     public static $registry = null;
     public static $saved=false;
+    const SERVICE_CONTAINER="ServiceContainer";
 
     function __construct($requestFormat = "html")
     {
@@ -31,7 +32,7 @@ class Registry
             $oCurrentUser->setLogged($userId);
         }
         Registry::$registry["user"] = $oCurrentUser;
-        Registry::addService("user",$oCurrentUser);
+        Registry::$registry[Registry::SERVICE_CONTAINER]->addService("user",$oCurrentUser);
 
         \Registry::$registry["session"] = $session->getId();
         \Registry::$registry["cookies"] = & $_COOKIE;
@@ -105,19 +106,19 @@ class Registry
         {
 
             $lastAction  = Registry::$registry["newAction"]->serialize();
-            
+
             $session["Registry/lastAction"]=$lastAction;
         }
         else
             unset($session["Registry/lastAction"]);
 
         global $oCurrentUser;
-        
+
         unset($session["Registry/userId"]);
         if (isset($oCurrentUser))
         {
             if ($oCurrentUser->isLogged())
-            {            
+            {
                 $session["Registry/userId"] = $oCurrentUser->getId();
 
             }
@@ -126,15 +127,11 @@ class Registry
     static  $services=array();
     static function addService($serviceName,$instance)
     {
-        \Registry::$services[$serviceName]=$instance;
+        Registry::$registry[Registry::SERVICE_CONTAINER]->addService($serviceName,$instance);
     }
     static function getService($serviceName)
     {
-        if(!isset(\Registry::$services[$serviceName]))
-        {
-            throw new RegistryException(RegistryException::ERR_NO_SUCH_SERVICE,array("serviceName"=>$serviceName));
-        }
-        return \Registry::$services[$serviceName];
+        return Registry::$registry[Registry::SERVICE_CONTAINER]->getServiceByName($serviceName);
     }
 }
 

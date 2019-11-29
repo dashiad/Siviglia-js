@@ -1,10 +1,15 @@
 <?php
+
+use lib\model\Package;
+use lib\model\ModelService;
+
 include_once(LIBPATH."/model/permissions/PermissionsManager.php");
 
 class Startup
 {
     static function init()
     {
+        global $Container;
         if(defined("DEVELOPMENT"))
         {
             error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
@@ -13,7 +18,6 @@ class Startup
             ini_set("xdebug.max_nesting_level",500);
         }
         include_once(LIBPATH."/autoloader.php");
-        include_once(PROJECTPATH."/model/reflection/objects/Model/ModelName.php");
         include_once(LIBPATH."/model/BaseException.php");
         include_once(LIBPATH."/model/types/BaseType.php");
         include_once(LIBPATH."/Registry.php");
@@ -22,35 +26,45 @@ class Startup
         include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
         include_once(PROJECTPATH."/vendor/autoload.php");
         $oPath=new \lib\Paths();
-        \Registry::addService("paths",$oPath);
-        \Registry::addService("model",new \lib\model\ModelCache());
-        \Registry::addService("router",new \lib\Router());
+
+
+        $Container->addService("paths",$oPath);
+        $defaultPackage = new \lib\model\DefaultPackage();
+        $modelService=new ModelService();
+        $modelService->addPackage($defaultPackage);
+        $Container->addService("model",$modelService);
+        $Container->addService("router",new \lib\Router());
+        $storageService=new \lib\storage\StorageSerializerService();
+        $storageService->addSerializer("PHP",[]);
+        $Container->addService("storage",$storageService);
+        \Registry::$registry["ServiceContainer"]=$Container;
 
     }
     static function initializeHTTPPage()
     {
+        global $Container;
         //session_start();
         include_once(LIBPATH."/Request.php");
         $request=Request::getInstance();
         global $currentSite;
         $currentSite=\model\web\Site::getCurrentWebsite();
-        Registry::addService("site",$currentSite);
+        $Container->addService("site",$currentSite);
         Registry::initialize($request);
-        
+
     }
 
     static function commonSetup()
     {
-
+        global $Container;
         Startup::initializeContext();
         $ser=\lib\storage\StorageFactory::getSerializerByName("default");
         $oPerms = new \PermissionsManager(
-            \Registry::getService("model"),
-            \Registry::getService("user"),
-            \Registry::getService("site"),
+            $Container->getService("model"),
+            $Container->getService("user"),
+            $Container->getService("site"),
             $ser);
 
-        \Registry::addService("permissions",$oPerms);
+        $Container->addService("permissions",$oPerms);
 
         //Incluimos las constantes en el registro para poder ser usadas en DS
         $constants = get_defined_constants(true);
@@ -71,12 +85,6 @@ class Startup
         $globalPath->addPath("registry",Registry::$registry);
     }
 
-    static function initializeSerializers()
-    {
-        global $SERIALIZERS;
-        \lib\storage\StorageFactory::$defaultSerializers=$SERIALIZERS;
-        \lib\storage\StorageFactory::$defaultSerializer="default";
-    }
 }
 
 
@@ -127,9 +135,16 @@ function ___cleanup()
         \lib\php\FPMManager::getInstance()->runWorkers();
     }
 }
+include_once(LIBPATH."/service/ServiceContainer.php");
+global $Container;
+$Container=new \lib\service\ServiceContainer();
+
 if(!defined("__RUNNING_TESTS__")) {
     Startup::init();
     Startup::initializeHTTPPage();
     Startup::commonSetup();
     register_shutdown_function('___cleanup');
+}
+else{
+    Startup::init();
 }

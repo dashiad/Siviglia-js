@@ -1,6 +1,8 @@
 <?php
 
 namespace lib\output\html;
+use Registry;
+
 include_once(LIBPATH."/Request.php");
 
 
@@ -90,7 +92,8 @@ class HTMLRequest extends \Request implements \ArrayAccess
         $_POST=null;
         $_FILES=null;
         $session=new \lib\storage\Persistence\PHPSession();
-        \Registry::addService("session",$session);
+        \Registry::$registry[Registry::SERVICE_CONTAINER]->addService("session",$session);
+
 
     }
     function getCurrentSite()

@@ -9,14 +9,14 @@ namespace lib\storage\Mysql\types;
 
 class PHPVariable extends BaseType
 {
-    function serialize($name,$type,$serializer)
+    function serialize($name,$type,$serializer,$model=null)
     {
         if($type->hasValue())
             return [$name=>"'".mysql_escape_string(serialize($type->getValue()))."'"];
         else
             return [$name=>"NULL"];
     }
-    function unserialize($name,$type,$value,$serializer)
+    function unserialize($name,$type,$value,$serializer,$model=null)
     {
         if(isset($value[$name]))
         {

@@ -424,8 +424,15 @@ class StatedDefinition
         if (!$this->hasState)
             return null;
 
-        if(isset( $this->definition["STATES"]["STATES"][$this->getStateLabel($stateId)]))
-            return $this->definition["STATES"]["STATES"][$this->getStateLabel($stateId)];
+        if(isset( $this->definition["STATES"]["STATES"][$this->getStateLabel($stateId)]["ALLOW_FROM"])) {
+            $allowed=$this->definition["STATES"]["STATES"][$this->getStateLabel($stateId)]["ALLOW_FROM"];
+            $result=[];
+            foreach($allowed as $k=>$v)
+            {
+                $result[]=$this->getStateId($v);
+            }
+            return $result;
+        }
         return null;
     }
 
@@ -433,10 +440,11 @@ class StatedDefinition
     function canTranslateTo($newStateId)
     {
         $currentState=$this->getCurrentState();
-        $transitions=array_keys($this->getStateTransitions($currentState));
+        $transitions=$this->getStateTransitions($newStateId);
         if($transitions===null)
             return true;
-        return in_array($newStateId,$transitions);
+
+        return in_array($currentState,$transitions);
     }
 
     function getStatedDefinition($statedDef,$stateToCheck)

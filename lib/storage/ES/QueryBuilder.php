@@ -165,7 +165,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 }
                 $curField->setValue($val);
             }
-            $serializedVal = str_replace("'",'"',$curField->serialize("MYSQL"));
+            $serializedVal = str_replace("'",'"',$curField->serialize($this->serializer));
             $keys[] = $matches[0][$key];
             $values[] = $serializedVal;
         }
@@ -251,7 +251,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                     // Val puede ser un array.
                     // TODO : Gestionar el array.
                     $inEnable=false;
-                    if(isset($curConditino["ENABLE_IF"]))
+                    if(isset($curCondition["ENABLE_IF"]))
                         $inEnable = in_array($val, (array)$curCondition["ENABLE_IF"]);
                     $hasDisable = isset($curCondition["DISABLE_IF"]);
                     $hasEnable = isset($curCondition["ENABLE_IF"]);
@@ -316,7 +316,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 if (is_array($curCondition["FILTER"])) {
                     $field=$curCondition["FILTER"]["F"];
                     $value=$curCondition["FILTER"]["V"];
-                    $trigger=(isset($curCondition["TRIGGER_VAR"])?$curCondition["TRIGGER_VAR"]:$field);
+                    $trigger=(isset($curCondition["TRIGGER_VAR"])?$curCondition["TRIGGER_VAR"]:null);
                     switch($curCondition["FILTER"]["OP"])
                     {
                         case "=":{
@@ -364,7 +364,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 
                     }
                 } else {
-                    throw new ESSerializerException(ESSerializerException::ERR_PLAIN_CONDITIONS_NOT_ALLOWED);
+                    throw new ESSerializerException(ESSerializerException::ERR_UNSUPPORTED);
                 }
             }
         // Reconstruir los must y must-not
@@ -381,59 +381,108 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 $curText="";
                 if(isset($cV[$cK])) {
                     $n = 0;
+                    $subFragments=[];
                     foreach ($cV[$cK] as $kk => $vvs) {
-
-
-
-                        if ($n == 0)
-                            $curText .= '"' . $cK . '":{';
-                        if ($n > 0)
-                            $curText .= ",";
-
                         switch ($cK) {
                             case "terms":{
-                                $vv=$vvs["value"];
                                 $trigger=$vvs["trigger"];
-                                $curText .= "[%$trigger:\"" . $kk . '":["' . $vv . '"]%]';
+                                if($trigger) {
+                                    $curText = "[%$trigger:";
+                                    $curText .= '{"term":{';
+                                    $vv = $vvs["value"];
+                                    $curText .= '"' . $kk . '":"' . $vv . '"}},';
+                                    $curText .= '%]';
+                                    $subFragments["terms"][] = $curText;
+                                }
+                                else
+                                    $subFragments["terms"][]='{"term":{"'.$kk.'":'.json_encode($vvs["value"]).'}}';
                             }break;
                             case "regexp":
                             case "wildcard":
                                 {
+
                                     $vv=$vvs["value"];
                                     $trigger=$vvs["trigger"];
-                                    $curText .="[%$trigger:\"" . $kk . '":"' . $vv . '"%]';
+                                    if($trigger) {
+                                        $curText = '[%' . $trigger . ':{"' . $cK . '":{';
+                                        $curText .= '"' . $kk . '":"' . $vv;
+                                        $curText .= "}}%]";
+                                        $subFragments[$cK][] = $curText;
+                                    }
+                                    else
+                                        $subFragments[$cK][]='{"'.$cK.'":{"'.$kk."':".json_encode($vv)."}}";
                                 }
                                 break;
                             case "exists":
                                 {
+                                    if ($n == 0)
+                                        $curText = '"' . $cK . '":{';
+                                    if ($n > 0)
+                                        $curText = ",";
                                     $trigger=$vvs["trigger"];
-                                    $curText .= "[%$trigger:".'"field":"' . $kk . '"%]';
+                                    if($trigger) {
+                                        $curText = '[%' . $trigger . ':{"' . $cK . '":{';
+                                        $curText .= '"field":"' . $kk . '"';
+                                        $curText .= "}}%]";
+                                        $subFragments[$cK][] = $curText;
+                                    }
+                                    else
+                                        $subFragments[$cK][]='{"'.$cK.'":{"field":"'.$kk.'"}}';
                                 }
                                 break;
                             case "range":
                                 {
-                                    $curText .= '"'.$kk.'":{';
+
+                                    $curText = '{"'.$kk.'":{';
                                     $parts = [];
                                     $vv=$vvs;
                                     foreach ($vv as $op => $val) {
                                         $trigger=$val["trigger"];
-                                        $parts[] = "[%$trigger:\"". $op . '":' . $val["value"] . '%]';
+
+                                        $txt="";
+                                        if($trigger) {
+                                            $txt .= "[%$trigger:";
+                                            $txt .= '"' . $op . '":' . $val["value"];
+                                            $txt .= ',%]';
+                                            $parts[] = $txt;
+                                        }
+                                        else
+                                        {
+                                            $parts[]='"'.$op.'":'.json_encode($val["value"]).",";
+                                        }
+
                                     }
-                                    $curText .= implode(",", $parts) . '}';
+                                    $curText .= implode(",", $parts);
+                                    $curText.="}}";
+                                    $subFragments[$cK][]=$curText;
                                 }
                                 break;
                         }
                         $n++;
                     }
+                    $partFragments=[];
+                    $nn=0;
+                    foreach($subFragments as $kf=>$vf)
+                    {
+                        foreach($vf as $vf1=>$vf2) {
+                            $nn++;
+                            if($kf==="terms")
+                                $partFragments[]=$vf2;
+                            else
+                                $partFragments[] = '{"' . $kf . '":' . $vf2 . '}';
+                        }
+                    }
+                    if ($nn !== 0) {
 
-
-                    if ($curText !== "")
-                        $fragments[] = $curText."}";
+                        $fragments[] = implode(",",$partFragments);
+                    }
                 }
             }
             if(count($fragments)>0)
             {
-                $conditions[]='"'.$bVk.'":{'.implode(",",$fragments)."}";
+
+                    $conditions[]='"'.$bVk.'":['.implode(",",$fragments)."]";
+
             }
         }
 

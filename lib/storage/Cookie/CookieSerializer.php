@@ -41,8 +41,8 @@ class CookieSerializer extends \lib\storage\StorageSerializer
     {
         $this->origDefinition=$definition;
 
-        parent::__construct($definition,"HTML");        
-        $this->loadDefaults();        
+        parent::__construct($definition,"HTML");
+        $this->loadDefaults();
     }
 
 
@@ -162,6 +162,7 @@ class CookieSerializer extends \lib\storage\StorageSerializer
                 continue;
             if(isset($data[$key]))
             {
+                // TODO: ESTO VA A PETAR!!
                 $value->unserialize($data,$this->getSerializerType());
             }
         }

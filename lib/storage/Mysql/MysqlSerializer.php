@@ -28,7 +28,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         $this->conn = $this->storageManager;
         $this->conn->connect();
         if($useDataSpace)
-            $this->useDataSpace($definition["ADDRESS"]["database"]["NAME"]);
+            $this->useDataSpace($definition["ADDRESS"]["database"]);
 
         \lib\storage\StorageSerializer::__construct($definition, MysqlSerializer::MYSQL_SERIALIZER_TYPE);
 
@@ -39,9 +39,10 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         $object->__setSerializer($this);
         if ($queryDef)
         {
-            $object->__setSerializerFilters("MYSQL",array("DEF" => $queryDef, "VALS" => $filterValues));
+ //           $object->__setSerializerFilters("MYSQL",array("DEF" => $queryDef, "VALS" => $filterValues));
             //$object->filters["MYSQL"] = array("DEF" => $queryDef, "VALS" => $filterValues);
-            $queryDef["BASE"] = "SELECT * FROM " . $object->__getTableName();
+            $table=isset($queryDef["TABLE"])?$queryDef["TABLE"]:$object->__getTableName();
+            $queryDef["BASE"] = "SELECT * FROM " . $table;
             if(isset($queryDef["CONDITIONS"]))
             {
                 $condKeys=array_keys($queryDef["CONDITIONS"]);
@@ -59,25 +60,21 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
                 return false;
             $filterValues = null;
         }
-        $qb = new QueryBuilder($queryDef, $filterValues);
+        $qb = new QueryBuilder($this,$queryDef, $filterValues);
         $q = $qb->build();
 
         $arr = $this->conn->select($q);
 
         if (isset($arr[0]))
         {
-            $fieldList = $object->__getFields();
-            foreach ($fieldList as $key => $value)
-            {
-                $value->unserialize($arr[0],"MYSQL");
-            }
+            $this->unserializeObjectFromData($object,$arr[0]);
         }
         else
-            throw new MysqlSerializerException(MysqlSerializerException::ERR_NO_SUCH_OBJECT, array("MODEL" => $object->__getTableName()));
+            throw new MysqlSerializerException(MysqlSerializerException::ERR_NO_SUCH_OBJECT, array("MODEL" => $queryDef["TABLE"]));
     }
 
 
-    function delete($objects,$basedOnFields=null)
+    function delete($objects,$basedOnFields=null,$tableName=null)
     {
         if($objects!=null && !is_array($objects))
             $objects=[$objects];
@@ -86,6 +83,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
             return;
         if($basedOnFields==null)
             $basedOnFields=$objects[0]->getIndexFields();
+        $table=$tableName!=null?$tableName:$objects[0]->__getTableName();
 
         // TODO : Permitir tipos multiples aqui.
         $keys=[];
@@ -93,8 +91,8 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
 
         foreach($basedOnFields as $key=>$value)
         {
-            $keys[]=$key;
-            $types[]=$this->getTypeSerializer($value->getType());
+            $keys[]=$value;
+            $types[$value]=$this->getTypeSerializer($objects[0]->{"*$value"});
         }
         $ser = $this;
         // Solo es 1 campo. Podemos hacer un operador "in"
@@ -102,60 +100,112 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
             $typeSerializer = $types[0];
             $vals = [];
 
-            $serializedValues = array_map(function ($item) use ($typeSerializer, $ser) {
-                return $typeSerializer->unserialize($item->getValue(), $ser);
+            $serializedValues = array_map(function ($item) use ($typeSerializer, $ser,$keys) {
+                return $typeSerializer->serialize($keys[0],$item->{"*".$keys[0]}, $ser);
             },$objects);
-            $q = $keys[0]." IN (".implode(",",$serializedValues).")";
+
+            foreach($serializedValues as $k=>$v)
+            {
+                $vals[]=$v[$keys[0]];
+            }
+            $q = $keys[0]." IN (".implode(",",$vals).")";
         }
         else
         {
 
             // Si es mas de un campo, la query tiene que ser del tipo (a=b && c=d) || (a=b1 && c=d1) || ...
             $subParts=array_map(function($item) use ($keys,$types,$ser){
-
-                $result=array_map(function($item,$key,$type) use (& $result,$ser) {
-                    return $key."=".$type->unserialize($item->getValue(),$ser);
-                },$item,$keys,$types);
-                return "(".implode(" AND ",$result);
+                $results=[];
+                array_map(function($key) use ($types,$item,$ser,& $results){
+                    $serialized=$types[$key]->serialize($key,$item->{"*".$key},$ser);
+                    foreach($serialized as $k1=>$v1)
+                    {
+                        $results[]=$k1."=".$v1;
+                    }
+                },$keys);
+                return "(".implode(" AND ",$results).")";
             },$objects);
             $q=implode(" OR ",$subParts);
         }
-        $this->deleteByQuery($q);
+        $deleteQuery="DELETE FROM ".$table." WHERE ".$q;
+        $this->conn->doQ($deleteQuery);
     }
 
     function deleteByQuery($q,$params=null)
     {
         $qb=$this->getQueryBuilder($q,$params);
-        $this->conn->delete($qb->build());
+        $q=$qb->build();
+        $this->conn->delete($q);
 
     }
-    function add($table, $keyValues, $extraValues = null)
+    function add($objects, $tableName=null)
     {
-        if (is_object($table))
-            $table = $table->__getTableName();
 
-        $q = "INSERT INTO $table ";
-        $nVals = count($keyValues);
-        $inserts = array();
-        for ($k = 0; $k < $nVals; $k++)
-        {
+        if(!is_array($objects))
+            $objects=[$objects];
+        if(count($objects)==0)
+            return;
+        $table=$tableName==null?$objects[0]->__getTableName():$tableName;
 
-            $vals = array();
-            foreach ($keyValues[$k] as $key => $value)
-            {
-                if ($k == 0)
-                    $fieldNames[] = $key;
+        $nItems=count($objects);
+        // En ES no existe campo Autoincrement, pero el objeto puede tener indices. Se busca un campo AutoIncrement, que
+        // va a ser sustituido por un UUID.
+        if($nItems == 0)
+            return;
 
-                $vals[] = $value;
+        $typeSerializers=$this->getSerializersForObject($objects[0]);
+
+        $indexField=null;
+        $func=null;
+        $ser=$this;
+        $keyObj = $objects[0]->__getKeys();
+
+
+        $func=function($item) use ($indexField,$typeSerializers,$ser){
+            $data=[];
+            foreach($typeSerializers as $k=>$v) {
+                $serialized=$typeSerializers[$k]->serialize($k, $item->{"*" . $k}, $ser);
+                if($serialized!==null)
+                    $data=array_merge($data,$serialized);
             }
-            $inserts[] = "(" . implode(",", $vals) . ")";
-        }
+            return $data;
+        };
 
-        $q.="(" . implode(",", $fieldNames) . ") VALUES " . implode(",", $inserts);
+        $rows=array_map($func,$objects);
 
-        $this->conn->insert($q);
+        $this->conn->insertFromAssociative($table,$rows);
     }
+    function update($object,$byFields=[],$tableName=null)
+    {
+        $table=$tableName==null?$object->__getTableName():$tableName;
+        $dirty=$object->getDirtyFields();
+        $keys=$object->__getKeys();
+        if(!$keys)
+        {
+            // TODO : Utilizar los campos que esten set, pero no "dirty"
+        }
+        $typeSerializers=$this->getSerializersForObject($object);
+        $q = "UPDATE $table SET ";
+        foreach ($dirty as $key => $value)
+        {
+            // TODO : Eliminar el mysql_escape_string, cambiarlo por serializado
+            $serialized=$typeSerializers[$key]->serialize($key, $object->{"*" . $key}, $this);
+            foreach($serialized as $k1=>$v1)
+                $parts[] = $k1 . "=" . $v1 ;
+        }
+        $q.=(implode(",", $parts) . " WHERE ");
+        $parts = array();
 
+        foreach ($keys->indexFields as $key => $value)
+        {
+            $serialized=$typeSerializers[$key]->serialize($key, $object->{"*" . $key}, $this);
+            foreach($serialized as $key=>$value)
+                $parts[] = $key . "=" . $value;
+        }
+        $q.=implode(" AND ", $parts);
+        $this->conn->update($q);
+    }
+/*
     function update($table, $keyValues, $fields)
     {
         $q = "UPDATE $table SET ";
@@ -172,7 +222,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         }
         $q.=implode(" AND ", $parts);
         $this->conn->update($q);
-    }
+    }*/
     // El primer parametro es la tabla
     // El segundo, es un array asociativo de tipo {clave_fija=>valor}.Son las columnas que indican la parte de la relacion fija, con su valor.
     // El tercero, es un array simple que indican los nombres de campo de la parte de relacion que estamos editando.
@@ -230,6 +280,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         for ($k = 0; $k < $nResults; $k++)
         {
             $newInstance=\lib\model\BaseModel::getModelInstance($objectName);
+
             $newInstance->__setSerializer($this);
             $newInstance->loadFromArray($results[$k], $this);
             $normalized=\lib\model\ModelCache::store($newInstance);
@@ -239,20 +290,22 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         return $models;
     }
 
-    function count($definition, & $model)
+    function count($definition, & $model,$table=null)
     {
         $definition["BASE"] = array("COUNT(*) AS NELEMS");
-        $builder = new QueryBuilder($definition);
+        if($table!==null)
+            $definition["TABLE"]=$table;
+        $builder = new QueryBuilder($this,$definition,[]);
         $q = $builder->build();
         $result = $this->conn->select($q);
         return $result[0]["NELEMS"];
     }
 
-    function createStorage($modelDef, $extraDef = null)
+    function createStorage($modelDef, $extraDef = null,$tableName=null)
     {
         if (!$extraDef)
         {
-            $mysqlDesc = \model\reflection\Storage\Mysql\ESOptionsDefinition::createDefault($modelDef);
+            $mysqlDesc = \model\reflection\Storage\Mysql\MysqlOptionsDefinition::createDefault($modelDef);
             $extraDef = $mysqlDesc->getDefinition();
         }
         $extraDefinition = $extraDef;
@@ -264,8 +317,8 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
             $fields = $definition["FIELDS"];
 
         // Los objetos privados tienen como prefijo el objeto publico.
-        $tableName = str_replace('\\','_',$modelDef->getTableName());
-        $fields = $modelDef->fields;
+        $tableName = $tableName!==null?$tableName:str_replace('\\','_',$modelDef->getTableName());
+        $fields = $modelDef->__getFields();
 
         $keys = (array) (isset($extraDefinition["KEY"]) ? $extraDefinition["KEY"] : $definition["INDEXFIELDS"]);
 
@@ -278,14 +331,13 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         foreach ($fields as $key => $value)
         {
 
-            $types = $value->getRawType();
+            $type = $value->getType();
             $serializers = array();
             $serType = $this->getSerializerType();
 
-            foreach ($types as $typeKey => $typeValue)
-            {
-                $serializers[$typeKey] = \lib\model\types\TypeFactory::getSerializer($typeValue, $serType);
-            }
+
+            $serializers[$key] = $this->getTypeSerializer($type);
+
 
             $def = $value->getDefinition();
 
@@ -294,18 +346,15 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
             else
                 $notNullExpr = "";
 
-            foreach ($serializers as $type => $typeSerializer)
+            $columnDef = $serializers[$key]->getSQLDefinition($key, $type->getDefinition(),$this);
+
+            if (\lib\php\ArrayTools::isAssociative($columnDef))
+                $columnDef = array($columnDef);
+
+            for ($k = 0; $k < count($columnDef); $k++)
             {
-                $columnDef = $typeSerializer->getSQLDefinition($type, $types[$type]->getDefinition(),$this);
-
-                if (\lib\php\ArrayTools::isAssociative($columnDef))
-                    $columnDef = array($columnDef);
-
-                for ($k = 0; $k < count($columnDef); $k++)
-                {
-                    $fieldColumns[$key][] = $columnDef[$k]["NAME"];
-                    $sqlFields[] = "`" . $columnDef[$k]["NAME"] . "` " . $columnDef[$k]["TYPE"] . " " . $notNullExpr;
-                }
+                $fieldColumns[$key][] = $columnDef[$k]["NAME"];
+                $sqlFields[] = "`" . $columnDef[$k]["NAME"] . "` " . $columnDef[$k]["TYPE"] . " " . $notNullExpr;
             }
         }
         $tableOptionsText = "";
@@ -359,13 +408,12 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         $this->conn->update($createTableQuery);
     }
 
-    function destroyStorage($object)
+    function destroyStorage($object,$tableName=null)
     {
+        $table=$tableName!=null?$tableName:$object->__getTableName();
 
-        $instance = \lib\model\BaseModel::getModelInstance($object);
-        $tableName = $instance->__getTableName();
-        $q = "DROP TABLE " . $tableName;
-        $this->conn->update($q);
+        $q = "DROP TABLE ".$tableName;
+        $this->conn->doQ($q);
     }
 
     function createDataSpace($spaceDef)
@@ -464,6 +512,14 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
     function getQueryBuilder($conds,$params)
     {
         return new QueryBuilder($conds,$params);
+    }
+    function insertFromAssociative($target, $data)
+    {
+        return $this->getConnection()->insertFromAssociative($target,$data);
+    }
+    function updateFromAssociative($target, $fields, $query)
+    {
+        return $this->getConnection()->updateFromAssociative($target,$fields,$query);
     }
 }
 

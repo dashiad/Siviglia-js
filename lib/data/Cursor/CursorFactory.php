@@ -20,11 +20,11 @@ class CursorFactory
         if(is_a($params,'\lib\data\Cursor\BaseCursor'))
             return $params;
         if(!isset($params["TYPE"]))
-            throw new \lib\data\Cursor\CursorException(\lib\data\Cursor\CursorException::CURSOR_TYPE_NOT_SPECIFIED);
+            throw new \lib\data\Cursor\CursorException(\lib\data\Cursor\CursorException::ERR_CURSOR_TYPE_NOT_SPECIFIED);
         $includeFile=__DIR__.DIRECTORY_SEPARATOR.str_replace('\\',DIRECTORY_SEPARATOR,$params["TYPE"])."Cursor.php";
 
         if(!is_file($includeFile))
-            throw new \lib\data\Cursor\CursorException(\lib\data\Cursor\CursorException::UNKNOWN_CURSOR_TYPE);
+            throw new \lib\data\Cursor\CursorException(\lib\data\Cursor\CursorException::ERR_UNKNOWN_CURSOR_TYPE);
         include_once($includeFile);
         $className='lib\data\Cursor\\'.$params["TYPE"]."Cursor";
         $cursor=new $className();

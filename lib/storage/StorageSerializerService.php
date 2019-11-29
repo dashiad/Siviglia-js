@@ -41,7 +41,6 @@ class StorageSerializerService
     function addSerializer($name,$definition)
     {
         $this->config["serializers"][$name]=$definition;
-
     }
 
     function getDefaultSerializer($objName=null)
@@ -54,7 +53,7 @@ class StorageSerializerService
             return $this->getSerializerByName($this->config["default"]);
         else
         {
-            $objNameClass=new \model\reflection\Model\ModelName($objName);
+            $objNameClass=\lib\model\ModelService::getModelDescriptor($objName);
             $Cserializer=$objNameClass->getDefaultSerializer();
             if($Cserializer)
                 return $this->getSerializerByName($Cserializer);
@@ -100,21 +99,27 @@ class StorageSerializerService
     }
     function getSerializerInstance($definition=null,$useDataSpace=true)
     {
-        if($definition==null)
+        if($definition===null)
             return $this->getDefaultSerializer();
 
         $name=$definition["NAME"];
         if($name && isset($this->serializers[$name]))
             return $this->serializers[$name];
-        if(!isset($definition["ADDRESS"]))
-            throw new StorageSerializerServiceException(StorageSerializerServiceException::ERR_SERIALIZER_NOT_FOUND,array("name"=>$name));
-        if(isset($definition["NAMESPACE"]))
-            $baseNamespace=$definition["NAMESPACE"];
-        else
-            $baseNamespace='\lib\storage';
-        $type=ucfirst(strtolower($definition["TYPE"]));
-        $serClass=$baseNamespace.'\\'.$type.'\\'.$type."Serializer";
-        $serializer = new $serClass($definition,$useDataSpace);
+        //if(!isset($definition["ADDRESS"]))
+         //   throw new StorageSerializerServiceException(StorageSerializerServiceException::ERR_SERIALIZER_NOT_FOUND,array("name"=>$name));
+        if(isset($definition["MODEL"])) {
+            $baseNamespace = $definition["MODEL"];
+            $class=$definition["CLASS"];
+            $modelService=\Registry::getService("model");
+            $descriptor=$modelService->getModelDescriptor($baseNamespace);
+            $serializer=$descriptor->getSerializer($class,isset($definition["PARAMS"])?$definition["PARAMS"]:[]);
+        }
+        else {
+            $baseNamespace = '\lib\storage';
+            $type = $definition["TYPE"];
+            $serClass = $baseNamespace . '\\' . $type . '\\' . $type . "Serializer";
+            $serializer = new $serClass($definition, $useDataSpace);
+        }
         if($name)
             $this->serializers[$name]=$serializer;
         return $serializer;
@@ -124,10 +129,15 @@ class StorageSerializerService
     function serializeType($mixedType,$serializer)
     {
 
+        $typeSerializer=$this->getTypeSerializer($mixedType,$serializer);
+        return $typeSerializer->serialize($mixedType);
+    }
+    function getTypeSerializer($mixedType,$serializer)
+    {
         if(!is_object($serializer))
             $serializer=$this->getSerializerByName($serializer);
         $typeSerializer=$serializer->getTypeSerializer($mixedType);
-        return $typeSerializer->serialize($mixedType);
+        return $typeSerializer;
     }
 }
 

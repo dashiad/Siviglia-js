@@ -2,7 +2,7 @@
 
   class DateTime extends BaseType
   {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           // Unserialize always will return UTC dates.
 

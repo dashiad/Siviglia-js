@@ -4,7 +4,7 @@
 
   class Relationship extends BaseType
   {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           if(!$type->hasValue())
               return 'NULL';
@@ -14,10 +14,10 @@
           return [$name=>$serialized];
       }
 
-      function unserialize($name,$type,$value,$serializer)
+      function unserialize($name,$type,$value,$serializer,$model=null)
       {
           $remoteType=$type->getRelationshipType();
-          $serializer->unserializeType($name,$remoteType,$value);
+          $serializer->unserializeType($name,$remoteType,$value,$model);
           $type->setValue($remoteType->getValue());
       }
       function getSQLDefinition($name,$definition,$serializer)

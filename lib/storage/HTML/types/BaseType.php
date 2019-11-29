@@ -3,7 +3,7 @@
 
   class BaseType
   {
-      function serialize($name,$type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           if($type->hasValue())return [$name=>$type->getValue()];
 		  return "";

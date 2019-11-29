@@ -1,6 +1,6 @@
 <?php
   namespace lib\model\types;
-  class ArrayType extends BaseType implements \ArrayAccess
+  class _Array extends BaseType implements \ArrayAccess
   {
       var $subTypeDef;
       const TYPE_NOT_MODIFIED_ON_NULL=0x20;
@@ -50,6 +50,24 @@
               return count($this->value);
           return false;
       }
+
+      function equals($value)
+      {
+          if(($this->value===null && $value!==null) ||
+              ($this->value!==null && $value===null))
+              return false;
+          if(count($value)!=count($this->value))
+          {
+              return false;
+          }
+          for($k=0;$k<count($this->value);$k++)
+          {
+              if(!$this->value[$k]->equals($value[$k]))
+                  return false;
+          }
+          return true;
+      }
+
       function __toString()
       {
          return implode(",",$this->value);
