@@ -9,9 +9,9 @@
       function unserialize($name,$type,$value,$serializer,$model=null)
       {
           if(isset($value[$name]))
-              $type->__rawSet($value[$name]);
+            $model->{$name}=$value[$name];
           else
-              $type->__rawSet(null);
+              $model->{$name}=null;
       }
       abstract function getSQLDefinition($name,$definition,$serializer);
   }

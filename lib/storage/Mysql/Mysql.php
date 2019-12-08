@@ -28,6 +28,7 @@ class Mysql
     var $debugLevel=0;
     var $currentDb=NULL;
     var $host;
+
     function __construct($definition)
     {
         $this->myInstance=Mysql::$nInstances;
@@ -255,9 +256,6 @@ function selectIndexed($q,$field="")
         $res=mysqli_query($this->conn,$q);
         if(!$res)
         {
-            echo $q;
-            //_d($q);
-
             throw new MysqlException(MysqlException::ERR_QUERY_ERROR,array("message"=>mysqli_error($this->conn),"query"=>$q));
         }
         $nRows=0;
@@ -364,8 +362,12 @@ function selectIndexed($q,$field="")
 					$wheres[]=$key."=".$c.$value.$c;
 				$sqlStr.=" WHERE ".implode(" AND ",$wheres);
 			}
-			else
-				$sqlStr.=" WHERE ".$wherePart;
+			else {
+			    $wherePart=trim($wherePart);
+			    if(strpos($wherePart,"WHERE")===0)
+			        $wherePart=substr($wherePart,strlen("WHERE"));
+                $sqlStr .= " WHERE " . $wherePart;
+            }
        }
 
        Mysql::$lastWhere=$wherePart;
@@ -557,9 +559,31 @@ function selectIndexed($q,$field="")
     function importDump($filePath)
     {
         $this->doQ("SET GLOBAL max_allowed_packet=16777216");
-        $command = file_get_contents($filePath);
-        $this->conn->multi_query($command);
-        while (mysqli_next_result($this->conn)); // Flush out the results.
+        $lines = file($filePath);
+        $templine='';
+        foreach ($lines as $line)
+        {
+// Skip it if it's a comment
+
+            $line=str_replace("\r\n","",$line);
+            if($line=="")
+                continue;
+            if (substr($line, 0, 2) == '--' || $line == '')
+                continue;
+
+// Add this line to the current segment
+            $templine .= $line;
+// If it has a semicolon at the end, it's the end of the query
+            if (substr(trim($line), -1, 1) == ';')
+            {
+                // Perform the query
+                $res=mysqli_query($this->conn,$templine);
+                if(!$res)
+                    $this->showSqlErrors($templine);
+                // Reset temp variable to empty
+                $templine = '';
+            }
+        }
     }
 
     function getSlaveStatus()

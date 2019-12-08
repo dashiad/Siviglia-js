@@ -1,0 +1,81 @@
+<?php
+namespace model\tests\User\datasources;
+/**
+
+CLASS:FullList
+ *
+ *
+ **/
+
+class FullList
+{
+    static  $definition=array(
+        'ROLE'=>'list',
+        'DATAFORMAT'=>'Table',
+        'PARAMS'=>array(
+            'id'=>array(
+                'MODEL'=>'\model\tests\User',
+                'FIELD'=>'id',
+                'TRIGGER_VAR'=>'id'
+            ),
+            'Name'=>array(
+                'MODEL'=>'\model\tests\User',
+                'FIELD'=>'Name',
+                'TRIGGER_VAR'=>'Name'
+            )
+        ),
+        'FIELDS'=>array(
+            'id'=>array(
+                'MODEL'=>'\model\tests\User',
+                'FIELD'=>'id'
+            ),
+            'Name'=>array(
+                'MODEL'=>'\model\tests\User',
+                'FIELD'=>'Name'
+            )
+        ),
+        "INCLUDE"=>array(
+            'Posts'=>array(
+                'MODEL'=>'\model\tests\Post',
+                'DATASOURCE'=>'FullList',
+                'JOINTYPE'=>'LEFT',
+                'JOIN'=>array(
+                    'id'=>'creator_id'
+                )
+            )
+        ),
+        'STORAGE'=>array(
+            'MYSQL'=>array(
+                'DEFINITION'=>array(
+                    'TABLE'=>'user',
+                    'BASE'=>array(
+                        'id','Name'
+                    ),
+                    'CONDITIONS'=>array(
+                        array(
+                            'FILTER'=>array(
+                                'F'=>'id',
+                                'OP'=>'=',
+                                'V'=>'{%id%}'
+                            ),
+                            'TRIGGER_VAR'=>'id',
+                            'DISABLE_IF'=>'0',
+                            'FILTERREF'=>'id'
+                        ),
+                        array(
+                            'FILTER'=>array(
+                                'F'=>'Name',
+                                'OP'=>'=',
+                                'V'=>'{%tag%}'
+                            ),
+                            'TRIGGER_VAR'=>'Name',
+                            'DISABLE_IF'=>'0',
+                            'FILTERREF'=>'Name'
+                        )
+                    )
+                )
+            )
+        )
+    );
+}
+?>

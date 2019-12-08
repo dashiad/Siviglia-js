@@ -71,6 +71,8 @@ abstract class StorageSerializer extends TypeSerializer
             $tFields=$object->__getFields();
         else
             $tFields=$dirtyFields;
+        $setOnSaveFields=[];
+        $nSetOnSave=0;
         foreach ($tFields as $key => $value)
         {
             if(!$value->is_set())
@@ -82,10 +84,15 @@ abstract class StorageSerializer extends TypeSerializer
                 if($isNew && $value->getType()->hasDefaultValue())
                     $value->getType()->setValue($value->getType()->getValue());
             }
-            if(($isNew && ($value->getType()->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_SAVE)) || $value->isAlias())
+            if($value->isAlias())
                 continue;
+            if(($isNew && ($value->getType()->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_SAVE))) {
+                $setOnSaveFields[$key]=$value;
+                $nSetOnSave++;
+                continue;
+            }
 
-            $subVals = $value->serialize($this->getSerializerType());
+            $subVals = $value->serialize($this);
 
             // Los tipos compuestos pueden devolver un array
 
@@ -96,7 +103,7 @@ abstract class StorageSerializer extends TypeSerializer
                 else
                 {
                     foreach($subVals as $resKey=>$resValue)
-                        $results[$this->getDestinationColumn($key.".".$resKey)]=($resValue===null?null:$resValue);
+                        $results[$this->getDestinationColumn($resKey)]=($resValue===null?null:$resValue);
                 }
             }
             else
@@ -135,7 +142,7 @@ abstract class StorageSerializer extends TypeSerializer
 
             $this->updateFromAssociative($object->__getTableName(), $results, $q, false);
         }
-
+        $this->updateOnSaveFields($object,$setOnSaveFields,$isNew);
         foreach ($dirtyFields as $key => $value)
             $value->onModelSaved();
     }
@@ -166,9 +173,15 @@ abstract class StorageSerializer extends TypeSerializer
         return array_map($func,$objects);
     }
 
+    // A sobreescribir por sistemas de almacenamiento que modifiquen los tipos al guardar.
+    function updateOnSaveFields($object,$setOnSaveFields,$isNew)
+    {
+
+    }
 
     // modeldef es una instancia de \lib\reflection\classes\ModelDefinition.
     // extradef es una instancia de \lib\reflection\classes\MysqlOptionsDefinition
+
     abstract function createStorage($modelDef,$extraDef=null);
     abstract function destroyStorage($object);
     abstract function createDataSpace($spaceDef);

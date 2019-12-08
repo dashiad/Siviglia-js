@@ -144,7 +144,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
        static function getObjectDefinition($objName,$layer=null)
       {
 
-          if(!is_object($objName) || get_class($objName)!= 'model\reflection\Model\ModelName')
+          if(is_string($objName))
           {
               if(trim($objName)=="")
               {

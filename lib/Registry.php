@@ -26,7 +26,7 @@ class Registry
 
         global $oCurrentUser;
         $userId=$session->retrieve("Registry/userId");
-        $oCurrentUser=\lib\model\BaseModel::getModelInstance("web/WebUser");
+        $oCurrentUser=new \model\web\WebUser();
         if ($userId)
         {
             $oCurrentUser->setLogged($userId);
@@ -34,7 +34,7 @@ class Registry
         Registry::$registry["user"] = $oCurrentUser;
         Registry::$registry[Registry::SERVICE_CONTAINER]->addService("user",$oCurrentUser);
 
-        \Registry::$registry["session"] = $session->getId();
+        \Registry::$registry["session"] = $session->ge1tId();
         \Registry::$registry["cookies"] = & $_COOKIE;
 
         if (isset($session["Registry/request_date"]))

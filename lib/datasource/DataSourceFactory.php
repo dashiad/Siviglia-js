@@ -17,34 +17,33 @@ class DataSourceFactory
 {
         static function getDataSource($objName,$dsName,&$serializer=null)
         {
-                $objNameClass=\lib\model\ModelService::getModelDescriptor($objName);
-                require_once($objNameClass->getDataSourceFileName($dsName));
-                $objName=$objNameClass->getNamespaced();
-                $csN=$objName.'\datasources\\'.$dsName;
+            $objNameClass=\lib\model\ModelService::getModelDescriptor($objName);
+            require_once($objNameClass->getDataSourceFileName($dsName));
+            $objName=$objNameClass->getNamespaced();
+            $csN=$objName.'\datasources\\'.$dsName;
 
-                if(!class_exists($csN))
-                {
-                    throw new DataSourceException(DataSourceException::ERR_NO_SUCH_DATASOURCE,array("object"=>$objName,"datasource"=>$dsName));
-                }
-                $instance=new $csN();
-                if(is_a($instance,'\lib\datasource\MultipleDatasource'))
-                    return $instance;
+            if(!class_exists($csN))
+            {
+                throw new DataSourceException(DataSourceException::ERR_NO_SUCH_DATASOURCE,array("object"=>$objName,"datasource"=>$dsName));
+            }
+            $instance=new $csN();
+            if(is_a($instance,'\lib\datasource\MultipleDatasource'))
+                return $instance;
 
-                $mainDef=$csN::$definition;
+            $mainDef=$csN::$definition;
 
-                $storageKeys = array_keys($mainDef['STORAGE']);
-                if(!$serializer && count($storageKeys) !== 1) {
-                    $instance=\lib\model\BaseModel::getModelInstance($objName);
-                    $serializer=$instance->__getSerializer();
-                    $serType=ucfirst(strtolower($serializer->getSerializerType()));
-                }
-                else {
-                    $serType = ucfirst(strtolower($storageKeys[0]));
-                }
 
-                include_once(LIBPATH."/storage/".$serType."/".$serType."DataSource.php");
-
-                $dsN='\\lib\\storage\\'.$serType.'\\'.$serType.'DataSource';
+            if(!$serializer) {
+                $modelService=\Registry::getService("model");
+                $instance=$modelService->getModel($objName);
+                $serializer=$instance->__getSerializer();
+                $serType=ucfirst(strtolower($serializer->getSerializerType()));
+            }
+            else
+                $serType=$serializer->getSerializerType();
+            $uSerType=ucfirst(strtolower($serType));
+            if(isset($mainDef["STORAGE"][$serType]))
+                $dsN='\\lib\\storage\\'.$uSerType.'\\'.$uSerType.'DataSource';
                 $mainDs=new $dsN($objName,$dsName,$instance,null,$mainDef["STORAGE"][strtoupper($serType)]);
                 return $mainDs;
         }

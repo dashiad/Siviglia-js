@@ -4,12 +4,15 @@ use lib\model\Package;
 use lib\model\ModelService;
 
 include_once(LIBPATH."/model/permissions/PermissionsManager.php");
+include_once(LIBPATH."/model/BaseTypedObject.php");
 
 class Startup
 {
     static function init()
     {
         global $Container;
+        global $globalContext;
+        $globalContext=new \lib\model\SimpleContext();
         if(defined("DEVELOPMENT"))
         {
             error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);

@@ -94,6 +94,10 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     {
         return $this->relation->getRawVal();
     }
+    function __rawSet($value)
+    {
+        $this->relation->setRawVal($value);
+    }
     function getValue()
     {
         return $this->getRaw();
@@ -194,21 +198,12 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     {
 
     }
-    function getTypeSerializer($serializerType)
-    {
-        $results=array();
-        foreach($this->types as $key=>$value)
-        {
-            $results[$key]=\lib\model\types\TypeFactory::getSerializer($value,$serializerType);
-        }
-        return $results;
-    }
     function getType($typeName=null)
     {
         $types=$this->relation->getTypes();
         if($typeName)
             return $types[$typeName];
-        // Solo se retornal el primero!
+        // TODO : Solo se retornal el primero!
         foreach($types as $key=>$value)
             return $value;
     }
@@ -246,8 +241,8 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
         }
 
         $q=array(
-            "TABLE"=>$table,
-            "BASE"=>"SELECT * FROM ".$table
+            "TABLE"=>$table
+            //"BASE"=>"SELECT * FROM ".$table
         );
 
         if(isset($this->definition["CONDITION"]))
@@ -279,7 +274,7 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
         $serType=$serializer->getSerializerType();
         if($dontUseIndexes==false)
         {
-            $this->relation->getQueryConditions($q,$serType);
+            $this->relation->getQueryConditions($q,$serializer);
         }
 
         return $q;
@@ -325,7 +320,7 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
         }
         // Se compone una query
         $q=$this->getRelationQueryConditions($dontUseIndexes);
-        if($itemIndex!=null) {
+        if($itemIndex!==null) {
             $q["STARTINGROW"]=$itemIndex;
             $q["PAGESIZE"]=1;
         }
@@ -361,8 +356,8 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
 
     function createRemoteInstance()
     {
-
-       $ins=\lib\model\BaseModel::getModelInstance($this->remoteObject);
+        $remClass=$this->remoteObject;
+       $ins=new $remClass(); // \lib\model\BaseModel::getModelInstance($this->remoteObject);
        $srcConds=$this->getExtraConditions();
 
        if($srcConds)
@@ -497,6 +492,11 @@ class RelationFields
     function getRawVal()
     {
         return $this->rawVal;
+    }
+    function setRawVal($value)
+    {
+        $this->rawVal=$value;
+        $this->state=ModelBaseRelation::SET;
     }
     function getTypes()
     {
@@ -783,7 +783,7 @@ class RelationFields
         }
 	}
 
-    function getQueryConditions(& $q,$serializerType)
+    function getQueryConditions(& $q,$serializer)
     {
         $h=0;
         $extraConds="true";
@@ -807,18 +807,16 @@ class RelationFields
         foreach($this->types as $key=>$value)
         {
             $curKey="[%".$h."%]";
-            $curVal=\lib\model\types\TypeFactory::serializeType($value,$serializerType);
-            if(is_array($curVal))
-            {
-                foreach($curVal as $key2=>$value2)
-                    $q["CONDITIONS"][]=array("FILTER"=>array("F"=>$key."_".$key2,"OP"=>"=","V"=>$value2));
+            $curVal=$serializer->serializeType($key,$value);
+            if(\lib\php\ArrayTools::isAssociative($curVal)) {
+                $vals = array_values($curVal);
+                $curVal=$vals[0];
             }
-            else
-                $q["CONDITIONS"][]=array("FILTER"=>array("F"=>$this->definition["FIELDS"][$key],"OP"=>"=","V"=>$curVal));
+            $q["CONDITIONS"][]=array("FILTER"=>array("F"=>$this->definition["FIELDS"][$key],"OP"=>"=","V"=>$curVal));
             $h++;
             $conditionKeys[]=$curKey;
         }
-        $q["BASE"].=" WHERE ".$extraConds." AND ".implode(" AND ",$conditionKeys);
+        //$q["BASE"].=" WHERE ".$extraConds." AND ".implode(" AND ",$conditionKeys);
     }
 
     function serialize($serializerType)
@@ -829,10 +827,6 @@ class RelationFields
            return array();
        }
 
-       if($this->nFields==1)
-           $prefix="";
-       else
-           $prefix=$this->name."_";
        $results=array();
 
 
@@ -844,19 +838,15 @@ class RelationFields
        {
             if($curType->is_set())
             {
-                $data=\lib\model\types\TypeFactory::serializeType($curType,$serializerType);
+                $data=$serializer->serializeType($key,$curType);
 
                 if(!is_array($data))
                 {
-                    $results[$prefix.$key]=$data;
+                    $results[$key]=$data;
                     continue;
                 }
-
-
                 foreach($data as $key2=>$value2)
-                {
-                     $results[$prefix.$key."_".$key2]=$data[$key2];
-                }
+                     $results[$key2]=$value2;
 
             }
 
@@ -1054,21 +1044,19 @@ class RelationValues extends \lib\datasource\TableDataSet
          {
              $curObject=$this->relatedObjects[$accessed[$k]];
 
-             if($curObject->isDirty())
-             {
-                if($isInverse)
-                {
-                    foreach($relFields as $key=>$value)
-                    {
-                        $f=$curObject->__getField($value);
-                        if(!$f->is_set())
-                            $curObject->{$value}=$parentModel->{$key};
-                    }
-                }
-
-                $curObject->save(); //$this->relField->getSerializer());
-                $saved++;
+             if($curObject->__isNew()) {
+                 if ($isInverse) {
+                     foreach ($relFields as $key => $value) {
+                         $f = $curObject->__getField($value);
+                         if (!$f->is_set())
+                             $curObject->{$value} = $parentModel->{$key};
+                     }
+                 }
              }
+
+             $curObject->save(); //$this->relField->getSerializer());
+             $saved++;
+
          }
          $this->accessedIndexes=array();
         $this->newObjects=array();

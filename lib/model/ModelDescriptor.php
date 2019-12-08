@@ -147,7 +147,11 @@ class ModelDescriptor
             return $defArr["DEFAULT_SERIALIZER"];
         return null;
     }
-
+    function getInstance($serializer=null)
+    {
+        $cName=$this->getNamespaced();
+        return new $cName($serializer);
+    }
     function includeModel()
     {
         include_once($this->getPath($this->className . ".php"));
@@ -167,6 +171,10 @@ class ModelDescriptor
     function getDataSourceFileName($actionName)
     {
         return $this->getPath("/datasources/" . $actionName . ".php");
+    }
+    function getNamespacedDatasource($datasourceName)
+    {
+        return $this->getNamespaced() . '\\datasources\\' . $datasourceName;
     }
 
     function getNamespacedActionException($actionName)
@@ -235,7 +243,7 @@ class ModelDescriptor
     function equals($target)
     {
         if (is_string($target)) {
-            $target = new ModelName($target);
+            $target=\lib\model\ModelService::getModelDescriptor($target);
         }
 
         return $target->getNamespaced() == $this->getNamespaced();

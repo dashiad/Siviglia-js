@@ -40,7 +40,7 @@ class BaseTypedModel extends MultipleModel
                     return $this->__aliasDef[$fieldName];
             }
             include_once(PROJECTPATH."/lib/model/BaseModel.php");
-            throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$varName));
+            throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
    }
 
 

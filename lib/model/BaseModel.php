@@ -244,9 +244,17 @@ class BaseModel extends BaseTypedObject
 
         foreach ($this->__fields as $key => $value)
         {
-            if ($value->isDirty())
+            if ($value->is_set())
             {
-                $filters[] = array("FILTER" => array("F" => $key, "OP" => "=", "V" => \lib\model\types\TypeFactory::serializeType($value->getType(), $serializer->getSerializerType())));
+                $serialized=$serializer->serializeType($key,$value->getType());
+                if(!is_array($serialized))
+                    $serialized[$key]=$serialized;
+
+                foreach($serialized as $k=>$v)
+                {
+                        $filters[] = array("FILTER" => array("F" => $k, "OP" => "=", "V" =>$v));
+                }
+
             }
         }
         if (count($filters) == 0)
@@ -264,7 +272,14 @@ class BaseModel extends BaseTypedObject
         $this->__new=false;
         $this->__loaded=true;
         $this->__isDirty=false;
+        $this->cleanDirtyFields();
     }
+    function endUnserialize()
+    {
+        parent::endUnserialize();
+        $this->__new=false;
+    }
+
     function reload()
     {
         if($this->__new)
@@ -505,17 +520,16 @@ class BaseModel extends BaseTypedObject
 
     function __getSerializer($op="READ")
     {
+        $service=\Registry::getService("storage");
         if($op=="READ")
         {
             if($this->__serializer)
                 return $this->__serializer;
 
-            if(isset($this->__objectDef["DEFAULT_SERIALIZER"]))
-                $this->__serializer = \lib\storage\StorageFactory::getSerializerByName($this->__objectDef["DEFAULT_SERIALIZER"]);
-            else
-            {
-                $this->__serializer= \lib\storage\StorageFactory::getSerializerByName(DEFAULT_SERIALIZER);
-            }
+            $serName=isset($this->__objectDef["DEFAULT_SERIALIZER"])?$this->__objectDef["DEFAULT_SERIALIZER"]:DEFAULT_SERIALIZER;
+
+            $this->__serializer = $service->getSerializerByName($serName);
+
 
             if (!$this->__serializer)
                 throw new BaseModelException(BaseModelException::ERR_NO_SERIALIZER);
@@ -524,8 +538,11 @@ class BaseModel extends BaseTypedObject
 
         if($this->__writeSerializer)
               return $this->__writeSerializer;
-         if(isset($this->__objectDef["DEFAULT_WRITE_SERIALIZER"]))
-                $this->__writeSerializer = \lib\storage\StorageFactory::getSerializerByName($this->__objectDef["DEFAULT_WRITE_SERIALIZER"]);
+
+
+
+        if(isset($this->__objectDef["DEFAULT_WRITE_SERIALIZER"]))
+                $this->__writeSerializer = $service->getSerializerByName($this->__objectDef["DEFAULT_WRITE_SERIALIZER"]);
             else
                 $this->__writeSerializer = $this->__getSerializer();
 

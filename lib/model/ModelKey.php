@@ -43,7 +43,8 @@ class ModelKey
                     {
                         throw new BaseModelException(BaseModelException::ERR_UNKNOWN_KEY_FIELD,array("keyField"=>$key));
                     }
-                    $this->indexFields[$key]->set($value);
+                    $this->model->{$key}=$value;
+
                     // We dont want those fields to think they're dirty
                     $this->indexFields[$key]->cleanState();
                 }
@@ -53,8 +54,8 @@ class ModelKey
                 
                 if($this->nIndexes != 1)
                     throw new BaseModelException(BaseModelException::ERR_INCOMPLETE_KEY,array("model"=>$this->model->__getFullObjectName()));
-                
-                $this->indexFields[$this->indexFieldNames[0]]->set($id);                
+
+                $this->model->{$this->indexFieldNames[0]}=$id;
                 // We dont want those fields to think they're dirty
                 $this->indexFields[$this->indexFieldNames[0]]->cleanState();
             }            

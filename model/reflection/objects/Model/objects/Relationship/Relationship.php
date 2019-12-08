@@ -240,6 +240,7 @@ class Relationship extends \model\reflection\Model\Relationship\BaseRelation
                $aliasName.="_".$this->name;
            }
        }
+       else
 
        $newAlias=\model\reflection\Model\Alias\InverseRelation::createInverseRelation($aliasName,
                                                                                           $targetModel,

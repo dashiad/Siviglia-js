@@ -20,7 +20,7 @@ class PHPVariable extends BaseType
     {
         if(isset($value[$name]))
         {
-            $type->setValue(unserialize($value[$name]));
+            $model->{$name}=unserialize($value[$name]);
         }
 
     }

@@ -18,6 +18,9 @@
 --
 -- Table structure for table `admin`
 --
+DROP DATABASE IF EXISTS `modeltests`;
+CREATE DATABASE modeltests;
+USE modeltests;
 
 DROP TABLE IF EXISTS `admin`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -52,7 +55,6 @@ CREATE TABLE `comment` (
   `id_post` int(11) NOT NULL,
   `title` varchar(45) DEFAULT NULL,
   `content` varchar(45) DEFAULT NULL,
-  `comment` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -63,7 +65,7 @@ CREATE TABLE `comment` (
 
 LOCK TABLES `comment` WRITE;
 /*!40000 ALTER TABLE `comment` DISABLE KEYS */;
-INSERT INTO `comment` VALUES (1,2,1,'Comment-user2-post1',NULL,NULL),(2,3,1,'Comment-user3-post1',NULL,NULL),(3,1,1,'Comment-user1-post1',NULL,NULL),(4,4,1,'Comment-user4-post1',NULL,NULL),(5,1,1,'Comment-user1-2-post1',NULL,NULL),(6,2,1,'Comment-user2-2-post1',NULL,NULL),(7,3,2,'Comment-user3-post2',NULL,NULL),(8,2,2,'Comment-user3-post2',NULL,NULL),(9,1,2,'Comment-user1-post2',NULL,NULL),(10,3,4,'Comment-user3-post4',NULL,NULL),(11,2,4,'Comment-user2-post4',NULL,NULL),(12,4,4,'Comment-user4-post4',NULL,NULL);
+INSERT INTO `comment` VALUES (1,2,1,'Comment-user2-post1',NULL),(2,3,1,'Comment-user3-post1',NULL),(3,1,1,'Comment-user1-post1',NULL),(4,4,1,'Comment-user4-post1',NULL),(5,1,1,'Comment-user1-2-post1',NULL),(6,2,1,'Comment-user2-2-post1',NULL),(7,3,2,'Comment-user3-post2',NULL),(8,2,2,'Comment-user3-post2',NULL),(9,1,2,'Comment-user1-post2',NULL),(10,3,4,'Comment-user3-post4',NULL),(11,2,4,'Comment-user2-post4',NULL),(12,4,4,'Comment-user4-post4',NULL);
 /*!40000 ALTER TABLE `comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -117,6 +119,49 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES (1,'User1'),(2,'User2'),(3,'User3'),(4,'User4');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `roles` (
+  `id_role` int(11) NOT NULL AUTO_INCREMENT,
+  `role` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id_role`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `roles`
+--
+
+LOCK TABLES `roles` WRITE;
+/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` VALUES (1,'role1'),(2,'role2'),(3,'role3'),(4,'role4');
+/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+DROP TABLE IF EXISTS `userrole`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `userrole` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_user` int(11) DEFAULT NULL,
+  `id_role` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `userrole`
+--
+
+LOCK TABLES `userrole` WRITE;
+/*!40000 ALTER TABLE `userrole` DISABLE KEYS */;
+INSERT INTO `userrole` VALUES (1,1,1),(2,1,2),(3,2,2),(4,2,3),(5,2,4),(6,3,1),(7,3,3),(8,4,5);
+/*!40000 ALTER TABLE `userrole` ENABLE KEYS */;
+UNLOCK TABLES;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

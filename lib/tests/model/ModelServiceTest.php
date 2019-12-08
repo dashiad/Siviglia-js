@@ -28,6 +28,7 @@ class ModelServiceTest extends TestCase
         if($this->testResolverIncluded==false)
         {
             \Registry::getService("model")->addPackage($this->getTestPackage());
+            $this->testResolverIncluded=true;
         }
 
     }

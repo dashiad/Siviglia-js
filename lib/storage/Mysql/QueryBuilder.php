@@ -9,7 +9,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 
     function makeRegExp($val)
     {
-        return "/@@" . mysql_escape_string($val) . "@@/";
+        return "/@@" . mysqli_escape_string($val) . "@@/";
     }
 
     function build($onlyConditions = false)
@@ -18,13 +18,19 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 
         $curQuery = $this->definition;
         if ($onlyConditions == false) {
-            if (is_array($curQuery["BASE"])) {
-                if(!isset($curQuery["TABLE"]))
-                    throw new MysqlException(MysqlException::ERR_NO_TABLE);
-                $selectStr = "SELECT " . ($this->findRows ? "SQL_CALC_FOUND_ROWS " : "") . implode(",", $curQuery["BASE"]) . " FROM " . $curQuery["TABLE"];
+            if(!isset($curQuery["BASE"]))
+            {
+                $curQuery["BASE"]=[];
+                $selectStr="SELECT " . ($this->findRows ? "SQL_CALC_FOUND_ROWS " : "") ." * FROM " . $curQuery["TABLE"];
             }
-            else
-                $selectStr = trim($curQuery["BASE"]);
+            else {
+                if (is_array($curQuery["BASE"])) {
+                    if (!isset($curQuery["TABLE"]))
+                        throw new MysqlException(MysqlException::ERR_NO_TABLE);
+                    $selectStr = "SELECT ". implode(",", $curQuery["BASE"]) . " FROM " . $curQuery["TABLE"];
+                } else
+                    $selectStr = trim($curQuery["BASE"]);
+            }
             if ($this->findRows)
                 $selectStr = "SELECT SQL_CALC_FOUND_ROWS " . substr($selectStr, 6);
         } else

@@ -187,15 +187,16 @@ abstract class StorageDataSource extends TableDataSource
         if($this->serializer)
             return $this->serializer;
 
+        $service=\Registry::getService("storage");
         if(isset($this->__objectDef["SERIALIZER"]))
         {
             if(is_array($this->__objectDef["SERIALIZER"]))
-                $this->serializer=\lib\storage\StorageFactory::getSerializer($this->__objectDef["SERIALIZER"]);
+                $this->serializer=$service->getSerializer($this->__objectDef["SERIALIZER"]);
             else
-                $this->serializer=\lib\storage\StorageFactory::getSerializerByName($this->__objectDef["SERIALIZER"]);
+                $this->serializer=$service->getSerializerByName($this->__objectDef["SERIALIZER"]);
         }
         else
-            $this->serializer= \lib\storage\StorageFactory::getDefaultSerializer($this->objName);
+            $this->serializer= $service->getDefaultSerializer($this->objName);
         return $this->serializer;
     }
 

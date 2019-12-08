@@ -33,39 +33,6 @@ class ExtendedModel extends MultipleModel
         }
         BaseModel::loadFromFields();
         return;
-        $filters = array();
-        $serializer=$this->__getSerializer();
-        $keys=$this->__key->getKeyNames();
-
-        // Aqui solo interesan los campos a los que ya se haya accedido.
-        foreach ($this->__fields as $key => $value)
-        {
-            if ($value->isDirty())
-            {
-                if(in_array($key,$keys))
-                {
-                    $this->relatedModel=$this->{$keys[0]}[0];
-                }
-                $filters[] = array("FILTER" => array("F" => $key, "OP" => "=", "V" => \lib\model\types\TypeFactory::serializeType($value->getType(), $serializer->getSerializerType())));
-            }
-        }
-        if (count($filters) == 0)
-        { // No existen filters
-            $this->__getRelatedModel()->loadFromFields();
-            foreach($keys as $val)
-                $filters[] = array("FILTER" => array("F" => $key, "OP" => "=", "V" => $this->relatedModel->{$val}));
-        }
-        try
-        {
-            $this->__serializer->unserialize($this, array("CONDITIONS" => $filters));
-        }
-        catch(\Exception $e)
-        {
-            throw new BaseModelException(BaseModelException::ERR_UNKNOWN_OBJECT);
-        }
-        $this->__new=false;
-        $this->__isDirty=false;
-        $this->__loaded=true;
     }
         function __getRelatedModel()
         {

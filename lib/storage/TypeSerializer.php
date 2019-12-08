@@ -101,8 +101,11 @@ abstract class TypeSerializer
     {
         $data=$this->mapIncomingColumns($data);
         $serializers=$this->getSerializersForObject($object);
-        foreach ($data as $key => $value)
-            $serializers[$key]->unserialize($key,$object->{"*".$key},$data,$this,$object);
+        $object->beginUnserialize();
+        foreach ($data as $key => $value) {
+            $serializers[$key]->unserialize($key, $object->{"*" . $key}, $data, $this, $object);
+        }
+        $object->endUnserialize();
     }
     function getSerializersForObject($obj)
     {
@@ -122,9 +125,9 @@ abstract class TypeSerializer
     }
     function getDestinationColumn($localColumn)
     {
-        if(!$this->isset($this->columnMap))
+        if(!isset($this->columnMap))
             return $localColumn;
-        if(!$this->isset($this->flippedColumnMap))
+        if(!isset($this->flippedColumnMap))
             $this->flippedColumnMap=array_flip($this->columnMap);
         return $this->flippedColumnMap[$localColumn];
     }

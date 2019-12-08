@@ -10,8 +10,12 @@ class RowDataSet extends \lib\model\BaseTypedObject{
     }
     function __get($varName)
     {
-                
-        if(!$this->__fieldDef[$varName])
+        if($varName[0]=="*")
+            $realField=substr($varName,1);
+        else
+            $realField=$varName;
+
+        if(!isset($this->__fieldDef[$realField]))
         {
             return $this->tableDataSet->getField($varName);
         }
@@ -365,18 +369,21 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         return $index < $this->count;
     }
     function offsetGet($index)
-    {        
+    {
+        $s=$this->parentDs->getSerializer();
         if($this->reIndexField)
         {            
             $this->mappedOffset=$this->reIndexData[$this->currentIndex][$index];
-            $this->rowSet->loadFromArray($this->value[$this->mappedOffset],$this->parentDs->getSerializer()->getSerializerType());
+            $s->unserializeObjectFromData($this->rowSet,$this->value[$this->mappedOffset]);
+
         }
         else
         {
             $this->currentOffset=$index;                        
             //if($this->parentDs)
             //{
-                $this->rowSet->loadFromArray($this->value[$this->currentOffset],$this->parentDs->getSerializer()->getSerializerType(),true);
+
+            $s->unserializeObjectFromData($this->rowSet,$this->value[$this->currentOffset]);
             //}
         }
         return $this->rowSet;

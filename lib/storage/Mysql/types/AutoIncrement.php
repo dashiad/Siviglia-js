@@ -7,6 +7,13 @@
               return NULL;
 			return [$name=>$type->value];
       }
+      function unserialize($name,$type,$value,$serializer,$model=null)
+      {
+          if(isset($value[$name]))
+              $model->{$name}=intval($value[$name]);
+          else
+              $model->{$name}=null;
+      }
       function getSQLDefinition($name,$definition,$serializer)
       {
           $iSer=new Integer();

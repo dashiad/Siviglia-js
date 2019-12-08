@@ -97,7 +97,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         $ser = $this;
         // Solo es 1 campo. Podemos hacer un operador "in"
         if(count($keys)==1) {
-            $typeSerializer = $types[0];
+            $typeSerializer = $types[$keys[0]];
             $vals = [];
 
             $serializedValues = array_map(function ($item) use ($typeSerializer, $ser,$keys) {
@@ -271,7 +271,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
     function subLoad($definition, & $relationColumn)
     {
         $objectName = $relationColumn->getRemoteObject();
-        $builder = new QueryBuilder($definition);
+        $builder = new QueryBuilder($this,$definition);
         $q = $builder->build();
         $results = $this->conn->select($q);
         $nResults = count($results);
@@ -279,10 +279,10 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
         $models = array();
         for ($k = 0; $k < $nResults; $k++)
         {
-            $newInstance=\lib\model\BaseModel::getModelInstance($objectName);
+            $newInstance=new $objectName();
 
             $newInstance->__setSerializer($this);
-            $newInstance->loadFromArray($results[$k], $this);
+            $this->unserializeObjectFromData($newInstance,$results[$k]);
             $normalized=\lib\model\ModelCache::store($newInstance);
             $models[] = $normalized;
         }
@@ -454,7 +454,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
 
     function buildQuery($queryDef,$params,$pagingParams,$findRows=true)
     {
-        $qB = new QueryBuilder($queryDef, $params,$pagingParams);
+        $qB = new QueryBuilder($this,$queryDef, $params,$pagingParams);
         $qB->findFoundRows($findRows);
         return  $qB->build();
 
@@ -511,7 +511,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
     }
     function getQueryBuilder($conds,$params)
     {
-        return new QueryBuilder($conds,$params);
+        return new QueryBuilder($this,$conds,$params);
     }
     function insertFromAssociative($target, $data)
     {
@@ -519,9 +519,25 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
     }
     function updateFromAssociative($target, $fields, $query)
     {
-        return $this->getConnection()->updateFromAssociative($target,$fields,$query);
+        return $this->getConnection()->updateFromAssociative($target,$fields,$query,false);
+    }
+    function updateOnSaveFields($object,$setOnSaveFields, $isNew)
+    {
+        foreach($setOnSaveFields as $k=>$v)
+        {
+            if($isNew && is_a($v->getType(),'\lib\model\types\AutoIncrement'))
+                $object->{$k}=$this->conn->lastId();
+            else {
+                if(!$v->is_set())
+                $pending[] = $k;
+            }
+        }
+        // TODO : Update de otros tipos que sean SetOnSave, ademas del autoincrement, como los timestamps.
+        // Para eso, habria que deserializar el objeto entero de nuevo.
+
     }
 }
+
 
 
 

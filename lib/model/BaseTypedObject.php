@@ -279,6 +279,16 @@ class BaseTypedObject extends PathObject
         {
             $this->__serializer=$serializer;
         }
+        function beginUnserialize()
+        {
+            $this->disableStateChecks();
+        }
+        function endUnserialize()
+        {
+            $this->enableStateChecks();
+            $this->__loaded=true;
+            $this->cleanDirtyFields();
+        }
         // Si raw es true, el valor se asigna incluso si la validacion da un error.
         function loadFromArray($data,$raw=false)
         {
@@ -297,7 +307,7 @@ class BaseTypedObject extends PathObject
                     throw new BaseTypedException(BaseTypedException::ERR_LOAD_DATA_FAILED);
                 }
             }
-            $this->disableStateChecks();
+            $this->beginUnserialize();
             // TODO : Tener en cuenta el campo estado.
             foreach($fields as $key=>$value)
             {
@@ -307,9 +317,10 @@ class BaseTypedObject extends PathObject
                 $this->{$key}=$data[$key];
 
             }
-            $this->enableStateChecks();
+            $this->endUnserialize();
             $this->__data=$data;
             $this->__loaded=true;
+            $this->cleanDirtyFields();
         }
         function getAsDictionary($nonSetAsNull=true)
         {
@@ -401,7 +412,7 @@ class BaseTypedObject extends PathObject
             {
                 // Se comprueba primero que el valor del campo es diferente del que tenemos actualmente.
 
-                if($this->{"*".$varName}->equals($value))
+                if($this->{$varName}===$value)
                     return;
 
                 if($this->__stateDef->hasState && $this->isLoaded())

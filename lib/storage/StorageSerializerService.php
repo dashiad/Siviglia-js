@@ -67,8 +67,6 @@ class StorageSerializerService
         if(isset($this->serializers[$name]))
             return $this->serializers[$name];
 
-
-
         if(!isset($this->config["serializers"][$name]))
             throw new StorageSerializerServiceException(StorageSerializerServiceException::ERR_SERIALIZER_NOT_FOUND,array("name"=>$name));
 

@@ -73,6 +73,11 @@ class ModelService extends \lib\service\Service
         $obj=new $namespacedName($serializer);
         return $obj;
     }
+    static function getDataSource($objectName,$datasource,$serializer=null)
+    {
+        return \lib\datasource\DataSourceFactory::getDataSource($objectName,$datasource,$serializer);
+
+    }
     static function includeClass($className)
     {
         $resolver=ModelService::getPackage($className);

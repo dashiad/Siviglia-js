@@ -20,7 +20,8 @@
         $this->remoteModelName=\lib\model\ModelService::getModelDescriptor($definition["REMOTE_MODEL"]);
         // Se necesita la definicion del objeto relacion.
         $this->uniqueRelations=isset($definition["RELATIONS_ARE_UNIQUE"])?$definition["RELATIONS_ARE_UNIQUE"]:false;
-        $this->relationModelInstance=\lib\model\BaseModel::getModelInstance($definition["MODEL"]);
+        $m1=$definition["MODEL"];
+        $this->relationModelInstance=new $m1();
         $this->remoteTable=$this->relationModelInstance->__getTableName();
         $rMD=$this->relationModelInstance->getDefinition();
         $this->relationFields=$rMD["MULTIPLE_RELATION"]["FIELDS"];
@@ -131,61 +132,47 @@ class MultipleRelationValues extends RelationValues
         {
             switch($type[$k])
             {
-            case "remote":
-                {
-                    // Tengamos A y B, relacionadas por C.
-                    // Se nos pasa a borrar, una instancia de B.
-                    // Por lo tanto, no tenemos los campos indice de C.Lo que podemos tener son los campos de C que relacionan A con B.
-                    // Esto significa que se borran *todas* las relaciones entre A y B que existen en C.
-                    $remFields=$this->relField->getRemoteMapping();
-                    foreach($remFields as $key2=>$value2)
+                case "remote":
                     {
-                        $field=$value[$k]->__getField($key2);
-                        // TODO : Otro problema con formatos.
-                        // A veces, serialize devuelve simplemente un valor,
-                        // otras veces, un array asociativo tipo clave=>valor...
-                        $serialized=$field->serialize($serializer);
-                        if(is_array($serialized))
+                        // Tengamos A y B, relacionadas por C.
+                        // Se nos pasa a borrar, una instancia de B.
+                        // Por lo tanto, no tenemos los campos indice de C.Lo que podemos tener son los campos de C que relacionan A con B.
+                        $remFields=$this->relField->getRemoteMapping();
+                        // Hay que crear una instancia de C, y borrar en base a esos campos
+                        $fields=[];
+                        foreach($remFields as $key2=>$value2)
                         {
-                            foreach($serialized as $fName=>$fval)
-                                $deleteKeys[$k][$fName]=$fval;
+                            $relInstance->{$value2}=$value[$k]->{$key2};
+                            $fields[]=$value2;
                         }
-                        else
-                            $deleteKeys[$k][$key2]=$field->serialize($serializer);
-                    }
-                    $locFields=$this->relField->getLocalMapping();
-                    foreach($locFields as $key2=>$value2)
+                        $locFields=$this->relField->getLocalMapping();
+                        foreach($locFields as $key2=>$value2)
+                        {
+                            $relInstance->{$value2}=$this->relField->getModel()->{$key2};
+                            $fields[]=$value2;
+                        }
+                        // Se hace un borrado por campos.
+                        $serializer->delete($relInstance,$fields);
+                    }break;
+                case "relation":
                     {
-                        $serialized=$this->relField->serialize($serializer);
-                        if(is_array($serialized))
-                        {
-                            foreach($serialized as $fName=>$fval)
-                                $deleteKeys[$k][$fName]=$fval;
-                        }
-                        else
-                            $deleteKeys[$k][$key2]=$serialized;
-                    }
-                }break;
-            case "relation":
-                {
-                    // Tengamos A y B, relacionadas por C.
-                    // Se nos pasa a borrar una instancia de C.
-                    // Por lo tanto, eliminamos solo esa relacion entre A y C.
-                    $index=$value[$k]->getIndexes()->getKeyNames();
-                    $firstIndex=$index[0];
-                    $deleteKeys[$k][$firstIndex]=$value[$k]->__getField($firstIndex)->serialize($serializer);
-                }break;
+                        // Tengamos A y B, relacionadas por C.
+                        // Se nos pasa a borrar una instancia de C.
+                        // Por lo tanto, eliminamos solo esa relacion entre A y C.
+                        $serializer->delete($value[$k]);
+                    }break;
+                // Value se refiere a un id de la tabla relacion.
             case "value":
                 {
                     $instance=$this->relField->getRelationModelInstance();
-                    $index=$instance->getIndexes()->getKeyNames();
+                    $index=$instance->getIndexFields();
                     $firstIndex=$index[0];
                     $instance->{$firstIndex}=$value[$k];
-                    $deleteKeys[$k][$firstIndex]=$instance->__getField($firstIndex)->serialize($serializer);
+                    $serializer->delete($instance);
                 }break;
             }
         }
-        $serializer->delete($this->relField->getRelationModelInstance()->getTableName(),$deleteKeys);
+
     }
 
 
@@ -197,6 +184,7 @@ class MultipleRelationValues extends RelationValues
         $relInstance=$this->relField->getRelationModelInstance();
         $serializer=$relInstance->__getSerializer();
         $uniques=$this->relField->relationsAreUnique();
+        $modelService=\Registry::getService("model");
          $type=$this->recognizeType($value);
 
         if(!is_array($type))
@@ -208,19 +196,25 @@ class MultipleRelationValues extends RelationValues
         {
             switch($type[$k])
             {
+                case "value":
             case "remote":
                 {
-                    // Relacion A con B a traves de C. Nos han pasado un B.Hay por tanto que crear una instancia de C, y asignar campos.
-                    // Si el objeto a relacionar (B) esta sucio, hay que guardarlo.
-                    if($value[$k]->isDirty())
-                        $value[$k]->save();
-
-                    $newInstance=\lib\model\BaseModel::getModelInstance($this->relField->getRelationModelName());
+                    if($type[$k]=="remote") {
+                        // Relacion A con B a traves de C. Nos han pasado un B.Hay por tanto que crear una instancia de C, y asignar campos.
+                        // Si el objeto a relacionar (B) esta sucio, hay que guardarlo.
+                        if ($value[$k]->isDirty())
+                            $value[$k]->save();
+                    }
+                    $newInstance=$this->relField->getRelationModelName()->getInstance();
                     // Por lo tanto, no tenemos los campos indice de C.Lo que podemos tener son los campos de C que relacionan A con B.
                     // Esto significa que se borran *todas* las relaciones entre A y B que existen en C.
                     $remFields=$this->relField->getRemoteMapping();
-                    foreach($remFields as $key2=>$value2)
-                        $newInstance->{$value2}=$value[$k]->{$key2};
+                    foreach($remFields as $key2=>$value2) {
+                        if($type[$k]=="remote")
+                            $newInstance->{$value2} = $value[$k]->{$key2};
+                        else
+                            $newInstance->{$value2} = $value[$k];
+                    }
                     $locFields=$this->relField->getLocalMapping();
                     foreach($locFields as $key2=>$value2)
                         $newInstance->{$value2}=$this->relField->getModel()->{$key2};
@@ -234,16 +228,8 @@ class MultipleRelationValues extends RelationValues
                         $value[$k]->{$value2}=$this->relField->getModel()->{$key2};
                     $value[$k]->save();
                 }break;
-            case "value":
-                {
-                    $instance=\lib\model\BaseModel::getModelInstance($this->relField->getRelationModelName);
-                    $instance->setId($value[$k]);
-                    $instance->unserialize();
-                    $locFields=$this->relField->getLocalMapping();
-                    foreach($locFields as $key2=>$value2)
-                        $value[$k]->{$value2}=$this->relField->getModel()->{$key2};
-                    $value[$k]->save();
-                }break;
+                // Se ha recibido un id del objeto remoto.
+
             }
         }
 
