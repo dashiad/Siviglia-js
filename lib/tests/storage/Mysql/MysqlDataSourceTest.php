@@ -83,9 +83,18 @@ class MysqlDataSourceTest extends TestCase
     {
         $this->init();
         $datasource=\lib\datasource\DataSourceFactory::getDataSource("/model/tests/User","FullList",$this->serializer);
+        $datasource->__sort="id";
+        $datasource->__sortDir="ASC";
         $res=$datasource->fetchAll();
         $posts=$res[0]->Posts->count();
-        $n=$res->count();
+        $posts2=$res[1]->Posts->count();
+        $posts3=$res[2]->Posts->count();
+        $posts4=$res[3]->Posts->count();
+        $this->assertEquals(3,$posts);
+        $this->assertEquals(2,$posts2);
+        $this->assertEquals(3,$posts3);
+        $this->assertEquals(1,$posts4);
+
     }
 
 

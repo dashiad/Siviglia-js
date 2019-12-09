@@ -121,7 +121,33 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 }
                 $curField->setValue($val);
             }
-            $serializedVal = $this->serializer->serializeType($key,$curField->getType());
+            // Aqui tenemos un pequeño problema.
+            // Una cosa es serializar un valor para usarlo como campo a insertar (insert o update), y otra cosa
+            // es serializarlo para usarlo en el "where" de un select.
+            // Permitimos que un campo de filtro sea un array. Qué significa serializar un array?
+            // Si fuera para insertarlo, posiblemente seria un serializado json.
+            // Sin embargo, aqui, lo que necesitamos es una lista de elementos separados por comas,
+            // ya que lo estamos usando en un IN (...).
+            // Asi que vamos a manejar ese caso por separado.
+            $type=$curField->getType();
+            if(!is_a($type,'\lib\model\types\_Array'))
+                $serializedVal = $this->serializer->serializeType($key,$curField->getType());
+            else
+            {
+                $n=$type->count();
+                $def=$type->getDefinition();
+                $elementType=$def["ELEMENTS"];
+                $subtype=\lib\model\types\TypeFactory::getType($this, $elementType);
+                $subVals=[];
+                for($s=0;$s<$n;$s++)
+                {
+                    $subtype->setValue($type[$s]);
+                    $serialized = $this->serializer->serializeType($key,$subtype);
+                    $subVals[]=$serialized[$key];
+                }
+                $serializedVal[$key]=implode(",",$subVals);
+            }
+
             $keys[] = $matches[0][$key];
             $values[] = $serializedVal[$key];
         }

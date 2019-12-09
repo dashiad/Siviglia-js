@@ -10,8 +10,10 @@
               return 'NULL';
           $remoteType=$type->getRelationshipType();
           $remoteType->setValue($type->getValue());
-          $serialized= $serializer->serializeType($remoteType,$serializer);
-          return [$name=>$serialized];
+          $remoteFieldName=$type->getRemoteFields();
+          // TODO : Relaciones multiples??
+          $serialized= $serializer->serializeType($remoteFieldName[0],$remoteType);
+          return [$name=>$serialized[$remoteFieldName[0]]];
       }
 
       function unserialize($name,$type,$value,$serializer,$model=null)

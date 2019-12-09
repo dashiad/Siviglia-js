@@ -2,6 +2,16 @@
 
 // El tipo Relacion solo existe para poder "redireccionar" columnas de tipo Relationship, a su tipo padre.
 class Relationship extends BaseType {
+    function getRemoteFields()
+    {
+        $f=$this->definition["FIELDS"];
+        return array_values($f);
+    }
+    function getLocalFields()
+    {
+        $f=$this->definition["FIELDS"];
+        return array_keys($f);
+    }
     function getRelationshipType()
       {
           $obj=$this->definition["MODEL"];

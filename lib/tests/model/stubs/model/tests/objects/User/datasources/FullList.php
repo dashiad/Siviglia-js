@@ -40,7 +40,8 @@ class FullList
                 'DATASOURCE'=>'FullList',
                 'JOINTYPE'=>'LEFT',
                 'JOIN'=>array(
-                    'id'=>'creator_id'
+                    // OJO!!! REMOTO-LOCAL
+                    'creator_id'=>'id'
                 )
             )
         ),
