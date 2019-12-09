@@ -35,17 +35,19 @@ class DataSourceFactory
 
             if(!$serializer) {
                 $modelService=\Registry::getService("model");
-                $instance=$modelService->getModel($objName);
-                $serializer=$instance->__getSerializer();
+                $modelIns=$modelService->getModel($objName);
+                $serializer=$modelIns->__getSerializer();
                 $serType=ucfirst(strtolower($serializer->getSerializerType()));
             }
             else
                 $serType=$serializer->getSerializerType();
             $uSerType=ucfirst(strtolower($serType));
-            if(isset($mainDef["STORAGE"][$serType]))
-                $dsN='\\lib\\storage\\'.$uSerType.'\\'.$uSerType.'DataSource';
-                $mainDs=new $dsN($objName,$dsName,$instance,null,$mainDef["STORAGE"][strtoupper($serType)]);
-                return $mainDs;
+            $options=null;
+            if(isset($mainDef["STORAGE"][strtoupper($serType)]))
+                $options=$mainDef["STORAGE"][strtoupper($serType)];
+            $dsN='\\lib\\storage\\'.$uSerType.'\\'.$uSerType.'DataSource';
+            $mainDs=new $dsN($objName,$dsName,$instance,null,$options);
+            return $mainDs;
         }
         function applyDataSource($objName,$dsName,$params,$callable,$dsParams=null,$serializer=null)
         {

@@ -27,17 +27,13 @@ abstract class StorageDataSource extends TableDataSource
     protected $grouped=false;
     function __construct($objName,$dsName,$definition,$serializer)
     {
+
         // Se hace un merge de indices y params.Esto deberia ser cambiado.
         // TODO: hacer que la generacion de codigo genere INDEXFIELDS como solo nombres de campo, estando la definicion en PARAMS.
         $this->originalDefinition=$definition;
         $localFields=array_merge(isset($definition["INDEXFIELDS"])?$definition["INDEXFIELDS"]:array(),
                                  isset($definition["PARAMS"])?$definition["PARAMS"]:array());
-        if(isset($definition["COVER_MODEL"]))
-        {
-            $modelName=$definition["COVER_MODEL"];
-            $model=\lib\model\types\TypeFactory::getObjectDefinition($modelName);
 
-        }
         $pagingParams=array(
             "__start"=>array("TYPE"=>"Integer"),
             "__count"=>array("TYPE"=>"Integer"),
@@ -88,7 +84,7 @@ abstract class StorageDataSource extends TableDataSource
         // datasource de un objeto de tipo "app".
         if(!$serializer)
         {
-            $serializer=$this->getSerializer();
+            $this->serializer=$this->getSerializer();
         }
         else
             $this->serializer=$serializer;
