@@ -146,7 +146,7 @@ class MultipleDatasource {
                         $include=$value->getSubDataSourceInstance($key2);
                         $odef=$include->getOriginalDefinition();
                         $def["DATASOURCES"][$key2]=array(
-                            "OBJECT"=>$include->getObjectName(),
+                            "MODEL"=>$include->getObjectName(),
                             "DATASOURCE"=>$include->getName(),
                             "DEFINITION"=>$odef);
                     }

@@ -94,8 +94,16 @@ class MysqlDataSourceTest extends TestCase
         $this->assertEquals(2,$posts2);
         $this->assertEquals(3,$posts3);
         $this->assertEquals(1,$posts4);
-
     }
+    function testParametrizedString()
+    {
+        $this->init();
+        $datasource=\lib\datasource\DataSourceFactory::getDataSource("/model/tests/User","FullListParam",$this->serializer);
+        $datasource->id=1;
+        $res=$datasource->fetchAll();
+        $this->assertEquals(1,$res->count());
+    }
+
 
 
 
