@@ -150,7 +150,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Unified_pricing_rule',
                         'OP'=>'=',
-                        'V'=>'{%Unified_pricing_rule%}'
+                        'V'=>'[%Unified_pricing_rule%]'
                     ),
                     'TRIGGER_VAR'=>'Unified_pricing_rule'
                 )
@@ -192,7 +192,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Unified_pricing_rule',
                         'OP'=>'!=',
-                        'V'=>'{%Unified_pricing_rule%}'
+                        'V'=>'[%Unified_pricing_rule%]'
                     ),
                     'TRIGGER_VAR'=>'Unified_pricing_rule'
                 )
@@ -246,7 +246,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Total_impressions',
                         'OP'=>'>',
-                        'V'=>'{%MIN_IMPRESSIONS%}'
+                        'V'=>'[%MIN_IMPRESSIONS%]'
                     ),
                     'TRIGGER_VAR'=>'MIN_IMPRESSIONS'
                 ),
@@ -254,7 +254,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Total_impressions',
                         'OP'=>'<=',
-                        'V'=>'{%MAX_IMPRESSIONS%}'
+                        'V'=>'[%MAX_IMPRESSIONS%]'
                     ),
                     'TRIGGER_VAR'=>'MAX_IMPRESSIONS'
                 )
@@ -304,7 +304,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Total_impressions',
                         'OP'=>'>',
-                        'V'=>'{%MIN_IMPRESSIONS%}'
+                        'V'=>'[%MIN_IMPRESSIONS%]'
                     ),
                     'TRIGGER_VAR'=>'MIN_IMPRESSIONS'
                 ),
@@ -312,7 +312,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Total_impressions',
                         'OP'=>'<=',
-                        'V'=>'{%MAX_IMPRESSIONS%}'
+                        'V'=>'[%MAX_IMPRESSIONS%]'
                     ),
                     'TRIGGER_VAR'=>'MAX_IMPRESSIONS'
                 ),
@@ -320,7 +320,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Ad_Exchange_revenue',
                         'OP'=>'>',
-                        'V'=>'{%MIN_REVENUE%}'
+                        'V'=>'[%MIN_REVENUE%]'
                     ),
                     'TRIGGER_VAR'=>'MIN_REVENUE'
                 ),
@@ -328,7 +328,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Ad_Exchange_revenue',
                         'OP'=>'<=',
-                        'V'=>'{%MAX_REVENUE%}'
+                        'V'=>'[%MAX_REVENUE%]'
                     ),
                     'TRIGGER_VAR'=>'MAX_REVENUE'
                 )
@@ -372,7 +372,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Total_impressions',
                         'OP'=>'>',
-                        'V'=>'{%MIN_IMPRESSIONS%}'
+                        'V'=>'[%MIN_IMPRESSIONS%]'
                     ),
                     'TRIGGER_VAR'=>'MIN_IMPRESSIONS'
                 ),
@@ -380,7 +380,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Total_impressions',
                         'OP'=>'<=',
-                        'V'=>'{%MAX_IMPRESSIONS%}'
+                        'V'=>'[%MAX_IMPRESSIONS%]'
                     ),
                     'TRIGGER_VAR'=>'MAX_IMPRESSIONS'
                 ),
@@ -388,7 +388,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Unified_pricing_rule',
                         'OP'=>'!=',
-                        'V'=>'{%Unified_pricing_rule%}'
+                        'V'=>'[%Unified_pricing_rule%]'
                     ),
                     'TRIGGER_VAR'=>'Unified_pricing_rule'
                 )
@@ -431,7 +431,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Total_impressions',
                         'OP'=>'>',
-                        'V'=>'{%MIN_IMPRESSIONS%}'
+                        'V'=>'[%MIN_IMPRESSIONS%]'
                     ),
                     'TRIGGER_VAR'=>'MIN_IMPRESSIONS'
                 ),
@@ -439,7 +439,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Total_impressions',
                         'OP'=>'<=',
-                        'V'=>'{%MAX_IMPRESSIONS%}'
+                        'V'=>'[%MAX_IMPRESSIONS%]'
                     ),
                     'TRIGGER_VAR'=>'MAX_IMPRESSIONS'
                 ),
@@ -447,7 +447,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Unified_pricing_rule',
                         'OP'=>'=',
-                        'V'=>'{%Unified_pricing_rule%}'
+                        'V'=>'[%Unified_pricing_rule%]'
                     ),
                     'TRIGGER_VAR'=>'Unified_pricing_rule'
                 ),
@@ -455,7 +455,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Ad_unit',
                         'OP'=>'=',
-                        'V'=>'{%Ad_unit%}'
+                        'V'=>'[%Ad_unit%]'
                     ),
                     'TRIGGER_VAR'=>'Ad_unit'
                 )
@@ -568,7 +568,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Ad_Exchange_revenue',
                         'OP'=>'>',
-                        'V'=>'{%MIN_AD_EXCHANGE_REVENUE%}'
+                        'V'=>'[%MIN_AD_EXCHANGE_REVENUE%]'
                     ),
                     'TRIGGER_VAR'=>'MIN_AD_EXCHANGE_REVENUE'
                 ),
@@ -576,7 +576,7 @@ class QueryBuilderTest extends TestCase
                     'FILTER'=>array(
                         'F'=>'Ad_Exchange_revenue',
                         'OP'=>'<=',
-                        'V'=>'{%MAX_AD_EXCHANGE_REVENUE%}'
+                        'V'=>'[%MAX_AD_EXCHANGE_REVENUE%]'
                     ),
                     'TRIGGER_VAR'=>'MAX_AD_EXCHANGE_REVENUE'
                 )

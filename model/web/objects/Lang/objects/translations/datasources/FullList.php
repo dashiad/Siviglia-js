@@ -81,27 +81,27 @@ class FullList
                                  WHERE tf.`lang`=\'|%DEFAULT_LANGUAGE%|\' AND [%0%] AND [%1%] AND [%2%] AND [%3%] AND [%4%] ORDER BY id_translation DESC',
                                  'CONDITIONS'=>array(
                                        array(
-                                             'FILTER'=>'tp.id_string={%id_string%}',
+                                             'FILTER'=>'tp.id_string=[%id_string%]',
                                              'TRIGGER_VAR'=>'id_string',
                                              'DISABLE_IF'=>''
                                              ),
                                        array(
-                                             'FILTER'=>'tp.lang={%lang%}',
+                                             'FILTER'=>'tp.lang=[%lang%]',
                                              'TRIGGER_VAR'=>'lang',
                                              'DISABLE_IF'=>''
                                              ),
                                        array(
-                                             'FILTER'=>'tp.dirty={%dirty%}',
+                                             'FILTER'=>'tp.dirty=[%dirty%]',
                                              'TRIGGER_VAR'=>'dirty',
                                              'DISABLE_IF'=>''
                                              ),
                                        array(
-                                             'FILTER'=>'tp.value={%value%}',
+                                             'FILTER'=>'tp.value=[%value%]',
                                              'TRIGGER_VAR'=>'value',
                                              'DISABLE_IF'=>null
                                              ),
                                        array(
-                                             'FILTER'=>'tp.realm={%realm%}',
+                                             'FILTER'=>'tp.realm=[%realm%]',
                                              'TRIGGER_VAR'=>'realm',
                                              'DISABLE_IF'=>''
                                              )

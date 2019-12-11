@@ -2,7 +2,7 @@
 class RegistryException extends \lib\model\BaseException
 {
     const ERR_NO_SUCH_SERVICE=1;
-    const TXT_NO_SUCH_SERVICE="El servicio {%serviceName%} no existe.";
+    const TXT_NO_SUCH_SERVICE="El servicio [%serviceName%] no existe.";
 }
 class Registry
 {

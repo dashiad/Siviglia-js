@@ -61,7 +61,7 @@ class View
                                              'FILTER'=>array(
                                                    'F'=>'id_translation',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_translation%}'
+                                                   'V'=>'[%id_translation%]'
                                                    ),
                                              'FILTERREF'=>'id_translation'
                                              )

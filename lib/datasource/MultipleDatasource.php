@@ -66,14 +66,14 @@ class MultipleDatasource {
     var $params;
     var $iterator;
     var $datasources;
-    function __construct($objName,$dsName,$definition)
+    function __construct($objName,$dsName,$definition,$serializer=null)
     {
 
         $this->definition=$definition;
         $this->params=null;
         foreach($this->definition["DATASOURCES"] as $key=>$value)
         {
-            $this->datasources[$key]=\lib\datasource\DataSourceFactory::getDataSource($value["MODEL"],$value["DATASOURCE"]);
+            $this->datasources[$key]=\lib\datasource\DataSourceFactory::getDataSource($value["MODEL"],$value["DATASOURCE"],$serializer);
         }
     }
     function setParameters($params)

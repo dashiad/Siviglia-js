@@ -89,7 +89,7 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'id_site',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_site%}'
+                                                   'V'=>'[%id_site%]'
                                                    ),
                                              'TRIGGER_VAR'=>'id_site',
                                              'DISABLE_IF'=>'0',
@@ -99,7 +99,7 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'host',
                                                    'OP'=>'=',
-                                                   'V'=>'{%host%}'
+                                                   'V'=>'[%host%]'
                                                    ),
                                              'TRIGGER_VAR'=>'host',
                                              'DISABLE_IF'=>'0',
@@ -109,7 +109,7 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'canonical_url',
                                                    'OP'=>'=',
-                                                   'V'=>'{%canonical_url%}'
+                                                   'V'=>'[%canonical_url%]'
                                                    ),
                                              'TRIGGER_VAR'=>'canonical_url',
                                              'DISABLE_IF'=>'0',
@@ -119,7 +119,7 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'hasSSL',
                                                    'OP'=>'=',
-                                                   'V'=>'{%hasSSL%}'
+                                                   'V'=>'[%hasSSL%]'
                                                    ),
                                              'TRIGGER_VAR'=>'hasSSL',
                                              'DISABLE_IF'=>'0',
@@ -129,7 +129,7 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'namespace',
                                                    'OP'=>'=',
-                                                   'V'=>'{%namespace%}'
+                                                   'V'=>'[%namespace%]'
                                                    ),
                                              'TRIGGER_VAR'=>'namespace',
                                              'DISABLE_IF'=>'0',
@@ -139,7 +139,7 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'websiteName',
                                                    'OP'=>'=',
-                                                   'V'=>'{%websiteName%}'
+                                                   'V'=>'[%websiteName%]'
                                                    ),
                                              'TRIGGER_VAR'=>'websiteName',
                                              'DISABLE_IF'=>'0',

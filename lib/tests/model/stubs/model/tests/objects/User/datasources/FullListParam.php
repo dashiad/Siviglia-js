@@ -55,21 +55,14 @@ class FullListParam
                             'FILTER'=>array(
                                 'F'=>'id',
                                 'OP'=>'=',
-                                'V'=>'{%id%}'
+                                'V'=>'[%id%]'
                             ),
                             'TRIGGER_VAR'=>'id',
                             'DISABLE_IF'=>'0',
                             'FILTERREF'=>'id'
                         ),
                         array(
-                            'FILTER'=>array(
-                                'F'=>'Name',
-                                'OP'=>'=',
-                                'V'=>'{%tag%}'
-                            ),
-                            'TRIGGER_VAR'=>'Name',
-                            'DISABLE_IF'=>'0',
-                            'FILTERREF'=>'Name'
+                            'FILTER'=>"[%Name:Name={%Name%}%][%!Name:Name='User1'%]"
                         )
                     )
                 )

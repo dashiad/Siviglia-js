@@ -84,7 +84,7 @@ class AdminView
                                              'FILTER'=>array(
                                                    'F'=>'id_site',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_site%}'
+                                                   'V'=>'[%id_site%]'
                                                    ),
                                              'FILTERREF'=>'id_site'
                                              )

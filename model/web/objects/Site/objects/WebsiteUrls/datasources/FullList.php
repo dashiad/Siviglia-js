@@ -64,7 +64,7 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'id_websiteUrl',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_websiteUrl%}'
+                                                   'V'=>'[%id_websiteUrl%]'
                                                    ),
                                              'TRIGGER_VAR'=>'id_websiteUrl',
                                              'DISABLE_IF'=>'0',
@@ -74,14 +74,14 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'url',
                                                    'OP'=>'=',
-                                                   'V'=>'{%url%}'
+                                                   'V'=>'[%url%]'
                                                    ),
                                              'TRIGGER_VAR'=>'url',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'url'
                                              ),
                                        array(
-                                             'FILTER'=>'url LIKE {%dynurl%}',
+                                             'FILTER'=>'url LIKE [%dynurl%]',
                                              'TRIGGER_VAR'=>'dynurl',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'dynurl'
@@ -90,7 +90,7 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'priority',
                                                    'OP'=>'=',
-                                                   'V'=>'{%priority%}'
+                                                   'V'=>'[%priority%]'
                                                    ),
                                              'TRIGGER_VAR'=>'priority',
                                              'DISABLE_IF'=>'0',

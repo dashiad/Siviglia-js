@@ -99,109 +99,57 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         //Construimos las condiciones
         $queryText = $this->buildConditions($queryText);
 
-        // Se hace el reemplazo final, obteniendo los campos serializados.
-        preg_match_all('/{\%([^%]+)\%}/', $queryText, $matches);
-        if (count($matches[1]) > 0 && !$this->data) {
-            // TODO: throw exception
-            return false;
-        }
-        $keys=array();
-        $values=array();
-        foreach ($matches[1] as $key => $value) {
-            $curField=$this->data->__getField($value);
-
-            $fdef=$curField->getDefinition();
-
-            if(isset($fdef["PARAMTYPE"]) && $fdef["PARAMTYPE"]=="DYNAMIC")
+        // Se prepara el serializado de todos los campos que esten "set"
+        $paramsObj=[];
+        foreach($this->data->__getFields() as $key=>$value)
+        {
+            $curField=$this->data->__getField($key);
+            if($curField->getType()->hasOwnValue())
             {
-                $val=$curField->getValue().'%';
-                if(isset($fdef["DYNAMICTYPE"]) && $fdef["DYNAMICTYPE"]=="BOTH")
+                $fdef=$curField->getDefinition();
+
+                if(isset($fdef["PARAMTYPE"]) && $fdef["PARAMTYPE"]=="DYNAMIC")
                 {
-                    $val='%'.$val;
+                    $val=$curField->getValue().'%';
+                    if(isset($fdef["DYNAMICTYPE"]) && $fdef["DYNAMICTYPE"]=="BOTH")
+                    {
+                        $val='%'.$val;
+                    }
+                    $curField->setValue($val);
                 }
-                $curField->setValue($val);
-            }
-            // Aqui tenemos un pequeño problema.
-            // Una cosa es serializar un valor para usarlo como campo a insertar (insert o update), y otra cosa
-            // es serializarlo para usarlo en el "where" de un select.
-            // Permitimos que un campo de filtro sea un array. Qué significa serializar un array?
-            // Si fuera para insertarlo, posiblemente seria un serializado json.
-            // Sin embargo, aqui, lo que necesitamos es una lista de elementos separados por comas,
-            // ya que lo estamos usando en un IN (...).
-            // Asi que vamos a manejar ese caso por separado.
-            $type=$curField->getType();
-            if(!is_a($type,'\lib\model\types\_Array'))
-                $serializedVal = $this->serializer->serializeType($key,$curField->getType());
-            else
-            {
-                $n=$type->count();
-                $def=$type->getDefinition();
-                $elementType=$def["ELEMENTS"];
-                $subtype=\lib\model\types\TypeFactory::getType($this, $elementType);
-                $subVals=[];
-                for($s=0;$s<$n;$s++)
+                // Aqui tenemos un pequeño problema.
+                // Una cosa es serializar un valor para usarlo como campo a insertar (insert o update), y otra cosa
+                // es serializarlo para usarlo en el "where" de un select.
+                // Permitimos que un campo de filtro sea un array. Qué significa serializar un array?
+                // Si fuera para insertarlo, posiblemente seria un serializado json.
+                // Sin embargo, aqui, lo que necesitamos es una lista de elementos separados por comas,
+                // ya que lo estamos usando en un IN (...).
+                // Asi que vamos a manejar ese caso por separado.
+                $type=$curField->getType();
+                if(!is_a($type,'\lib\model\types\_Array'))
+                    $serializedVal = $this->serializer->serializeType($key,$curField->getType());
+                else
                 {
-                    $subtype->setValue($type[$s]);
-                    $serialized = $this->serializer->serializeType($key,$subtype);
-                    $subVals[]=$serialized[$key];
-                }
-                $serializedVal[$key]=implode(",",$subVals);
-            }
-
-            $keys[] = $matches[0][$key];
-            $values[] = $serializedVal[$key];
-        }
-        $qText = str_replace($keys, $values, $queryText);
-        //echo $qText;
-        // Se reemplazan las constantes
-        preg_match_all("/\|\%([^%]*)\%\|/", $qText, $matches);
-        if (isset($matches[1])) {
-            $constants = get_defined_constants(true);
-            for ($k = 0; $k < count($matches[1]); $k++) {
-                //Vemos si es un valor metido en el registro
-                if (strstr($matches[1][$k], '/registry/')) {
-                    preg_match('#/registry/(.*)#', $matches[1][$k], $moreMatches);
-                    $tr = explode('?', $moreMatches[1]);
-                    try {
-                        $value = \Registry::retrieve($tr[0]);
+                    $n=$type->count();
+                    $def=$type->getDefinition();
+                    $elementType=$def["ELEMENTS"];
+                    $subtype=\lib\model\types\TypeFactory::getType($this, $elementType);
+                    $subVals=[];
+                    for($s=0;$s<$n;$s++)
+                    {
+                        $subtype->setValue($type[$s]);
+                        $serialized = $this->serializer->serializeType($key,$subtype);
+                        $subVals[]=$serialized[$key];
                     }
-                    catch(\Exception $e) {
-                        $value = $tr[1];
-                    }
-                    $qText = str_replace("|%" . $matches[1][$k] . "%|", $value, $qText);
+                    $serializedVal[$key]=implode(",",$subVals);
                 }
-                else {
-                    if($matches[1][$k]=="currentUser") {
-                    // TODO : Tirar excepcion cuando el usuario no esta logeado.
-                    global $oCurrentUser;
-                    if($oCurrentUser->isLogged())
-                        $qText=str_replace("|%currentUser%|",$oCurrentUser->getId(),$qText);
-                    else
-                        $qText=str_replace("|%currentUser%|","false",$qText);
-                    continue;
-                }
-                $c = $matches[1][$k];
-                $qText = str_replace("|%" . $c . "%|", $constants["user"][$c], $qText);
+
+                foreach($serializedVal as $kk=>$vv)
+                    $paramsObj[$kk]=$vv;
             }
-        }
-        }
 
-        //Reemplazo de serializadores
-        preg_match_all("/\|\|([^|]*)\|\|/", $qText, $matches);
-        if (isset($matches[1])) {
-            $replaces=array();
-            global $SERIALIZERS;
-            for ($k = 0; $k < count($matches[1]); $k++) {
-                $db=$matches[1][$k];
-                $dbName=$SERIALIZERS[$db]["ADDRESS"]["database"]["NAME"];
-                $replaces["||".$db."||"]=$dbName;
-            }
-            $qText=str_replace(array_keys($replaces),array_values($replaces),$qText);
         }
-        //echo $qText;
-
-
-        return $qText;
+        return \lib\php\ParametrizableString::getParametrizedString($queryText,$paramsObj);
     }
 
     function buildInnerParts($base)

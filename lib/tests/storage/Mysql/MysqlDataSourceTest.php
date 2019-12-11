@@ -87,23 +87,66 @@ class MysqlDataSourceTest extends TestCase
         $datasource->__sortDir="ASC";
         $res=$datasource->fetchAll();
         $posts=$res[0]->Posts->count();
+        $title=$res[1]->Posts[1]->title;
+        $this->assertEquals("Post-2-2",$title);
         $posts2=$res[1]->Posts->count();
         $posts3=$res[2]->Posts->count();
         $posts4=$res[3]->Posts->count();
         $this->assertEquals(3,$posts);
         $this->assertEquals(2,$posts2);
-        $this->assertEquals(3,$posts3);
+        $this->assertEquals(4,$posts3);
         $this->assertEquals(1,$posts4);
     }
+
     function testParametrizedString()
     {
         $this->init();
         $datasource=\lib\datasource\DataSourceFactory::getDataSource("/model/tests/User","FullListParam",$this->serializer);
+        $res=$datasource->fetchAll();
+        // Nota:este datasource de prueba, si no se especifica un parametro 'Name', pone uno por defecto.
+        $this->assertEquals(1,$res->count());
+        $this->assertEquals("User1",$res[0]->Name);
+    }
+    function testParametrizedString2()
+    {
+        $this->init();
+        $datasource=\lib\datasource\DataSourceFactory::getDataSource("/model/tests/User","FullListParam",$this->serializer);
+        $datasource->Name='User2';
+        $res=$datasource->fetchAll();
+        // Nota:este datasource de prueba, si no se especifica un parametro 'Name', pone uno por defecto.
+        // Aqui lo sobreescribimos.
+        $this->assertEquals(1,$res->count());
+        $this->assertEquals("User2",$res[0]->Name);
+    }
+    function testMultipleDataSource()
+    {
+        $this->init();
+        $datasource=\lib\datasource\DataSourceFactory::getDataSource("/model/tests/User","Multiple",$this->serializer);
         $datasource->id=1;
         $res=$datasource->fetchAll();
-        $this->assertEquals(1,$res->count());
-    }
+        $n1=$res->Posts->count();
+        $this->assertEquals(1,$n1);
+        $p=$res->Posts[0];
 
+        $this->assertEquals(1,$p->creator_id);
+        $n2=$res->FullList->count();
+        $this->assertEquals(1,$n2);
+        $this->assertEquals("User1",$res->FullList[0]->Name);
+    }
+    // Prueba con LOAD_INCLUDES (datasource Multiple2)
+    function testMultipleDataSource2()
+    {
+        $this->init();
+        $datasource=\lib\datasource\DataSourceFactory::getDataSource("/model/tests/User","Multiple2",$this->serializer);
+        $datasource->id=1;
+        $res=$datasource->fetchAll();
+        $n=$res->FullList[0]->Posts->count();
+        $this->assertEquals(1,$n);
+    }
+    function testGroupings()
+    {
+
+    }
 
 
 

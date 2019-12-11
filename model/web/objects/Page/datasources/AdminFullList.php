@@ -144,7 +144,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'id_page',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_page%}'
+                                                   'V'=>'[%id_page%]'
                                                    ),
                                              'TRIGGER_VAR'=>'id_page',
                                              'DISABLE_IF'=>'0',
@@ -154,7 +154,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'tag',
                                                    'OP'=>'=',
-                                                   'V'=>'{%tag%}'
+                                                   'V'=>'[%tag%]'
                                                    ),
                                              'TRIGGER_VAR'=>'tag',
                                              'DISABLE_IF'=>'0',
@@ -164,7 +164,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'name',
                                                    'OP'=>'=',
-                                                   'V'=>'{%name%}'
+                                                   'V'=>'[%name%]'
                                                    ),
                                              'TRIGGER_VAR'=>'name',
                                              'DISABLE_IF'=>'0',
@@ -174,7 +174,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'date_add',
                                                    'OP'=>'=',
-                                                   'V'=>'{%date_add%}'
+                                                   'V'=>'[%date_add%]'
                                                    ),
                                              'TRIGGER_VAR'=>'date_add',
                                              'DISABLE_IF'=>'0',
@@ -184,7 +184,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'date_modified',
                                                    'OP'=>'=',
-                                                   'V'=>'{%date_modified%}'
+                                                   'V'=>'[%date_modified%]'
                                                    ),
                                              'TRIGGER_VAR'=>'date_modified',
                                              'DISABLE_IF'=>'0',
@@ -194,7 +194,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'id_type',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_type%}'
+                                                   'V'=>'[%id_type%]'
                                                    ),
                                              'TRIGGER_VAR'=>'id_type',
                                              'DISABLE_IF'=>'0',
@@ -204,7 +204,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'isPrivate',
                                                    'OP'=>'=',
-                                                   'V'=>'{%isPrivate%}'
+                                                   'V'=>'[%isPrivate%]'
                                                    ),
                                              'TRIGGER_VAR'=>'isPrivate',
                                              'DISABLE_IF'=>'0',
@@ -214,7 +214,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'path',
                                                    'OP'=>'=',
-                                                   'V'=>'{%path%}'
+                                                   'V'=>'[%path%]'
                                                    ),
                                              'TRIGGER_VAR'=>'path',
                                              'DISABLE_IF'=>'0',
@@ -224,7 +224,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'title',
                                                    'OP'=>'=',
-                                                   'V'=>'{%title%}'
+                                                   'V'=>'[%title%]'
                                                    ),
                                              'TRIGGER_VAR'=>'title',
                                              'DISABLE_IF'=>'0',
@@ -234,7 +234,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'tags',
                                                    'OP'=>'=',
-                                                   'V'=>'{%tags%}'
+                                                   'V'=>'[%tags%]'
                                                    ),
                                              'TRIGGER_VAR'=>'tags',
                                              'DISABLE_IF'=>'0',
@@ -244,7 +244,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'description',
                                                    'OP'=>'=',
-                                                   'V'=>'{%description%}'
+                                                   'V'=>'[%description%]'
                                                    ),
                                              'TRIGGER_VAR'=>'description',
                                              'DISABLE_IF'=>'0',

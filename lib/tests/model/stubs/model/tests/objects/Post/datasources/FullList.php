@@ -31,7 +31,7 @@ class FullList
                 'MODEL'=>'\model\tests\Post',
                 'FIELD'=>'id'
             ),
-            'Name'=>array(
+            'creator_id'=>array(
                 'MODEL'=>'\model\tests\Post',
                 'FIELD'=>'creator_id'
             ),
@@ -56,7 +56,7 @@ class FullList
                             'FILTER'=>array(
                                 'F'=>'id',
                                 'OP'=>'=',
-                                'V'=>'{%id%}'
+                                'V'=>'[%id%]'
                             ),
                             'TRIGGER_VAR'=>'id',
                             'DISABLE_IF'=>'0',
@@ -66,7 +66,7 @@ class FullList
                             'FILTER'=>array(
                                 'F'=>'creator_id',
                                 'OP'=>'=',
-                                'V'=>'{%creator_id%}'
+                                'V'=>'[%creator_id%]'
                             ),
                             'TRIGGER_VAR'=>'creator_id',
                             'DISABLE_IF'=>'0',

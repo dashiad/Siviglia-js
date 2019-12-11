@@ -12,7 +12,7 @@ use model\reflection\Model;
 class ModelServiceException extends BaseException
 {
     const ERR_MODEL_PROVIDER_NOT_FOUND=101;
-    const TXT_MODEL_PROVIDER_NOT_FOUND="Provider for model {%model%} not found";
+    const TXT_MODEL_PROVIDER_NOT_FOUND="Provider for model [%model%] not found";
 }
 
 

@@ -232,7 +232,7 @@ class MysqlDsDefinition
                         $condition=array("FILTER"=>$valP["FIELD"]." LIKE {%".$keyP."%}");
                 }
                 else
-                    $condition=array("FILTER"=>array("F"=>$valP["FIELD"],"OP"=>"=","V"=>"{%".$keyP."%}"));
+                    $condition=array("FILTER"=>array("F"=>$valP["FIELD"],"OP"=>"=","V"=>"[%".$keyP."%]"));
 
                  if(!isset($valP["REQUIRED"]))
                  {

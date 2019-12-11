@@ -97,7 +97,7 @@ class NotPages
                                              'FILTER'=>array(
                                                    'F'=>'tl.id_site',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_site%}'
+                                                   'V'=>'[%id_site%]'
                                                    ),
                                              'FILTERREF'=>'id_site'
                                              )

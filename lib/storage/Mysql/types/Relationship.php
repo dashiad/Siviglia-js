@@ -20,8 +20,6 @@
       {
           $remoteType=$type->getRelationshipType();
           $serializer->unserializeType($name,$remoteType,$value,$model);
-          // Las relaciones las deserializamos a traves del modelo.
-          $model->{$name}=$remoteType->getValue();
       }
       function getSQLDefinition($name,$definition,$serializer)
       {

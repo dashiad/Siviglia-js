@@ -48,7 +48,7 @@ class View
                                          'FILTER'=>array(
                                              'F'=>'USER_ID',
                                              'OP'=>'=',
-                                             'V'=>'{%USER_ID%}'
+                                             'V'=>'[%USER_ID%]'
                                          ),
                                          'TRIGGER_VAR'=>'USER_ID',
                                          'DISABLE_IF'=>'0',

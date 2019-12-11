@@ -69,7 +69,7 @@ class View
                                              'FILTER'=>array(
                                                    'F'=>'id_websiteUrl',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_websiteUrl%}'
+                                                   'V'=>'[%id_websiteUrl%]'
                                                    ),
                                              'FILTERREF'=>'id_websiteUrl'
                                              )

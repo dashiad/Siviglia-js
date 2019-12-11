@@ -84,14 +84,14 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'LOGIN',
                                                    'OP'=>'=',
-                                                   'V'=>'{%LOGIN%}'
+                                                   'V'=>'[%LOGIN%]'
                                                    ),
                                              'TRIGGER_VAR'=>'LOGIN',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'LOGIN'
                                              ),
                                        array(
-                                             'FILTER'=>'LOGIN LIKE CONCAT({%dynLOGIN%},\'%\')',
+                                             'FILTER'=>'LOGIN LIKE CONCAT([%dynLOGIN%],\'%\')',
                                              'TRIGGER_VAR'=>'dynLOGIN',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'dynLOGIN'
@@ -100,14 +100,14 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'PASSWORD',
                                                    'OP'=>'=',
-                                                   'V'=>'{%PASSWORD%}'
+                                                   'V'=>'[%PASSWORD%]'
                                                    ),
                                              'TRIGGER_VAR'=>'PASSWORD',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'PASSWORD'
                                              ),
                                        array(
-                                             'FILTER'=>'PASSWORD LIKE CONCAT({%dynPASSWORD%},\'%\')',
+                                             'FILTER'=>'PASSWORD LIKE CONCAT([%dynPASSWORD%],\'%\')',
                                              'TRIGGER_VAR'=>'dynPASSWORD',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'dynPASSWORD'
@@ -116,7 +116,7 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'USER_ID',
                                                    'OP'=>'=',
-                                                   'V'=>'{%USER_ID%}'
+                                                   'V'=>'[%USER_ID%]'
                                                    ),
                                              'TRIGGER_VAR'=>'USER_ID',
                                              'DISABLE_IF'=>'0',
@@ -126,14 +126,14 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'EMAIL',
                                                    'OP'=>'=',
-                                                   'V'=>'{%EMAIL%}'
+                                                   'V'=>'[%EMAIL%]'
                                                    ),
                                              'TRIGGER_VAR'=>'EMAIL',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'EMAIL'
                                              ),
                                        array(
-                                             'FILTER'=>'EMAIL LIKE CONCAT({%dynEMAIL%},\'%\')',
+                                             'FILTER'=>'EMAIL LIKE CONCAT([%dynEMAIL%],\'%\')',
                                              'TRIGGER_VAR'=>'dynEMAIL',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'dynEMAIL'

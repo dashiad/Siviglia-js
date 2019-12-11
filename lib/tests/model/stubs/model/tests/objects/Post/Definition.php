@@ -59,6 +59,10 @@ class Definition extends \lib\model\BaseModelDefinition
                 'LABEL'=>'Created on',
                 'SHORTLABEL'=>'Created',
                 'ISLABEL'=>'false'
+            ],
+            'likes'=>[
+                'TYPE'=>'Integer',
+                'LABEL'=>'Likes'
             ]
         ),
 

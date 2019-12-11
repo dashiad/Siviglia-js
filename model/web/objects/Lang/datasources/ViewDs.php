@@ -101,7 +101,7 @@ class ViewDs
                                              'FILTER'=>array(
                                                    'F'=>'id_lang',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_lang%}'
+                                                   'V'=>'[%id_lang%]'
                                                    ),
                                              'FILTERREF'=>'id_lang'
                                              )

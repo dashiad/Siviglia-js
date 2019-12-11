@@ -79,7 +79,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'value',
                                                    'OP'=>'=',
-                                                   'V'=>'{%value%}'
+                                                   'V'=>'[%value%]'
                                                    ),
                                              'TRIGGER_VAR'=>'value',
                                              'DISABLE_IF'=>'0',
@@ -89,14 +89,14 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'lang',
                                                    'OP'=>'=',
-                                                   'V'=>'{%lang%}'
+                                                   'V'=>'[%lang%]'
                                                    ),
                                              'TRIGGER_VAR'=>'lang',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'lang'
                                              ),
                                        array(
-                                             'FILTER'=>'lang LIKE {%dynlang%}',
+                                             'FILTER'=>'lang LIKE [%dynlang%]',
                                              'TRIGGER_VAR'=>'dynlang',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'dynlang'
@@ -105,7 +105,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'id_string',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_string%}'
+                                                   'V'=>'[%id_string%]'
                                                    ),
                                              'TRIGGER_VAR'=>'id_string',
                                              'DISABLE_IF'=>'0',
@@ -115,7 +115,7 @@ class AdminFullList
                                              'FILTER'=>array(
                                                    'F'=>'id_translation',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_translation%}'
+                                                   'V'=>'[%id_translation%]'
                                                    ),
                                              'TRIGGER_VAR'=>'id_translation',
                                              'DISABLE_IF'=>'0',

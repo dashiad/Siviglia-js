@@ -109,7 +109,7 @@ class View
                                              'FILTER'=>array(
                                                    'F'=>'id_page',
                                                    'OP'=>'=',
-                                                   'V'=>'{%id_page%}'
+                                                   'V'=>'[%id_page%]'
                                                    ),
                                              'FILTERREF'=>'id_page'
                                              )

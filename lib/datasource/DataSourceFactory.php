@@ -31,6 +31,11 @@ class DataSourceFactory
                 return $instance;
 
             $mainDef=$csN::$definition;
+            if(isset($mainDef["ROLE"]) && $mainDef["ROLE"]=="MULTIPLE")
+            {
+                return new \lib\datasource\MultipleDatasource($objName,$dsName,$mainDef,$serializer);
+            }
+
 
 
             if(!$serializer) {
