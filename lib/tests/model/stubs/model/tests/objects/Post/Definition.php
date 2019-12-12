@@ -66,6 +66,7 @@ class Definition extends \lib\model\BaseModelDefinition
             ]
         ),
 
+
         'ALIASES'=>array(
             'comments'=>array(
                 'TYPE'=>'InverseRelation',

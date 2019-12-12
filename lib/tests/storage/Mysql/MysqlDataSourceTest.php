@@ -145,7 +145,27 @@ class MysqlDataSourceTest extends TestCase
     }
     function testGroupings()
     {
+        $this->init();
+        $datasource=\lib\datasource\DataSourceFactory::getDataSource("/model/tests/Post","Grouped",$this->serializer);
+        $res=$datasource->fetchGrouped("creator_id");
+        $this->assertEquals(4,$res->count());
+        $this->assertEquals(28,$res[0]->likes);
+        $this->assertEquals(1,$res[0]->creator_id);
+        $this->assertEquals(3,$res[0]->N);
+    }
+    function testGroupings2()
+    {
+        $this->init();
+        $datasource=\lib\datasource\DataSourceFactory::getDataSource("/model/tests/Post","Grouped",$this->serializer);
+        $res=$datasource->fetchGrouped("likes",10);
+        $this->assertEquals(5,$res->count());
+        // Valores entre 0 y 10
+        $this->assertEquals(2,$res[0]->N);
+        $this->assertEquals(0,$res[0]->likes);
 
+        // Valores entre 10 y 20
+        $this->assertEquals(3,$res[1]->N);
+        $this->assertEquals(10,$res[1]->likes);
     }
 
 

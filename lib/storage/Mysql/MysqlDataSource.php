@@ -114,7 +114,7 @@ include_once(LIBPATH."/datasource/DataSource.php");
             }
             // Si hay agrupacion, hay que ver con que rango hay que comparar la query inicial, con la tabla de rangos.
             $this->serializer->getConnection()->doQ("DROP TABLE IF EXISTS GroupedData");
-            $fullQuery="CREATE TABLE GroupedData AS ".$fullQuery.$groupExpression;
+            $fullQuery="CREATE  TABLE GroupedData AS ".$fullQuery.$groupExpression;
             $this->serializer->getConnection()->doQ($fullQuery);
             $q="SELECT MIN($groupingField) as ming,MAX($groupingField) as maxg FROM GroupedData";
 
