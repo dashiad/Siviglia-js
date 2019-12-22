@@ -36,12 +36,8 @@ class AclManager
     {
         if (!$serializer)
         {
-            global $APP_NAMESPACES;
-            if(in_array("web",$APP_NAMESPACES))
-                $tdb="web";
-            else
-                $tdb=$APP_NAMESPACES[0];
-            $serializer = Registry::$registry["serializers"][$tdb];
+            global $Config;
+            $serializer=\Registry::getService("storage")->getSerializerByName($Config["SERIALIZERS"][$Config["DEFAULT_SERIALIZER"]]);
         }
 
         $this->itemTypes = array("aro", "aco", "axo");

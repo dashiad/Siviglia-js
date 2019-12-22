@@ -26,10 +26,10 @@ class StorageWriterCursor extends TestCase
     function buildCustomSerializer()
     {
         if($this->serializer===null) {
-            include_once(__DIR__."/res/SimplePackage.php");
-            $package=new \lib\tests\data\res\SimplePackage();
+
+            $package=new \lib\tests\data\res\model\Ads\Package();
             $modelService=\Registry::getService("model");
-            $modelService->addPackage($package);
+            $modelService->addPackage("test",$package);
 
             $serializerService=\Registry::getService("storage");
             $serializerService->addSerializer("ADSManager-CSV",
@@ -39,9 +39,8 @@ class StorageWriterCursor extends TestCase
                     "PARAMS"=>[]
                 ]
                 );
-            $esDefinition=["NAME"=>"MAIN_ES",
-                           "TYPE"=>"ES",
-                           "ES"=>["servers"=>[ES_TEST_SERVER],"port"=>ES_TEST_PORT,"index"=>ES_TEST_INDEX]];
+            global $Config;
+            $esDefinition=$Config["SERIALIZERS"]["es"];
             $serializerService->addSerializer("MAIN_ES",$esDefinition);
             // Obtenemos el serializer para destruir el indice destino si es necesario.
             $es=$serializerService->getSerializerByName("MAIN_ES");
@@ -72,11 +71,13 @@ class StorageWriterCursor extends TestCase
                 "serializer"=>"ADSManager-CSV"
             ]
         ]);
+        global $Config;
+        $testIndex=$Config["SERIALIZERS"]["es"]["ES"]["index"];
         $cr->init(
             [
                 "serializer"=>"MAIN_ES",
                 "batchSize"=>10,
-                "target"=>ES_TEST_INDEX
+                "target"=>$testIndex
             ]
         );
 

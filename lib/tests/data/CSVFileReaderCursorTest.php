@@ -66,7 +66,7 @@ class CSVFileReaderCursorTest extends TestCase
         $cr->init([
             "callback"=>function($item,$cursor) use (& $columns,& $sum,& $nSet){
                 $p=$item;
-                $sum+=$item["HOUR"];
+                $sum+=$item["Hour"];
                 $nSet+=isset($item["Ad Exchange impressions"])?1:0;
                 return $item;
             }]);

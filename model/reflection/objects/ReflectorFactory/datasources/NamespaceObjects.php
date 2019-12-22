@@ -35,6 +35,7 @@ class NamespaceObjects
                 'PERMISSION'=>'REFLECTION'
             )
         ),
+        'SOURCE'=>[
         'STORAGE'=>array(
             'DICTIONARY'=>array(
                 'DEFINITION'=>array(
@@ -43,6 +44,7 @@ class NamespaceObjects
                 )
             )
         )
+            ]
     );
 
     function getLayerObjects($ds)

@@ -47,8 +47,10 @@ class QueryBuilderTest extends TestCase
     }
     function getDefaultSerializer()
     {
+        global $Config;
+        $sc=$Config["SERIALIZERS"]["default"]["ADDRESS"];
         if($this->serializer===null)
-            $this->serializer=new \lib\storage\Mysql\MysqlSerializer(["NAME"=>"MAIN_MYSQL","ADDRESS"=>["host" => _DB_SERVER_, "user" => _DB_USER_, "password" => _DB_PASSWORD_,"database"=>"test"]]);
+            $this->serializer=new \lib\storage\Mysql\MysqlSerializer(["NAME"=>"MAIN_MYSQL","ADDRESS"=>["host" => $sc["host"], "user" => $sc["user"], "password" => $sc["password"],"database"=>"test"]]);
         return $this->serializer;
     }
 
@@ -476,28 +478,6 @@ class QueryBuilderTest extends TestCase
         );
     }
 
-    function testAggregation()
-    {
-        $def=array(
-            "TABLE"=>QueryBuilderTest::TEST_TABLE_NAME,
-            'PARAMS'=>array(
-                'type'=>array("TYPE"=>"Decimal","REQUIRED"=>true)
-            ),
-            'BASE'=>['Total_impressions','Unified_pricing_rule','Ad_Exchange_revenue'],
-            'GROUPBY'=>"Unified_pricing_rule => (1000)Total_impressions => (10)Ad_Exchange_revenue"
-
-        );
-        $serializer=$this->getDefaultSerializer();
-        $qb=new QueryBuilder($serializer,$def,null);
-        $t=$qb->build();
-        $res=json_encode($t);
-        $ser=$this->getDefaultSerializer();
-        $client=$ser->getConnection();
-        $res2=$client->query($t);
-        $this->assertEquals('{"index":"SampleData","_source":["Total_impressions","Unified_pricing_rule","Ad_Exchange_revenue"],"timeout":"30000ms","body":{"aggs":{"Unified_pricing_rule":{"terms":{"field":"Unified_pricing_rule","size":1000},"aggs":{"Total_impressions":{"histogram":{"field":"Total_impressions","interval":"1000"},"aggs":{"Ad_Exchange_revenue":{"histogram":{"field":"Ad_Exchange_revenue","interval":"10"}}}}}}}}}',
-            $res
-        );
-    }
 
     /**
      *  Test de parametros de paginacion

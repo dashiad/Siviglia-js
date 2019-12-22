@@ -1,15 +1,15 @@
 <?php
-            global $SERIALIZERS;
+            $serializer=\Registry::getService("storage")->getSerializerByName('web');
+            $params=Registry::$registry["PAGE"];
             $formKeys=null;;
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+
 ?>
 
 
-                [*/FORMS/form({"object":"WebUser","layer":"backoffice","name":"EditAction","form":"&$form"})]        
+                [*/FORMS/form({"object":"WebUser","layer":"backoffice","name":"EditAction","form":"&$form"})]
                 [_TITLE]EditAction WebUser[#]
                 [_DESCRIPTION]Form Description[#]
-                [_MODEL({"keys":"$formKeys","serializer":"$serializer","model":"&$currentModel"})][#]                           
+                [_MODEL({"keys":"$formKeys","serializer":"$serializer","model":"&$currentModel"})][#]
                 [_FORMGROUP]
                         [_TITLE]Form Group Title[#]
                         [_DESCRIPTION]Form Group Description[#]
@@ -78,10 +78,10 @@
 						[_ERROR({"type":"INVALID_CHARACTERS","code":"102"})][@L]WebUser__EMAIL_INVALID_CHARACTERS[#][#]
 					[#]
 				[#]
-         
+
                         [#]
                 [#]
                 [_BUTTONS]
                         [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
-                [#]        
+                [#]
           [#]

@@ -244,7 +244,7 @@ class BaseModel extends BaseTypedObject
 
         foreach ($this->__fields as $key => $value)
         {
-            if ($value->is_set())
+            if ($value->hasOwnValue())
             {
                 $serialized=$serializer->serializeType($key,$value->getType());
                 if(!is_array($serialized))
@@ -380,7 +380,7 @@ class BaseModel extends BaseTypedObject
 
 
 
-    static function getTableName($objectName, $def)
+    static function getObjectTableName($objectName, $def)
     {
 
         if ($def["TABLE"])

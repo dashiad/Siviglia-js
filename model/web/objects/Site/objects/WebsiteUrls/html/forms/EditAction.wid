@@ -1,15 +1,13 @@
 <?php
-            global $SERIALIZERS;
             $formKeys=array("id_websiteUrl"=>Registry::$registry["params"]["id_websiteUrl"]);;
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+            $serializer=\Registry::getService("storage")->getSerializerByName('web');
 ?>
 
 
-                [*/FORMS/form({"object":"Sites/WebsiteUrls","layer":"backoffice","name":"EditAction","form":"&$form"})]        
+                [*/FORMS/form({"object":"Sites/WebsiteUrls","layer":"backoffice","name":"EditAction","form":"&$form"})]
                 [_TITLE]EditAction Sites\WebsiteUrls[#]
                 [_DESCRIPTION]Form Description[#]
-                [_MODEL({"keys":"$formKeys","serializer":"$serializer","model":"&$currentModel"})][#]                           
+                [_MODEL({"keys":"$formKeys","serializer":"$serializer","model":"&$currentModel"})][#]
                 [_FORMGROUP]
                         [_TITLE]Form Group Title[#]
                         [_DESCRIPTION]Form Group Description[#]
@@ -59,10 +57,10 @@
 						[_ERROR({"type":"UNSET","code":"1"})][@L]Sites\WebsiteUrls__priority_UNSET[#][#]
 					[#]
 				[#]
-         
+
                         [#]
                 [#]
                 [_BUTTONS]
                         [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
-                [#]        
+                [#]
           [#]

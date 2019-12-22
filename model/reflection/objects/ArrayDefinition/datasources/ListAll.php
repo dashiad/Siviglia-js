@@ -25,6 +25,7 @@ class ListAll
                 'PERMISSION'=>'REFLECTION'
             )
         ),
+        'SOURCE'=>[
         'STORAGE'=>array(
             'DICTIONARY'=>array(
                 'DEFINITION'=>array(
@@ -33,6 +34,7 @@ class ListAll
                 )
             )
         )
+            ]
     );
 }
 ?>

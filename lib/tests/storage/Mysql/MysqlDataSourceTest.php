@@ -18,33 +18,37 @@ class MysqlDataSourceTest extends TestCase
     var $serializer=null;
     function getTestPackage()
     {
-        include_once(LIBPATH . "/tests/model/stubs/SimplePackage.php");
-        return new \lib\tests\model\stubs\SimplePackage();
+        return new \lib\tests\model\stubs\model\tests\Package();
     }
 
     function init()
     {
+        global $Config;
+        $sc=$Config["SERIALIZERS"]["modeltests"]["ADDRESS"];
         if ($this->testResolverIncluded == false) {
-            \Registry::getService("model")->addPackage($this->getTestPackage());
+            \Registry::getService("model")->addPackage("modeltests",$this->getTestPackage());
             $serService=\Registry::getService("storage");
             $serService->addSerializer("web",
 
                 [
                     "TYPE"=>"Mysql",
-                    "NAME"=>"web",
+                    "NAME"=>"modeltests",
                     "ADDRESS"=>[
-                        "host" => _DB_SERVER_,
-                        "user" => _DB_USER_,
-                        "password" => _DB_PASSWORD_,
-                        "database"=>"modeltests"
+                        "host" => $sc["host"],
+                        "user" => $sc["user"],
+                        "password" => $sc["password"],
+                        "database"=>$sc["database"]
                     ]
                 ]
 
             );
+            global $Config;
+
+            $conn=new \lib\storage\Mysql\Mysql($Config["SERIALIZERS"]["modeltests"]["ADDRESS"]);
+            $conn->connect();
+            $conn->importDump(LIBPATH . "/tests/model/stubs/samplemodel.sql");
             $serializer=$serService->getSerializerByName("web");
             $this->serializer=$serializer;
-            $conn=$serializer->getConnection();
-            $conn->importDump(LIBPATH . "/tests/model/stubs/samplemodel.sql");
             $this->testResolverIncluded=true;
         }
     }
@@ -141,7 +145,7 @@ class MysqlDataSourceTest extends TestCase
         $datasource->id=1;
         $res=$datasource->fetchAll();
         $n=$res->FullList[0]->Posts->count();
-        $this->assertEquals(1,$n);
+        $this->assertEquals(3,$n);
     }
     function testGroupings()
     {

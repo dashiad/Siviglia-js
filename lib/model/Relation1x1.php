@@ -48,6 +48,10 @@ class Relation1x1 extends ModelBaseRelation
             }
         }
     }
+    function setValue($value)
+    {
+        return $this->set($value);
+    }
 
     function get()
     {
@@ -66,10 +70,10 @@ class Relation1x1 extends ModelBaseRelation
 
     function save()
     {
-        $nSaved = $this->relationValues->save();        
+        $nSaved = $this->relationValues->save();
         if ($nSaved == 1)
         {
-            $this->relation->setFromModel($this->relationValues[0]);            
+            $this->relation->setFromModel($this->relationValues[0]);
         }
     }
 
@@ -122,9 +126,9 @@ class Relation1x1 extends ModelBaseRelation
     }
 
     function copyField($type)
-    {    
+    {
         $this->relation->copyField($type);
-        
+
      }
     function __getRaw()
     {

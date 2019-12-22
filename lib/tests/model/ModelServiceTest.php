@@ -20,14 +20,14 @@ class ModelServiceTest extends TestCase
     var $testResolverIncluded=false;
     function getTestPackage()
     {
-        include_once(__DIR__."/stubs/SimplePackage.php");
-        return new \lib\tests\model\stubs\SimplePackage();
+        include_once(__DIR__ . "/stubs/model/tests/Package.php");
+        return new \lib\tests\model\stubs\model\tests\Package();
     }
     function getModelService()
     {
         if($this->testResolverIncluded==false)
         {
-            \Registry::getService("model")->addPackage($this->getTestPackage());
+            \Registry::getService("model")->addPackage("model",$this->getTestPackage());
             $this->testResolverIncluded=true;
         }
 
@@ -47,7 +47,7 @@ class ModelServiceTest extends TestCase
 
         $path=str_replace("//","/",$path);
 
-        $this->assertEquals(__DIR__.DIRECTORY_SEPARATOR."stubs/model/tests/objects/ClassA/html/forms/Test.php",$path);
+        $this->assertEquals(realpath(__DIR__.DIRECTORY_SEPARATOR."stubs/model/tests/objects/ClassA/html/forms/Test.php"),realpath($path));
     }
 
     // Nos aseguramos de que funciona el autoloader.

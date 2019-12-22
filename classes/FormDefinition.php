@@ -31,20 +31,20 @@ class FormDefinition extends ClassFileGenerator
         {
             $def["INDEXFIELD"]=$indexes;
         }
-        
+
         $fields=$actionDef->getFields();
         if($fields)
         {
             foreach($fields as $key=>$value)
-            {                
+            {
                 $def["FIELDS"][$key]=$value;
             // Se obtiene una instancia del tipo.
-                
+
             $type=\lib\model\types\TypeFactory::getType($value);
               $fullclass=get_class($type);
               $parts=explode('\\',$fullclass);
               $className=$parts[count($parts)-1];
-            // se obtiene el input asociado por defecto.            
+            // se obtiene el input asociado por defecto.
             $def["INPUTS"][$key]=array("TYPE"=>"/types/inputs/".$className,
                                        "PARAMS"=>array());
             }
@@ -53,7 +53,7 @@ class FormDefinition extends ClassFileGenerator
         {
             $def["NOFORM"]=true;
         }
-        return new FormDefinition($modelDef,$def,$actionDef);       
+        return new FormDefinition($modelDef,$def,$actionDef);
     }
     static function getFormClass($layer,$objName,$name)
     {
@@ -78,13 +78,13 @@ class FormDefinition extends ClassFileGenerator
     function saveModelMethods($generator)
     {
         $def=$this->getDefinition();
-        
+
            /* $generator->addMethod(array(
                 "NAME"=>"__construct",
                 "COMMENT"=>" Constructor for ".$this->name,
                 "CODE"=>"\t\t\t\\lib\\action\\Action::__construct(".$this->name."::\$definition);\n"
             ));*/
-        
+
             $this->addMethod(array(
                     "NAME"=>"validate",
                     "COMMENT"=>" Callback for validation of form :".$this->name,
@@ -92,7 +92,7 @@ class FormDefinition extends ClassFileGenerator
                         "params"=>array(
                             "COMMENT"=>" Parameters received,as a BaseTypedObject.\nIts fields are:\n".($def["INDEXES"]?"keys: ".implode(",",array_keys($def["INDEXES"]))."\n":"").
                                 ($def["FIELDS"]?"fields: ".implode(",",array_keys($def["FIELDS"])):"")
-                                        
+
                             ),
                         "actionResult"=>array("COMMENT"=>"\\lib\\action\\ActionResult instance.Errors found while validating this action must be notified to this object"
                             ),
@@ -104,7 +104,7 @@ class FormDefinition extends ClassFileGenerator
                     "CODE"=>"\n/"."* Insert the validation code here *"."/\n\n\t\treturn \$actionResult->isOk();\n"
 
                 ));
-        
+
             $this->addMethod(array(
                     "NAME"=>"onSuccess",
                     "COMMENT"=>" Callback executed when this form had success.".$this->name,
@@ -119,12 +119,12 @@ class FormDefinition extends ClassFileGenerator
                     "NAME"=>"onError",
                     "COMMENT"=>" Callback executed when this action had an error".$this->name,
                     "PARAMS"=>array(
-                        
+
                         "actionResult"=>array("COMMENT"=>"\\lib\\action\\ActionResult instance.Errors found while validating this action must be notified to this object"
                             )
                         ),
                     "CODE"=>"\n/"."* Insert callback code here *"."/\n\nreturn true;\n"
-                ));        
+                ));
     }
 
     function saveDefinition()
@@ -132,8 +132,8 @@ class FormDefinition extends ClassFileGenerator
         $definition=$this->getDefinition();
         if(!$this->parentModel->config->mustRebuild("htmlforms",$definition["NAME"],$this->filePath))
             return;
-            
-        $this->addProperty(array("NAME"=>"definition",                                  
+
+        $this->addProperty(array("NAME"=>"definition",
                                       "DEFAULT"=>$this->getDefinition()
                                       ));
         $this->saveModelMethods($generator);
@@ -152,15 +152,15 @@ class FormDefinition extends ClassFileGenerator
     {
         if( $this->definition["NOFORM"] )
             return;
-        
+
         if(!$this->parentModel->config->mustRebuild("htmlformLayouts",$this->definition["NAME"],$this->filePath))
-            return;        
-        
+            return;
+
         $phpCode = <<<'TEMPLATE'
-            global $SERIALIZERS;
+            $serializer=\Registry::getService("storage")->getSerializerByName('{%layer%}');
+            $params=\Registry::$registry["PAGE"];
             $formKeys={%formKeys%};
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('{%layer%}');
-            $serializer->useDataSpace($SERIALIZERS["{%layer%}"]["ADDRESS"]["database"]["NAME"]);
+            
 TEMPLATE;
         $phpCode="<"."?php\n".$phpCode."\n?>\n\n";
 
@@ -184,21 +184,21 @@ TEMPLATE;
                 [#]        
           [#]
 TEMPLATE;
-             
+
 
         $this->fillActionErrors($actionErrors);
-        
+
         if(is_array($actionErrors))
         {
-            
+
             foreach($actionErrors as $key2=>$value2)
             {
               $formErrors.="\t\t\t\t[_ERROR({\"type\":\"".$key2."\",\"code\":\"".$value2."\"})][@L]".$this->parentModel->objectName->className."_".$this->action->name."_".$key2."[#][#]\n";
             }
-            
+
         }
       // [*/types/inputs/Relation1x1Input({"name":"a3","labelField":"c2","valueField":"c1"})][#]
-      
+
       $actionRole=$this->action->getRole();
       switch($actionRole)
       {
@@ -210,7 +210,7 @@ TEMPLATE;
       case "AddRelation":
       case "SetRelation":
           {
-              $keys=$this->action->getIndexes();              
+              $keys=$this->action->getIndexes();
           }break;
       default:
           {
@@ -239,16 +239,16 @@ TEMPLATE;
 
           if(!$input)
           {
-              // Se obtiene el tipo basico de este campo                            
+              // Se obtiene el tipo basico de este campo
               $fullclass=get_class($type);
               $parts=explode('\\',$fullclass);
               $className=$parts[count($parts)-1];
               $input="/types/inputs/".$className."Input";
           }
           // Se obtienen las cadenas de errores por defecto para este campo.
-          $errors=array();          
+          $errors=array();
           $this->fillTypeErrors($type,$value,$errors);
-          
+
 
           $parameters=$this->definition["INPUTS"][$key]["PARAMS"];
           if( $parameters )
@@ -281,17 +281,17 @@ TEMPLATE;
                           $this->action->name." ".$this->parentModel->objectName->className,
                           $formErrors
                        );
-      
+
       $formWidget=$phpCode."\n".$formCode."\n";
-      
-      $formWidget=str_replace($searchs,$replaces,$formWidget);      
+
+      $formWidget=str_replace($searchs,$replaces,$formWidget);
       $path=$this->getFormPath();
-      file_put_contents($path."/".$this->definition["ACTION"]["ACTION"].".wid",$formWidget);      
+      file_put_contents($path."/".$this->definition["ACTION"]["ACTION"].".wid",$formWidget);
     }
 
     function fillBaseErrors($typeDef,& $errors)
     {
-        
+
         // Al final, de BaseTypeException solo quiero unset
             if( $typeDef["REQUIRED"] )
                 $errors["UNSET"]=1;
@@ -303,19 +303,19 @@ TEMPLATE;
         if(!is_file(PROJECTPATH."/$layer/objects/$objname/actions/".$this->action->name.".php"))
                 return;
         include_once(PROJECTPATH."/$layer/objects/$objname/actions/".$this->action->name.".php");
-        
+
         $exceptionClass="\\".$layer."\\".$objname."\\actions\\".$this->action->name."Exception";
-        
+
         if( !class_exists($exceptionClass) )
             return;
-        
-        
+
+
         $reflectionClass=new \ReflectionClass($exceptionClass);
 
         // Se obtienen las constantes
         $constants = $reflectionClass->getConstants ();
         foreach($constants as $key=>$value)
-        {        
+        {
 
          if( strpos($key,"ERR_")===0 )
             {
@@ -326,51 +326,51 @@ TEMPLATE;
     }
 
     function fillTypeErrors($type,$definition,& $errors)
-    {                
+    {
         // Se obtienen las constantes de la clase base, BaseType, para filtrarlas.
         // Se deben filtrar ya que dichas constantes son para excepciones internas,
         // no relacionadas con los errores que pueden aparecer en un formulario.
         $baseClass=new \ReflectionClass('\lib\model\types\BaseTypeException');
         $baseExceptions=$baseClass->getConstants();
-        
-        
-        if($definition["REQUIRED"])                        
+
+
+        if($definition["REQUIRED"])
             unset($baseExceptions["ERR_UNSET"]); // Queremos que se procese esta excepcion
-            
-        
-        
+
+
+
         $errors=array();
         $typeList=array_values(class_parents($type));
         $nEls=array_unshift($typeList,get_class($type));
         $typeList=array_values(array_reverse($typeList));
-        
+
         foreach($typeList as $key=>$value)
         {
             $parts=explode("\\",$value);
             $className=$parts[count($parts)-1];
-            
+
             $exceptionClass=$value."Exception";
-            
+
             if( !class_exists($exceptionClass) )
                 continue;
-            
+
             $reflectionClass=new \ReflectionClass($exceptionClass);
             $constants=$reflectionClass->getConstants();
             foreach($constants as $key2=>$value2)
             {
-                
+
                 if(array_key_exists($key2,$baseExceptions))
                         continue;
-                // Se filtran las excepciones que existen en la clase base.                
+                // Se filtran las excepciones que existen en la clase base.
                 if( strpos($key2,"ERR_")===0 )
                 {
                     $key2=substr($key2,4);
                 }
                 $errors[$key2]=$value2;
-            }  
-            
+            }
+
         }
-        
-                
+
+
     }
 }

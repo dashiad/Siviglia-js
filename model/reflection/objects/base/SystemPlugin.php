@@ -9,7 +9,7 @@ class SystemPlugin {
         $fNames=$this->getFieldNames($tableName);
         for($k=0;$k<count($fNames);$k++)
         {
-            
+
             if($objectDefinitions[$tableName]["FIELDS"][$fNames[$k]][$attrName]==$attrValue)
                 $results[]=$fNames[$k];
         }
@@ -17,13 +17,16 @@ class SystemPlugin {
     }
     function iterateOnModels($method)
     {
-        global $APP_NAMESPACES;
-        foreach($APP_NAMESPACES as $layer)
+        global $Config;
+        $packages=$Config["PACKAGES"];
+        for($k=0;$k<count($packages);$k++)
         {
-            $objects=ReflectorFactory::getObjectsByLayer($layer);
-            foreach($objects as $name=>$model)
+            $curPackage=$packages[$k];
+            $package=new \model\reflection\Package($curPackage);
+            $models=$package->getModels();
+            foreach($models as $name=>$model)
             {
-                $this->{$method}($layer,$name,$model);                
+                $this->{$method}($package,$name,$model);
             }
         }
     }
@@ -31,7 +34,7 @@ class SystemPlugin {
     {
         return ReflectorFactory::getLayer($layer);
     }
-    
+
     // Metodo para capturar eventos que no usamos
     function __call($method,$args)
     {

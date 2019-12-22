@@ -45,6 +45,7 @@ class FullListParam
                 )
             )
         ),
+        'SOURCE'=>[
         'STORAGE'=>array(
             'MYSQL'=>array(
                 'DEFINITION'=>array(
@@ -68,6 +69,7 @@ class FullListParam
                 )
             )
         )
+            ]
     );
 }
 ?>

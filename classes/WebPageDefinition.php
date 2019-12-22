@@ -180,9 +180,11 @@
                   "/html/Website"
                   )
               );
-          global $APP_NAMESPACES;
-          foreach($APP_NAMESPACES as $val)
-              $def["WIDGETPATH"][]="/$val/objects";
+          $packages=\model\reflection\ReflectorFactory::getPackageNames();
+          for($kk=0;$kk<count($packages);$kk++) {
+              $package = $packages[$kk];
+              $def["WIDGETPATH"][] = "/$package/objects";
+          }
           $def["WIDGETPATH"][]="/output/html/Widgets";
 
 
@@ -293,9 +295,13 @@
                   "/html/Website"
               )
           );
-          global $APP_NAMESPACES;
-          foreach($APP_NAMESPACES as $val)
-              $def["WIDGETPATH"][]="/$val";
+          $packages=\model\reflection\ReflectorFactory::getPackageNames();
+          for($kk=0;$kk<count($packages);$kk++) {
+              $package = $packages[$kk];
+              $def["WIDGETPATH"][]="/$package";
+          }
+
+
           $def["WIDGETPATH"][]="/output/html/Widgets";
           $listCodePath=$dsDef->getListCodePath($isadmin);
           if($isadmin)

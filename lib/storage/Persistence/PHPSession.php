@@ -12,13 +12,22 @@ namespace lib\storage\Persistence;
 class PHPSession implements \ArrayAccess
 {
     var $data=array();
+    static $id=null;
     function __construct()
     {
-        session_start();
-        $this->data=$_SESSION;
+        $this->startSession();
+    }
+    function startSession()
+    {
+        if(PHPSession::$id===null) {
+            session_start();
+            $this->data = $_SESSION;
+        }
+        PHPSession::$id=session_id();
     }
     function getId()
     {
+        $this->startSession();
         return session_id();
     }
     function persist($key,$value)

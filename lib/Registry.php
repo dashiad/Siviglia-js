@@ -34,7 +34,7 @@ class Registry
         Registry::$registry["user"] = $oCurrentUser;
         Registry::$registry[Registry::SERVICE_CONTAINER]->addService("user",$oCurrentUser);
 
-        \Registry::$registry["session"] = $session->ge1tId();
+        \Registry::$registry["session"] = $session->getId();
         \Registry::$registry["cookies"] = & $_COOKIE;
 
         if (isset($session["Registry/request_date"]))

@@ -126,6 +126,7 @@ class FullList
                      )
                      ),
                'PERMISSIONS'=>array('PUBLIC'),
+               'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(
@@ -212,7 +213,6 @@ class FullList
                                                    'V'=>'[%id_type%]'
                                                    ),
                                              'TRIGGER_VAR'=>'id_type',
-                                             'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'id_type'
                                              ),
                                        array(
@@ -269,6 +269,7 @@ class FullList
                                  )
                            )
                      )
+                   ]
                );
 }
 ?>

@@ -108,6 +108,7 @@ class FullPages
                            'FIELD'=>'description'
                            )
                      ),
+         'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(
@@ -125,6 +126,7 @@ class FullPages
                                  )
                            )
                      )
+             ]
                );
 }
 ?>

@@ -67,6 +67,7 @@ class AdminView
                            'PERMISSION'=>'adminView'
                            )
                      ),
+         'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(
@@ -92,6 +93,7 @@ class AdminView
                                  )
                            )
                      )
+             ]
                );
 }
 ?>

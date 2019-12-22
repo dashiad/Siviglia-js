@@ -9,7 +9,7 @@ class Layer extends \model\reflection\base\ClassFileGenerator
     {
         $this->layer=$layer;
         if(is_file(PROJECTPATH."/".$layer."/config/Config.php"))
-        {                
+        {
               $className='\\'.$layer.'\config\Config';
               $this->configInstance=new $className();
         }
@@ -19,29 +19,25 @@ class Layer extends \model\reflection\base\ClassFileGenerator
     {
        if(!$this->serializer)
        {
-          global $SERIALIZERS;
-          $this->serializer=\lib\storage\StorageFactory::getSerializer($SERIALIZERS[$this->layer]);
-          $dS=$SERIALIZERS[$this->layer]["ADDRESS"]["database"];
-          $this->serializer->useDataSpace($dS["NAME"]);          
+
        }
        return $this->serializer;
-    }    
+    }
     function rebuildStorage()
     {
-        
+
         if(!$this->configInstance->definition["DONT_REBUILD_DATASPACE"])
         {
-            
-            global $SERIALIZERS;
-            $dS=$SERIALIZERS[$this->layer]["ADDRESS"]["database"];
+
+
             $ser=$this->getSerializer();
-            
+
             if($this->serializer->existsDataSpace($dS))
                   $this->serializer->destroyDataSpace($dS);
-            
+
             $this->serializer->createDataSpace($dS);
-            
-            $this->serializer->useDataSpace($dS["NAME"]);          
+
+            $this->serializer->useDataSpace($dS["NAME"]);
             return true;
          }
         return false;
@@ -54,14 +50,14 @@ class Layer extends \model\reflection\base\ClassFileGenerator
     {
         $objects=\model\reflection\ReflectorFactory::getObjectsByLayer($this->layer);
         return $objects;
-        
+
     }
     function getQuickDefinitions()
     {
            return $this->configInstance->definition["QuickDef"];
     }
     function getPermissionsDefinition()
-    {     
+    {
             return $this->configInstance->permissions;
     }
 

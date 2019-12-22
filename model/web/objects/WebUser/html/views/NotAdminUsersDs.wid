@@ -1,9 +1,7 @@
 <?php
-            
-            global $SERIALIZERS;
-            $params=Registry::$registry["PAGE"];
-            $serializer=Registry::$registry["serializers"]["web"];
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);            $params=\Registry::$registry["PAGE"];
+
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$params=Registry::$registry["PAGE"];
 ?>
             [*/VIEWS/OBJECT_VIEW({"currentPage":"$currentPage","object":"WebUser","dsName":"NotAdminUsersDs","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                     [_TITLE]USER_ID[#]
@@ -65,7 +63,7 @@
 					[_LEFT]PHOTO[#]
 					[_RIGHT][*:/types/File({"name":"PHOTO","model":"$iterator"})][#][#]
 				[#]
- 
+
                         [#]
-                    [#]    
+                    [#]
            [#]

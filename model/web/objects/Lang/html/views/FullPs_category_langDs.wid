@@ -1,8 +1,7 @@
 <?php
-            global $SERIALIZERS;
+
+            $serializer=\Registry::getService("storage")->getSerializerByName('backoffice');
             $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('backoffice');
-            $serializer->useDataSpace($SERIALIZERS["backoffice"]["ADDRESS"]["database"]["NAME"]);
 ?>
 [*LIST_DS({"currentPage":"$currentPage","object":"Lang","dsName":"FullPs_category_langDs","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_HEADER]
@@ -26,7 +25,7 @@
 						[_COLUMN][_LABEL]description[#][#]
 						[_COLUMN][_LABEL]link_rewrite[#][#]
 						[_COLUMN][_LABEL]ps_category_id_category[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/String({"name":"name","model":"$iterator"})][#][#][#]
@@ -48,5 +47,5 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]

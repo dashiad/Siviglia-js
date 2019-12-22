@@ -1,8 +1,6 @@
 <?php
-            global $SERIALIZERS;
-            $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$params=Registry::$registry["PAGE"];
 ?>
 [*LIST_DS({"currentPage":"$currentPage","object":"/model/Site","dsName":"FullPages","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_HEADER]
@@ -28,7 +26,7 @@
 						[_COLUMN][_LABEL]title[#][#]
 						[_COLUMN][_LABEL]tags[#][#]
 						[_COLUMN][_LABEL]description[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/Relationship({"name":"id_site","model":"$iterator"})][#][#][#]
@@ -52,5 +50,5 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]

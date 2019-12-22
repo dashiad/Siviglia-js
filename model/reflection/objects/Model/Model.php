@@ -1,11 +1,11 @@
 <?php
 /**
- * ADVERTENCIA : UN OBJETO MODELO NECESITA: 
- * 1) CREARSE 
- * 2) LLAMAR A INITIALIZE() 
+ * ADVERTENCIA : UN OBJETO MODELO NECESITA:
+ * 1) CREARSE
+ * 2) LLAMAR A INITIALIZE()
  * 3) LLAMAR A o()
- * Para evitar relaciones circulares. 
- * 
+ * Para evitar relaciones circulares.
+ *
  * @author Jose (13/10/2012)
  */
 namespace model\reflection;
@@ -42,7 +42,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
        try{
            $this->baseDir=$this->objectName->getDestinationFile();
            $this->definition=\lib\model\types\TypeFactory::getObjectDefinition($objectName,$layer);
-           $this->layer=$this->objectName->layer;                     
+           $this->layer=$this->objectName->layer;
            parent::__construct(
                           "Definition",
                            $this->layer,
@@ -51,7 +51,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
                           );
       }
       catch(\lib\model\types\BaseTypeException $e)
-      {                       
+      {
           $this->hasDefinition=false;
       }
       $this->config=new \model\reflection\base\ModelConfiguration($this);
@@ -64,7 +64,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         if(isset($this->definition["EXTENDS"]))
         {
             $this->extendedModel=$this->definition["EXTENDS"];
-            
+
         }
         $this->acls=io($this->definition,"DEFAULT_PERMISSIONS",null);
 
@@ -76,22 +76,22 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         if(isset($this->definition["DEFAULT_SERIALIZER"]))
         {
             // TODO! WARNING! Siempre devuelve el serializador de lectura!!
-            global $SERIALIZERS;
-            $this->serializer=$SERIALIZERS[$this->definition["DEFAULT_SERIALIZER"]];
+            global $Config;
+            $this->serializer=$Config["SERIALIZERS"][$this->definition["DEFAULT_SERIALIZER"]];
 
 
         }
         if(isset($this->definition["STATES"]))
-        {            
+        {
 
-            $stateField=$this->getStateField();                       
+            $stateField=$this->getStateField();
             if($stateField)
             {
                 $keys=array_keys($stateField);
                 $sfield=$stateField[$keys[0]];
                 $states=$this->definition["STATES"]["STATES"];
                 $sfield->setStates($states);
-            }                
+            }
         }
         if(isset($this->definition["TYPEFIELD"]))
         {
@@ -107,7 +107,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
             foreach($this->definition["STORAGE"] as $key=>$value)
                $this->addStorageConfiguration($key,$value);
         }
-        
+
     }
     /*
      * 'DEFAULT_SERIALIZER'=>"default",
@@ -132,7 +132,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         $inst=parent::getField($fieldName);
         if($inst)
             return $inst;
-        
+
         if($this->extendedModel)
         {
             $ext=\model\reflection\ReflectorFactory::getModel($this->extendedModel);
@@ -285,14 +285,14 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         //$extModelInstance=\model\reflection\ReflectorFactory::getModel($this->extendedModel);
         //return $extModelInstance->getIndexFields();
     }
-        
+
     function getOwnershipField()
-    {           
+    {
        return io($this->definition,"OWNERSHIP",null);
-    }    
-       
+    }
+
     function loadAliases()
-    {        
+    {
        $this->aliases=array();
        if(!isset($this->definition["ALIASES"]))return;
        // Codigo para eliminar aliases duplicados.
@@ -301,7 +301,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
        {
            $this->aliases[$key]=\model\reflection\Model\Alias\AliasFactory::getAlias($this,$key,$value);
        }
-            
+
     }
     function getAliases()
     {
@@ -309,11 +309,11 @@ class Model extends \model\reflection\base\SimpleModelDefinition
     }
 
     function addAlias($name,$alias)
-    {        
-        echo "Aniadiendo el alias $name al objeto ".$this->getNamespaced()."<br>";    
+    {
+        echo "Aniadiendo el alias $name al objeto ".$this->getNamespaced()."<br>";
         $this->aliases[$name]=$alias;
     }
-        
+
     function getFieldOrAlias($name)
     {
         $field=$this->getField($name);
@@ -327,7 +327,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         return $this->definition["ROLE"];
     }
     function addStorageConfiguration($storageEngine,$configuration)
-    {        
+    {
         $this->storageConfigs[$storageEngine]=$configuration;
     }
     function getStorageConfiguration($storageEngine)
@@ -363,7 +363,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
             if($def["ROLE"]=="MULTIPLE_RELATION")
             {
                 $def["MULTIPLE_RELATION"]=$this->definition["MULTIPLE_RELATION"];
-            }            
+            }
 
             // CAMPOS INDICES USADOS POR ESTE OBJETO.Es un array de campos.
             if($this->indexFields)
@@ -404,14 +404,14 @@ class Model extends \model\reflection\base\SimpleModelDefinition
             // if($this->serializer)
             //     $def["SERIALIZER"]=$this->serializer->getDefinition();
 
-             
+
              if($this->modelPermissions)
                  $def["PERMISSIONS"]=$this->modelPermissions->getDefinition();
 
              $owner=$this->getOwnershipField();
 
              if($owner)
-             {                 
+             {
                      $def["OWNERSHIP"]=$owner;
              }
 
@@ -421,7 +421,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
              }
              if(isset($this->definition["STATES"]))
                  $def["STATES"]=$this->definition["STATES"];
-             
+
              if(isset($this->storageConfigs))
              {
                  foreach($this->storageConfigs as $key=>$value)
@@ -431,16 +431,16 @@ class Model extends \model\reflection\base\SimpleModelDefinition
              }
              return $def;
         }
-        
+
         function addAction($name,$actionObj)
         {
             $this->actions[$name]=$actionObj;
         }
-        
+
         function save($all=true)
         {
             $this->saveDefinition();
-            
+
             if($all)
             {
                 foreach($this->actions as $key=>$value)
@@ -459,9 +459,9 @@ class Model extends \model\reflection\base\SimpleModelDefinition
                                      "ACCESS"=>"static",
                                      "DEFAULT"=>$def));
             $this->generate();
-            
+
         }
-        
+
         function addDataSource($dataSource)
         {
             $this->datasources[$dataSource->getName()]=$dataSource;
@@ -477,7 +477,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
                     return $ser;
                     // TODO : Hacer que utilice su custom namespace
                     $curSerializer->useDataSpace($serDef["database"]);
-                    
+
                 }
                 else
                 {
@@ -485,7 +485,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
                     return $layer->getSerializer();
                 }
         }
-        
+
 
         function getDataSources()
         {
@@ -500,7 +500,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
 
             return io($this->datasources,$name,null);
         }
-        
+
 
         function loadDataSources()
         {
@@ -519,9 +519,9 @@ class Model extends \model\reflection\base\SimpleModelDefinition
                 $this->datasources[$curDs]=new \model\reflection\DataSource($curDs,$this);
                 $this->datasources[$curDs]->initialize();
             }
-            $this->datasourcesLoaded=true;            
+            $this->datasourcesLoaded=true;
             return $this->datasources;
-        }        
+        }
 
         function loadModelPermissions()
         {
@@ -550,7 +550,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
             $this->actions=array();
             $actions=$this->loadFilesFrom($this->objectName->getPath('')."/actions/","/.*\.php/",true,false,true);
             foreach($actions as $curAct)
-            {                
+            {
                 $this->actions[$curAct]=new \model\reflection\Action($curAct,$this);
                 $this->actions[$curAct]->initialize();
             }
@@ -618,7 +618,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
             $vals=array_values($stateField);
             $types=array_values($vals[0]->getType());
             return $types[0]->getDefaultState();
-            
+
         }
 
         function saveInitialData()
@@ -638,8 +638,8 @@ class Model extends \model\reflection\base\SimpleModelDefinition
                   if(class_exists($className))
                   {
                       $setupInstance= new $className();
-                      if(method_exists($setupInstance,"install"))                            
-                           $setupInstance->install();                            
+                      if(method_exists($setupInstance,"install"))
+                           $setupInstance->install();
                    }
                }
         }
@@ -650,7 +650,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
             echo "<h3>Generando relaciones derivadas para ".$this->objectName->getNamespaced()."</h3>";
             foreach($relations as $relName=>$relObject)
             {
-                echo "Analizando relacion $relName<br>";                
+                echo "Analizando relacion $relName<br>";
                 $relObject->createDerivedRelation();
             }
         }
@@ -703,6 +703,6 @@ class Model extends \model\reflection\base\SimpleModelDefinition
             include_once(__DIR__."/ModelMetadata.php");
             return new \model\reflection\Model\ModelMetadata($objectName);
         }
-        
+
 }
 

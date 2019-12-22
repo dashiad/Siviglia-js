@@ -1,9 +1,7 @@
 <?php
-            
-            global $SERIALIZERS;
-            $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);            $params=\Registry::$registry["PAGE"];
+
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$params=Registry::$registry["PAGE"];
 ?>
             [*/VIEWS/OBJECT_VIEW({"currentPage":"$currentPage","object":"WebUser","dsName":"ViewDs","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                     [_TITLE][#]
@@ -25,8 +23,8 @@
 					[_LEFT]EMAIL[#]
 					[_RIGHT][*:/types/String({"name":"EMAIL","model":"$iterator"})][#][#]
 				[#]
- 
+
                         [#]
-                    [#]    
+                    [#]
            [#]
 

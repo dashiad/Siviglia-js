@@ -203,20 +203,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
             }
         }
         }
-/*
-        //Reemplazo de serializadores
-        preg_match_all("/\|\|([^|]*)\|\|/", $qText, $matches);
-        if (isset($matches[1])) {
-            $replaces=array();
-            global $SERIALIZERS;
-            for ($k = 0; $k < count($matches[1]); $k++) {
-                $db=$matches[1][$k];
-                $dbName=$SERIALIZERS[$db]["ADDRESS"]["database"]["NAME"];
-                $replaces["||".$db."||"]=$dbName;
-            }
-            $qText=str_replace(array_keys($replaces),array_values($replaces),$qText);
-        }
-        //echo $qText;*/
+
         return json_decode($qText,true);
     }
 

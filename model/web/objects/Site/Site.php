@@ -25,7 +25,7 @@ class Site extends \lib\model\BaseModel
     const SITECACHE_FILEMAP=4;
 
     function getRelativeRoot(){
-        return \Registry::getService("paths")->getRelativeSitePath()."/".$this->namespace;
+        return "/sites/".$this->namespace;
     }
     function getRoot(){return PROJECTPATH.$this->getRelativeRoot();}
     function getCachePath($isWork=false)
@@ -50,7 +50,7 @@ class Site extends \lib\model\BaseModel
     function getDocumentRoot(){return $this->getRoot()."/html/";}
     function getClassPath(){return $this->getRoot()."/".ucfirst($this->namespace).".php";}
     function toRelative($path){return "/".str_replace(PROJECTPATH,"",$path);}
-    function getNamespace(){return \Registry::getService("paths")->getSiteNamespace().'\\'.$this->namespace;}
+    function getNamespace(){return Site::getSiteNamespace().'\\'.$this->namespace;}
     function getConfig(){
         if($this->config==null) {
             $name = $this->getNamespace() . "\\Config";
@@ -90,7 +90,7 @@ class Site extends \lib\model\BaseModel
 
     function getSectionResourcesPath($pageName)
     {
-        return \Registry::getService("paths")->getSiteDocumentRoot($this->name).$this->getRelativeSectionResourcesPath($pageName);
+        return Site::getSiteDocumentRoot($this->name).$this->getRelativeSectionResourcesPath($pageName);
     }
 
     static function getClass($name){return '\sites\\'.ucfirst($name);}
@@ -164,6 +164,20 @@ class Site extends \lib\model\BaseModel
         return $this->id_site;
     }
 
+    static function getRelativeSitePath()
+    {
+        return "/sites";
+    }
+    static function getSitePath()
+    {
+        return PROJECTPATH.Paths::getRelativeSitePath();
+    }
+    static function getSiteNamespace()
+    {
+        return '\\sites';
+    }
+
+
     static function getCurrentWebsite()
     {
         if(isset(Site::$currentSite))
@@ -182,6 +196,7 @@ class Site extends \lib\model\BaseModel
         {
             throw new SiteException(SiteException::ERR_NO_SITE_FOR_HOST,array("host"=>$host));
         }
+
         return \getModel("\\model\\web\\Site",array("id_site"=>$it[0]->id_site));
     }
     static function getSiteFromNamespace($name)

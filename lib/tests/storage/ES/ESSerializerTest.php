@@ -22,8 +22,10 @@ class ESSerializerTest extends TestCase
     var $serializer=null;
     function getDefaultSerializer()
     {
+        global $Config;
+        $sc=$Config["SERIALIZERS"]["es"];
         if($this->serializer===null)
-            $this->serializer=new \lib\storage\ES\ESSerializer(["NAME"=>"MAIN_ES","ES"=>["servers"=>[ES_TEST_SERVER],"port"=>ES_TEST_PORT,"index"=>ES_TEST_INDEX]]);
+            $this->serializer=new \lib\storage\ES\ESSerializer($sc);
         return $this->serializer;
     }
     function getSimpleDefinedObject($includeIndex=1)

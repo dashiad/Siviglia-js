@@ -32,6 +32,7 @@ class ReflectionFormDefinition
                 'PERMISSION'=>'REFLECTION'
             )
         ),
+        'SOURCE'=>[
         'STORAGE'=>array(
             'DICTIONARY'=>array(
                 'DEFINITION'=>array(
@@ -40,6 +41,7 @@ class ReflectionFormDefinition
                 )
             )
         )
+            ]
     );
 
     function getFormDefinition($ds)

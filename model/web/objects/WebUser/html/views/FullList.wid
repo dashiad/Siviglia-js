@@ -1,8 +1,8 @@
 <?php
-            global $SERIALIZERS;
+
+            $serializer=\Registry::getService("storage")->getSerializerByName('web');
             $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+
 ?>
 [*LIST_DS({"currentPage":"$currentPage","object":"WebUser","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_HEADER]
@@ -15,7 +15,7 @@
 						[_COLUMN][_LABEL]PASSWORD[#][#]
 						[_COLUMN][_LABEL]USER_ID[#][#]
 						[_COLUMN][_LABEL]EMAIL[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/String({"name":"LOGIN","model":"$iterator"})][#][#][#]
@@ -26,5 +26,5 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]

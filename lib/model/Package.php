@@ -9,32 +9,42 @@
 namespace lib\model;
 
 
-abstract class Package
+class Package
 {
     var $basePath;
     var $baseNamespace;
-    function __construct($baseNamespace,$basePath)
+
+    function __construct($baseNamespace, $basePath)
     {
-        $this->basePath=$basePath;
-        $this->baseNamespace=$baseNamespace;
+        $this->basePath = PROJECTPATH.$basePath;
+        $this->baseNamespace = $baseNamespace;
     }
+
     function getBasePath()
     {
         return $this->basePath;
     }
+
     function getBaseNamespace()
     {
         return $this->baseNamespace;
     }
-    abstract function getModelDescriptor($objectName);
+
+    function getModelDescriptor($objectName)
+    {
+        return new \lib\model\ModelDescriptor($objectName,null,$this);
+    }
 
     function includeFile($className)
     {
         return $this->includeModel($className);
     }
+
     function includeModel($modelName)
     {
-        $descriptor=$this->getModelDescriptor($modelName,$this);
+        $descriptor = $this->getModelDescriptor($modelName, $this);
         $descriptor->includeModel();
     }
+
+
 }

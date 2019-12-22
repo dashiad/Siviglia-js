@@ -4,8 +4,8 @@ class ViewWidget extends \model\reflection\base\ConfiguredObject
 {
     var $generating=false;
     function __construct($name,$parentModel,$parentDs)
-    {                        
-        $this->parentDs=$parentDs;        
+    {
+        $this->parentDs=$parentDs;
         $filePath="/html/views";
         parent::__construct($name,$parentModel,'', $filePath, "datasourceTemplate", null, false,".wid");
     }
@@ -23,9 +23,9 @@ class ViewWidget extends \model\reflection\base\ConfiguredObject
         $this->generating=true;
 
         $isadmin=$this->parentDs->isAdmin();
-        
+
         $descriptiveFields=$this->parentModel->getDescriptiveFields();
-        
+
         if($descriptiveFields!=null && count($descriptiveFields)>0)
         {
             $dKeys=array_keys($descriptiveFields);
@@ -33,13 +33,11 @@ class ViewWidget extends \model\reflection\base\ConfiguredObject
         }
         else
             $mainLabel="";
-            
+
         $phpCode=<<<'TEMPLATE'
             
-            global $SERIALIZERS;
-            $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('{%layer%}');
-            $serializer->useDataSpace($SERIALIZERS["{%layer%}"]["ADDRESS"]["database"]["NAME"]);
+            \Registry::getService("storage")->getSerializerByName('{%layer%}');
+            $params=\Registry::$registry["PAGE"];
 TEMPLATE;
         if(!$asSubDs)
         {
@@ -58,16 +56,16 @@ TEMPLATE;
                     [#]    
            [#]
 WIDGET;
-        
+
         // Se buscan todos los objetos que tenemos en metadata.
         $def=$this->parentDs->getDefinition();
-        
+
         $metadata=$def["FIELDS"];
         if(!$metadata)
             $metadata=$def["PARAMS"];
         $contents="";
         foreach($metadata as $fName=>$fDef)
-        {            
+        {
             $type=\lib\model\types\TypeFactory::getType($this->parentModel,$fDef);
             $typeDef=$type->getDefinition();
             $typeClass=get_class($type);
@@ -77,7 +75,7 @@ WIDGET;
             $contents.="\t\t\t\t[_ROW]\n\t\t\t\t\t[_LEFT]".(isset($typeDef["LABEL"])?$typeDef["LABEL"]:$fName)."[#]\n"
                         ."\t\t\t\t\t[_RIGHT][*:/types/".$className."({\"name\":\"".$fName."\",\"model\":\"\$iterator\"})][#][#]\n\t\t\t\t[#]\n";
         }
-        
+
         $searchs=array("{%layer%}","{%object%}","{%dsName%}","{%contents%}","{%title%}");
         $replaces=array($this->parentModel->getLayer(),
                         str_replace('\\','/',$this->parentModel->getClassName()),
@@ -85,7 +83,7 @@ WIDGET;
                         $contents,
                         $mainLabel
                         );
-        
+
         $code=str_replace($searchs,$replaces,"<?php\n".$phpCode."\n?>\n".$widgetCode."\n");
         if($asSubDs==false)
         {
@@ -132,15 +130,15 @@ WIDGET;
            //}
 
        }
-        }        
-        
+        }
+
         $this->code=$code;
         $this->generating=true;
         return $code;
     }
     function save()
     {
-    
+
         @mkdir(dirname($this->filePath),0777,true);
         file_put_contents($this->filePath,$this->code);
     }

@@ -20,8 +20,8 @@ class DataSourceDefinition extends ClassFileGenerator
         $this->isadmin=io($definition,"IS_ADMIN",false);
         ClassFileGenerator::__construct($name,$parentModel->objectName->layer,
         $parentModel->objectName->getNamespace().'\datasources',
-        $parentModel->objectName->getPath().'/datasources/'.$this->name.'.php');        
-        
+        $parentModel->objectName->getPath().'/datasources/'.$this->name.'.php');
+
         $this->metadata=array();
         if($definition["PARAMS"] && $definition["PARAMS"]["FIELDS"])
         {
@@ -30,20 +30,20 @@ class DataSourceDefinition extends ClassFileGenerator
         }
         else
             $this->fields=array();
-        
-      
-        
+
+
+
 
         $this->serializer=\lib\storage\StorageFactory::getSerializerByName($this->parentModel->objectName->layer);
-        
+
         // Se intenta cargar, si existe, la definicion de este datasource, segun su serializador.
         $this->loadSerializerDefinition();
-          
+
         if($definition["METADATA"])
         {
             foreach($definition["METADATA"] as $key=>$value)
                 $this->metadata[$key]=\lib\reflection\classes\types\TypeReflectionFactory::getReflectionType($value);
-        }        
+        }
         $indexFields=$this->parentModel->getIndexFields();
         $keys=array_keys($indexFields);
         $meta=array_keys($this->metadata);
@@ -52,8 +52,8 @@ class DataSourceDefinition extends ClassFileGenerator
                 $this->haveIndexes=true;
                 $this->modelIndexes=$keys;
         }
-        
-        
+
+
         $this->permissions=new PermissionRequirementsDefinition($definition["PERMISSIONS"]?$definition["PERMISSIONS"]:'PUBLIC');
 
         $this->includes=array();
@@ -64,7 +64,7 @@ class DataSourceDefinition extends ClassFileGenerator
                 $this->includes[$key]=new DataSourceIncludeDefinition($value);
             }
         }
-        
+
     }
     function getRole()
     {
@@ -78,31 +78,31 @@ class DataSourceDefinition extends ClassFileGenerator
     {
         $serType=$this->serializer->getSerializerType();
         $className='\\'.$this->parentModel->objectName->layer.'\\'.$this->parentModel->objectName->className.'\datasources\\'.$serType.'\\'.$this->name;
-        
+
         if(class_exists($className))
-        {                        
+        {
             // Existe una definicion del serializer.Se carga.
             $serDsObj=new $className($this->parentModel->objectName->className,
                                      $this->name,
                                      $this->definition,
                                      $this->serializer);
-            
+
             $serDef=$serDsObj->serializerDefinition;
             // La clase que gestiona la definicion de datasources segun serializers, tienen el siguiente formato:
-            
+
             $serDsClass='\lib\reflection\classes\\'.ucfirst(strtolower($serType))."DsDefinition";
-            
+
             $this->serializerDefinition[$serType]=new $serDsClass($this->parentModel,$this->name,$this,$serDef);
-            
+
             // Si no habia metadata, se intenta descubrir a partir de la query MYSQL.
-            
+
                 $this->metadata=$this->discoverFields();
-                
+
                 $this->definition["METADATA"]=$this->metadata;
-                
-            
+
+
         }
-        
+
 
     }
     function getListCodePath()
@@ -114,7 +114,7 @@ class DataSourceDefinition extends ClassFileGenerator
     {
         $serType=$this->serializer->getSerializerType();
         if($this->serializerDefinition[$serType])
-        {            
+        {
             return $this->serializerDefinition[$serType]->discoverFields();
         }
 
@@ -134,7 +134,7 @@ class DataSourceDefinition extends ClassFileGenerator
         $labelFields=array();
         $layer=$parentModel->objectName->layer;
         $objName=$parentModel->objectName->className;
-        
+
         foreach($fields as $key=>$value)
         {
             if($value->isRelation())
@@ -179,7 +179,7 @@ class DataSourceDefinition extends ClassFileGenerator
             $defaultDs[4][]=$descriptiveFields;
             $defaultDs[5][]="list";
             $defaultDs[6][]=false;
-            
+
             $defaultDs[0][]="ViewOwn";
             $defaultDs[1][]=$fullFields;
             $defaultDs[2][]=array('OWNER');
@@ -209,10 +209,10 @@ class DataSourceDefinition extends ClassFileGenerator
                                 );
             if($defaultDs[6][$k])
             {
-                
+
                 $dsDefinition["IS_ADMIN"]=true;
             }
-            foreach($curIndexes as $key=>$value)      
+            foreach($curIndexes as $key=>$value)
             {
                 $paramType=\lib\reflection\classes\types\ModelReferenceType::create($parentModel->objectName->className,$key);
                 $paramField=DataSourceParameterDefinition::create($key,$paramType->getDefinition(),null);
@@ -246,15 +246,15 @@ class DataSourceDefinition extends ClassFileGenerator
                 while($usedNames[$subDsName.$j])$j++;
                     $usedNames[$subDsName.$j]=1;
                 $includeName=$j?$subDsName.$j:$subDsName;
-                $instance=\lib\reflection\classes\DataSourceIncludeDefinition::create($key,$value,"List","LEFT");  
+                $instance=\lib\reflection\classes\DataSourceIncludeDefinition::create($key,$value,"List","LEFT");
                 $dsDefinition["INCLUDES"][$includeName]=$instance->getDefinition();
-                
+
             }
             $perms=\lib\reflection\classes\PermissionRequirementsDefinition::create($permissions);
             $dsDefinition["PERMISSIONS"]=$perms->getDefinition();
 
             $datasources[$name]=new DataSourceDefinition($parentModel,$name,$dsDefinition);
-                        
+
         }
         return $datasources;
     }
@@ -276,15 +276,15 @@ class DataSourceDefinition extends ClassFileGenerator
     }
     function getDefinition()
     {
-        
+
         $def=array(
             "LABEL"=>$this->label,
             "DATAFORMAT"=>($this->definition["DATAFORMAT"]?$this->definition["DATAFORMAT"]:"Table"),
             "ROLE"=>$this->role,
             "IS_ADMIN"=>$this->isadmin?"true":"false"
-            
+
             );
-        
+
         foreach($this->fields as $key=>$value)
             $def["PARAMS"]["FIELDS"][$key]=$value->getDefinition();
         if($this->metadata)
@@ -306,7 +306,7 @@ class DataSourceDefinition extends ClassFileGenerator
         {
             $def["INCLUDES"][$key]=$value->getDefinition();
         }
-        return $def;   
+        return $def;
     }
 
     function save($dsName)
@@ -334,27 +334,25 @@ class DataSourceDefinition extends ClassFileGenerator
                 $this->generateViewCode("admin");
             }
         }
-            
+
     }
-    
+
     function generateListCode($dstype="user")
     {
         if($dstype=="user")
         $codePath=$this->parentModel->objectName->getPath()."/html/".$this->role."/".$this->name.".wid";
         else
             $codePath=$this->parentModel->objectName->getPath()."/html/admin".$this->role."/".$this->name.".wid";
-     
+
         if(!$this->parentModel->config->mustRebuild("datasourceTemplate",$this->name,
             $codePath
         ))
             return;
-            
+
         $phpCode=<<<'TEMPLATE'
             
-            global $SERIALIZERS;
-            $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('{%layer%}');;
-            $serializer->useDataSpace($SERIALIZERS["{%layer%}"]["ADDRESS"]["database"]["NAME"]);
+            $serializer=\Registry::getService("storage")->getSerializerByName('{%layer%}');
+            $params=\Registry::$registry["PAGE"];
 TEMPLATE;
 
         $widgetCode= <<<'WIDGET'
@@ -375,7 +373,7 @@ TEMPLATE;
                 [#]     
            [#]
 WIDGET;
-        
+
         // Se buscan todos los objetos que tenemos en metadata.
         $def=$this->getDefinition();
         $widgetHelper=new \lib\reflection\classes\WidgetHelper();
@@ -383,7 +381,7 @@ WIDGET;
         if(!$metadata)
             $metadata=$def["PARAMS"]["FIELDS"];
         foreach($metadata as $fName=>$fDef)
-        {            
+        {
             $type=\lib\model\types\TypeFactory::getType($fDef);
             $typeClass=get_class($type);
             $pos=strrpos($typeClass,"\\");
@@ -399,7 +397,7 @@ WIDGET;
             $columnCad.="\t\t\t\t\t\t[_ROW][_VALUE][*/list/icons/delete({\"model\":\"\$iterator\",\"indexes\":[\"".implode("\",\"",$this->modelIndexes)."\"]})][#][#][#]\n";
         }
         $searchs=array("{%layer%}","{%object%}","{%dsName%}","{%headers%}","{%columns%}");
-        
+
         $replaces=array($this->parentModel->objectName->layer,
                         $this->parentModel->objectName->className,
                         $this->name,
@@ -412,23 +410,23 @@ WIDGET;
         file_put_contents($codePath,$code);
 
     }
-    
+
     function generateViewCode($dstype="user")
     {
         if($dstype=="user")
             $codePath=$this->parentModel->objectName->getPath()."/html/".$this->role."/".$this->name.".wid";
         else
             $codePath=$this->parentModel->objectName->getPath()."/html/admin".$this->role."/".$this->name.".wid";
-     
+
         if(!$this->parentModel->config->mustRebuild("datasourceTemplate",$this->name,
             $codePath
         ))
             return;
-        
+
         $descriptiveFields=$this->parentModel->getDescriptiveFields();
         $dkeys=array_keys($descriptiveFields);
         $mainLabel=$descriptiveFields[$dKeys[0]]->getLabel();
-            
+
         $phpCode=<<<'TEMPLATE'
             
             global $SERIALIZERS;
@@ -447,7 +445,7 @@ TEMPLATE;
                     [#]    
            [#]
 WIDGET;
-        
+
         // Se buscan todos los objetos que tenemos en metadata.
         $def=$this->getDefinition();
         $widgetHelper=new \lib\reflection\classes\WidgetHelper();
@@ -455,7 +453,7 @@ WIDGET;
         if(!$metadata)
             $metadata=$def["PARAMS"]["FIELDS"];
         foreach($metadata as $fName=>$fDef)
-        {            
+        {
             $type=\lib\model\types\TypeFactory::getType($fDef);
             $typeClass=get_class($type);
             $pos=strrpos($typeClass,"\\");
@@ -464,7 +462,7 @@ WIDGET;
             $contents.="\t\t\t\t\t\t[_LEFT]".($typeDef["LABEL"]?$typeDef["LABEL"]:$fName)."[#]\n"
                         ."\t\t\t\t\t\t[_RIGHT][*:/types/".$className."({\"name\":\"".$fName."\",\"model\":\"\$iterator\"})][#][#]\n";
         }
-        
+
         $searchs=array("{%layer%}","{%object%}","{%dsName%}","{%contents%}","{%title%}");
         $replaces=array($this->parentModel->objectName->layer,
                         $this->parentModel->objectName->className,
@@ -473,12 +471,12 @@ WIDGET;
                         $mainLabel
                         );
         $code=str_replace($searchs,$replaces,"<?php\n".$phpCode."\n?>\n".$widgetCode."\n");
-        
+
         @mkdir(dirname($codePath),0777,true);
         file_put_contents($codePath,$code);
     }
 
-    
+
 
 }
 ?>

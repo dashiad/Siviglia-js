@@ -19,7 +19,6 @@ namespace model\reflection;
    // Ejemplos de otros eventos:
    // ADD_OBJECT(layer,name)
    // ADD_FIELD(layer,name,
-include_once(PROJECTPATH."/model/reflection/objects/Model/ModelName.php");
 include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
 
    class ReflectorFactory
@@ -42,7 +41,6 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
                return ReflectorFactory::$objectDefinitions[$layer][$className];
            if(ReflectorFactory::$factoryLoaded==true)
                return null;
-
 
            ReflectorFactory::loadFactory();
            return ReflectorFactory::$objectDefinitions[$layer][$className];
@@ -71,33 +69,14 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
            }
            return $layers;
        }
-
-       static function getLayerObjects($layer,$path,$prefix=null,$childKey="subobjects")
+       static function getPackageNames()
        {
-           $path=$path."/objects";
-           if(!is_dir($path))
-               return null;
-           $dir = new \DirectoryIterator($path);
-           $objects=array();
-           if($prefix!=null)
-               $prefix.='\\';
-           foreach ($dir as $fileinfo) {
-               if (!$fileinfo->isDot() && $fileinfo->isDir()) {
-                   $name=$fileinfo->getFilename();
-                       $current=array(
-                           "name"=>$name,
-                           "layer"=>$layer,
-                           "path"=>$fileinfo->getRealPath(),
-                           "class"=>$prefix.$name
-                       );
-                       $subobjects=ReflectorFactory::getLayerObjects($layer,$current["path"],$current["class"],$childKey);
-                       if($subobjects)
-                           $current[$childKey]=$subobjects;
-                       $objects[]=$current;
-               }
-           }
-           return $objects;
+
        }
+
+
+
+
 
        private static function getObjectCache($pointer,$layer,& $existingModels,& $objectDefinitions)
         {
@@ -219,10 +198,7 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
                        continue;
                    }
                    $adist=& $distances[$curObject];
-                   if($curDistance==1 && $curObject=="TipoGrupo")
-                   {
-                       $yy=3;
-                   }
+
 
                    foreach($adist as $bName=>$bdist)
                    {

@@ -698,11 +698,12 @@ class MysqlDsDefinition
         {
 
             $objName=str_replace('_','\\',$tableName);
-            global $APP_NAMESPACES;
-            foreach($APP_NAMESPACES as $value)
-            {
-                $objects=\model\reflection\ReflectorFactory::getObjectsByLayer($value);
-                foreach($objects as $key2=>$value2)
+            $packages=\model\reflection\ReflectorFactory::getPackageNames();
+            for($kk=0;$kk<count($packages);$kk++) {
+                $package = $packages[$kk];
+                $pkg = new \model\reflection\Package($package);
+                $objs = $pkg->getModels($pkg);
+                foreach($objs as $key2=>$value2)
                 {
                     if(strtolower($value2->getTableName())==$tableName)
                     {
@@ -718,11 +719,12 @@ class MysqlDsDefinition
     {
 
         $objName=str_replace('_','\\',$tableName);
-        global $APP_NAMESPACES;
-        foreach($APP_NAMESPACES as $value)
-        {
-            $objects=\model\reflection\ReflectorFactory::getObjectsByLayer($value);
-            foreach($objects as $key2=>$value2)
+        $packages=\model\reflection\ReflectorFactory::getPackageNames();
+        for($kk=0;$kk<count($packages);$kk++) {
+            $package = $packages[$kk];
+            $pkg = new \model\reflection\Package($package);
+            $objs = $pkg->getModels($pkg);
+            foreach($objs as $key2=>$value2)
             {
                 if(strtolower($value2->getTableName())==$tableName)
                 {

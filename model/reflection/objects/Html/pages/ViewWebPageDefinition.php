@@ -54,9 +54,14 @@
                   "/html/Website"
               )
           );
-          global $APP_NAMESPACES;
-          foreach($APP_NAMESPACES as $val)
-              $def["WIDGETPATH"][]="/$val/objects";
+          global $Config;
+          for($kk=0;$kk<count($Config["PACKAGES"]);$kk++)
+          {
+              $package=$Config["PACKAGES"][$kk];
+              $def["WIDGETPATH"][]="/$package/objects";
+          }
+
+
           $def["WIDGETPATH"][]="/output/html/Widgets";
           if($objName->isPrivate())
           {

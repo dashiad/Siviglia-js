@@ -1,8 +1,7 @@
 <?php
-            global $SERIALIZERS;
-            $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('backoffice');
-            $serializer->useDataSpace($SERIALIZERS["backoffice"]["ADDRESS"]["database"]["NAME"]);
+$serializer=\Registry::getService("storage")->getSerializerByName('backoffice');
+$params=Registry::$registry["PAGE"];
+
 ?>
 [*LIST_DS({"currentPage":"$currentPage","object":"Lang/translations","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_HEADER]
@@ -18,7 +17,7 @@
 						[_COLUMN][_LABEL]dirty[#][#]
 						[_COLUMN][_LABEL]translated[#][#]
 						[_COLUMN][_LABEL]original[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_translation","model":"$iterator"})][#][#][#]
@@ -32,5 +31,5 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]

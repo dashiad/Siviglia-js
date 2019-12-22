@@ -19,10 +19,12 @@ class MysqlClientTest extends TestCase
     var $client=null;
     function connect()
     {
+        global $Config;
+        $sc=$Config["SERIALIZERS"]["default"]["ADDRESS"];
         if($this->client==null) {
-            $client = new \lib\storage\Mysql\Mysql(["host" => _DB_SERVER_, "user" => _DB_USER_, "password" => _DB_PASSWORD_]);
+            $client = new \lib\storage\Mysql\Mysql(["host" => $sc["host"], "user" => $sc["user"], "password" => $sc["password"]]);
             $client->connect();
-            $client->selectDb(_DB_NAME_);
+            $client->selectDb($sc["database"]);
             $this->client=$client;
         }
         return $this->client;
@@ -176,6 +178,10 @@ class MysqlClientTest extends TestCase
         $data=$res[0];
         $data["viewabilityProviderCompanyId"]=555;
         unset($data["id"]);
+        // Hay que tener en cuenta que insertFromAssociative no serializa nada, asi que hay que
+        // meter todo entre comillas.
+        foreach($data as $k=>$v)
+            $data[$k]="'".str_replace("'","''",$v)."'";
         $this->client->insertFromAssociative(
             "lineitemsummary",
             $data

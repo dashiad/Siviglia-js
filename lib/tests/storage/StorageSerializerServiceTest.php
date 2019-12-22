@@ -18,14 +18,17 @@ class StorageSerializerServiceTest extends TestCase
 {
      function getDefaultService()
      {
+         global $Config;
          $s=new \lib\Storage\StorageSerializerService();
-         $s->init([
+         $sc=$Config["SERIALIZERS"]["default"];
+         $def=[
              "default"=>"default",
              "serializers"=>[
-                 "backoffice"=>array("NAME"=>"backoffice","TYPE"=>"MYSQL","ADDRESS"=>array("host"=>_DB_SERVER_,"user"=>_DB_USER_,"password"=>_DB_PASSWORD_,"database"=>array("NAME"=>_DB_NAME_))),
-                 "default"=>array("NAME"=>"default","TYPE"=>"MYSQL","ADDRESS"=>array("host"=>_DB_SERVER_,"user"=>_DB_USER_,"password"=>_DB_PASSWORD_,"database"=>array("NAME"=>_DB_NAME_)))
              ]
-         ]);
+         ];
+         $def["serializers"]["default"]=$sc;
+         $def["serializers"]["backoffice"]=$Config["SERIALIZERS"]["backoffice"];
+         $s->init($def);
          return $s;
      }
      function testCreateService()
@@ -37,16 +40,13 @@ class StorageSerializerServiceTest extends TestCase
      function testAddSerializer()
      {
          $s=$this->getDefaultService();
+         global $Config;
+         $details=$Config["SERIALIZERS"]["test"]["ADDRESS"];
          $s->addSerializer("added",
                             array(
                                     "NAME"=>"added",
                                     "TYPE"=>"MYSQL",
-                                    "ADDRESS"=>array(
-                                            "host"=>_DB_SERVER_,
-                                            "user"=>_DB_USER_,
-                                            "password"=>_DB_PASSWORD_,
-                                            "database"=>array("NAME"=>_DB_NAME_)
-                                    )
+                                    "ADDRESS"=>$details
                             )
          );
          $ss=$s->getSerializerByName("added");

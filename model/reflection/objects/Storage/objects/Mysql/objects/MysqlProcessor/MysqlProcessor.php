@@ -20,14 +20,15 @@ class MysqlProcessor extends \model\reflection\Processor {
         // Creacion del soporte en base de datos de las tablas.
 
         global $APP_NAMESPACES;
-        foreach($APP_NAMESPACES as $layer)
-        {
-            // $layer=\model\reflection\ReflectorFactory::getLayer($layer);
-            $objects=\model\reflection\ReflectorFactory::getObjectsByLayer($layer);
+        $packages=\model\reflection\ReflectorFactory::getPackageNames();
+        for($kk=0;$kk<count($packages);$kk++) {
+            $package = $packages[$kk];
+            $pkg = new \model\reflection\Package($package);
+            $objects = $pkg->getModels($pkg);
             foreach($objects as $objName=>$modelDef)
             {
                 printItem("Generando $objName");
-                $this->generateStorage($objName,$modelDef,$layer);
+                $this->generateStorage($objName,$modelDef,$package);
             }
         }
 

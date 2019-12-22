@@ -36,6 +36,7 @@ class ViewDs
 
                      ),
                'PERMISSIONS'=>array('PUBLIC'),
+               'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(
@@ -50,6 +51,7 @@ class ViewDs
                                  )
                            )
                      )
+                   ]
                );
 }
 ?>

@@ -17,24 +17,25 @@ class ModelTest extends TestCase
 
     function getTestPackage()
     {
-        include_once(__DIR__ . "/stubs/SimplePackage.php");
-        return new \lib\tests\model\stubs\SimplePackage();
+        return new \lib\tests\model\stubs\model\tests\Package();
     }
 
     function init()
     {
         if ($this->testResolverIncluded == false) {
-            \Registry::getService("model")->addPackage($this->getTestPackage());
+            \Registry::getService("model")->addPackage("test",$this->getTestPackage());
             $serService=\Registry::getService("storage");
+            global $Config;
+            $sc=$Config["SERIALIZERS"]["default"]["ADDRESS"];
             $serService->addSerializer("web",
 
                     [
                         "TYPE"=>"Mysql",
                         "NAME"=>"web",
                         "ADDRESS"=>[
-                            "host" => _DB_SERVER_,
-                            "user" => _DB_USER_,
-                            "password" => _DB_PASSWORD_,
+                            "host" => $sc["host"],
+                            "user" => $sc["user"],
+                            "password" => $sc["password"],
                             "database"=>"modeltests"
                         ]
                     ]

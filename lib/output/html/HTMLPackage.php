@@ -1,25 +1,23 @@
 <?php
 /**
- * Class DefaultModelProvider
- * @package lib\model
+ * Class HTMLPackage
+ * @package lib\output\html
  *  (c) Smartclip
  */
 
 
-namespace lib\model;
+namespace lib\output\html;
 
 
-class DefaultPackage extends \lib\model\Package
+class HTMLPackage extends \lib\model\Package
 {
-
     function __construct()
     {
-        parent::__construct("/model",PROJECTPATH);
+        parent::__construct("/sites",PROJECTPATH);
     }
 
     function getModelDescriptor($objectName)
     {
         return new \lib\model\ModelDescriptor($objectName,null,$this);
     }
-
 }

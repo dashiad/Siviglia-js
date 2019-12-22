@@ -6,23 +6,24 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
     function REBUILD_MODELS($step)
     {
         if($step!=2)
-            return;        
+            return;
         printPhase("Incializando Storage de Modelos [Mysql]");
 
         // Creacion del soporte en base de datos de las tablas.
 
-        global $APP_NAMESPACES;
-        foreach($APP_NAMESPACES as $layer)
-        {
+        $packages=\model\reflection\ReflectorFactory::getPackageNames();
+        for($kk=0;$kk<count($packages);$kk++) {
+            $package = $packages[$kk];
+            $pkg = new \model\reflection\Package($package);
+            $objects = $pkg->getModels($pkg);
          // $layer=\model\reflection\ReflectorFactory::getLayer($layer);
-            $objects=\model\reflection\ReflectorFactory::getObjectsByLayer($layer);
             foreach($objects as $objName=>$modelDef)
-            {                
+            {
                  printItem("Generando $objName");
                  $this->generateStorage($objName,$modelDef,$layer);
-            }                       
-        }          
-              
+            }
+        }
+
     }
     function generateStorage($objName,$modelDef,$layer)
     {
@@ -37,7 +38,7 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
         }
 
         $layerObj=\model\reflection\ReflectorFactory::getLayer($layer);
-        $curSerializer=$layerObj->getSerializer();    
+        $curSerializer=$layerObj->getSerializer();
         if($curSerializer->getSerializerType()!="MYSQL")
         {
             return;
@@ -46,7 +47,7 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
         printItem("<b>Creando Tablas Mysql para relaciones multiples</b>");
         $curSerializer->createStorage($modelDef,$optionsDefinition->getDefinition());
 
-      
+
     }
 
     function REBUILD_DATASOURCES($step)
@@ -62,11 +63,11 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
     }
     function rebuildDataSources($layer,$objName,$modelDef)
     {
-    
+
         $curSerializer=$modelDef->getSerializer();
         if($curSerializer->getSerializerType()!="MYSQL")
              return;
-             
+
         // Se obtienen los datasources generados via el editor.Estan en el fichero Definition.js, key "Queries"
          $modelPath=$modelDef->objectName->getDestinationFile();
          $processedDs=array();
@@ -85,7 +86,7 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
                 }
 
             }
-               
+
         foreach($modelDef->datasources as $dsKey=>$dsValue)
         {
             // Si es un datasource que ya hemos procesado (estaba en las definiciones generadas por el editor), no lo re-procesamos.
@@ -93,7 +94,7 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
                 continue;
             $newDef=new \model\reflection\Storage\Mysql\MysqlDefinition($modelDef,$dsKey,$dsValue);
             $srcRelation=$dsValue->getSourceRelation();
-            
+
             $type="normal";
             if($srcRelation)
             {
@@ -105,9 +106,9 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
                 else
                     $type="mxn";
             }
-            
+
             switch($type)
-            {            
+            {
             case "mxn":
                  {
                      $newDef->createMxNDsDefinition(0);
@@ -121,8 +122,8 @@ class MysqlProcessor extends \model\reflection\base\SystemPlugin {
                          $newDef->create();
                      }
                  }
-                        
-        }    
+
+        }
     }
 }
 ?>

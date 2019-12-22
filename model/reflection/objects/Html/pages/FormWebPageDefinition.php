@@ -70,9 +70,12 @@
                   "/html/Website"
               )
           );
-          global $APP_NAMESPACES;
-          foreach($APP_NAMESPACES as $val)
-              $wdef["WIDGETPATH"][]="/$val/objects";
+          global $Config;
+          for($kk=0;$kk<count($Config["PACKAGES"]);$kk++) {
+              $package = $Config["PACKAGES"][$kk];
+              $wdef["WIDGETPATH"][]="/$package/objects";
+          }
+
           $wdef["WIDGETPATH"][]="/output/html/Widgets";
           if($objName->isPrivate())
           {

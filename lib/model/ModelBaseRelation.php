@@ -1002,6 +1002,8 @@ class RelationValues extends \lib\datasource\TableDataSet
         }
         else
         {
+            if($this->relatedObjects==null)
+                return 0;
             $this->nResults=count($this->relatedObjects);
             return $this->nResults;
         }

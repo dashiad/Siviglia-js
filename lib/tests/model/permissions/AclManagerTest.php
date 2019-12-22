@@ -21,9 +21,8 @@ class AclManagerTest extends TestCase
     var $permsArr;
     function firstSetup()
     {
-        global $SERIALIZERS;
-        $ser = \lib\storage\StorageFactory::getSerializer($SERIALIZERS["default"]);
-        //$ser->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+        $ser=\Registry::getService("storage")->getSerializerByName('default');
+
         include_once(PROJECTPATH . "/lib/model/permissions/AclManager.php");
         $this->acl = new AclManager($ser);
         $this->acl->uninstall();
@@ -86,9 +85,9 @@ class AclManagerTest extends TestCase
 
     function secondSetup()
     {
-        global $SERIALIZERS;
-        $ser = \lib\storage\StorageFactory::getSerializer($SERIALIZERS["default"]);
-        //$ser->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+
+        $ser=\Registry::getService("storage")->getSerializerByName('web');
+
         include_once(PROJECTPATH . "/lib/model/permissions/AclManager.php");
         $this->acl = new AclManager($ser);
         $this->acl->uninstall();
@@ -612,10 +611,10 @@ class AclManagerTest extends TestCase
         $this->acl->add_acl(array("ITEM"=>array("view")),
             array("ITEM"=>array(1)),
             array("GROUP"=>array("webModules")));
-        
+
         $res=$this->acl->canAccess(array("view"),$user,$model);
         $this->assertEquals(true,$res);
-        
+
         $this->acl->removePermissionOverModule("view",1,"/AllObjects/Sys/web/webModules/Page");
         $res=$this->acl->canAccess(array("view"),$user,$model);
         $this->assertEquals(false,$res);
@@ -624,7 +623,7 @@ class AclManagerTest extends TestCase
             "CREATE"=>true,
             "CREATEPATH"=>"/AllObjects/Sys/web/webModules"
         ));
-        
+
         // Now, we create a model to check the access to Sites work
         $model=$this->getMockBuilder('\lib\model\BaseModel')
             ->disableOriginalConstructor()
@@ -636,7 +635,7 @@ class AclManagerTest extends TestCase
         }));
         $res=$this->acl->canAccess(array("view"),$user,$model);
         $this->assertEquals(true,$res);
-        
+
     }
 
     function testGetAccessDetails()

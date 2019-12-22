@@ -26,10 +26,9 @@ class TransformCursorTest extends TestCase
     function buildCustomSerializer()
     {
         if($this->serializer===null) {
-            include_once(__DIR__."/res/SimplePackage.php");
-            $package=new \lib\tests\data\res\SimplePackage();
+            $package=new \lib\tests\data\res\model\Ads\Package();
             $modelService=\Registry::getService("model");
-            $modelService->addPackage($package);
+            $modelService->addPackage("test",$package);
             $serializerService=\Registry::getService("storage");
             $serializerService->addSerializer("ADSManager-CSV",
                 [

@@ -46,8 +46,10 @@ class QueryBuilderTest extends TestCase
     }
     function getDefaultSerializer()
     {
+        global $Config;
+        $sc=$Config["SERIALIZERS"]["default"]["ADDRESS"];
         if($this->serializer===null)
-            $this->serializer=new \lib\storage\ES\ESSerializer(["NAME"=>"MAIN_ES","ES"=>["servers"=>[ES_TEST_SERVER],"port"=>ES_TEST_PORT,"index"=>QueryBuilderTest::TEST_INDEX_NAME]]);
+            $this->serializer=new \lib\storage\ES\ESSerializer($sc);
         return $this->serializer;
     }
 

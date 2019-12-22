@@ -85,14 +85,16 @@ class Definition extends \lib\model\BaseModelDefinition
                            )
                      ),
                'PERMISSIONS'=>array(),
-               'STORAGE'=>array(
-                     'MYSQL'=>array(
+               'SOURCE'=>[
+                    'STORAGE'=>array(
+                         'MYSQL'=>array(
                            'ENGINE'=>'InnoDb',
                            'CHARACTER SET'=>'utf8',
                            'COLLATE'=>'utf8_general_ci',
                            'TABLE_OPTIONS'=>array('ROW_FORMAT'=>'FIXED')
                            )
-                     )
+                        )
+                   ]
                );
 }
 ?>

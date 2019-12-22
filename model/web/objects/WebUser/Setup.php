@@ -4,16 +4,15 @@ class Setup {
     function install()
     {
         echo "INSTALLING WEBUSER<br>";
-        global $SERIALIZERS;
+
         include_once(PROJECTPATH."/lib/storage/StorageFactory.php");
         include_once(PROJECTPATH."/web/objects/WebUser/WebUser.php");
-        $ser=\lib\storage\StorageFactory::getSerializer($SERIALIZERS["web"]);
-        $ser->useDataSpace("framweb");
+        $ser=\Registry::getService("storage")->getSerializerByName('web');
         $oUser=new \web\objects\WebUser($ser);
 
         try
         {
-            $oUser->loadByUsername("admin");            
+            $oUser->loadByUsername("admin");
             $id=$oUser->USER_ID;
         }
         catch(\Exception $e)
@@ -25,13 +24,13 @@ class Setup {
             $id=$oUser->USER_ID;
         }
 
-        
-                
+
+
         include_once(LIBPATH."/model/permissions/AclManager.php");
         $manager=new \AclManager($ser);
         if(!$manager->get_object($id))
         {
-            
+
             $aclId=$manager->add_object("user",$id);
             $groupId=$manager->get_group_id(null,'FullAdmin',\AclManager::ARO);
             $manager->add_group_object($groupId,$aclId);
@@ -39,7 +38,7 @@ class Setup {
 
         try
         {
-            $oUser->loadByUsername("test");            
+            $oUser->loadByUsername("test");
         }
         catch(\Exception $e)
         {

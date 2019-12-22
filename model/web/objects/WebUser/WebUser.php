@@ -19,9 +19,9 @@ class WebUser extends \lib\model\BaseModel
     var $dbLink;
     static $currentUser=null;
 
-    function __construct($serializer, $userId = null)
+    function __construct($serializer=null, $userId = null)
     {
-                        
+
         \lib\model\BaseModel::__construct($serializer);
         if ($userId)
             $this->loadById($userId);
@@ -45,14 +45,14 @@ class WebUser extends \lib\model\BaseModel
     }
 
     function loadByUsername($username)
-    {      
-          
+    {
+
         $this->LOGIN = $username;
         $this->loadFromFields();
     }
 
     function setLogged($id = null)
-    {        
+    {
         if ($id)
         {
             $this->setId($id);
@@ -63,7 +63,7 @@ class WebUser extends \lib\model\BaseModel
         {
             try
             {
-                $this->unserialize();                
+                $this->unserialize();
             }
             catch (\Exception $e)
             {
@@ -109,23 +109,23 @@ class WebUser extends \lib\model\BaseModel
     {
         return $this->ROLE;
     }
-    
+
     static function login($userName,$password,$model=null)
     {
         if($model==null)
-        {            
+        {
             $model=new WebUser(null);
         }
         // If the User doesnt exist, we'll get an exception from the serializers
         try
-        {            
+        {
             $model->loadByUsername($userName);
         }catch(\Exception $e)
         {
             throw new WebUserException(WebUserException::ERR_INVALID_USERNAME_PASSWORD);
         }
 
-              
+
         if($model->active!=1)
             throw new WebUserException(WebUserException::ERR_FROZEN);
 

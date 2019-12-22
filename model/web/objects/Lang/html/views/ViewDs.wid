@@ -1,9 +1,7 @@
 <?php
-            
-            global $SERIALIZERS;
+
+            $serializer=\Registry::getService("storage")->getSerializerByName('backoffice');
             $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('backoffice');
-            $serializer->useDataSpace($SERIALIZERS["backoffice"]["ADDRESS"]["database"]["NAME"]);            $params=\Registry::$registry["PAGE"];
 ?>
             [*/VIEWS/OBJECT_VIEW({"currentPage":"$currentPage","object":"Lang","dsName":"ViewDs","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                     [_TITLE][#]
@@ -41,9 +39,9 @@
 					[_LEFT]date_format_lite[#]
 					[_RIGHT][*:/types/String({"name":"date_format_lite","model":"$iterator"})][#][#]
 				[#]
- 
+
                         [#]
-                    [#]    
+                    [#]
            [#]
 
 
@@ -62,7 +60,7 @@
 						[_COLUMN][_LABEL]id_lang[#][#]
 						[_COLUMN][_LABEL]value[#][#]
 						[_COLUMN][_LABEL]id_feature_value[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/Relationship({"name":"id_lang","model":"$curModel"})][#][#][#]
@@ -72,7 +70,7 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]
 
 
@@ -91,7 +89,7 @@
 						[_COLUMN][_LABEL]id_lang[#][#]
 						[_COLUMN][_LABEL]id_feature[#][#]
 						[_COLUMN][_LABEL]name[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/Relationship({"name":"id_lang","model":"$curModel"})][#][#][#]
@@ -101,7 +99,7 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]
 
 
@@ -126,7 +124,7 @@
 						[_COLUMN][_LABEL]ps_category_id_category[#][#]
 						[_COLUMN][_LABEL]id_lang[#][#]
 						[_COLUMN][_LABEL]name[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/String({"name":"meta_description","model":"$curModel"})][#][#][#]
@@ -142,5 +140,5 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]

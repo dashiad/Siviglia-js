@@ -1,8 +1,6 @@
 <?php
-            global $SERIALIZERS;
-            $params=Registry::$registry["PAGE"];
-            $serializer=Registry::$registry["serializers"]["web"];
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$params=Registry::$registry["PAGE"];
 ?>
 [*LIST_DS({"currentPage":"$currentPage","object":"WebUser","dsName":"FullWebSectionDs","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_HEADER]
@@ -34,7 +32,7 @@
 						[_COLUMN][_LABEL]path[#][#]
 						[_COLUMN][_LABEL]creator[#][#]
 						[_COLUMN][_LABEL]creationDate[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"USER_ID","model":"$iterator"})][#][#][#]
@@ -64,5 +62,5 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]

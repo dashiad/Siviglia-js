@@ -19,14 +19,13 @@ include_once(LIBPATH . "/Registry.php");
 include_once(LIBPATH . "/reflection/SystemReflector.php");
 \model\reflection\ReflectorFactory::loadFactory();
 
-global $APP_NAMESPACES;
-$layers=& $APP_NAMESPACES;
+$packages=\model\reflection\ReflectorFactory::getPackageNames();
+for($kk=0;$kk<count($packages);$kk++) {
+    $package = $packages[$kk];
+    $pkg = new \model\reflection\Package($package);
+    $cLayer = $pkg->getModels($pkg);
+    echo "<h2>Layer : ".$package."</h2>";
 
-for($k=0;$k<count($layers);$k++)
-{
-    echo "<h2>Layer : ".$layers[$k]."</h2>";
-
-    $cLayer=\model\reflection\ReflectorFactory::getObjectsByLayer($layers[$k]);
 
     foreach($cLayer as $key=>$value)
     {

@@ -1,6 +1,9 @@
 <?php
 namespace model\web;
 
+use lib\model\BaseModelDefinition;
+use lib\model\BaseTypedObject;
+
 class PageException extends \lib\model\BaseException
 {
     const ERR_PAGE_NOT_FOUND=1;
@@ -15,7 +18,7 @@ class PageException extends \lib\model\BaseException
 *
 *
 **/
-abstract class Page extends \lib\model\BaseModel
+class Page extends \lib\model\BaseModel
 {
     private $__pageConfig;
     private $__pageDef;
@@ -31,13 +34,37 @@ abstract class Page extends \lib\model\BaseModel
     const PAGE_PERMISSION_MODEL="MODEL";
     const PAGE_PERMISSION_SITE="SITE";
 
-    public function __construct($serializer = null, $definition = null)
+
+    function __construct($serializer = null, $definition = null)
     {
-        $pageModelDef=\model\web\Page\Definition::$definition;
-        parent::__construct($serializer, $pageModelDef);
+        $this->__objName = \lib\model\ModelService::getModelDescriptor('\model\web\Page');
+        if (!$definition)
+            $this->__def=Page::loadDefinition($this);
+        else
+            $this->__def=BaseModelDefinition::fromArray($definition);
 
+        BaseTypedObject::__construct($this->__def->getDefinition());
 
+        $this->__aliasDef = & $this->__objectDef["ALIASES"];
+
+        if ($serializer)
+        {
+            $this->__serializer = $serializer;
+            if(!isset($this->__objectDef["DEFAULT_WRITE_SERIALIZER"]))
+                $this->__writeSerializer=$this->__serializer;
+        }
     }
+    function getTableName()
+    {
+        return "Page";
+    }
+    static function loadDefinition($model)
+    {
+        include_once(__DIR__."/Definition.php");
+        // Se hace new() por si la definicion requiere inicializacion de constantes.
+        return new \model\web\Page\Definition();
+    }
+
     public function checkPermissions($user)
     {
         try {
@@ -119,7 +146,7 @@ abstract class Page extends \lib\model\BaseModel
         }
     }
 
-    abstract function initializePage($params);
+     function initializePage($params){}
 
     public function getPageName()
     {

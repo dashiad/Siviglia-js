@@ -1,9 +1,8 @@
 <?php
-            
-            global $SERIALIZERS;
+
             $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);            $params=\Registry::$registry["PAGE"];
+            $serializer=\Registry::getService("storage")->getSerializerByName('web');
+
 ?>
             [*/VIEWS/OBJECT_VIEW({"currentPage":"$currentPage","object":"Sites/WebsiteCountries","dsName":"View","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                     [_TITLE]id_websiteCountry[#]
@@ -21,9 +20,9 @@
 					[_LEFT]id_country[#]
 					[_RIGHT][*:/types/Relationship({"name":"id_country","model":"$iterator"})][#][#]
 				[#]
- 
+
                         [#]
-                    [#]    
+                    [#]
            [#]
  $Sites_id_websiteIterator=$iterator->Sites_id_website;
  ?><?php
@@ -39,7 +38,7 @@
 						[_COLUMN][_LABEL]id_website[#][#]
 						[_COLUMN][_LABEL]namespace[#][#]
 						[_COLUMN][_LABEL]websiteName[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_website","model":"$curModel"})][#][#][#]
@@ -49,7 +48,7 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]
  $ps_customer\ps_country_id_countryIterator=$iterator->ps_customer\ps_country_id_country;
  ?><?php
@@ -73,7 +72,7 @@
 						[_COLUMN][_LABEL]iso_code[#][#]
 						[_COLUMN][_LABEL]display_tax_label[#][#]
 						[_COLUMN][_LABEL]id_zone[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/String({"name":"zip_code_format","model":"$curModel"})][#][#][#]
@@ -91,5 +90,5 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]

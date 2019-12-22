@@ -20,7 +20,7 @@ class ModelDescriptorTest extends TestCase
 
     function testSimple()
     {
-        $package=new \lib\model\DefaultPackage();
+        $package=new \lib\model\Package('\model\reflection','');
         $obj=new \lib\model\ModelDescriptor('\model\reflection\Model',null,$package);
         $layer=$obj->getLayer();
         $class=$obj->getClassName();

@@ -25,8 +25,10 @@ class MysqlSerializerTest extends TestCase
     var $serializer=null;
     function getDefaultSerializer()
     {
+        global $Config;
+        $sc=$Config["SERIALIZERS"]["test"];
         if($this->serializer===null)
-            $this->serializer=new \lib\storage\Mysql\MysqlSerializer(["NAME"=>"MAIN_MYSQL","ADDRESS"=>["host" => _DB_SERVER_, "user" => _DB_USER_, "password" => _DB_PASSWORD_,"database"=>"test"]]);
+            $this->serializer=new \lib\storage\Mysql\MysqlSerializer($sc);
         return $this->serializer;
     }
     function getSimpleDefinedObject($includeIndex=1)
@@ -70,16 +72,16 @@ class MysqlSerializerTest extends TestCase
         $this->createTestTable($obj);
         $ser=$this->getDefaultSerializer();
         $client=$ser->getConnection();
-        $this->assertEquals(true,$client->tableExists(MysqlClientTest::TEST_TABLE));
+        $this->assertEquals(true,$client->tableExists(MysqlSerializerTest::TEST_TABLE));
     }
     function testDestroyStorage()
     {
         $obj=$this->getSimpleDefinedObject();
         $this->createTestTable($obj);
         $ser=$this->getDefaultSerializer();
-        $ser->destroyStorage($obj,MysqlClientTest::TEST_TABLE);
+        $ser->destroyStorage($obj,MysqlSerializerTest::TEST_TABLE);
         $client=$ser->getConnection();
-        $this->assertEquals(false,$client->tableExists(MysqlClientTest::TEST_TABLE));
+        $this->assertEquals(false,$client->tableExists(MysqlSerializerTest::TEST_TABLE));
     }
     function testAdd()
     {
@@ -115,11 +117,11 @@ class MysqlSerializerTest extends TestCase
         $obj->data=2000;
         $this->createTestTable($obj);
         $ser=$this->getDefaultSerializer();
-        $ser->add([$obj]);
+        $ser->add([$obj],MysqlSerializerTest::TEST_TABLE);
         sleep(1);
         $obj2=$this->getSimpleDefinedObject();
         $obj2->id=1;
-        $ser->unserialize($obj2);
+        $ser->unserialize($obj2,["TABLE"=>MysqlSerializerTest::TEST_TABLE]);
         $this->assertEquals(2000,$obj2->data);
 
     }

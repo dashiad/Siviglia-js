@@ -45,6 +45,7 @@ class FullList
                 )
             )
         ),
+        'SOURCE'=>[
         'STORAGE'=>array(
             'MYSQL'=>array(
                 'DEFINITION'=>array(
@@ -77,6 +78,7 @@ class FullList
                 )
             )
         )
+            ]
     );
 }
 ?>

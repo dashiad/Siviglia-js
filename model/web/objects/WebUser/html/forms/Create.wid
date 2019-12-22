@@ -1,15 +1,15 @@
 <?php
-            global $SERIALIZERS;
+            \Registry::getService("storage")->getSerializerByName('web');
+            $params=\Registry::$registry["PAGE"];
             $formKeys=null;;
-            $serializer=Registry::$registry["serializers"]["web"];
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+
 ?>
 
 
-                [*/FORMS/form({"object":"WebUser","layer":"web,"name":"Create"})]        
+                [*/FORMS/form({"object":"WebUser","layer":"web,"name":"Create"})]
                 [_TITLE]Create WebUser[#]
                 [_DESCRIPTION]Form Description[#]
-                [_MODEL({"keys":"$formKeys","serializer":"$serializer"})][#]                           
+                [_MODEL({"keys":"$formKeys","serializer":"$serializer"})][#]
                 [_FORMGROUP]
                         [_TITLE]Form Group Title[#]
                         [_DESCRIPTION]Form Group Description[#]
@@ -197,10 +197,10 @@
 						[_ERROR({"type":"UNSET","code":"1"})][@L]WebUser_Create_VALIDATED_UNSET[#][#]
 					[#]
 				[#]
-         
+
                         [#]
                 [#]
                 [_BUTTONS]
                         [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
-                [#]        
+                [#]
           [#]

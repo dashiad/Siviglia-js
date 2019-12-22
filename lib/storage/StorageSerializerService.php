@@ -45,10 +45,7 @@ class StorageSerializerService
 
     function getDefaultSerializer($objName=null)
     {
-        /*global $SERIALIZERS;
-        if(!$SERIALIZERS[DEFAULT_SERIALIZER])
-            throw new StorageFactoryException(StorageFactoryException::ERR_SERIALIZER_NOT_FOUND,array("name"=>$objName));
-        */
+
         if(!$objName)
             return $this->getSerializerByName($this->config["default"]);
         else

@@ -122,6 +122,7 @@ class AdminFullList
                            'PERMISSION'=>'adminList'
                            )
                      ),
+         'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(
@@ -254,6 +255,7 @@ class AdminFullList
                                  )
                            )
                      )
+             ]
                );
 }
 ?>

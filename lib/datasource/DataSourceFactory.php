@@ -13,9 +13,14 @@ function applyDataSource($objName,$dsName,$params,$callable,$dsParams=null,$seri
 
 }
 namespace lib\datasource {
+    class DataSourceFactoryException extends \lib\model\BaseException
+    {
+        const ERR_NO_APPLICABLE_SOURCE=1;
+        const TXT_NO_APPLICABLE_SOURCE="No encontrado source disponible para el datasource [%dsname%] de [%object%]";
+    }
 class DataSourceFactory
 {
-        static function getDataSource($objName,$dsName,&$serializer=null)
+        static function getDataSource($objName,$dsName,$serializer=null)
         {
             $objNameClass=\lib\model\ModelService::getModelDescriptor($objName);
             require_once($objNameClass->getDataSourceFileName($dsName));
@@ -36,23 +41,47 @@ class DataSourceFactory
                 return new \lib\datasource\MultipleDatasource($objName,$dsName,$mainDef,$serializer);
             }
 
-
-
-            if(!$serializer) {
-                $modelService=\Registry::getService("model");
-                $modelIns=$modelService->getModel($objName);
-                $serializer=$modelIns->__getSerializer();
-                $serType=ucfirst(strtolower($serializer->getSerializerType()));
+            // Si se nos pasa un serializer, se busca un SOURCE de tipo STORAGE cuyo tipo coincida con el del serializer.
+            $serType=null;
+            if($serializer)
+            {
+                $serType=$serializer->getSerializerType();
             }
             else
-                $serType=$serializer->getSerializerType();
-            $uSerType=ucfirst(strtolower($serType));
-            $options=null;
-            if(isset($mainDef["STORAGE"][strtoupper($serType)]))
-                $options=$mainDef["STORAGE"][strtoupper($serType)];
-            $dsN='\\lib\\storage\\'.$uSerType.'\\'.$uSerType.'DataSource';
-            $mainDs=new $dsN($objName,$dsName,$instance,null,$options);
-            return $mainDs;
+            {
+                // Si no hay un serializer, y hay un STORAGE, el serializador se obtiene del modelo.
+                if(isset($mainDef["SOURCE"]["STORAGE"]))
+                {
+                    $modelService=\Registry::getService("model");
+                    $modelIns=$modelService->getModel($objName);
+                    $serializer=$modelIns->__getSerializer();
+                    $serType=ucfirst(strtolower($serializer->getSerializerType()));
+                }
+            }
+            if($serType!==null) {
+                $uSerType = ucfirst(strtolower($serType));
+                $options = null;
+                if (isset($mainDef["SOURCE"]["STORAGE"][strtoupper($serType)])) {
+                    $options = $mainDef["SOURCE"]["STORAGE"][strtoupper($serType)];
+                    $dsN = '\\lib\\storage\\' . $uSerType . '\\' . $uSerType . 'DataSource';
+                    $mainDs = new $dsN($objName, $dsName, $instance, null, $options);
+                    return $mainDs;
+                }
+            }
+            // Si no hay nada relacionado con serializadores, se busca el primer "otro" source que haya.
+            foreach($mainDef["SOURCE"] as $k=>$v)
+            {
+                if($k=="STORAGE")
+                    continue;
+                $dsHandler=ucfirst(strtolower($k));
+                $dsN='\lib\datasource\\'.$dsHandler.'DataSource';
+                $mainDs = new $dsN($objName, $dsName, $instance::$definition, null, $options);
+                return $mainDs;
+            }
+            // Y, si no hay nada, lanzamos excepcion
+            throw new DataSourceFactoryException(DataSourceFactoryException::ERR_NO_APPLICABLE_SOURCE,["object"=>$objName,"dsname"=>$dsName]);
+
+
         }
         function applyDataSource($objName,$dsName,$params,$callable,$dsParams=null,$serializer=null)
         {

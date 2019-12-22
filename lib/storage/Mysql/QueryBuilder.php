@@ -101,53 +101,50 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 
         // Se prepara el serializado de todos los campos que esten "set"
         $paramsObj=[];
-        foreach($this->data->__getFields() as $key=>$value)
-        {
-            $curField=$this->data->__getField($key);
-            if($curField->getType()->hasOwnValue())
-            {
-                $fdef=$curField->getDefinition();
+        $dsFields=$this->data->__getFields();
+        if($dsFields!==null) {
+            foreach ($dsFields as $key => $value) {
+                $curField = $this->data->__getField($key);
+                if ($curField->getType()->hasOwnValue()) {
+                    $fdef = $curField->getDefinition();
 
-                if(isset($fdef["PARAMTYPE"]) && $fdef["PARAMTYPE"]=="DYNAMIC")
-                {
-                    $val=$curField->getValue().'%';
-                    if(isset($fdef["DYNAMICTYPE"]) && $fdef["DYNAMICTYPE"]=="BOTH")
-                    {
-                        $val='%'.$val;
+                    if (isset($fdef["PARAMTYPE"]) && $fdef["PARAMTYPE"] == "DYNAMIC") {
+                        $val = $curField->getValue() . '%';
+                        if (isset($fdef["DYNAMICTYPE"]) && $fdef["DYNAMICTYPE"] == "BOTH") {
+                            $val = '%' . $val;
+                        }
+                        $curField->setValue($val);
                     }
-                    $curField->setValue($val);
-                }
-                // Aqui tenemos un pequeño problema.
-                // Una cosa es serializar un valor para usarlo como campo a insertar (insert o update), y otra cosa
-                // es serializarlo para usarlo en el "where" de un select.
-                // Permitimos que un campo de filtro sea un array. Qué significa serializar un array?
-                // Si fuera para insertarlo, posiblemente seria un serializado json.
-                // Sin embargo, aqui, lo que necesitamos es una lista de elementos separados por comas,
-                // ya que lo estamos usando en un IN (...).
-                // Asi que vamos a manejar ese caso por separado.
-                $type=$curField->getType();
-                if(!is_a($type,'\lib\model\types\_Array'))
-                    $serializedVal = $this->serializer->serializeType($key,$curField->getType());
-                else
-                {
-                    $n=$type->count();
-                    $def=$type->getDefinition();
-                    $elementType=$def["ELEMENTS"];
-                    $subtype=\lib\model\types\TypeFactory::getType($this, $elementType);
-                    $subVals=[];
-                    for($s=0;$s<$n;$s++)
-                    {
-                        $subtype->setValue($type[$s]);
-                        $serialized = $this->serializer->serializeType($key,$subtype);
-                        $subVals[]=$serialized[$key];
+                    // Aqui tenemos un pequeño problema.
+                    // Una cosa es serializar un valor para usarlo como campo a insertar (insert o update), y otra cosa
+                    // es serializarlo para usarlo en el "where" de un select.
+                    // Permitimos que un campo de filtro sea un array. Qué significa serializar un array?
+                    // Si fuera para insertarlo, posiblemente seria un serializado json.
+                    // Sin embargo, aqui, lo que necesitamos es una lista de elementos separados por comas,
+                    // ya que lo estamos usando en un IN (...).
+                    // Asi que vamos a manejar ese caso por separado.
+                    $type = $curField->getType();
+                    if (!is_a($type, '\lib\model\types\_Array'))
+                        $serializedVal = $this->serializer->serializeType($key, $curField->getType());
+                    else {
+                        $n = $type->count();
+                        $def = $type->getDefinition();
+                        $elementType = $def["ELEMENTS"];
+                        $subtype = \lib\model\types\TypeFactory::getType($this, $elementType);
+                        $subVals = [];
+                        for ($s = 0; $s < $n; $s++) {
+                            $subtype->setValue($type[$s]);
+                            $serialized = $this->serializer->serializeType($key, $subtype);
+                            $subVals[] = $serialized[$key];
+                        }
+                        $serializedVal[$key] = implode(",", $subVals);
                     }
-                    $serializedVal[$key]=implode(",",$subVals);
+
+                    foreach ($serializedVal as $kk => $vv)
+                        $paramsObj[$kk] = $vv;
                 }
 
-                foreach($serializedVal as $kk=>$vv)
-                    $paramsObj[$kk]=$vv;
             }
-
         }
         return \lib\php\ParametrizableString::getParametrizedString($queryText,$paramsObj);
     }
@@ -194,7 +191,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                     $replacement = '';
                 }
 
-                $pattern = '/{%'.$tVar.':(.*)%}/';
+                $pattern = '/\[%'.$tVar.':(.*)%\]/';
                 $matches = array();
                 $base = preg_replace($pattern, $replacement, $base);
             }
@@ -225,25 +222,20 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
             $pattern = "[%" . $conditionName . "%]";
             if (isset($curCondition["TRIGGER_VAR"])) {
                 $tVar = $curCondition["TRIGGER_VAR"];
-                $default = (isset($curCondition["DEFAULT"]) ? (empty($curCondition["DEFAULT"]) ? "false" : "true") : "true");
 
+
+                // Nota: no queremos valores por defecto heredados del tipo.
                 try {
                     $curField = $this->data->__getField($tVar);
-                } catch (\Exception $e) {
-                    $notExisting[] = $pattern;
-                    $defaultValue[] = $default;
-                    continue;
-                }
-
-                if (!$curField->getType()->hasOwnValue()) {
-                    $hasDefaultValue=$curField->getType()->getDefaultValue();
-                    if(!$hasDefaultValue)
-                    {
-                        $defaultValue[] = $default;
+                    if (!$curField->getType()->hasOwnValue()) {
                         $notExisting[] = $pattern;
                         continue;
                     }
+                } catch (\Exception $e) {
+                    $notExisting[] = $pattern;
+                    continue;
                 }
+
 
 
                 $val = $curField->getValue();
@@ -284,7 +276,6 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 }
             } else {
                 $notExisting[] = $pattern;
-                $defaultValue[] = $default;
             }
         }
 
@@ -295,7 +286,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         if (count($notExisting) == 0) {
             return $base;
         }
-        $base = str_replace($notExisting, $defaultValue, $base);
+        $base = str_replace($notExisting, "true", $base);
         $base = str_replace(" AND true", "", $base);
         return $base;
     }

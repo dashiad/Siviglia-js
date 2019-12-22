@@ -26,6 +26,7 @@ abstract class TypeSerializer
     protected $cache=[];
     function __construct($definition,$serType)
     {
+        $definition["TYPE"]=$serType;
         $this->serializerType=$serType;
         $this->definition=$definition;
         if(isset($this->definition["columnMap"]))

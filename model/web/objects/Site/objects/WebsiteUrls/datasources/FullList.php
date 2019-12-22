@@ -50,6 +50,7 @@ class FullList
                            )
                      ),
                'PERMISSIONS'=>array('PUBLIC'),
+               'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(
@@ -99,7 +100,10 @@ class FullList
                                        )
                                  )
                            )
+
                      )
+                   ]
+
                );
 }
 ?>

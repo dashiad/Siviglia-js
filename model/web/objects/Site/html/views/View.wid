@@ -1,9 +1,7 @@
 <?php
-            
-            global $SERIALIZERS;
-            $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('web');
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);            $params=\Registry::$registry["PAGE"];
+
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$params=Registry::$registry["PAGE"];
 ?>
             [*/VIEWS/OBJECT_VIEW({"currentPage":"$currentPage","object":"/model/Site","dsName":"View","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                     [_TITLE]id_website[#]
@@ -33,9 +31,9 @@
 					[_LEFT]name[#]
 					[_RIGHT][*:/types/_String({"name":"websiteName","model":"$iterator"})][#][#]
 				[#]
- 
+
                         [#]
-                    [#]    
+                    [#]
            [#]
  $PagesIterator=$iterator->Pages;
  ?><?php
@@ -59,7 +57,7 @@
 						[_COLUMN][_LABEL]title[#][#]
 						[_COLUMN][_LABEL]tags[#][#]
 						[_COLUMN][_LABEL]description[#][#]
-        
+
                     [#]
                     [_ROWS]
 						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_page","model":"$curModel"})][#][#][#]
@@ -77,5 +75,5 @@
                     [#]
                     [_LISTINGFOOTER]
                     [#]
-                [#]     
+                [#]
            [#]

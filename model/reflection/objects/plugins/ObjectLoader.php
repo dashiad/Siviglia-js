@@ -8,13 +8,13 @@ class ObjectLoader extends \model\reflection\base\SystemPlugin
             if($level!=1)
                 return;
             printPhase("Cargando Modelos");
-            global $APP_NAMESPACES;
-            foreach($APP_NAMESPACES as $index=>$curLayer)
-            {
-                printSubPhase("Cargando Modelos de ".$curLayer);
+            for($kk=0;$kk<count($Config["PACKAGES"]);$kk++) {
+              $package = $Config["PACKAGES"][$kk];
+
+                printSubPhase("Cargando Modelos de ".$package);
                 // Se mira si existe una quickDef
-                $layer=\model\reflection\ReflectorFactory::getLayer($curLayer);
-                $quickDef=$layer->getQuickDefinitions();
+                $pkg=\model\reflection\ReflectorFactory::getPackage($package);
+                $quickDef=$pkg->getQuickDefinitions();
 
                 printSubPhase("Procesando QuickDefs");
                 //$quickDef=$layerConf->definition["QuickDef"];
@@ -26,23 +26,23 @@ class ObjectLoader extends \model\reflection\base\SystemPlugin
                     printItem("Procesando $key");
                     if(ReflectionFactory::getModel($key))
                         continue;
-                    $instance=\model\reflection\Model\QuickModelGenerator::createFromQuick($key,$curLayer,$value);
-                    ReflectorFactory::addModel($curLayer,$key,$instance);
+                    $instance=\model\reflection\Model\QuickModelGenerator::createFromQuick($key,$pkg,$value);
+                    ReflectorFactory::addModel($pkg,$key,$instance);
                     $instance->saveDefinition("objects");
-                }                                              
-            }                   
+                }
+            }
             printSubPhase("Generando Relaciones Inversas");
             $this->iterateOnModels("generateExtRelationships");
             printSubPhase("Generando clases modelo temporales");
             $this->iterateOnModels("generateTempModelClasses");
         }
-        
+
         function generateExtRelationships($layer,$name,$instance)
-        {            
+        {
             $instance->createDerivedRelations();
         }
 
-        
+
         function generateTempModelClasses($layer,$name,$instance)
         {
             echo "GENERANDO PARA $layer $name<br>";

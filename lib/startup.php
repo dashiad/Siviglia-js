@@ -28,17 +28,19 @@ class Startup
         include_once(LIBPATH."/model/BaseTypedObject.php");
         include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
         include_once(PROJECTPATH."/vendor/autoload.php");
-        $oPath=new \lib\Paths();
+        global $Config;
 
-
-        $Container->addService("paths",$oPath);
-        $defaultPackage = new \lib\model\DefaultPackage();
         $modelService=new ModelService();
-        $modelService->addPackage($defaultPackage);
+        $modelService->initialize();
         $Container->addService("model",$modelService);
         $Container->addService("router",new \lib\Router());
         $storageService=new \lib\storage\StorageSerializerService();
         $storageService->addSerializer("PHP",[]);
+
+        foreach($Config["SERIALIZERS"] as $key=>$value)
+        {
+            $storageService->addSerializer($key,$value);
+        }
         $Container->addService("storage",$storageService);
         \Registry::$registry["ServiceContainer"]=$Container;
 
@@ -60,11 +62,12 @@ class Startup
     {
         global $Container;
         Startup::initializeContext();
-        $ser=\lib\storage\StorageFactory::getSerializerByName("default");
+        $s=\Registry::getService("storage");
+        $ser=$s->getSerializerByName("default");
         $oPerms = new \PermissionsManager(
-            $Container->getService("model"),
-            $Container->getService("user"),
-            $Container->getService("site"),
+            \Registry::getService("model"),
+            \Registry::getService("user"),
+            \Registry::getService("site"),
             $ser);
 
         $Container->addService("permissions",$oPerms);
@@ -104,7 +107,14 @@ $modelCache=array();
 
 function getModel($objName,$fields=null)
 {
-    return \Registry::getService("model")->getInstance($objName,$fields);
+    $m=\Registry::getService("model")->getModel($objName);
+    if($fields!==null)
+    {
+        foreach($fields as $k=>$v)
+            $m->{$k}=$v;
+        $m->loadFromFields();
+    }
+    return $m;
 }
 
 function getModelInstance($objName,$serializer=null,$definition=null)

@@ -24,9 +24,10 @@ class AdminWebsiteProcessor extends \model\reflection\base\SystemPlugin
 
         }
 
-        global $APP_NAMESPACES;
-        foreach ($APP_NAMESPACES as $layer) {
-            $objs = \model\reflection\ReflectorFactory::getObjectsByLayer($layer);
+        $packages=\model\reflection\ReflectorFactory::getPackageNames();
+        for($kk=0;$kk<count($packages);$kk++) {
+            $pkg=new \model\reflection\Package($packages[$kk]);
+            $objs = $pkg->getModels();
             foreach ($objs as $key => $value) {
                 if ($config->mustRebuild("page", "index" . $key, PROJECTPATH . "/html/Website/admin/$key/index.wid")) {
                     $this->generateIndexPageDefinition($sys, 'Website\\admin\\' . $key,
@@ -58,9 +59,11 @@ class AdminWebsiteProcessor extends \model\reflection\base\SystemPlugin
                 "/html/Website"
             )
         );
-        global $APP_NAMESPACES;
-        foreach($APP_NAMESPACES as $val)
-            $def["WIDGETPATH"][]="/$val/objects";
+        $packages=\model\reflection\ReflectorFactory::getPackageNames();
+        for($kk=0;$kk<count($packages);$kk++) {
+            $package = $packages[$kk];
+            $def["WIDGETPATH"][] = "/$package/objects";
+        }
         $def["WIDGETPATH"][]="/output/html/Widgets";
 
         $text = "<?php\r\n\tnamespace " . $namespace . ";\nclass index extends \\lib\\output\\html\\WebPage\n" .
@@ -135,10 +138,13 @@ LAYOUT;
         $cont = ob_get_clean();
         $code = "";
         $offset = 3;
-        global $APP_NAMESPACES;
-        foreach ($APP_NAMESPACES as $layer) {
-            $objs = \model\reflection\ReflectorFactory::getObjectsByLayer($layer);
-            $code .= str_repeat("\t", $offset) . '[_:MENUGROUP({"permission":"' . ucfirst($layer) . 'Admin"})]' . "\n";
+
+        $packages=\model\reflection\ReflectorFactory::getPackageNames();
+        for($kk=0;$kk<count($packages);$kk++) {
+            $package = $packages[$kk];
+            $pkg = new \model\reflection\Package($package);
+            $objs = $pkg->getModels($pkg);
+            $code .= str_repeat("\t", $offset) . '[_:MENUGROUP({"permission":"' . ucfirst($package) . 'Admin"})]' . "\n";
             foreach ($objs as $key => $val) {
                 $code .= str_repeat("\t", $offset + 1) . '[_:MENUITEM({"permission":"adminList","module":"' . $key . '"})]' . "\n";
                 $code .= str_repeat("\t", $offset + 2) . '[_:LINK]' . WEBPATH . '/admin/' . $key . '[#]' . "\n";

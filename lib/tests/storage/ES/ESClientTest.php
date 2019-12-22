@@ -16,7 +16,9 @@ class ESClientTest extends TestCase
     const TEST_INDEX_NAME="testIndex";
     function connect()
     {
-        $client=new \lib\storage\ES\ESClient(["servers"=>[ES_TEST_SERVER],"port"=>ES_TEST_PORT,"index"=>ES_TEST_INDEX]);
+        global $Config;
+        $sc=$sc=$Config["SERIALIZERS"]["es"]["ES"];;
+        $client=new \lib\storage\ES\ESClient($sc);
         return $client;
     }
     function createTestIndex($client)

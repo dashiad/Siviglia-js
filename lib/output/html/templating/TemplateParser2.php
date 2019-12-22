@@ -8,39 +8,39 @@
   Copyright (c) 2012, Jose Maria Rodriguez Millan
   All rights reserved.
 
-  Redistribution and use in source and binary forms, with or without modification, are permitted provided that 
+  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
   the following conditions are met:
 
-  * Redistributions of source code must retain the above copyright notice, this list of conditions and 
+  * Redistributions of source code must retain the above copyright notice, this list of conditions and
     the following disclaimer.
-  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and 
+  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
     the following disclaimer in the documentation and/or other materials provided with the distribution.
   * Neither the name of the <ORGANIZATION> nor the names of its contributors may be used to endorse or
     promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
-INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-ARE DISCLAIMED. 
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS 
-OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-Please, send bugs, feature requests or comments to: 
- 
-dashiad at hotmail.com 
- 
-You can find more information about this class at: 
- 
-http://xphperiments.blogspot.com 
+Please, send bugs, feature requests or comments to:
+
+dashiad at hotmail.com
+
+You can find more information about this class at:
+
+http://xphperiments.blogspot.com
 
 */
 
 include_once(dirname(__FILE__)."/"."Grammar.class.php");
 include_once(dirname(__FILE__)."/Lock.php");
-define("WIDGET_EXTENSION","wid");      
+define("WIDGET_EXTENSION","wid");
 function print_backtrace_and_exit($msg)
 {
     echo $msg;
@@ -103,7 +103,7 @@ class CWidgetGrammarParser extends CGrammarParser {
     var $curLevel;
 
     function __construct($codeExpr,$curLevel,$parentWidget,$manager,$context)
-    {       
+    {
         $this->parentWidget=$parentWidget;
         $this->context=$context;
         $this->layoutManager=$manager;
@@ -187,9 +187,9 @@ class CWidgetGrammarParser extends CGrammarParser {
     static $widgetStack=array();
 
     /**
-     * 
+     *
      *    EVALUACION DE ESTRUCTURA JSON:
-     * 
+     *
      **/
     function eval_close_tag($params)
     {
@@ -588,13 +588,13 @@ class CWidgetGrammarParser extends CGrammarParser {
                         if(count($layout)==1 && $layout[0]["TYPE"]=="HTML")
                         {
                             $result[]=$this->parseVariableAssign($widget[$k]["ASSIGN_TO"],$layout[0]["TEXT"]);
-                            continue;
+                            break;
                         }
                     }
                     for($s=0;$s<count($layout);$s++)
                     {
                         if(!$layout[$s])
-                            continue;
+                            break;
                         $result[]=$layout[$s];
                     }
                 }break;
@@ -704,20 +704,23 @@ class CWidgetGrammarParser extends CGrammarParser {
     }
     /**
      *         tag_contents::= dataText-><datasource_text> || simpleText=>( passthru-><passthruText>
-                               || subwidget-><subwidget> 
+                               || subwidget-><subwidget>
                                || widget-><widget>)*.
      */
     function eval_tag_contents($params)
     {
         $results=array();
         $cc=& $params["result"];
-        $nItems=count($cc);
-        for($k=0;$k<$nItems;$k++) {
-            $c=$cc[$k];
-            if($c["selector"]=="widget")
-                $results=array_merge($results,$c["result"]);
-            else
-                $results[] = $params["result"][$k]["result"];
+        if($cc!=null) {
+
+            $nItems = count($cc);
+            for ($k = 0; $k < $nItems; $k++) {
+                $c = $cc[$k];
+                if ($c["selector"] == "widget")
+                    $results = array_merge($results, $c["result"]);
+                else
+                    $results[] = $params["result"][$k]["result"];
+            }
         }
         return $results;
 
@@ -1006,7 +1009,7 @@ class CLayoutManager
     var $layoutParser;
     var $layoutLoader;
     static $defaultWidgetPath;
-    
+
     function __construct($basePath,$targetProtocol,$widgetPath=null,$pluginParams=array(),$lang="es")
     {
         $this->targetProtocol=$targetProtocol;
@@ -1063,14 +1066,14 @@ class CLayoutManager
 
         $pluginName=dirname(__FILE__).'/'.$this->getTargetProtocol().'/plugins/'.$name.".php";
         $parent["FILE"]=$pluginName;
-        include_once($pluginName);        
+        include_once($pluginName);
         $plugin=new $name($parent,$contents,$this);
         if(!in_array($pluginName,$this->initializedPlugins))
         {
             $plugin->initialize();
             $this->initializedPlugins[]=$pluginName;
         }
-        return $plugin->parse();        
+        return $plugin->parse();
     }
 
     function getVarPrefix($widgetName)
@@ -1081,7 +1084,7 @@ class CLayoutManager
         if($suffix=="_0")
             $suffix="";
         $this->suffixes[$widgetName]["COUNTER"]++;
-        
+
         return $widgetName.$suffix;
     }
     function getLayout()
@@ -1100,7 +1103,7 @@ class CLayoutManager
         else
         {
             $compiledDir=dirname($fileName)."/cache/".$this->lang."/".$this->targetProtocol."/";
-        }           
+        }
         $pathInfo=pathinfo($fileName);
         $base=$pathInfo["basename"];
 
@@ -1113,7 +1116,7 @@ class CLayoutManager
                         $base
                         );
 	    }
-        
+
 
         $compiledFile=$compiledDir."/".$base;
         //include_once($compiledFile);
@@ -1125,7 +1128,7 @@ class CLayoutManager
 
         $mustRebuild=$this->checkCacheFile($fileName,$compiledFile,$depsFile);
 
-	
+
         //$mustRebuild=true;
         if($mustRebuild)
 
@@ -1162,7 +1165,7 @@ class CLayoutManager
                 ini_set('memory_limit', $oldMemoryLimit);
                 // El texto final se envia a los plugins, para que hagan las
                 // ultimas sustituciones.
-            
+
                 foreach($this->initializedPlugins as $pluginClass)
                 {
                     $cName=basename($pluginClass,".php");
@@ -1193,9 +1196,9 @@ class CLayoutManager
             $lock->unlock();
 
         }
-        
+
         if($include)
-        {                        
+        {
            include($compiledFile);
         }
         else
@@ -1248,7 +1251,7 @@ class CLayoutManager
     {
         if($this->staticData[$widgetName])
             return true;
-        return false;            
+        return false;
     }
     function addStaticData($widgetName,$datatype,$data)
     {

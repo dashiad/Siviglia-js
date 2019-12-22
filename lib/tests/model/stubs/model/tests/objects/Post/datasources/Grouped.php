@@ -58,6 +58,7 @@ class Grouped
                 ]
             ),
             'PERMISSIONS'=>array('_PUBLIC_'),
+        'SOURCE'=>[
             'STORAGE'=>array(
                 'MYSQL'=>array(
                     'DEFINITION'=>array(
@@ -80,6 +81,7 @@ class Grouped
                     )
                 )
             )
+            ]
         );
 
 }

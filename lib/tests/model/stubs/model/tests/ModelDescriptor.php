@@ -6,10 +6,10 @@
  */
 
 
-namespace lib\tests\model\stubs;
+namespace lib\tests\model\stubs\model\tests;
 
 
-class SimpleModelDescriptor extends \lib\model\ModelDescriptor
+class ModelDescriptor extends \lib\model\ModelDescriptor
 {
     function __construct($name,$package)
     {

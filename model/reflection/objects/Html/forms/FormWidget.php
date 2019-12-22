@@ -3,12 +3,12 @@ namespace model\reflection\Html\forms;
 class FormWidget extends \model\reflection\base\ConfiguredObject //ClassFileGenerator
 {
     function __construct($name,$parentForm)
-    {        
+    {
         $parentAction=$parentForm->getAction();
         $parentModel=$parentAction->parentModel;
         $this->action=$parentAction;
         $this->form=$parentForm;
-        
+
         parent::__construct($name,
                             $parentModel,
                             $parentModel->objectName->getNamespace()."\\html\\forms",
@@ -26,13 +26,12 @@ class FormWidget extends \model\reflection\base\ConfiguredObject //ClassFileGene
         $def=$this->form->getDefinition();
         if( isset($def["NOFORM"] ) && !$def["NOFORM"])
             return;
-        
-        
+
+
         $phpCode = <<<'TEMPLATE'
-            global $SERIALIZERS;
-            $formKeys={%formKeys%};
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('{%layer%}');
-            $serializer->useDataSpace($SERIALIZERS["{%layer%}"]["ADDRESS"]["database"]["NAME"]);
+            $serializer=\Registry::getService("storage")->getSerializerByName('{%layer%}');
+            $params=Registry::$registry["PAGE"];
+            $formKeys={%formKeys%};            
 TEMPLATE;
         $phpCode="<"."?php\n".$phpCode."\n?>\n\n";
 
@@ -57,20 +56,20 @@ TEMPLATE;
                 [#]        
           [#]
 TEMPLATE;
-             
+
         $this->fillActionErrors($actionErrors);
-        
+
         if(is_array($actionErrors))
         {
-            
+
             foreach($actionErrors as $key2=>$value2)
             {
               $formErrors.="\t\t\t\t[_ERROR({\"type\":\"".$key2."\",\"code\":\"".$value2."\"})][@L]".$this->parentModel->objectName->getNormalizedName()."_".$this->action->name."_".$key2."[#][#]\n";
             }
-            
+
         }
       // [*/types/inputs/Relation1x1Input({"name":"a3","labelField":"c2","valueField":"c1"})][#]
-      
+
       $actionRole=$this->action->getRole();
       switch($actionRole)
       {
@@ -85,11 +84,11 @@ TEMPLATE;
       case "AddRelation":
           {
               $keys=$this->action->getIndexFields();
-              $defaultInput="AddRelationMxN";                           
+              $defaultInput="AddRelationMxN";
           }break;
       case "SetRelation":
           {
-              $keys=$this->action->getIndexFields();              
+              $keys=$this->action->getIndexFields();
           }break;
       case "DeleteRelation":
           {
@@ -146,7 +145,7 @@ TEMPLATE;
                   $inputsExpr.=$curField->getFormInput($this->form,$key,$value,$this->definition["INPUTS"][$key]);
               }
           }
-      
+
 
       $searchs = array("{%formKeys%}","{%layer%}","{%objectName%}","{%actionName%}","{%inputs%}","{%title%}");
       $replaces = array($keyExpr,
@@ -156,16 +155,16 @@ TEMPLATE;
                           $inputsExpr,
                           $this->action->name." ".$this->parentModel->objectName->getNormalizedName()
                        );
-      
+
       $formWidget=$phpCode."\n".$formCode."\n";
-      
-      $formWidget=str_replace($searchs,$replaces,$formWidget);      
+
+      $formWidget=str_replace($searchs,$replaces,$formWidget);
       file_put_contents($this->filePath,$formWidget);
     }
 
     function fillBaseErrors($typeDef,& $errors)
     {
-        
+
         // Al final, de BaseTypeException solo quiero unset
             if( $typeDef["REQUIRED"] )
                 $errors["UNSET"]=1;
@@ -178,19 +177,19 @@ TEMPLATE;
         $destPath=$this->parentModel->objectName->getActionFileName($this->action->getName());
         if(!is_file($destPath))
                 return;
-        include_once($destPath);        
+        include_once($destPath);
         $exceptionClass=$this->parentModel->objectName->getNamespacedActionException($this->action->getName());
-        
+
         if( !class_exists($exceptionClass) )
             return;
-        
-        
+
+
         $reflectionClass=new \ReflectionClass($exceptionClass);
 
         // Se obtienen las constantes
         $constants = $reflectionClass->getConstants ();
         foreach($constants as $key=>$value)
-        {        
+        {
 
          if( strpos($key,"ERR_")===0 )
             {
@@ -198,5 +197,5 @@ TEMPLATE;
             }
             $errors[$key]=$value;
         }
-    }  
+    }
 }

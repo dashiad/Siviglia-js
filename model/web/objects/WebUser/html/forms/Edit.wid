@@ -1,15 +1,15 @@
 <?php
-            global $SERIALIZERS;
-            $formKeys=array("USER_ID"=>Registry::$registry["params"]["USER_ID"]);;
-            $serializer=Registry::$registry["serializers"]["web"];
-            $serializer->useDataSpace($SERIALIZERS["web"]["ADDRESS"]["database"]["NAME"]);
+
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$formKeys=array("USER_ID"=>Registry::$registry["params"]["USER_ID"]);;
+
 ?>
 
 
-                [*/FORMS/form({"object":"WebUser","layer":"web,"name":"Edit"})]        
+                [*/FORMS/form({"object":"WebUser","layer":"web,"name":"Edit"})]
                 [_TITLE]Edit WebUser[#]
                 [_DESCRIPTION]Form Description[#]
-                [_MODEL({"keys":"$formKeys","serializer":"$serializer"})][#]                           
+                [_MODEL({"keys":"$formKeys","serializer":"$serializer"})][#]
                 [_FORMGROUP]
                         [_TITLE]Form Group Title[#]
                         [_DESCRIPTION]Form Group Description[#]
@@ -197,10 +197,10 @@
 						[_ERROR({"type":"UNSET","code":"1"})][@L]WebUser_Edit_VALIDATED_UNSET[#][#]
 					[#]
 				[#]
-         
+
                         [#]
                 [#]
                 [_BUTTONS]
                         [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
-                [#]        
+                [#]
           [#]

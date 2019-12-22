@@ -88,6 +88,7 @@ class NotPages
                            'FIELD'=>'description'
                            )
                      ),
+               'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(
@@ -105,6 +106,7 @@ class NotPages
                                  )
                            )
                      )
+                   ]
                );
 }
 ?>

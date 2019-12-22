@@ -9,7 +9,7 @@ class Site extends \model\reflection\base\BaseDefinition
     function loadConfiguration()
     {
         $file=$this->findConfigurationFile();
-        
+
         if( $file )
         {
             include_once($file);
@@ -26,30 +26,23 @@ class Site extends \model\reflection\base\BaseDefinition
         include_once($this->getConfigFileName($projectName));
         if( !defined("PROJECTPATH") )
         {
-            
+
             return $this->generateDefaultConfiguration();
         }
 
-        global $SERIALIZERS;
+
         $defs=get_defined_constants();
-       
-        
-        return array(
-            "PROJECTNAME"=>$defs["PROJECTNAME"],
-            "PROJECTPATH"=>$defs["PROJECTPATH"],
-            "WEBPATH"=>$defs["WEBPATH"],
-            "SERIALIZERS"=>$SERIALIZERS,
-            "DEVELOPMENT"=>$defs["DEVELOPMENT"],
-            "INTERNAL_WEBPATH"=>$defs["INTERNAL_WEBPATH"]
-            );
+
+        global $Config;
+        return $Config;
     }
 
     function getProjectInfo()
     {
          $path=str_replace(implode(DIRECTORY_SEPARATOR,explode("/","/model/reflection/Site/Site.php")),"",__FILE__);
-         
+
          $parts=explode(DIRECTORY_SEPARATOR,$path);
-         $projectName=$parts[count($parts)-1];         
+         $projectName=$parts[count($parts)-1];
          $projectPath=implode("/",$parts);
          return array("projectName"=>$projectName,"projectPath"=>$projectPath);
     }
@@ -120,19 +113,19 @@ class Site extends \model\reflection\base\BaseDefinition
 
     function save($definition)
     {
-        
+
         $destFile=$this->findConfigurationFile();
-        
+
 
         $ds=DIRECTORY_SEPARATOR=='\\'?'\\\\':DIRECTORY_SEPARATOR;
         $definition["PROJECTPATH"]=trim($definition["PROJECTPATH"],DIRECTORY_SEPARATOR).$ds;
         $definition["DIRSEP"]=$ds;
         if(! $destFile )
-        {        
+        {
             $info=$this->getProjectInfo();
             $destFile=$info["projectPath"].DIRECTORY_SEPARATOR.$this->getConfigFileName($info["projectName"]);
         }
-        
+
         $configFile=<<<'EOD'
 <?php
 /**

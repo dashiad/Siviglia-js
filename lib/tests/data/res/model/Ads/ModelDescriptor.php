@@ -6,10 +6,10 @@
  */
 
 
-namespace lib\tests\data\res;
+namespace lib\tests\data\res\model\Ads;
 
 
-class SimpleModelDescriptor extends \lib\model\ModelDescriptor
+class ModelDescriptor extends \lib\model\ModelDescriptor
 {
     function __construct($name,$package)
     {

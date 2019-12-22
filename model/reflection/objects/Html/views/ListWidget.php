@@ -5,7 +5,7 @@ class ListWidget extends \model\reflection\base\ConfiguredObject
     var $generating=false;
     function __construct($name,$parentModel,$parentDs)
     {
-        $this->parentDs=$parentDs;        
+        $this->parentDs=$parentDs;
         $filePath="/html/views/";
         parent::__construct($name,$parentModel,'', $filePath, "datasourceTemplate", null, false,".wid");
     }
@@ -16,7 +16,7 @@ class ListWidget extends \model\reflection\base\ConfiguredObject
     }
 
     function generateCode($isadmin,$asSubDs=false,$subDsIterator=null)
-    {       
+    {
         if($this->generating)
             return "";
         $this->generating=true;
@@ -25,11 +25,9 @@ class ListWidget extends \model\reflection\base\ConfiguredObject
         $phpCode="";
         if(!$asSubDs)
         {
-        $phpCode=<<<'TEMPLATE'
-            global $SERIALIZERS;
+        $phpCode=<<<'TEMPLATE' 
             $params=Registry::$registry["PAGE"];
-            $serializer=\lib\storage\StorageFactory::getSerializerByName('{%layer%}');
-            $serializer->useDataSpace($SERIALIZERS["{%layer%}"]["ADDRESS"]["database"]["NAME"]);
+            $serializer=\Registry::getService("storage")->getSerializerByName('{%layer%}');                        
 TEMPLATE;
             $widgetCode='[*LIST_DS({"currentPage":"$currentPage","object":"{%object%}","dsName":"{%dsName%}","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]'."\n";
             $subDsIterator="iterator";
@@ -57,16 +55,16 @@ TEMPLATE;
                 [#]     
            [#]
 WIDGET;
-        
+
         // Se buscan todos los objetos que tenemos en metadata.
-        $def=$this->parentDs->getDefinition();        
+        $def=$this->parentDs->getDefinition();
         $metadata=$def["FIELDS"];
         if(!$metadata)
             $metadata=$def["PARAMS"];
         $headerCad="";
         $columnCad="";
         foreach($metadata as $fName=>$fDef)
-        {            
+        {
             $type=\lib\model\types\TypeFactory::getType($this->parentModel,$fDef);
             $typeDef=$type->getDefinition();
             $typeClass=get_class($type);
@@ -81,7 +79,7 @@ WIDGET;
             $columnCad.="\t\t\t\t\t\t[_ROW][_VALUE][*/list/icons/delete({\"model\":\"\$".$subDsIterator."\",\"indexes\":[\"".implode("\",\"",$this->modelIndexes)."\"]})][#][#][#]\n";
         }
         $searchs=array("{%layer%}","{%object%}","{%dsName%}","{%headers%}","{%columns%}");
-        
+
         $replaces=array($this->parentModel->getLayer(),
                         str_replace('\\','/',$this->parentModel->getClassName()),
                         $this->parentDs->getName(),
@@ -95,12 +93,12 @@ WIDGET;
             return $code;
         $this->code=$code;
         return $code;
-        
-    }    
+
+    }
     function save()
     {
         @mkdir(dirname($this->filePath),0777,true);
         file_put_contents($this->filePath,$this->code);
-        
+
     }
 }

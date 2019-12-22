@@ -160,7 +160,7 @@ class RelationMxN extends ModelBaseRelation
         }
         $this->remoteFields=$remoteDef;
 
-        $this->remoteTable=BaseModel::getTableName($targetObject,$remoteDef);
+        $this->remoteTable=BaseModel::getObjectTableName($targetObject,$remoteDef);
 
         foreach($local as $key=>$value)
         {

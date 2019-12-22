@@ -46,6 +46,7 @@ class ObjectSummary
                 'PERMISSION'=>'REFLECTION'
             )
         ),
+        'SOURCE'=>[
         'STORAGE'=>array(
             'DICTIONARY'=>array(
                 'DEFINITION'=>array(
@@ -54,6 +55,7 @@ class ObjectSummary
                 )
             )
         )
+            ]
     );
 
     function getObjectSummary($ds)

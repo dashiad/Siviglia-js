@@ -29,8 +29,9 @@ include_once(LIBPATH . "/Registry.php");
 // Se listan todos los objetos que hay.
 include_once(LIBPATH . "/reflection/SystemReflector.php");
 \model\reflection\ReflectorFactory::loadFactory();
-global $APP_NAMESPACES;
-$layers=& $APP_NAMESPACES;
+$packages=\model\reflection\ReflectorFactory::getPackageNames();
+
+$layers=& $packages;
 $layer=$_GET["layer"];
 $obj=$_GET["object"];
 $model=\model\reflection\ReflectorFactory::getModel($obj,$layer);

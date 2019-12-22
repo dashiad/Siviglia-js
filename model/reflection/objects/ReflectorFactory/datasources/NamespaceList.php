@@ -29,14 +29,16 @@ class NamespaceList
                 'PERMISSION'=>'REFLECTION'
             )
         ),
-        'STORAGE'=>array(
-            'DICTIONARY'=>array(
+        'SOURCE'=>[
+
+            'METHOD'=>array(
                 'DEFINITION'=>array(
                     "MODEL"=>'\model\reflection\ReflectorFactory',
                     "METHOD"=>'getLayers'
                 )
             )
-        )
+
+            ]
     );
 }
 ?>
