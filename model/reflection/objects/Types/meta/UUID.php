@@ -1,6 +1,6 @@
 <?php namespace model\reflection\Types\meta;
 include_once(LIBPATH."/model/types/BaseType.php");
-class UUID extends BaseType
+class UUID extends \model\reflection\Meta\BaseMetadata
 {
       var $valueSet=false;
       var $value;

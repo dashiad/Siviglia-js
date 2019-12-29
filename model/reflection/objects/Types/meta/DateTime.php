@@ -1,6 +1,6 @@
 <?php namespace model\reflection\Types\meta;
 
-  class  DateTimeTypeException extends BaseTypeException{
+  class  DateTimeTypeException extends \model\reflection\Meta\BaseMetadataException{
       const ERR_START_YEAR=100;
       const ERR_END_YEAR=101;
       const ERR_WRONG_HOUR=102;
@@ -30,7 +30,7 @@
   // REMEMBER TO SET default-time-zone='UTC' in mysql if working with UTC dates
   // Importing timezones into mysql:mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
 
-  class DateTime extends BaseType
+  class DateTime extends \model\reflection\Meta\BaseMetadata
   {
       const DATE_FORMAT="Y-m-d H:i:s";
       const DATE_FORMAT_EU="d/m/Y H:i:s";

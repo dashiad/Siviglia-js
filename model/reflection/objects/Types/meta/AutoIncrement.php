@@ -1,22 +1,13 @@
 <?php namespace model\reflection\Types\meta;
-  class AutoIncrement extends Integer
+  class AutoIncrement extends \model\reflection\Meta\BaseMetadata
   {
-      function __construct($def,$value=null)
+      function getMeta()
       {
-          Integer::__construct(array("TYPE"=>"AutoIncrement","MIN"=>0,"MAX"=>9999999999),$value);
-          $this->setFlags(BaseType::TYPE_SET_ON_SAVE);
-      }
-
-      function validate($value)
-      {
-          return true;
-      }
-      function setValue($val)
-      {
-          Integer::setValue($val);
-      }
-      function getRelationshipType()
-      {
-          return new Integer(array("MIN"=>0,"MAX"=>9999999999));
+          return [
+              "TYPE"=>"Container",
+              "FIELDS"=>[
+                  "TYPE"=>["TYPE"=>"String","FIXED"=>"AutoIncrement"]
+              ]
+          ];
       }
   }

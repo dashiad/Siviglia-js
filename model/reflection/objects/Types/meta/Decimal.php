@@ -1,5 +1,5 @@
 <?php namespace model\reflection\Types\meta;
-class Decimal extends BaseType
+class Decimal extends \model\reflection\Meta\BaseMetadata
 {
     function setValue($val)
     {

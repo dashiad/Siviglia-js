@@ -1,6 +1,6 @@
 <?php namespace model\reflection\Types\meta;
 
-  class  DateTypeException extends BaseTypeException{
+  class  DateTypeException extends \model\reflection\Meta\BaseMetadataException{
       const ERR_START_YEAR=100;
       const ERR_END_YEAR=101;
       const ERR_STRICTLY_PAST=104;
@@ -26,7 +26,7 @@
   // REMEMBER TO SET default-time-zone='UTC' in mysql if working with UTC dates
   // Importing timezones into mysql:mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
 
-  class Date extends BaseType
+  class Date extends \model\reflection\Meta\BaseMetadata
   {
       const DATE_FORMAT="Y-m-d";
       function __construct($definition,$value=false)

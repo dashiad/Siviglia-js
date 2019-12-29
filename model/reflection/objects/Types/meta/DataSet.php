@@ -41,7 +41,7 @@ class RowDataSet extends \lib\model\BaseTypedObject{
  
  
 */
-class DataSet extends BaseType implements \ArrayAccess // TableDataSet
+class DataSet extends \model\reflection\Meta\BaseMetadata implements \ArrayAccess // TableDataSet
 {
     var $data;
     var $definition;

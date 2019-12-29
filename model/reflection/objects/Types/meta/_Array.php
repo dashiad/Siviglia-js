@@ -1,166 +1,21 @@
 <?php
   namespace model\reflection\Types\meta;
-  class _Array extends BaseType
+  class _Array extends \model\reflection\Meta\BaseMetadata
   {
-
-      function __construct($def)
+      function getMeta()
       {
-          $this->subTypeDef=$def["ELEMENTS"];
-          $this->subObjects=null;
-          $ins=$this->getSubtypeInstance();
-          $this->remoteTypeName=get_class($ins);
-          parent::__construct($def);
-      }
-      function getSubTypeDef()
-      {
-          return $this->subTypeDef;
-      }
-      function getSubtypeInstance()
-      {
-         return TypeFactory::getType(null,$this->subTypeDef,null);
-      }
-      function _setValue($val)
-      {
-          $this->valueSet=false;
-          $className=$this->remoteTypeName;
-          $this->subObjects=[];
-          for($k=0;$k<count($val);$k++)
-          {
-              $v=$val[$k];
-              if(is_object($v))
-              {
-                if(is_a($v,$className))
-                {
-                    $this->subObjects[]=$v;
-                }
-                else
-                    throw new ArrayException(ArrayException::ERR_INVALID_ARRAY_TYPE,["type"=>get_class($v)]);
-              }
-              else
-              {
-                  $ninst=$this->getSubtypeInstance();
-                  $ninst->setValue($v);
-                  $this->subObjects[]=$ninst;
-              }
-          }
-          if(count($this->subObjects)>0)
-            $this->valueSet=true;
-      }
-
-      function _validate($value)
-      {
-        if(!is_array($value))
-                $value=array($value);
-         $remoteType=$this->getSubtypeInstance();
-         $remoteClass=get_class($remoteType);
-         for($k=0;$k<count($value);$k++)
-         {
-             if(is_a($remoteClass,$value[$k]))
-                 continue;
-             if(!$remoteType->validate($value[$k]))
-                 return false;
-         }
-         return true;
-      }
-      function _getValue()
-      {
-          $v=[];
-          for($k=0;$k<count($this->subObjects);$k++)
-          {
-              $v[]=$this->subObjects[$k]->getValue();
-          }
-          return $v;
-      }
-
-      function count()
-      {
-          if($this->valueSet)
-              return count($this->subObjects);
-          return false;
-      }
-
-      function _equals($value)
-      {
-          if(($this->subObjects===null && $value!==null) ||
-              ($this->subObjects!==null && $value===null))
-              return false;
-          if(count($value)!=count($this->subObjects))
-          {
-              return false;
-          }
-          for($k=0;$k<count($this->subObjects);$k++)
-          {
-              if(is_object($value))
-              {
-                  if(!$this->subObjects[$k]->equals($value[$k]->getValue()))
-                      return false;
-              }
-              else {
-                  if (!$this->subObjects[$k]->equals($value[$k]))
-                      return false;
-              }
-          }
-          return true;
-      }
-
-      function __toString()
-      {
-          if($this->subObjects==null)
-              return "[NULL]";
-          $parts=[];
-          for($k=0;$k<count($this->subObjects);$k++)
-          {
-              $parts[]=$this->subObjects[$k]->__toString();
-          }
-         return implode(",",$parts);
-      }
-
-      function offsetExists($index)
-      {
-          if(!$this->valueSet)
-              return false;
-          return isset($this->subObjects[$index]);
-      }
-
-      function offsetGet($index)
-      {
-          return $this->subObjects[$index];
-      }
-      function offsetSet($index,$newVal)
-      {
-      }
-      function offsetUnset($index)
-      {
-
-      }
-      function getApplicableErrors()
-      {
-          $errors=parent::getApplicableErrors();
-          $errors[get_class($this)."Exception"][ArrayTypeException::ERR_ERROR_AT]=ArrayTypeException::TXT_ERROR_AT;
-          $subType=TypeFactory::getType(null,$this->subTypeDef,null);
-          $errorsSubType=$subType->getApplicableErrors();
-          return array_merge($errors,$errorsSubType);
-      }
-      function _clear()
-      {
-          $this->subObjects=null;
-      }
-      function _copy($ins)
-      {
-          $n=$ins->count();
-          $this->subObjects=[];
-          for($k=0;$k<$n;$k++)
-          {
-            $subins=$this->getSubtypeInstance();
-            $subins->copy($ins[$n]);
-            $this->subObjects[]=$subins;
-          }
-          if($n>0)
-              $this->valueSet=true;
-      }
-      function getMetaClassName()
-      {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/_Array");
-          return '\model\reflection\Types\meta\_Array';
+          return [
+              "TYPE"=>"Container",
+              "FIELDS"=>[
+                  "TYPE"=>["TYPE"=>"String","FIXED"=>"Array"],
+                  "ELEMENTS"=>[
+                      "TYPEREF"=>"BASETYPE"
+                  ],
+                  "REQUIRED"=>[
+                      "TYPE"=>"Boolean",
+                      "DEFAULT"=>false
+                  ]
+              ]
+          ];
       }
   }

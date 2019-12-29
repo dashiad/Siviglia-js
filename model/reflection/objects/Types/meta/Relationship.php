@@ -1,7 +1,7 @@
 <?php namespace model\reflection\Types\meta;
 
 // El tipo Relacion solo existe para poder "redireccionar" columnas de tipo Relationship, a su tipo padre.
-class Relationship extends BaseType {
+class Relationship extends \model\reflection\Meta\BaseMetadata {
     function getRemoteFields()
     {
         $f=$this->definition["FIELDS"];

@@ -8,12 +8,12 @@
 
 namespace model\reflection\Types\meta;
 include_once(LIBPATH."/model/types/BaseType.php");
-class DataReferenceException extends BaseTypeException {
+class DataReferenceException extends \model\reflection\Meta\BaseMetadataException {
     const ERR_CANT_FIND_REFERENCE=100;
 
     const TXT_CANT_FIND_REFERENCE="No se encuentra la referencia a %model%::%field% ";
 }
-class DataReference extends BaseType{
+class DataReference extends \model\reflection\Meta\BaseMetadata{
 
     var $refModel;
     var $refField;

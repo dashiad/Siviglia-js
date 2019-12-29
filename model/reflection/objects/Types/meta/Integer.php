@@ -1,6 +1,6 @@
 <?php namespace model\reflection\Types\meta;
 
-  class IntegerTypeException extends BaseTypeException {
+  class IntegerTypeException extends \model\reflection\Meta\BaseMetadataException {
       const ERR_TOO_SMALL=100;
       const ERR_TOO_BIG=101;
       const ERR_NOT_A_NUMBER=102;
@@ -12,7 +12,7 @@
       const REQ_TOO_SMALL='MIN';
       const REQ_TOO_BIG='MAX';
   }
-  class Integer extends BaseType
+  class Integer extends \model\reflection\Meta\BaseMetadata
   {
       function __construct($def,$value=null)
       {

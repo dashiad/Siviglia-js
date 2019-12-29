@@ -6,7 +6,7 @@
  * Time: 23:15
  */
 namespace model\reflection\Types\meta;
-class PHPVariableException extends BaseTypeException {
+class PHPVariableException extends \model\reflection\Meta\BaseMetadataException {
 
 }
 

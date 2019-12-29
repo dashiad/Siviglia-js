@@ -1,7 +1,7 @@
 <?php
 namespace model\reflection\Types\meta;
 // El valor de una clase enumeracion es el indice.El "texto" de la enumeracion es la label.
-class Enum extends BaseType
+class Enum extends \model\reflection\Meta\BaseMetadata
   {
       function __construct($def,$neutralValue=null)
       {

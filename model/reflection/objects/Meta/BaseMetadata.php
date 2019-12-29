@@ -12,7 +12,7 @@ namespace model\reflection\Meta;
 abstract class BaseMetadata
 {
     var $definition;
-    function importDefinition($fileName,$metaDataClass)
+    static function importDefinition($fileName,$metaDataClass)
     {
         include_once(PROJECTPATH."/model/reflection/objects/".$fileName);
         $metaDataClass='\model\reflection\objects\meta\\'.$metaDataClass;
@@ -21,7 +21,7 @@ abstract class BaseMetadata
     }
     function mergeDefinition($fileName,$metaDataClass)
     {
-        $d=$this->importDefinition($fileName,$metaDataClass);
+        $d=BaseMetaData::importDefinition($fileName,$metaDataClass);
         if($this->definition==null)
             $this->definition=[];
         $this->definition=array_merge($this->definition,$d);

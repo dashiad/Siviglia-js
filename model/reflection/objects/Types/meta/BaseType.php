@@ -1,18 +1,18 @@
 <?php namespace model\reflection\Types\meta;
-include_once(PROJECTPATH."/model/reflection/objects/base/BaseMetadata.php");
+include_once(PROJECTPATH."/model/reflection/objects/Meta/BaseMetadata.php");
 
 class BaseType extends \model\reflection\Meta\BaseMetadata
 {
-    function geCommonMeta()
+    static function geCommonMeta()
     {
         return [
             "FIXED"=>["TYPE"=>"String"],
             "DEFAULT"=>["TYPE"=>"String"]
         ];
     }
-    function getSourceMeta()
+    static function getSourceMeta()
     {
-        $datasourceReference=$this->importDefinition(
+        $datasourceReference=\model\reflection\Meta\BaseMetaData::importDefinition(
             "types/ModelDatasourceReference",
             'types\ModelDatasourceReference'
         );

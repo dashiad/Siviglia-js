@@ -1,5 +1,5 @@
 <?php namespace model\reflection\Types\meta;
-  class Boolean extends BaseType
+  class Boolean extends \model\reflection\Meta\BaseMetadata
   {
       function __construct($def,$val=null)
       {

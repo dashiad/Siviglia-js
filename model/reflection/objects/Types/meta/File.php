@@ -1,6 +1,6 @@
 <?php namespace model\reflection\Types\meta;
 
- class  FileException extends BaseTypeException{
+ class  FileException extends \model\reflection\Meta\BaseMetadataException{
       const ERR_FILE_TOO_SMALL=100;
       const ERR_FILE_TOO_BIG=101;
       const ERR_INVALID_FILE=102;
@@ -16,7 +16,7 @@
 
   }
 
-  class File extends BaseType
+  class File extends \model\reflection\Meta\BaseMetadata
   {
       var $mustCopy=false;
       var $srcFile='';
