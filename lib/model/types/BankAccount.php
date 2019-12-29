@@ -10,7 +10,7 @@ class BankAccount extends _String
 {
     function __construct($def,$value=false)
     {
-        String::__construct(array("TYPE"=>"BankAccount","MAXLENGTH"=>10),$value);
+        parent::__construct(array("TYPE"=>"BankAccount","MAXLENGTH"=>10),$value);
     }
 
     static function validateCCC($ccc)
@@ -111,6 +111,11 @@ class BankAccount extends _String
         }
         return true;
 
+    }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/BankAccount.php");
+        return '\model\reflection\Types\meta\BankAccount';
     }
 
 }

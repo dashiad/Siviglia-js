@@ -50,5 +50,11 @@ class Link extends _String
         return preg_replace(array('/[^a-zA-Z0-9\s\'\:\/\[\]-]/', '/[\s\'\:\/\[\]-]+/', '/[ ]/', '/[\/]/'),
             array('', ' ', '-', '-'), trim($str));
     }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Link.php");
+        return '\model\reflection\Types\meta\Link';
+    }
+
 
 }

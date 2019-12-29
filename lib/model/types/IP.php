@@ -3,7 +3,7 @@
   {
       function __construct($def,$value=false)
       {
-          String::__construct(array("TYPE"=>"IP","MAXLENGTH"=>15),$value);
+          parent::__construct(array("TYPE"=>"IP","MAXLENGTH"=>15),$value);
       }
       function setToCurrent()
       {
@@ -40,5 +40,12 @@
               return $ip = $_SERVER['REMOTE_ADDR'];
 
       }
+
+      function getMetaClassName()
+      {
+          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/IP.php");
+          return '\model\reflection\Types\meta\IP';
+      }
+
   }
 ?>

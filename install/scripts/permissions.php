@@ -11,7 +11,7 @@ $perms->install();
 $layers=\model\reflection\ReflectorFactory::getLayers();
 array_walk($layers,function($val,$index) use ($perms){
 
-    $objs=\model\reflection\ReflectorFactory::getObjectsByLayer($val["name"]);
+    $objs=\model\reflection\ReflectorFactory::getObjectsByPackage($val["name"]);
     array_walk($objs,function($v1,$index) use ($perms,$val)
     {
         $perms->createGroup("/".$val["name"]."/".$v1->getClassName(),PermissionsManager::PERM_TYPE_MODULE);

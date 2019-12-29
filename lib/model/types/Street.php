@@ -4,11 +4,11 @@ class Street extends _String {
     {
 		$definition['MINLENGTH']=2;
 		$definition['MAXLENGTH']=200;
-        String::__construct($definition,$value);
+        parent::__construct($definition,$value);
     }
     static function normalize($cad)
     {
-        $cad=String::normalize($cad);
+        $cad=parent::normalize($cad);
 
         $cad=str_replace(array("Nº","nº"),array("",""),$cad);
         //$cad=$this->basicStringFilter($cad);
@@ -30,6 +30,10 @@ class Street extends _String {
                 $cad=str_replace($prefixes[$k],"",$cad);
         }
         return $cad;
-
+    }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Street.php");
+        return '\model\reflection\Types\meta\Street';
     }
 }

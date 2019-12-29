@@ -29,7 +29,7 @@ class StorageWriterCursor extends TestCase
 
             $package=new \lib\tests\data\res\model\Ads\Package();
             $modelService=\Registry::getService("model");
-            $modelService->addPackage("test",$package);
+            $modelService->addPackage($package);
 
             $serializerService=\Registry::getService("storage");
             $serializerService->addSerializer("ADSManager-CSV",

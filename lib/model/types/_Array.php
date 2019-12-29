@@ -1,88 +1,143 @@
 <?php
   namespace lib\model\types;
-  class _Array extends BaseType implements \ArrayAccess
+  class ArrayException extends BaseTypeException
+  {
+      const ERR_INVALID_ARRAY_TYPE=101;
+      const ERR_INVALID_ARRAY_VALUE=102;
+      const TXT_INVALID_ARRAY_TYPE="Type [%type%] invalid for array";
+      const TXT_INVALID_ARRAY_VALUE="Value [%value%] invalid for array";
+  }
+
+  class _Array extends BaseContainer implements \ArrayAccess
   {
       var $subTypeDef;
-      const TYPE_NOT_MODIFIED_ON_NULL=0x20;
+      var $subObjects;
+      var $remoteTypeName;
 
-      function __construct($def,$neutralValue=null)
+      function __construct($def)
       {
           $this->subTypeDef=$def["ELEMENTS"];
-          parent::__construct($def,$neutralValue);
+          $this->subObjects=null;
+          $ins=$this->getSubtypeInstance();
+          $this->remoteTypeName=get_class($ins);
+          parent::__construct($def);
       }
       function getSubTypeDef()
       {
           return $this->subTypeDef;
       }
-      function setValue($val)
+      function getSubtypeInstance()
       {
-          if($val===null || !isset($val))
-          {
-              $this->valueSet=false;
-              $this->value=null;
-          }
-          $this->valueSet=true;
-          $this->value=$val;
+         $instance= TypeFactory::getType(null,$this->subTypeDef,null);
+         $instance->setParent($this);
+         return $instance;
       }
-      function validate($value)
+      function _setValue($val)
+      {
+          $this->valueSet=false;
+          $className=$this->remoteTypeName;
+          $this->subObjects=[];
+          for($k=0;$k<count($val);$k++)
+          {
+              $v=$val[$k];
+              if(is_object($v))
+              {
+                if(is_a($v,$className))
+                {
+                    $this->subObjects[]=$v;
+                }
+                else
+                    throw new ArrayException(ArrayException::ERR_INVALID_ARRAY_TYPE,["type"=>get_class($v)]);
+              }
+              else
+              {
+                  $ninst=$this->getSubtypeInstance();
+                  $ninst->__rawSet($v);
+                  $this->subObjects[]=$ninst;
+              }
+          }
+          if(count($this->subObjects)>0)
+            $this->valueSet=true;
+      }
+
+      function _validate($value)
       {
         if(!is_array($value))
                 $value=array($value);
-         $remoteType=TypeFactory::getType(null,$this->subTypeDef,null);
+         $remoteType=$this->getSubtypeInstance();
+         $remoteClass=get_class($remoteType);
          for($k=0;$k<count($value);$k++)
          {
-                if(!$remoteType->validate($value[$k]))
-                        return false;
+             if(is_a($value[$k],$remoteClass))
+                 continue;
+             if(!$remoteType->validate($value[$k]))
+                 return false;
          }
          return true;
       }
-      function getValue()
+      function _getValue()
       {
-          if($this->valueSet)
-            return $this->value;
-          if(isset($this->definition["DEFAULT"]))
-            return explode(",",$this->definition["DEFAULT"]);
-          return null;
+          $v=[];
+          for($k=0;$k<count($this->subObjects);$k++)
+          {
+              $v[]=$this->subObjects[$k]->getValue();
+          }
+          return $v;
       }
+
       function count()
       {
           if($this->valueSet)
-              return count($this->value);
+              return count($this->subObjects);
           return false;
       }
 
-      function equals($value)
+      function _equals($value)
       {
-          if(($this->value===null && $value!==null) ||
-              ($this->value!==null && $value===null))
+          if(($this->subObjects===null && $value!==null) ||
+              ($this->subObjects!==null && $value===null))
               return false;
-          if(count($value)!=count($this->value))
+          if(count($value)!=count($this->subObjects))
           {
               return false;
           }
-          for($k=0;$k<count($this->value);$k++)
+          for($k=0;$k<count($this->subObjects);$k++)
           {
-              if(!$this->value[$k]->equals($value[$k]))
-                  return false;
+              if(is_object($value))
+              {
+                  if(!$this->subObjects[$k]->equals($value[$k]->getValue()))
+                      return false;
+              }
+              else {
+                  if (!$this->subObjects[$k]->equals($value[$k]))
+                      return false;
+              }
           }
           return true;
       }
 
       function __toString()
       {
-         return implode(",",$this->value);
+          if($this->subObjects==null)
+              return "[NULL]";
+          $parts=[];
+          for($k=0;$k<count($this->subObjects);$k++)
+          {
+              $parts[]=$this->subObjects[$k]->__toString();
+          }
+         return implode(",",$parts);
       }
 
       function offsetExists($index)
       {
           if(!$this->valueSet)
               return false;
-          return isset($this->value[$index]);
+          return isset($this->subObjects[$index]);
       }
 
       function offsetGet($index)
       {
-          return $this->value[$index];
+          return $this->subObjects[$index];
       }
       function offsetSet($index,$newVal)
       {
@@ -96,20 +151,50 @@
           $errors=parent::getApplicableErrors();
           $errors[get_class($this)."Exception"][ArrayTypeException::ERR_ERROR_AT]=ArrayTypeException::TXT_ERROR_AT;
           $subType=TypeFactory::getType(null,$this->subTypeDef,null);
+          $subType->setParent($this);
           $errorsSubType=$subType->getApplicableErrors();
           return array_merge($errors,$errorsSubType);
       }
-  }
-
-  class ArrayTypeMeta
-  {
-      function getMeta($type)
+      function _clear()
       {
-          $def=$type->getDefinition();
-          $subType=$def["ELEMENTS"];
-          $def["ELEMENTS"]=\lib\model\types\TypeFactory::getTypeMeta($subType);
-          return $def;
+          $this->subObjects=null;
+      }
+      function _copy($ins)
+      {
+          $n=$ins->count();
+          $this->subObjects=[];
+          for($k=0;$k<$n;$k++)
+          {
+            $subins=$this->getSubtypeInstance();
+            $subins->copy($ins[$n]);
+            $this->subObjects[]=$subins;
+          }
+          if($n>0)
+              $this->valueSet=true;
+      }
+      function getMetaClassName()
+      {
+          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/_Array");
+          return '\model\reflection\Types\meta\_Array';
+      }
+
+      function __getPathProperty($pathProperty,$mode)
+      {
+
+          if(is_numeric($pathProperty))
+          {
+              return $this->subObjects[intval($pathProperty)];
+          }
+          if($pathProperty[0]=="{")
+          {
+              $pathProperty=substr($pathProperty,1,-1);
+              $results=[];
+              for($k=0;$k<count($this->subObjects);$k++)
+                  $results[] = $this->subObjects[$k]->getPath($pathProperty);
+              return $results;
+          }
+          if($pathProperty=="length")
+              return count($this->subObjects);
+
       }
   }
-
-

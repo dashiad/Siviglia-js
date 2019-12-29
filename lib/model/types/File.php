@@ -37,22 +37,15 @@
       // setUnserialized no marca como dirty.
       function setUnserializedValue($val)
       {
-          if(isset($val) && !$empty($val))
+          if(isset($val) && !empty($val))
           {
               $this->value=$val;
               $this->valueSet=true;
           }
       }
 
-      function setValue($val)
+      function _setValue($val)
       {
-          if($val===null || !isset($val))
-          {
-              if($this->hasOwnValue())
-                  $this->dirty=true;
-              return $this->clear();
-          }
-
           $osName=PHP_OS;
           $relative=false;
           if($osName[0]=="W") // WINDOWS,WINNT
@@ -98,14 +91,14 @@
           $this->value=$val;
       }
 
-      function equals($value)
+      function _equals($value)
       {
           if($this->value===null || $value===null)
               return $this->value===$value;
           return $this->value==$value;
       }
 
-      function getValue()
+      function _getValue()
       {
           if($this->valueSet)
             return $this->value;
@@ -114,7 +107,7 @@
           return null;
       }
 
-      function validate($srcValue)
+      function _validate($srcValue)
       {
 
         $value=$srcValue;
@@ -229,9 +222,7 @@
                       @unlink($this->value);
               }
           }
-          $this->valueSet=false;
-          $this->value=null;
-          return;
+          parent::clear();
       }
       function setUploadedFilename($filename)
       {
@@ -285,7 +276,7 @@
           $this->postValidate(null);
       }
 
-      function copy($type)
+      function _copy($type)
       {
           if($type->hasValue())
           {
@@ -311,17 +302,14 @@
           }
           $this->dirty=true;
       }
+
+      function getMetaClassName()
+      {
+          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/File.php");
+          return '\model\reflection\Types\meta\File';
+      }
+
   }
 
-  class FileMeta extends \lib\model\types\BaseTypeMeta
-  {
-    function getMeta($type)
-    {
-        $def=$type->getDefinition();
-        unset($def["TARGET_FILEPATH"]);
-        unset($def["TARGET_FILENAME"]);
-        return $def;
-    }
-  }
 
 

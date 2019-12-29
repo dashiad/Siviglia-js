@@ -20,7 +20,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
     var $aliases=array();
     var $actions=array();
     var $datasources=array();
-    var $layer;
+    var $package;
     var $actionsLoaded=false;
     var $datasourcesLoaded=false;
     var $extendedModel="";
@@ -31,21 +31,18 @@ class Model extends \model\reflection\base\SimpleModelDefinition
     var $aliasesLoaded=false;
     var $objectName;
     var $serializer;
+    var $modelService;
     function __construct($objectName,$layer=null)
     {
-
-       if($objectName=="") // TODO : Cambiar esto.
-       {
-           throw new \Exception("SIN OBJETO");
-       }
-       $this->objectName=new ModelName($objectName,$layer);
-       try{
+        $this->modelService=\Registry::getService("model");
+        $this->objectName=$this->modelService->getModelDescriptor($objectName);
+        try{
            $this->baseDir=$this->objectName->getDestinationFile();
-           $this->definition=\lib\model\types\TypeFactory::getObjectDefinition($objectName,$layer);
-           $this->layer=$this->objectName->layer;
+           $this->definition=$this->objectName->getDefinition();
+           $this->package=$this->objectName->package;
            parent::__construct(
                           "Definition",
-                           $this->layer,
+                           $this->package,
                            $this->objectName->getNamespaced(),
                            $this->objectName->getPath("Definition.php")
                           );
@@ -107,7 +104,6 @@ class Model extends \model\reflection\base\SimpleModelDefinition
             foreach($this->definition["STORAGE"] as $key=>$value)
                $this->addStorageConfiguration($key,$value);
         }
-
     }
     /*
      * 'DEFAULT_SERIALIZER'=>"default",

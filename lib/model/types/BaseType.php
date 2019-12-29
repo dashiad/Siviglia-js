@@ -1,7 +1,5 @@
 <?php namespace lib\model\types;
 
-
-
   abstract class BaseType
   {
       var $valueSet=false;
@@ -11,7 +9,7 @@
       var $typeReference;
       var $referencedModel;
       var $referencedField;
-
+      var $parent;
       const TYPE_SET_ON_SAVE=0x1;
       const TYPE_SET_ON_ACCESS=0x2;
       const TYPE_IS_FILE=0x4;
@@ -20,12 +18,31 @@
       const TYPE_NOT_MODIFIED_ON_NULL=0x20;
       const TYPE_REQUIRES_UPDATE_ON_NEW=0x40;
 
-      function __construct($def,$neutralValue=null)
+      function __construct($def)
       {
+          $this->parent=null;
           $this->typeReference=false;
           $this->definition=$def;
-          if($neutralValue!==null)
-            $this->setValue($neutralValue);
+          $this->flags=0;
+          if($this->hasDefaultValue())
+              $this->__rawSet($this->getDefaultValue());
+          if(isset($def["FIXED"])) {
+              $this->__rawSet($def["FIXED"]);
+              $this->flags|=BaseType::TYPE_NOT_EDITABLE;
+          }
+
+      }
+      function setParent($parent)
+      {
+          $this->parent=$parent;
+      }
+      function hasSource()
+      {
+          return isset($this->definition["SOURCE"]);
+      }
+      function getSource()
+      {
+          return \lib\model\types\sources\SourceFactory::getSource($this->definition["SOURCE"]);
       }
 
       function setFlags($flags)
@@ -37,32 +54,28 @@
           return $this->flags;
       }
 
-      function setValue($val)
+      final function setValue($val)
       {
-          //if($this->validate($val))
-          //{
-           /* if($val===null || !isset($val))
-            {
-              $this->valueSet=false;
-              $this->value=null;
-            }
-            else
-            {
-              $this->valueSet=true;
-              $this->value=$val;
-            }*/
-          //}
-          if($this->validate($val)) {
-              $this->valueSet = true;
-              $this->value = $val;
+          if($val===null)
+          {
+              $this->clear();
           }
-      }
+          else {
+              if($this->flags & BaseType::TYPE_NOT_EDITABLE)
+                  return;
+              if ($this->validate($val))
+                  $this->_setValue($val);
+          }
 
-      function validate($value)
+      }
+      abstract function _setValue($val);
+
+      final function validate($value)
       {
-            return true;
+            if($value===null)
+                return true;
+            return $this->_validate($value);
       }
-
       function postValidate($value)
       {
           return true;
@@ -75,72 +88,68 @@
       {
           return $this->valueSet;
       }
-      function copy($type)
+      final function copy($type)
       {
-
           if($type->hasValue())
-          {
-
-              $this->valueSet=true;
-              $this->setValue($type->getValue());
-
-          }
+              $this->_copy($type);
           else
+              $this->clear();
+      }
+      abstract function _copy($type);
+
+      final function equals($value)
+      {
+          $hasVal=$this->hasValue();
+          if(!$hasVal && $value===null)
+              return true;
+          if(($hasVal && $value===null) || (!$hasVal && $value!==null))
+              return false;
+          return $this->_equals($value);
+      }
+      abstract function _equals($value);
+
+      // Warning : sin validacion.Acepta cualquier cosa.Usado por los formularios cuando un campo es erroneo.
+      function __rawSet($val)
+      {
+          if($val===null)
           {
-              if($this->definition["TYPE"]=="State")
-                  echo "COPIANDO SIN VALUE\n";
-              $this->valueSet=false;
-              $this->value=null;
+              $this->clear();
+          }
+          else {
+              if($this->flags & BaseType::TYPE_NOT_EDITABLE)
+                  return;
+              $this->_setValue($val);
           }
       }
-      function equals($value)
-      {
-          if($this->value===null)
-              return false;
-          return $this->value==$value;
-      }
-      // Warning : sin validacion.Acepta cualquier cosa.Usado por los formularios cuando un campo es erroneo.
-      function __rawSet($value)
-      {
-          $this->value=$value;
-          $this->valueSet=true;
-      }
-      function set($value)
-      {
-          if(is_object($value) && get_class($value)==get_class($this))
-              return $this->copy($value);
-          return $this->setValue($value);
-      }
+
+
       function is_set()
       {
-          if($this->valueSet)return true;
 
           if(!($this->flags & BaseType::TYPE_SET_ON_SAVE) &&
              !($this->flags & BaseType::TYPE_SET_ON_ACCESS))
               return false;
-          return true;
+          return $this->valueSet;
       }
+
       function clear()
       {
-          $this->valueSet=true;
-          $this->value=null;
+          $this->valueSet=false;
       }
+
       function isEditable()
       {
           return !($this->flags & BaseType::TYPE_NOT_EDITABLE);
       }
-      function get()
-      {
-          return $this->getValue();
-      }
-      function getValue()
+
+      final function getValue()
       {
           if($this->valueSet)
-            return $this->value;
-          if($this->hasDefaultValue())
-            return $this->getDefaultValue();
+            return $this->_getValue();
           return null;
       }
+      abstract function _getValue();
+
       function __toString()
       {
 
@@ -150,18 +159,19 @@
           }
           return (string)$this->value;
       }
+
       function hasDefaultValue()
       {
-
           return isset($this->definition["DEFAULT"]) && $this->definition["DEFAULT"]!="NULL" && $this->definition["DEFAULT"]!==null && $this->definition["DEFAULT"]!=="";
       }
+
       function getDefaultValue()
       {
           if(!isset($this->definition["DEFAULT"]))
-              return false;
-          $def=strtolower($this->definition["DEFAULT"]);
-          if($def==="null")
-              return false;
+              return null;
+          $def=$this->definition["DEFAULT"];
+          if($def==="null" || $def=="NULL")
+              return null;
           return $this->definition["DEFAULT"];
       }
       function setDefaultValue($val)
@@ -181,58 +191,16 @@
           }
           return $this->definition;
       }
-      function isEmpty()
+      function getMetaClass()
       {
-          return $this->valueSet==false || $this->value==="" || $this->value===null;
+          $metaClassName=$this->getMetaClassName();
+          return new $metaClassName();
       }
-      function getApplicableErrors()
-      {
-          $errors=array();
-          $cl=get_class($this);
-          $typeList=array_flip(array_merge(array($cl),array_values(class_parents($this))));
-          $setErrors=array();
-          foreach($typeList as $key=>$value)
-          {
-              $parts=explode("\\",$value);
-              $className=$parts[count($parts)-1];
-              $exceptionClass=$value."Exception";
-              if( !class_exists($exceptionClass) )
-                  continue;
-
-               return $exceptionClass::getPrintableErrors($this,$this->definition);
-          }
-          return array();
-      }
-      function isTypeReference()
-      {
-          return $this->typeReference;
-      }
-
       function setTypeReference($model,$field)
       {
           $this->referencedModel=$model;
           $this->referencedField=$field;
           $this->typeReference=true;
       }
-      function getTypeReference()
-      {
-          if($this->typeReference==false)
-              return null;
-          return array("MODEL"=>$this->referencedModel,"FIELD"=>$this->referencedField);
-      }
+      abstract function getMetaClassName();
   }
-
-class BaseTypeMeta
-{
-    function getMeta($type)
-    {
-        return $type->getDefinition();
-    }
-}
-
-  interface ISaveableType
-  {
-       function onSave($model);
-       function onSaved($model);
-  }
-?>

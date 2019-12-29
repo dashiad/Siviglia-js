@@ -33,20 +33,18 @@
       {
           BaseType::__construct($definition,$value);
       }
-       function getValue()
+      function _getValue()
       {
-          if($this->valueSet)
+
             return $this->value;
-          if(isset($this->definition["DEFAULT"]))
-          {
-              if($this->definition["DEFAULT"]=="NOW")
-              {
-                  $this->setAsNow();
-                  return $this->value;
-              }
-          }
-          return null;
       }
+      function _setValue($v)
+      {
+          if($v=="NOW")
+              $this->setAsNow();
+          $this->value=$v;
+      }
+
       function setAsNow()
       {
           $this->setValue(Date::getValueFromTimestamp());
@@ -59,12 +57,12 @@
           return $this->value!="" && $this->value!="0000-00-00";
       }
 
-      function validate($value)
+      function _validate($value)
       {
-          if (!$value && (!isset($this->definition["REQUIRED"]) || $this->definition["REQUIRED"]==false))
+
+          if($value=="NOW")
               return true;
 
-          BaseType::validate($value);
           $asArr=$this->asArray($value);
 
           extract($asArr);
@@ -161,5 +159,19 @@
           $mvDateTime=new \DateTime($date,$localTz);
           $offset=$localTz->getOffset($mvDateTime);
           return date(CDateType::DATE_FORMAT,$mvDateTime->format("U")-$offset);
+      }
+      function _copy($ins)
+      {
+          $this->value=$ins->value;
+          $this->valueSet=$ins->valueSet;
+      }
+      function _equals($value)
+      {
+          return $this->value==$value;
+      }
+      function getMetaClassName()
+      {
+          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Date.php");
+          return '\model\reflection\Types\meta\Date';
       }
   }

@@ -19,7 +19,7 @@ class NIF extends _String{
         String::__construct($definition,$value);
     }
 
-    function validate($val)
+    function _validate($val)
     {
         $val=strtoupper($val);
         if(!parent::validate($val))
@@ -28,4 +28,11 @@ class NIF extends _String{
             throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_INVALID);
         return true;
     }
+
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/NIF.php");
+        return '\model\reflection\Types\meta\NIF';
+    }
+
 }

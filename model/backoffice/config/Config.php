@@ -1,6 +1,5 @@
 <?php
-
-namespace backoffice\config;
+namespace model\backoffice\config;
 
 class Config
 {

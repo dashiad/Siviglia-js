@@ -26,7 +26,7 @@ class MysqlDataSourceTest extends TestCase
         global $Config;
         $sc=$Config["SERIALIZERS"]["modeltests"]["ADDRESS"];
         if ($this->testResolverIncluded == false) {
-            \Registry::getService("model")->addPackage("modeltests",$this->getTestPackage());
+            \Registry::getService("model")->addPackage($this->getTestPackage());
             $serService=\Registry::getService("storage");
             $serService->addSerializer("web",
 

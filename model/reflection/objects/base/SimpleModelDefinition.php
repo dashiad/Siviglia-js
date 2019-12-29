@@ -68,7 +68,7 @@ class SimpleModelDefinition extends ClassFileGenerator
                             
             foreach($this->definition["FIELDS"] as $key=>$value)
             {
-                if(\model\reflection\Model\Field::isRelation($value))
+                if(\model\reflection\Model\Field::isFieldARelation($value))
                     $this->fields[$key]=new \model\reflection\Model\Relationship\Relationship($key,$this,$value);
                 else
                     $this->fields[$key]=new \model\reflection\Model\Field($key,$this,$value);

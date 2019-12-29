@@ -11,4 +11,9 @@ class State extends Enum
     {
         return $this->definition["DEFAULT"];
     }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/State.php");
+        return '\model\reflection\Types\meta\State';
+    }
 }

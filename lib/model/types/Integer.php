@@ -5,9 +5,9 @@
       const ERR_TOO_BIG=101;
       const ERR_NOT_A_NUMBER=102;
 
-      const TXT_TOO_SMALL='Valor demasiado pequeño';
-      const TXT_TOO_BIG='Valor demasiado grande';
-      const TXT_NOT_A_NUMBER='Debes introducir un número';
+      const TXT_TOO_SMALL='Minimum value is [%min%]';
+      const TXT_TOO_BIG='Maximum value is [%max%]';
+      const TXT_NOT_A_NUMBER='Invalid number';
 
       const REQ_TOO_SMALL='MIN';
       const REQ_TOO_BIG='MAX';
@@ -18,24 +18,43 @@
       {
           BaseType::__construct($def,$value);
       }
-      function validate($value)
+      function _setValue($val)
       {
-          if($value===null)
-              return true;
+          $this->value=intval($val);
+          $this->valueSet=true;
+      }
+      function _getValue()
+      {
+          return $this->value;
+      }
+      function _equals($val)
+      {
+          return $this->value===intval($val);
+      }
+      function _copy($val){
+          $this->value=$val->getValue();
+      }
+      function getMetaClassName()
+      {
+          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Integer.php");
+          return '\model\reflection\Types\meta\Integer';
+      }
+
+      function _validate($value)
+      {
           $value=trim($value);
-          $res=BaseType::validate($value);
           if(!preg_match("/^(?:[0-9]+)+$/",$value))
               throw new IntegerTypeException(IntegerTypeException::ERR_NOT_A_NUMBER);
 
           if(isset($this->definition["MIN"]))
           {
               if($value < intval($this->definition["MIN"]))
-                  throw new IntegerTypeException(IntegerTypeException::ERR_TOO_SMALL);
+                  throw new IntegerTypeException(IntegerTypeException::ERR_TOO_SMALL,["min"=>$this->definition["MIN"]]);
           }
           if(isset($this->definition["MAX"]))
           {
               if($value > intval($this->definition["MAX"]))
-                throw new IntegerTypeException(IntegerTypeException::ERR_TOO_BIG);
+                throw new IntegerTypeException(IntegerTypeException::ERR_TOO_BIG,["max"=>$this->definition["MAX"]]);
           }
           return true;
       }

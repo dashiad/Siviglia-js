@@ -92,10 +92,8 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
     {
         return $this->parentDs;
     }
-    function setValue($value)
+    function _setValue($value)
     {
-     
-           
         if(!is_array($value))
         {
             if($value==null)
@@ -111,7 +109,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         $this->valueSet=true;
     }      
 
-    function validate($value)
+    function _validate($value)
     {                       
             return true;                                            
     }
@@ -128,7 +126,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
     {
           return $this->valueSet;
     }
-    function copy($type)
+    function _copy($type)
     {
         $this->value=$type->value;
         $this->count=$type->count;
@@ -165,14 +163,9 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         return $checkSum;
     }
 
-    function equals($value)
+    function _equals($value)
     {
         return count($this->getDiff($value))==0;
-    }
-
-    function is_set()
-    {         
-          return true;
     }
 
     function clear()
@@ -181,13 +174,9 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         $this->initialize(array(),0,0,null);
     }
         
-    function getValue()
+    function _getValue()
     {
-          if($this->valueSet)
-            return $this->value; 
-          if($this->hasDefaultValue())
-            return $this->getDefaultValue();
-          return null;          
+        return $this->value;
     }
     function __toString()
     {
@@ -405,6 +394,12 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         $min=$this->rangeStart;
         $max=$this->rangeEnd;
     }
+    // Este tipo de dato no va a permitir que se use su meta.
+    function getMetaClassName()
+    {
+        return null;
+    }
+
 }
 
 

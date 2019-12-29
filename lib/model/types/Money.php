@@ -11,4 +11,11 @@ class Money extends Decimal {
     {
         return money_format('%=*(#10.2n', $value);
     }
+
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Money.php");
+        return '\model\reflection\Types\meta\Money';
+    }
+
 }

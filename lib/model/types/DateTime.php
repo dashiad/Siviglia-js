@@ -38,36 +38,32 @@
       {
           BaseType::__construct($definition,$value);
       }
-       function getValue()
+       function _getValue()
       {
-          if($this->valueSet)
-            return $this->value;
-          if(isset($this->definition["DEFAULT"]))
-          {
-              if($this->definition["DEFAULT"]=="NOW")
-              {
-                  $this->setAsNow();
-                  return $this->value;
-              }
-          }
-          return null;
+          return $this->value;
       }
+      function _setValue($v)
+      {
+          if($v=="NOW")
+              $this->setAsNow();
+          $this->value=$v;
+      }
+
       function setAsNow()
       {
           $this->setValue(DateTime::getValueFromTimestamp());
       }
 
-      function validate($value)
+      function _validate($value)
       {
-          if (!$value && (!isset($this->definition["REQUIRED"]) || $this->definition["REQUIRED"]==false))
+          if($value=="NOW")
               return true;
 
-          BaseType::validate($value);
           $asArr=$this->asArray($value);
 
           extract($asArr);
-          if($day==0 && $month==0 && $year==0 && (!isset($this->definition["REQUIRED"]) || $this->definition["REQUIRED"]==false))
-              return true;
+          if($day==0 || $month==0 || $year==0 )
+              return false;
           if(!checkdate($month,$day,$year))
           {
               throw new BaseTypeException(BaseTypeException::ERR_INVALID);
@@ -101,6 +97,15 @@
           BaseType::postValidate($value);
 
           return true;
+      }
+      function _copy($ins)
+      {
+          $this->value=$ins->value;
+          $this->valueSet=$ins->valueSet;
+      }
+      function _equals($value)
+      {
+          return $this->value==$value;
       }
       function hasValue()
       {
@@ -183,4 +188,11 @@
       {
           return date(DateTime::DATE_FORMAT_EU,$this->getTimestamp());
       }
+
+      function getMetaClassName()
+      {
+          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/DateTime.php");
+          return '\model\reflection\Types\meta\DateTime';
+      }
+
   }

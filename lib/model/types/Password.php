@@ -55,6 +55,13 @@
       {
           return password_verify($string,$this->value);
       }
+
+      function getMetaClassName()
+      {
+          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Password.php");
+          return '\model\reflection\Types\meta\Password';
+      }
+
   }
 class PasswordMeta extends \lib\model\types\BaseTypeMeta
   {

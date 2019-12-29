@@ -11,7 +11,14 @@
             "ALLOWHTML"=>false,
             "TRIM"=>true
           );          
-          String::__construct($def,$value);                      
-      }       
+          parent::__construct($def,$value);
+      }
+
+      function getMetaClassName()
+      {
+          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Login.php");
+          return '\model\reflection\Types\meta\Login';
+      }
+
   }
 ?>

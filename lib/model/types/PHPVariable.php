@@ -12,9 +12,26 @@ class PHPVariableException extends BaseTypeException {
 
 class PHPVariable extends \lib\model\types\BaseType {
 
-    function setValue($val)
+    function _setValue($val)
     {
-        parent::setValue($val);
+        $this->value=$val;
+    }
+    function _getValue()
+    {
+        return $this->value;
+    }
+    function _copy($val)
+    {
+        $this->value=$val->value;
+    }
+    function _equals($v)
+    {
+        return $this->value==$v->value;
+    }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/PHPVariable.php");
+        return '\model\reflection\Types\meta\PHPVariable';
     }
 
     function getUnserializedValue()

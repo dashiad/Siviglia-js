@@ -22,10 +22,10 @@ class ModelConfiguration extends ConfigurationFile
         
         $className=$parentModel->objectName->getNormalizedName();
         
-        $layer=$parentModel->objectName->layer;
+        $package=$parentModel->objectName->package;
         $path=$parentModel->objectName->getPath("config.php");
         $namespace=$parentModel->objectName->getNamespaced();
-        ConfigurationFile::__construct($path,$namespace,$layer);       
+        ConfigurationFile::__construct($path,$namespace,$package);
     }
        
     function generateDefault()

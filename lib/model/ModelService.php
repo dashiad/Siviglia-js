@@ -36,16 +36,22 @@ class ModelService extends \lib\service\Service
             include_once($fileName);
             $className=$v["namespace"]."\Package";
             $pkg=new $className($v["namespace"],$v["path"]);
-            $this->addPackage($k,$pkg);
+            $this->addPackage($pkg);
         }
     }
-    static function addPackage($name,$instance)
+    static function addPackage($instance)
     {
         $path=$instance->getBaseNamespace();
+        $name=$instance->getName();
         $p = ModelService::normalizePath($path);
         ModelService::$packages[$name] = ["path" => $p, "instance" => $instance, "len" => strlen($p)];
 
     }
+    static function getPackageNames()
+    {
+        return array_keys(ModelService::$packages);
+    }
+
     static function getPackages()
     {
         return ModelService::$packages;
@@ -121,48 +127,5 @@ class ModelService extends \lib\service\Service
         $resolver=ModelService::getPackage($modelName);
         $resolver->includeModel($modelName);
     }
-    static function getLayers()
-    {
-        $modelPath = realpath(\Registry::getService("paths")->getModelPath());
-        $dir = new \DirectoryIterator($modelPath);
-        $layers = array();
-        foreach ($dir as $fileinfo) {
-            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
-                if ($fileinfo->getFilename() != "reflection")
-                    $layers[] = array(
-                        "name" => $fileinfo->getFilename(),
-                        "path" => $fileinfo->getRealPath()
-                    );
-            }
-        }
-        return $layers;
-    }
 
-
-    static function getLayerObjects($layer,$path,$prefix=null,$childKey="subobjects")
-    {
-        $path=$path."/objects";
-        if(!is_dir($path))
-            return null;
-        $dir = new \DirectoryIterator($path);
-        $objects=array();
-        if($prefix!=null)
-            $prefix.='\\';
-        foreach ($dir as $fileinfo) {
-            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
-                $name=$fileinfo->getFilename();
-                $current=array(
-                    "name"=>$name,
-                    "layer"=>$layer,
-                    "path"=>$fileinfo->getRealPath(),
-                    "class"=>$prefix.$name
-                );
-                $subobjects=ReflectorFactory::getLayerObjects($layer,$current["path"],$current["class"],$childKey);
-                if($subobjects)
-                    $current[$childKey]=$subobjects;
-                $objects[]=$current;
-            }
-        }
-        return $objects;
-    }
 }

@@ -3,13 +3,20 @@
   {
       function __construct($def,$value=false)
       {
-          String::__construct(array("TYPE"=>"Name","MAXLENGTH"=>100),$value);
+          parent::__construct(array("TYPE"=>"Name","MAXLENGTH"=>100),$value);
       }
       static function normalize($cad)
       {
-          $cad=String::normalize($cad);
+          $cad=parent::normalize($cad);
           return $cad;
 
       }
+
+      function getMetaClassName()
+      {
+          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Name.php");
+          return '\model\reflection\Types\meta\Name';
+      }
+
   }
 ?>

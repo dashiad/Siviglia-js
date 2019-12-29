@@ -4,6 +4,11 @@ class City extends _String {
     {
 		$definition['MINLENGTH']=2;
 		$definition['MAXLENGTH']=128;
-        _String::__construct($definition,$value);
+        parent::__construct($definition,$value);
+    }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/City.php");
+        return '\model\reflection\Types\meta\City';
     }
 }

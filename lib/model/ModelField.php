@@ -180,8 +180,8 @@ class ModelField
         }
 
         $this->setDirty();
-        $this->type->set($val);
-        $this->model->__setRaw($this->name,$this->type->get());
+        $this->type->setValue($val);
+        $this->model->__setRaw($this->name,$this->type->getValue());
         $this->notifyListeners();
     }
     function __rawSet($value)
@@ -274,14 +274,14 @@ class ModelField
 
     function get()
     {
-        return $this->type->get();
+        return $this->type->getValue();
 
     }
     function is_valid()
     {
         if($this->isRequired())
         {
-            if(!$this->type || !$this->type->is_set())
+            if(!$this->type || !$this->type->hasValue())
                 return false;
         }
         return true;
@@ -388,7 +388,7 @@ class ModelField
     }
     function signal($field)
     {
-        $this->set($field->get());
+        $this->set($field->getValue());
     }
 
     function onModelSaved()

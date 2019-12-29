@@ -79,7 +79,6 @@ include_once(LIBPATH."/model/types/BaseType.php");
             }
             else
             {
-
                 return new $type($def,$value);
             }
           }

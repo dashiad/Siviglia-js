@@ -23,7 +23,7 @@ class ModelTest extends TestCase
     function init()
     {
         if ($this->testResolverIncluded == false) {
-            \Registry::getService("model")->addPackage("test",$this->getTestPackage());
+            \Registry::getService("model")->addPackage($this->getTestPackage());
             $serService=\Registry::getService("storage");
             global $Config;
             $sc=$Config["SERIALIZERS"]["default"]["ADDRESS"];

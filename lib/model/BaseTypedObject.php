@@ -49,7 +49,7 @@ class PathObject {
             {
                 throw new PathObjectException(PathObjectException::ERR_NO_CONTEXT);
             }
-            $variable=$path[$index+1];
+
             $onListener=null;
 
             $caller=$context->getCaller();
@@ -60,8 +60,6 @@ class PathObject {
                 $tempObj=$caller;
             else
                 $tempObj=$context;
-
-
 
             if(is_array($tempObj))
             {
@@ -87,7 +85,6 @@ class PathObject {
             }
             if(is_object($val) || is_array($val))
             {
-
                  $index++;
                  $obj=$val;
             }
@@ -110,7 +107,6 @@ class PathObject {
 
     if(is_object($obj))
     {
-
         $propName=$path[$index+1];
         $val=$obj->{$propName};
         if(!(is_object($val) || is_array($val)))
@@ -128,7 +124,6 @@ class PathObject {
      else
         return $obj;
 
-    //return  Ecija.Dom.getPath(obj[path[index+1]],path,index+1,context,currentObject,listener);
 }
 }
 

@@ -37,7 +37,7 @@ for($k=0;$k<count($layers);$k++)
 {
     echo "<h2>Layer : ".$layers[$k]."</h2>";
 
-    $cLayer=\model\reflection\ReflectorFactory::getObjectsByLayer($layers[$k]);
+    $cLayer=\model\reflection\ReflectorFactory::getModelsByPackage($layers[$k]);
     foreach($cLayer as $key=>$value)
     {
         $extra="";

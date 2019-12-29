@@ -17,7 +17,7 @@ class Image extends File
            $def["EXTENSIONS"]=array("jpg","gif","png");
         parent::__construct($def,$neutralValue);
     }
-    function validate($value)
+    function _validate($value)
     {
         parent::validate($value);
         if(!$this->hasOwnValue())
@@ -187,4 +187,11 @@ class Image extends File
         }
         return '';
     }
+
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Image.php");
+        return '\model\reflection\Types\meta\Image';
+    }
+
 }

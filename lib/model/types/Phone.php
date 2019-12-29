@@ -6,7 +6,14 @@ class Phone extends _String {
 		$definition['MAXLENGTH']=12;
 		$definition['REGEXP']='/[0-9\\-]{7,12}/';
 
-        String::__construct($definition,$value);
+        parent::__construct($definition,$value);
     }
+
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Phone.php");
+        return '\model\reflection\Types\meta\Phone';
+    }
+
 
 }

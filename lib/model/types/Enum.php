@@ -7,12 +7,9 @@ class Enum extends BaseType
       {
             BaseType::__construct($def,$neutralValue);
       }
-      function validate($val)
+      function _validate($val)
       {
-          if($val===null || !isset($val) || $val==='')
-          {
-              return true;
-          }
+
           if(!is_numeric($val))
           {
               if(!in_array($val,$this->definition["VALUES"]))
@@ -29,18 +26,8 @@ class Enum extends BaseType
           return true;
       }
 
-      function setValue($val)
+      function _setValue($val)
       {
-          if(!$this->validate($val))
-          {
-              return;
-          }
-          if($val===null || !isset($val))
-          {
-              $this->valueSet=false;
-              $this->value=null;
-              return;
-          }
           $this->valueSet=true;
           if(!is_numeric($val))
           {
@@ -48,6 +35,14 @@ class Enum extends BaseType
           }
           else
               $this->value=intval($val);
+      }
+      function _getValue()
+      {
+          return $this->value;
+      }
+      function _copy($ins)
+      {
+          $this->value=$ins->getValue();
       }
       function getLabels()
       {
@@ -79,10 +74,15 @@ class Enum extends BaseType
           }
           return $this->definition["VALUES"][$this->value];
       }
-      function equals($value)
+      function _equals($value)
       {
           if($this->value===null || $value===null)
               return $this->value===$value;
           return ((string)$this->value==(string)$value);
       }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Enum.php");
+        return '\model\reflection\Types\meta\Enum';
+    }
   }

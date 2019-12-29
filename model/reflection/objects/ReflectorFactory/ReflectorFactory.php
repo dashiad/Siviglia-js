@@ -21,12 +21,19 @@ namespace model\reflection;
    // ADD_FIELD(layer,name,
 include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
 
+class ReflectorFactoryException extends \lib\model\BaseException
+{
+    const ERR_UNSOLVED_MODEL=101;
+    const TXT_UNSOLVED_MODEL="Cant initialize model [%model%] (is it EXTENDing an unexisting class?)";
+}
    class ReflectorFactory
    {
        static $objectDefinitions;
        static $factoryLoaded=false;
        static $layers=array();
        static $relationMap=null;
+       static $reflectionPackages=null;
+
 
        static function getModel($modelName,$layer=null)
        {
@@ -45,71 +52,67 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
            ReflectorFactory::loadFactory();
            return ReflectorFactory::$objectDefinitions[$layer][$className];
        }
-       static function getObjectsByLayer($layer)
+       static function getModelsByPackage($pkg)
        {
            if(!ReflectorFactory::$factoryLoaded)
            {
                ReflectorFactory::loadFactory();
            }
-           return io(ReflectorFactory::$objectDefinitions,$layer,array());
+           return io(ReflectorFactory::$objectDefinitions,$pkg,array());
        }
-       static function getLayers()
-       {
-           $modelPath=realpath(\Registry::getService("paths")->getModelPath());
-           $dir = new \DirectoryIterator($modelPath);
-           $layers=array();
-           foreach ($dir as $fileinfo) {
-               if (!$fileinfo->isDot() && $fileinfo->isDir()) {
-                   if($fileinfo->getFilename() != "reflection")
-                       $layers[]=array(
-                           "name"=>$fileinfo->getFilename(),
-                           "path"=>$fileinfo->getRealPath()
-                       );
-               }
-           }
-           return $layers;
-       }
+
        static function getPackageNames()
        {
-
+            $service=\Registry::getService("model");
+            return $service->getPackageNames();
+       }
+       static function getReflectionPackages()
+       {
+           if(ReflectorFactory::$reflectionPackages==null)
+           {
+               ReflectorFactory::$reflectionPackages=[];
+               $packageNames=ReflectorFactory::getPackageNames();
+               for($k=0;$k<count($packageNames);$k++)
+                   ReflectorFactory::$reflectionPackages[$packageNames[$k]]=new \model\reflection\ReflectionPackage($packageNames[$k]);
+           }
+           return ReflectorFactory::$reflectionPackages;
+       }
+       static function iterateOnPackages($cb)
+       {
+           $packages=ReflectorFactory::getReflectionPackages();
+           foreach($packages as $key=>$value)
+           {
+               call_user_func($cb,[$value]);
+           }
        }
 
-
-
-
-
-       private static function getObjectCache($pointer,$layer,& $existingModels,& $objectDefinitions)
-        {
-            for($k=0;$k<count($pointer);$k++)
-            {
-                $existingModels[$pointer[$k]["class"]]=$layer;
-                $objectDefinitions[$layer][$pointer[$k]["class"]]=new \model\reflection\Model("model\\".$pointer[$k]["layer"].'\\'.$pointer[$k]["class"]);
-                if(isset($pointer[$k]["subobjects"]))
-                    ReflectorFactory::getObjectCache($pointer[$k]["subobjects"],$layer,$existingModels,$objectDefinitions);
-            }
-
-        }
        static function loadFactory()
        {
-           $layers=ReflectorFactory::getLayers();
-           $objectDefinitions=array();
-           $existingModels=array();
-           for($k=0;$k<count($layers);$k++) {
-               $layers[$k]["objects"] = ReflectorFactory::getLayerObjects($layers[$k]["name"], $layers[$k]["path"],null);
-               ReflectorFactory::getObjectCache($layers[$k]["objects"],$layers[$k]["name"],$existingModels,$objectDefinitions);
-           }
-           ReflectorFactory::$objectDefinitions=$objectDefinitions;
+           $result=[];
+           $existingModels=[];
 
+           ReflectorFactory::iterateOnPackages(function($pkg) use (&$result, &$existingModels){
+               $subResult=$pkg->getModels();
+               $pkgName=$pkg->getName();
+               foreach($subResult as $key=>$value)
+                   $existingModels[$key]=$pkgName;
+               $result[$pkgName]=$subResult;
+
+           });
+
+
+           ReflectorFactory::$objectDefinitions=$result;
 
            // Hay que inicializar primero aquellos objetos que no extienden de nada, y, a partir de ahi,
            // los objetos que heredan de cualquier otro.
            $parsedModels=array();
-           while(count($existingModels)>0)
+           $lastExisting=count(array_keys($existingModels));
+           while(count(array_keys($existingModels))>0)
            {
                $newModels=array();
-               foreach($existingModels as $name=>$layer)
+               foreach($existingModels as $name=>$package)
                {
-                   $cur=ReflectorFactory::$objectDefinitions[$layer][$name];
+                   $cur=ReflectorFactory::$objectDefinitions[$package][$name];
 
                    if(isset($cur->definition["EXTENDS"]))
                    {
@@ -117,38 +120,40 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
                        $normalized=$objName->getNormalizedName();
                        if(!$parsedModels[$normalized])
                        {
-                           $newModels[$name]=$layer;
+                           $newModels[$name]=$package;
                            continue;
                        }
                    }
                    $parsedModels[$name]=1;
                    $cur->initialize();
                }
+               $newExisting=count(array_keys($newModels));
+               if($newExisting>=$lastExisting)
+                   throw new ReflectorFactoryException(ReflectorFactoryException::ERR_UNSOLVED_MODEL,array("model"=>implode(",",array_keys($newModels))));
                $existingModels=$newModels;
+               $lastExisting=count(array_keys($existingModels));
            }
            // Lo siguiente no es tecnicamente cierto; la factoria no esta cargada.
            // Pero, si no la establecemos a cargada aqui, si algun alias intenta acceder a los modelos,
            // como aun no estarian cargados (factoryLoaded==false), comenzaria un bucle.Volverian a intentar
            // ser cargados (se volveria a llamar a esta funcion)
            ReflectorFactory::$factoryLoaded=true;
-           global $APP_NAMESPACES;
-           foreach($APP_NAMESPACES as $curLayer)
+
+           foreach(ReflectorFactory::$objectDefinitions as $pkg=>$models)
            {
-               if(isset(ReflectorFactory::$objectDefinitions[$curLayer])) {
-                   foreach (ReflectorFactory::$objectDefinitions[$curLayer] as $curObj => $curModel) {
-                       $curModel->initializeAliases();
-                   }
-               }
+               foreach ($models as $className => $curModel)
+                   $curModel->initializeAliases();
            }
        }
+
        static function getRelationMap()
        {
            if(ReflectorFactory::$relationMap)
                return ReflectorFactory::$relationMap;
-           global $APP_NAMESPACES;
-           foreach($APP_NAMESPACES as $curLayer)
+
+           foreach(ReflectorFactory::$objectDefinitions as $curPackage=>$pkgContents)
            {
-               foreach(ReflectorFactory::$objectDefinitions[$curLayer] as $curObj => $curModel)
+               foreach($pkgContents as $curObj => $curModel)
                {
                    $objects[]=$curObj;
                    $cK=array_keys($curModel->getIndexFields());
@@ -162,16 +167,13 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
            $temp["distances"]=ReflectorFactory::buildDistances($temp["objects"],$temp["relations"],$temp["keys"]);
            ReflectorFactory::$relationMap=$temp;
            return $temp;
-
        }
        static function buildDistances($objects,$relations,$oKeys)
        {
            $curDistance=0;
            while(1)
            {
-
                $cont=0;
-
                for($k=0;$k<count($objects);$k++)
                {
                    $curObject=$objects[$k];
@@ -233,20 +235,20 @@ include_once(PROJECTPATH."/model/reflection/objects/Model/Model.php");
            return array($distances,$paths,$queries);
        }
 
-       static function getLayer($layer)
+       static function getPackage($package)
        {
-           if(!isset(ReflectorFactory::$layers[$layer]))
-               ReflectorFactory::$layers[$layer]=new \model\reflection\base\Layer($layer);
-           return ReflectorFactory::$layers[$layer];
+           $packages=ReflectorFactory::getReflectionPackages();
+           return $packages[$package];
        }
-       static function addModel($layer,$name,$instance)
+       static function addModel($package,$name,$instance)
        {
            if(!ReflectorFactory::$factoryLoaded)
            {
                ReflectorFactory::loadFactory();
            }
-           ReflectorFactory::$objectDefinitions[$layer][$name]=$instance;
+           ReflectorFactory::$objectDefinitions[$package][$name]=$instance;
        }
+
        static function getSerializer($layer)
        {
            return Registry::$registry["serializers"][$layer];

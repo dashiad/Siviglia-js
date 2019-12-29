@@ -13,7 +13,7 @@ class UUID extends BaseType
           $this->setFlags(BaseType::TYPE_SET_ON_ACCESS);
       }
 
-      function validate($value)
+      function _validate($value)
       {
             return true;
       }
@@ -25,8 +25,12 @@ class UUID extends BaseType
       {
           return true;
       }
-
-      function getValue()
+      function _setValue($v)
+      {
+          $this->value=$v;
+          $this->valueSet=true;
+      }
+      function _getValue()
       {
 
           if($this->valueSet)
@@ -56,9 +60,21 @@ class UUID extends BaseType
                   $val= \lib\model\types\libs\UUID::uuid5(time(),UUID::nsDNS);
               }break;
           }
-
-          $this->setValue($val->__toString());
+          $this->_setValue($val->__toString());
           return $this->value;
       }
+      function _copy($ins)
+      {
+          $this->_setValue($ins->getValue());
+      }
+      function _equals($v)
+      {
+          return $this->valueSet && $this->value==$v;
+      }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/UUID.php");
+        return '\model\reflection\Types\meta\UUID';
+    }
 
 }

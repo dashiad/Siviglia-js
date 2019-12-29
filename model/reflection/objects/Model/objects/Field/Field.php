@@ -33,12 +33,16 @@ class Field extends \model\reflection\Model\ModelComponent
         {
             $this->definition["VALUES"]=$states;
         }
+        static function isFieldARelation($definition)
+        {
+            $type=\lib\model\types\TypeFactory::getType(null,$definition);
+            return is_a($type,'\lib\model\types\Relationship');
+        }
         function isRelation($definition=null)
         {
             if($definition==null)
                 $definition=$this->definition;
-            $type=\lib\model\types\TypeFactory::getType(null,$definition);
-            return is_a($type,'\lib\model\types\Relationship');
+            return Field::isFieldARelation($definition);
 
         }
         function isUnique()

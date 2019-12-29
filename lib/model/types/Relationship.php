@@ -17,11 +17,11 @@ class Relationship extends BaseType {
           $obj=$this->definition["MODEL"];
           if(io($this->definition,"MULTIPLICITY","1:1")=="M:N")
           {
-
-              $flist=$this->definition["FIELDS"]["REMOTE"];
               $remoteDef=\lib\model\types\TypeFactory::getObjectDefinition($obj);
 
-              if(!$flist)
+              if(isset($this->definition["FIELDS"]["REMOTE"]))
+                $flist=$this->definition["FIELDS"]["REMOTE"];
+              else
                 $flist=$remoteDef["INDEXFIELDS"];
 
               foreach($flist as $key=>$value)
@@ -30,7 +30,6 @@ class Relationship extends BaseType {
           }
           else
           {
-
                if(isset($this->definition["FIELD"]))
                     $fields=(array)$this->definition["FIELD"];
                else
@@ -47,14 +46,27 @@ class Relationship extends BaseType {
               return $subTypes;
           return $subTypes[$flist[0]];
       }
-      function setValue($val)
+      function _setValue($val)
       {
-          // Las relaciones no permiten "" como valor de relacion.
-          if($val==="")
-          {
-              return;
-          }
-          parent::setValue($val);
+          $this->value=$val;
       }
+
+      function _getValue()
+      {
+          return $this->value;
+      }
+      function _copy($val)
+      {
+          $this->value=$val->value;
+      }
+      function _equals($v)
+      {
+          return $this->value==$v->value;
+      }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Relationship.php");
+        return '\model\reflection\Types\meta\Relationship';
+    }
 }
 

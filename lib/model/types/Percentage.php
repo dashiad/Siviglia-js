@@ -18,10 +18,16 @@ class Percentage extends Decimal
         // Deberia aniadirse currency en la definicion.
         Decimal::__construct($definition,$value);
     }
-    function validate($value)
+    function _validate($value)
     {
         if($value>1 || $value<0)
             return false;
         return true;
     }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Percentage.php");
+        return '\model\reflection\Types\meta\Percentage';
+    }
+
 }

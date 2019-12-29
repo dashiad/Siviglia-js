@@ -3,7 +3,14 @@
   {
       function __construct($def,$value=false)
       {
-          String::__construct(array("TYPE"=>"Label","MAXLENGTH"=>50),$value);
-      }                
+          parent::__construct(array("TYPE"=>"Label","MAXLENGTH"=>50),$value);
+      }
+
+      function getMetaClassName()
+      {
+          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Label.php");
+          return '\model\reflection\Types\meta\Label';
+      }
+
   }
 ?>
