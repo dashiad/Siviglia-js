@@ -1,12 +1,5 @@
 <?php
-namespace lib\model\types;
+namespace model\reflection\Types\meta;
 class Description extends Text
 {
-
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Description.php");
-        return '\model\reflection\Types\meta\Description';
-    }
-
 }

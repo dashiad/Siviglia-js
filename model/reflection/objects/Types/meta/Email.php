@@ -1,14 +1,19 @@
 <?php namespace model\reflection\Types\meta;
-  class Email extends _String
-  {
-      function __construct($def,$value=false)
-      {
-            $def["MINLENGTH"]=8;
-            $def["MAXLENGTH"]=50;
-            $def["REGEXP"]='/^[^@]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$/';
-            $def["ALLOWHTML"]=false;
-            $def["TRIM"]=true;
-            String::__construct($def,$value);
-      }
-  }
-?>
+class Email extends \model\reflection\Meta\BaseMetadata
+{
+    function getMeta()
+    {
+        return [
+            "TYPE"=>"Container",
+            "FIELDS"=>[
+                "TYPE"=>["TYPE"=>"String","FIXED"=>"Email"],
+                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false],
+                "SET_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","SET_ON_EMPTY"=>false],
+                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","SET_ON_EMPTY"=>false],
+                "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","SET_ON_EMPTY"=>false],
+                "SOURCE"=>BaseType::getSourceMeta()
+            ]
+        ];
+    }
+
+}

@@ -8,7 +8,10 @@ class BankAccount extends \model\reflection\Meta\BaseMetadata
             "FIELDS"=>[
                 "TYPE"=>["TYPE"=>"String","FIXED"=>"BankAccount"],
                 "DEFAULT"=>["TYPE"=>"String"],
-                "SOURCE"=>BaseType::getSourceMeta()
+                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false],
+                "SET_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","SET_ON_EMPTY"=>false],
+                "SOURCE"=>BaseType::getSourceMeta(),
+                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false]
             ]
         ];
     }

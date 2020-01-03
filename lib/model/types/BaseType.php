@@ -1,15 +1,18 @@
 <?php namespace lib\model\types;
 
+  use lib\model\BaseTypedException;
+
   abstract class BaseType
   {
       var $valueSet=false;
-      var $value;
+      var $value=null;
       var $definition;
       var $flags=0;
       var $typeReference;
       var $referencedModel;
       var $referencedField;
       var $parent;
+      var $setOnEmpty;
       const TYPE_SET_ON_SAVE=0x1;
       const TYPE_SET_ON_ACCESS=0x2;
       const TYPE_IS_FILE=0x4;
@@ -24,6 +27,9 @@
           $this->typeReference=false;
           $this->definition=$def;
           $this->flags=0;
+          $this->setOnEmpty=false;
+          if(isset($def["SET_ON_EMPTY"]) && $def["SET_ON_EMPTY"]==true)
+              $this->setOnEmpty=true;
           if($this->hasDefaultValue())
               $this->__rawSet($this->getDefaultValue());
           if(isset($def["FIXED"])) {
@@ -42,7 +48,7 @@
       }
       function getSource()
       {
-          return \lib\model\types\sources\SourceFactory::getSource($this->definition["SOURCE"]);
+          return \lib\model\types\sources\SourceFactory::getSource($this,$this->definition["SOURCE"]);
       }
 
       function setFlags($flags)
@@ -56,6 +62,12 @@
 
       final function setValue($val)
       {
+          if($val===$this->getEmptyValue())
+          {
+              if($this->setOnEmpty==false)
+                    $val=null;
+          }
+
           if($val===null)
           {
               $this->clear();
@@ -68,13 +80,26 @@
           }
 
       }
+      function getEmptyValue()
+      {
+          return null;
+      }
       abstract function _setValue($val);
 
       final function validate($value)
       {
             if($value===null)
                 return true;
+            if(!$this->checkSource($value))
+                throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$value]);
             return $this->_validate($value);
+      }
+      function checkSource($value)
+      {
+          if(!$this->hasSource())
+              return true;
+          $s=$this->getSource();
+          return $s->contains($value);
       }
       function postValidate($value)
       {
@@ -82,7 +107,9 @@
       }
       function hasValue()
       {
-          return $this->valueSet || $this->hasDefaultValue() || ($this->flags & BaseType::TYPE_SET_ON_SAVE) || ($this->flags & BaseType::TYPE_SET_ON_ACCESS);
+          return $this->valueSet ||
+              ($this->setOnEmpty==true && $this->getEmptyValue()!==null) ||
+              ($this->flags & BaseType::TYPE_SET_ON_SAVE) || ($this->flags & BaseType::TYPE_SET_ON_ACCESS);
       }
       function hasOwnValue()
       {
@@ -146,6 +173,11 @@
       {
           if($this->valueSet)
             return $this->_getValue();
+          else
+          {
+              if($this->setOnEmpty==true)
+                  return $this->getEmptyValue();
+          }
           return null;
       }
       abstract function _getValue();

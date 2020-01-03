@@ -1,6 +1,6 @@
 <?php
-namespace lib\model\types;
-class DictionaryException extends \lib\model\types\BaseTypeException
+namespace model\reflection\Types\meta;
+class DictionaryException extends \model\reflection\Types\meta\BaseTypeException
 {
     const ERR_INVALID_VALUE=101;
     const ERR_INVALID_KEY=102;
@@ -14,34 +14,40 @@ class Dictionary extends BaseContainer
         parent::__construct($def,null);
         $this->value=null;
     }
-    function _setValue($val)
+    function setValue($val)
     {
         $this->valueSet = false;
+        if ($val === null) {
+
+            $this->value = null;
+            return;
+        }
         $nSet=0;
         foreach ($val as $key => $value) {
-            $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
-            $subType->setParent($this);
-            $subType->__rawSet($value);
+            $subType = \model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+            $subType->setValue($value);
             $this->value[$key] = $subType;
-
             $nSet++;
         }
         if($nSet>0)
             $this->valueSet=true;
     }
 
-    function _validate($val)
+    function validate($val)
     {
+        if($val===null)
+            return true;
+
         foreach ($val as $key => $value) {
-            $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
-            $subType->setParent($this);
-            if(!$subType->validate($value))
-                return false;
+            $subType = \model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+            $subType->validate($value);
         }
-        return true;
     }
-    function _getValue()
+    function getValue()
     {
+        if($this->valueSet==false)
+            return null;
+
         $nSet=0;
         $result=[];
 
@@ -66,8 +72,12 @@ class Dictionary extends BaseContainer
     {
         return $this->valueSet;
     }
-    function _equals($value)
+    function equals($value)
     {
+        if($this->value==null && $value==null)
+            return true;
+        if(($value==null && $this->value!==null) || ($this->value!==null && $value==null))
+            return false;
         $k1=array_keys($value);
         $k2=array_keys($this->value);
         $diff=array_diff($k1,$k2);
@@ -85,10 +95,9 @@ class Dictionary extends BaseContainer
     }
     function add($key,$value)
     {
-        if(!is_a($value,'\lib\model\types\BaseType'))
+        if(!is_a($value,'\model\reflection\Types\meta\BaseType'))
         {
-            $v=\lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
-            $v->setParent($this);
+            $v=\model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
             $v->setValue($value);
             $this->value[$key]=$v;
         }
@@ -113,6 +122,32 @@ class Dictionary extends BaseContainer
         if($this->value==null)
             return [];
         return array_keys($this->value);
+    }
+
+    // Warning : sin validacion.Acepta cualquier cosa.Usado por los formularios cuando un campo es erroneo.
+    function __rawSet($val)
+    {
+        $this->valueSet = false;
+        if ($val === null) {
+            $this->clear();
+            return;
+        }
+        $nSet=0;
+        foreach ($val as $key => $value) {
+            $subType = \model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+            $subType->__rawSet($value);
+            $this->value[$key] = $subType;
+            $nSet++;
+        }
+        if($nSet>0)
+            $this->valueSet=true;
+    }
+
+    function set($value)
+    {
+        if(is_object($value) && get_class($value)==get_class($this))
+            $value=$value->getValue();
+        return $this->setValue($value);
     }
 
     function is_set()
@@ -142,8 +177,7 @@ class Dictionary extends BaseContainer
     }
     function __set($fieldName,$value)
     {
-        $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
-        $subType->setParent($this);
+        $subType = \model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
         if(is_object($value))
         {
             if(get_class($subType)==get_class($value)) {
@@ -156,7 +190,7 @@ class Dictionary extends BaseContainer
         }
         else
         {
-
+            $subType->validate($value);
             $subType->setValue($value);
             if($subType->hasOwnValue()) {
                 $this->value[$fieldName]=$subType;
@@ -178,45 +212,8 @@ class Dictionary extends BaseContainer
             throw new DictionaryException(DictionaryException::ERR_INVALID_KEY,["key"=>$fieldName]);
         return $this->value[$fieldName]->getValue();
     }
-
-    function _copy($val)
+    function getEmptyValue()
     {
-        $f=$val->getValue();
-        $this->__rawSet($f);
-    }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Dictionary.php");
-        return '\model\reflection\Types\meta\Dictionary';
-    }
-
-    function __getPathProperty($pathProperty,$mode)
-    {
-        if($pathProperty[0]=="{")
-        {
-            $pathProperty=substr($pathProperty,1,-1);
-            if($pathProperty=="keys")
-            {
-                if(!$this->valueSet)
-                    return [];
-                return array_keys($this->value);
-            }
-            $results=[];
-            if($this->value!==null) {
-                foreach ($this->value as $k => $v)
-                    $results[] = $v->getPath($pathProperty);
-            }
-            return $results;
-        }
-
-        if(isset($this->value[$pathProperty]))
-        {
-            if($mode=="reference")
-                return $this->value[$pathProperty];
-            else
-                return $this->value[$pathProperty]->getValue();
-        }
-
-
+        return [];
     }
 }

@@ -47,6 +47,10 @@ class ModelDescriptor
         }
 
     }
+    function getBaseDir()
+    {
+        return $this->baseDir;
+    }
 
     function getLayer()
     {

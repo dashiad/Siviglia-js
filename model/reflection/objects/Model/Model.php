@@ -29,22 +29,22 @@ class Model extends \model\reflection\base\SimpleModelDefinition
     var $storageConfigs;
     var $pages;
     var $aliasesLoaded=false;
-    var $objectName;
+    var $modelDescriptor;
     var $serializer;
     var $modelService;
-    function __construct($objectName,$layer=null)
+    function __construct($modelDescriptor,$layer=null)
     {
         $this->modelService=\Registry::getService("model");
-        $this->objectName=$this->modelService->getModelDescriptor($objectName);
+        $this->modelDescriptor=$this->modelService->getModelDescriptor($modelDescriptor);
         try{
-           $this->baseDir=$this->objectName->getDestinationFile();
-           $this->definition=$this->objectName->getDefinition();
-           $this->package=$this->objectName->package;
+           $this->baseDir=$this->modelDescriptor->getDestinationFile();
+           $this->definition=$this->modelDescriptor->getDefinition();
+           $this->package=$this->modelDescriptor->package;
            parent::__construct(
                           "Definition",
                            $this->package,
-                           $this->objectName->getNamespaced(),
-                           $this->objectName->getPath("Definition.php")
+                           $this->modelDescriptor->getNamespaced(),
+                           $this->modelDescriptor->getPath("Definition.php")
                           );
       }
       catch(\lib\model\types\BaseTypeException $e)
@@ -142,7 +142,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
     }
     function getClassName()
     {
-        return $this->objectName->getNormalizedName();
+        return $this->modelDescriptor->getNormalizedName();
     }
     // Funcion que , en caso de que se pase un fieldName con un path ("a/b/c"), en vez de devolver a, devuelve c.
     function resolveField($fieldName)
@@ -264,15 +264,15 @@ class Model extends \model\reflection\base\SimpleModelDefinition
     {
         if(isset($this->definition["TABLE"]))
 			return $this->definition["TABLE"];
-        if($this->objectName->isPrivate())
+        if($this->modelDescriptor->isPrivate())
         {
-            $parentObj=$this->objectName->getNamespaceModel();
+            $parentObj=$this->modelDescriptor->getNamespaceModel();
             $model=\model\reflection\ReflectorFactory::getModel($parentObj);
             $modelTable=$model->getTableName();
-            $this->definition["TABLE"]=$modelTable."_".$this->objectName->className;
+            $this->definition["TABLE"]=$modelTable."_".$this->modelDescriptor->className;
             return $this->definition["TABLE"];
         }
-		return str_replace('\\','_',$this->objectName);
+		return str_replace('\\','_',$this->modelDescriptor);
     }
     function getIndexFields()
     {
@@ -368,7 +368,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
                 $def["TYPEFIELD"]=$this->typeField;
 
             // Sobreescribe el nombre de la tabla a generar para este objeto.
-            $name=$this->objectName->getNormalizedName();
+            $name=$this->modelDescriptor->getNormalizedName();
             if(isset($this->definition["TABLE"]))
                 $def["TABLE"]=$this->definition["TABLE"];
             else
@@ -477,7 +477,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
                 }
                 else
                 {
-                    $layer=\model\reflection\ReflectorFactory::getLayer($this->objectName->layer);
+                    $layer=\model\reflection\ReflectorFactory::getLayer($this->modelDescriptor->layer);
                     return $layer->getSerializer();
                 }
         }
@@ -504,11 +504,11 @@ class Model extends \model\reflection\base\SimpleModelDefinition
             {
                 return $this->datasources;
             }
-            $dsnames=$this->loadFilesFrom($this->objectName->getPath("/datasources/"),"/.*\.php/",true,false,true);
+            $dsnames=$this->loadFilesFrom($this->modelDescriptor->getPath("/datasources/"),"/.*\.php/",true,false,true);
             foreach($dsnames as $curDs)
             {
-                include_once($this->objectName->getPath('/datasources/'.$curDs.".php"));
-                $dsclass=$this->objectName->getNamespaced().'\\datasources\\'.$curDs;
+                include_once($this->modelDescriptor->getPath('/datasources/'.$curDs.".php"));
+                $dsclass=$this->modelDescriptor->getNamespaced().'\\datasources\\'.$curDs;
                 $instance=new $dsclass();
                 if(is_a($instance,'\lib\datasource\MultipleDataSource'))
                     continue;
@@ -544,7 +544,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         function loadActions()
         {
             $this->actions=array();
-            $actions=$this->loadFilesFrom($this->objectName->getPath('')."/actions/","/.*\.php/",true,false,true);
+            $actions=$this->loadFilesFrom($this->modelDescriptor->getPath('')."/actions/","/.*\.php/",true,false,true);
             foreach($actions as $curAct)
             {
                 $this->actions[$curAct]=new \model\reflection\Action($curAct,$this);
@@ -624,13 +624,13 @@ class Model extends \model\reflection\base\SimpleModelDefinition
 
         function runSetup()
         {
-            $layer=$this->objectName->layer;
-            $objName=$this->objectName->getNormalizedName();
-            $sPath=$this->objectName->getPath("Setup.php");
+            $layer=$this->modelDescriptor->layer;
+            $objName=$this->modelDescriptor->getNormalizedName();
+            $sPath=$this->modelDescriptor->getPath("Setup.php");
               if(is_file($sPath))
               {
                   include_once($sPath);
-                  $className=$this->objectName->getNamespaced().'\\Setup';
+                  $className=$this->modelDescriptor->getNamespaced().'\\Setup';
                   if(class_exists($className))
                   {
                       $setupInstance= new $className();
@@ -643,7 +643,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         function createDerivedRelations()
         {
             $relations=$this->getRelations();
-            echo "<h3>Generando relaciones derivadas para ".$this->objectName->getNamespaced()."</h3>";
+            echo "<h3>Generando relaciones derivadas para ".$this->modelDescriptor->getNamespaced()."</h3>";
             foreach($relations as $relName=>$relObject)
             {
                 echo "Analizando relacion $relName<br>";
@@ -694,10 +694,10 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         {
             return $this->pages["ACTIONS"];
         }
-        static function getMetaData($objectName)
+        static function getMetaData($modelDescriptor)
         {
             include_once(__DIR__."/ModelMetadata.php");
-            return new \model\reflection\Model\ModelMetadata($objectName);
+            return new \model\reflection\Model\ModelMetadata($modelDescriptor);
         }
 
 }

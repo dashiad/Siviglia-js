@@ -75,7 +75,7 @@ class Package
     function getModels($path=null,$prefix=null)
     {
         if($path==null)
-            $path=$this->pkg->getFullPath();
+            $path=$this->getFullPath();
         $path=$path."/objects";
         if(!is_dir($path))
             return null;
@@ -84,7 +84,7 @@ class Package
         if($prefix!=null)
             $prefix.='\\';
         else
-            $prefix=$this->pkg->getBaseNamespace();
+            $prefix=$this->getBaseNamespace();
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot() && $fileinfo->isDir()) {
                 $name=$fileinfo->getFilename();

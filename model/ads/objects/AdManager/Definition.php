@@ -12,7 +12,7 @@ include_once(LIBPATH . "/data/DataTransform.php");
  */
 
 
-class DataDefinition extends \lib\data\DataTransform
+class Definition extends \lib\data\DataTransform
 {
     function __construct()
     {

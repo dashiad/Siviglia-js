@@ -1,14 +1,19 @@
 <?php namespace model\reflection\Types\meta;
-class Money extends Decimal {
-    function __construct($definition,$value=null)
+class Money extends \model\reflection\Meta\BaseMetadata
+{
+    function getMeta()
     {
-		$definition['NINTEGERS']=20;
-		$definition['NDECIMALS']=3;
-        // Deberia aniadirse currency en la definicion.
-        Decimal::__construct($definition,$value);
+        return [
+            "TYPE"=>"Container",
+            "FIELDS"=>[
+                "TYPE"=>["TYPE"=>"String","FIXED"=>"Money"],
+                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false],
+                "SET_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","SET_ON_EMPTY"=>false],
+                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","SET_ON_EMPTY"=>false],
+                "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","SET_ON_EMPTY"=>false],
+                "SOURCE"=>BaseType::getSourceMeta()
+            ]
+        ];
     }
-    static function getFormatted($value)
-    {
-        return money_format('%=*(#10.2n', $value);
-    }
+
 }

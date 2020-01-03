@@ -17,11 +17,9 @@ class Image extends File
            $def["EXTENSIONS"]=array("jpg","gif","png");
         parent::__construct($def,$neutralValue);
     }
-    function _validate($value)
+    function validateImportedFile($value)
     {
-        parent::validate($value);
-        if(!$this->hasOwnValue())
-            return;
+        parent::validateImportedFile($value);
 
         // Se realizan las comprobaciones
         $size=getImageSize($value);
@@ -42,26 +40,18 @@ class Image extends File
 
     function save()
     {
-        if(!$this->hasOwnValue())
-            return;
-        // Se almacena el estado actual de dirty, ya que se necesita despues, y el save() de file lo va a poner a false.
-        $savedDirty=$this->dirty;
+
         parent::save();
-        // Se restaura el valor anterior de dirty, para crear thumbnails y watermarks.
-        $this->dirty=$savedDirty;
         if(isset($this->definition["THUMBNAIL"]))
           $this->makeThumbNail($this->definition["THUMBNAIL"]);
         if(isset($this->definition["WATERMARK"]))
           $this->addWatermark($this->definition["WATERMARK"]);
-        // Finalmente, se pone dirty a false.
-        $this->dirty=false;
+
     }
 
     public function makeThumbNail($def)
     {
         if(!$this->hasOwnValue())
-            return;
-        if(!$this->dirty)
             return;
 
         $srcImage=$this->getFullFilePath();
@@ -96,6 +86,7 @@ class Image extends File
         // exacta es el origen.
         $type=image_type_to_extension($sizes[2],false);
         $funcName="imagecreatefrom".$type;
+
         $img=$funcName($srcImage);
         if(!$img)
             return;
@@ -109,6 +100,11 @@ class Image extends File
         $quality=$def["QUALITY"];
         if(!$quality)
             $quality=85;
+        // Se cambia la extension
+        $parts=explode(".",$fileName);
+        array_pop($parts);
+        $parts[]="jpg";
+        $fileName=implode(".",$parts);
         imagejpeg($destImg,dirname($srcImage)."/".$suffix.$fileName,$quality);
     }
 
@@ -193,5 +189,4 @@ class Image extends File
         include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Image.php");
         return '\model\reflection\Types\meta\Image';
     }
-
 }

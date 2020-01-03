@@ -1,6 +1,6 @@
 <?php namespace lib\model\types;
 
-  class IntegerTypeException extends BaseTypeException {
+  class IntegerException extends BaseTypeException {
       const ERR_TOO_SMALL=100;
       const ERR_TOO_BIG=101;
       const ERR_NOT_A_NUMBER=102;
@@ -8,9 +8,6 @@
       const TXT_TOO_SMALL='Minimum value is [%min%]';
       const TXT_TOO_BIG='Maximum value is [%max%]';
       const TXT_NOT_A_NUMBER='Invalid number';
-
-      const REQ_TOO_SMALL='MIN';
-      const REQ_TOO_BIG='MAX';
   }
   class Integer extends BaseType
   {
@@ -33,6 +30,7 @@
       }
       function _copy($val){
           $this->value=$val->getValue();
+          $this->valueSet=true;
       }
       function getMetaClassName()
       {
@@ -44,17 +42,17 @@
       {
           $value=trim($value);
           if(!preg_match("/^(?:[0-9]+)+$/",$value))
-              throw new IntegerTypeException(IntegerTypeException::ERR_NOT_A_NUMBER);
+              throw new IntegerException(IntegerException::ERR_NOT_A_NUMBER);
 
           if(isset($this->definition["MIN"]))
           {
               if($value < intval($this->definition["MIN"]))
-                  throw new IntegerTypeException(IntegerTypeException::ERR_TOO_SMALL,["min"=>$this->definition["MIN"]]);
+                  throw new IntegerException(IntegerException::ERR_TOO_SMALL,["min"=>$this->definition["MIN"]]);
           }
           if(isset($this->definition["MAX"]))
           {
               if($value > intval($this->definition["MAX"]))
-                throw new IntegerTypeException(IntegerTypeException::ERR_TOO_BIG,["max"=>$this->definition["MAX"]]);
+                throw new IntegerException(IntegerException::ERR_TOO_BIG,["max"=>$this->definition["MAX"]]);
           }
           return true;
       }

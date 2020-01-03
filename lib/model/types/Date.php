@@ -1,6 +1,6 @@
 <?php namespace lib\model\types;
 
-  class  DateTypeException extends BaseTypeException{
+  class  DateException extends BaseTypeException{
       const ERR_START_YEAR=100;
       const ERR_END_YEAR=101;
       const ERR_STRICTLY_PAST=104;
@@ -42,12 +42,24 @@
       {
           if($v=="NOW")
               $this->setAsNow();
-          $this->value=$v;
+          $asArr=$this->asArray($v);
+          if($asArr!==false) {
+              $this->value = $v["year"]."-".$v["month"]."-".$v["day"];
+              $this->valueSet = true;
+          }
       }
 
       function setAsNow()
       {
           $this->setValue(Date::getValueFromTimestamp());
+      }
+      function __rawSet($val)
+      {
+          if($val=="NOW")
+              $this->setAsNow();
+          else {
+              parent::__rawSet($val);
+          }
       }
 
       function hasValue()
@@ -66,27 +78,25 @@
           $asArr=$this->asArray($value);
 
           extract($asArr);
-          if($day==0 && $month==0 && $year==0 && (!isset($this->definition["REQUIRED"]) || $this->definition["REQUIRED"]==false))
-              return true;
-          if(!checkdate($month,$day,$year))
+          if($asArr===false)
               throw new BaseTypeException(BaseTypeException::ERR_INVALID);
 
           if(isset($this->definition["STARTYEAR"]))
           {
               if(intval($year)<intval($this->definition["STARTYEAR"]))
-                  throw new DateTypeException(DateTypeException::ERR_START_YEAR,array("year"=>$this->definition["STARTYEAR"]));
+                  throw new DateException(DateException::ERR_START_YEAR,array("year"=>$this->definition["STARTYEAR"]));
           }
           if(isset($this->definition["ENDYEAR"]))
           {
               if(intval($year)>intval($this->definition["ENDYEAR"]))
-                  throw new DateTypeException(DateTypeException::ERR_END_YEAR,array("year"=>$this->definition["ENDYEAR"]));
+                  throw new DateException(DateException::ERR_END_YEAR,array("year"=>$this->definition["ENDYEAR"]));
           }
           $timestamp=$this->getTimestamp($value,$asArr);
           $curTimestamp=time();
           if(isset($this->definition["STRICTLYPAST"]) && $curTimestamp < $timestamp)
-              throw new DateTypeException(DateTypeException::ERR_STRICTLY_PAST);
+              throw new DateException(DateException::ERR_STRICTLY_PAST);
           if(isset($this->definition["STRICTLYFUTURE"]) && $curTimestamp > $timestamp)
-              throw new DateTimeException(DateTypeException::ERR_STRICTLY_FUTURE);
+              throw new DateException(DateException::ERR_STRICTLY_FUTURE);
 
           BaseType::postValidate($value);
 
@@ -96,14 +106,20 @@
       function asArray($val=null)
       {
           if(!$val)$val=$this->value;
+          $v=date_parse($val);
+          if($v===false)
+              return $v;
 
-          $parts=explode(" ",$val);
-          @list($result["year"],$result["month"],$result["day"])=explode("-",$parts[0]);
-          return $result;
+              return [
+                  "year"=>$v["year"],
+                  "month"=>$v["month"],
+                  "day"=>$v["day"]
+              ];
+
       }
 
       static function getValueFromTimestamp($timestamp=null) {
-        return date(DateTime::DATE_FORMAT, $timestamp?$timestamp:time());
+        return date(Date::DATE_FORMAT, $timestamp?$timestamp:time());
       }
 
 
@@ -174,4 +190,5 @@
           include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Date.php");
           return '\model\reflection\Types\meta\Date';
       }
+
   }

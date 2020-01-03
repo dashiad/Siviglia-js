@@ -1,27 +1,19 @@
-<?php
-/**
- * Class Percentage
- * @package model\reflection\Types\meta
- *  (c) Smartclip
- */
-
-
-namespace model\reflection\Types\meta;
-
-
-class Percentage extends Decimal
+<?php namespace model\reflection\Types\meta;
+class Percentage extends \model\reflection\Meta\BaseMetadata
 {
-    function __construct($definition,$value=null)
+    function getMeta()
     {
-        $definition['NINTEGERS']=1;
-        $definition['NDECIMALS']=10;
-        // Deberia aniadirse currency en la definicion.
-        Decimal::__construct($definition,$value);
+        return [
+            "TYPE"=>"Container",
+            "FIELDS"=>[
+                "TYPE"=>["TYPE"=>"String","FIXED"=>"Percentage"],
+                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false],
+                "SET_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","SET_ON_EMPTY"=>false],
+                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","SET_ON_EMPTY"=>false],
+                "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","SET_ON_EMPTY"=>false],
+                "SOURCE"=>BaseType::getSourceMeta()
+            ]
+        ];
     }
-    function validate($value)
-    {
-        if($value>1 || $value<0)
-            return false;
-        return true;
-    }
+
 }

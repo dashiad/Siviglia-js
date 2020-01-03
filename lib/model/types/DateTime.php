@@ -60,14 +60,9 @@
               return true;
 
           $asArr=$this->asArray($value);
-
-          extract($asArr);
-          if($day==0 || $month==0 || $year==0 )
-              return false;
-          if(!checkdate($month,$day,$year))
-          {
+          if($asArr===false)
               throw new BaseTypeException(BaseTypeException::ERR_INVALID);
-          }
+          extract($asArr);
 
           if(io($this->definition,"STARTYEAR",false))
           {
@@ -116,16 +111,20 @@
       function asArray($val=null)
       {
           if(!$val)$val=$this->value;
+          $v=date_parse($val);
+          if($v===false)
+              return $v;
 
-          $parts=explode(" ",$val);
-          @list($result["year"],$result["month"],$result["day"])=explode("-",$parts[0]);
-          if($parts[1])
-              @list($result["hour"],$result["minutes"],$result["seconds"])=explode(":",$parts[1]);
-          else
-              @list($result["hour"],$result["minutes"],$result["seconds"])=array(0,0,0);
-          return $result;
+          return [
+              "year"=>$v["year"],
+              "month"=>$v["month"],
+              "day"=>$v["day"],
+              "hour"=>$v["hour"]===false?0:$v["hour"],
+              "minutes"=>$v["hour"]===false?0:$v["minutes"],
+              "seconds"=>$v["hour"]===false?0:$v["seconds"],
+          ];
+
       }
-
       static function getValueFromTimestamp($timestamp=null) {
         return date(DateTime::DATE_FORMAT, $timestamp?$timestamp:time());
       }

@@ -8,13 +8,20 @@
               "TYPE"=>"Container",
               "FIELDS"=>[
                   "TYPE"=>["TYPE"=>"String","FIXED"=>"Array"],
+                  "LABEL"=>["TYPE"=>"String","LABEL"=>"Label"],
                   "ELEMENTS"=>[
-                      "TYPEREF"=>"BASETYPE"
+                      "LABEL"=>"Elementos",
+                      "TYPE"=>"BASETYPE",
+                      "REQUIRED"=>true
                   ],
                   "REQUIRED"=>[
+                      "LABEL"=>"Requerido",
                       "TYPE"=>"Boolean",
-                      "DEFAULT"=>false
-                  ]
+                      "DEFAULT"=>false,
+                      "SET_ON_EMPTY"=>false
+                  ],
+                  "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false],
+                  "SET_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","SET_ON_EMPTY"=>false]
               ]
           ];
       }

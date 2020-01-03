@@ -1,35 +1,19 @@
 <?php namespace model\reflection\Types\meta;
-class Street extends _String {
-    function __construct(& $definition,$value=null)
+class Street extends \model\reflection\Meta\BaseMetadata
+{
+    function getMeta()
     {
-		$definition['MINLENGTH']=2;
-		$definition['MAXLENGTH']=200;
-        String::__construct($definition,$value);
+        return [
+            "TYPE"=>"Container",
+            "FIELDS"=>[
+                "TYPE"=>["TYPE"=>"String","FIXED"=>"Street"],
+                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false],
+                "SET_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","SET_ON_EMPTY"=>false],
+                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","SET_ON_EMPTY"=>false],
+                "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","SET_ON_EMPTY"=>false],
+                "SOURCE"=>BaseType::getSourceMeta()
+            ]
+        ];
     }
-    static function normalize($cad)
-    {
-        $cad=String::normalize($cad);
 
-        $cad=str_replace(array("Nº","nº"),array("",""),$cad);
-        //$cad=$this->basicStringFilter($cad);
-        $cad=str_replace(array("calle/"),"",$cad);
-        $cad=str_replace(array(
-                "avenida de","s/n","calle","plaza","pza","ps.","pse","pz","º","ª","c/","avda.","avda","avd","avenida"),"",$cad
-        );
-        if(substr($cad,0,2)=="c ")
-            $cad=substr($cad,2);
-        if(substr($cad,0,2)=="av ")
-            $cad=substr($cad,3);
-        $cad=str_replace(array(" local "," chalet "," piso "," urbanizacion "," urb "," bj "," bajo "," bloque "," portal "," bloq "," bl "," esc "," escalera "," n "," pta "," puerta "," numero ")," ",$cad);
-        $cad=str_replace(array(" izquierda "," izqd "," izq ")," izq ",$cad);
-        $cad=str_replace(array(" derecha "," dcha "," drch ")," dcha ",$cad);
-        $prefixes=array("avnd ","carrer ","paseo ","ronda ","urb ","urbanizacion ","ctra ","carretera ","can ","rd ","cl ","av ","avinguda ","travesia ","trv ","rambla ","plz ","pl ");
-        for($k=0;$k<count($prefixes);$k++)
-        {
-            if(strpos($cad,$prefixes[$k])===0)
-                $cad=str_replace($prefixes[$k],"",$cad);
-        }
-        return $cad;
-
-    }
 }

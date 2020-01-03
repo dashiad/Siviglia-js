@@ -46,7 +46,17 @@ class MethodDataSource extends \lib\datasource\ArrayDataSource
             throw new \lib\datasource\DataSourceException(\lib\datasource\DataSourceException::ERR_NO_MODEL_OR_METHOD);
         }
 
-        $mdl = \getModel($definition['MODEL']);
+        $model=$definition["MODEL"];
+        if($model=="self")
+        {
+            $objNameClass=\lib\model\ModelService::getModelDescriptor($this->objName);
+            require_once($objNameClass->getDataSourceFileName($this->dsName));
+            $objName=$objNameClass->getNamespaced();
+            $csN=$objName.'\datasources\\'.$this->dsName;
+            $mdl=new $csN();
+        }
+        else
+            $mdl = \getModel($definition['MODEL']);
         $method = $definition['METHOD'];
         $params = $this->parameters;
         $data = $mdl->{$method}($params);

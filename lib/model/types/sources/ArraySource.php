@@ -16,8 +16,20 @@ namespace lib\model\types\sources;
 
 class ArraySource extends BaseSource
 {
+    var $source;
+    function __construct($parent,$definition)
+    {
+        parent::__construct($parent,$definition);
+        if(isset($this->definition["DATA"]))
+            $this->source=$this->definition["DATA"];
+        if(isset($this->definition["VALUES"])) {
+            $this->source=array_map(function($item){return ["VALUE"=>$item];},$this->definition["VALUES"]);
+            $this->definition["LABEL"]="VALUE";
+            $this->definition["VALUE"]="VALUE";
+            }
+    }
     function getData()
     {
-        return $this->definition["DATA"];
+        return $this->source;
     }
 }

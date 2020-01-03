@@ -197,4 +197,8 @@
               return count($this->subObjects);
 
       }
+      function getEmptyValue()
+      {
+          return [];
+      }
   }

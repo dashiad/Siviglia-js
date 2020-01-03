@@ -1,9 +1,15 @@
-<?php
-namespace model\reflection\Types\meta;
-class TreePath extends _String
+<?php namespace model\reflection\Types\meta;
+class TreePath extends \model\reflection\Meta\BaseMetadata
 {
-   function __construct($def,$neutralValue=null)
-   {
-            parent::__construct(array("MAXLENGTH"=>255),$neutralValue);
-   }
+    function getMeta()
+    {
+        return [
+            "TYPE"=>"Container",
+            "FIELDS"=>[
+                "TYPE"=>["TYPE"=>"String","FIXED"=>"TreePath"],
+                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false]
+            ]
+        ];
+    }
+
 }

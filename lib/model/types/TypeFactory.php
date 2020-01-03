@@ -234,5 +234,6 @@ include_once(LIBPATH."/model/types/BaseType.php");
           }
           return $resolver->getTypeClass($typeName);
       }
+
   }
 ?>

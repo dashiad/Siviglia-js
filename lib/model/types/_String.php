@@ -18,6 +18,14 @@
       }
       function _setValue($val)
       {
+          if(isset($this->definition["TRIM"]) && $this->definition["TRIM"]==true)
+          {
+                $val=trim($val);
+          }
+          if(isset($this->definition["NORMALIZE"]) && $this->definition["NORMALIZE"]==true)
+          {
+              $val=_String::normalize($val);
+          }
           $this->value=$val;
           $this->valueSet=true;
       }
@@ -30,7 +38,7 @@
           return $this->value===$val;
       }
       function _copy($val){
-          $this->value=$val->getValue();
+          $this->setValue($val->getValue());
       }
       function getMetaClassName()
       {
@@ -68,11 +76,12 @@
              if(in_array($val,$this->definition["EXCLUDE"]))
                  throw new _StringException(_StringException::ERR_EXCLUDED_VALUE,["value"=>$val]);
          }
+
          return true;
       }
       static function normalize($cad)
       {
-          $cad=str_replace(array("á","é","í","ó","ú","Á","Ë","Í","Ó","Ú","Ñ"),array("a","e","i","o","u","a","e","i","o","u","ñ"),$cad);
+          $cad=str_replace(array("á","é","í","ó","ú","Á","É","Í","Ó","Ú","Ñ"),array("a","e","i","o","u","a","e","i","o","u","ñ"),$cad);
           $cad=str_replace(array(".",",","-")," ",$cad);
           $cad=strtolower($cad);
           $cad=str_replace(array("#","_"),"",$cad);
@@ -82,6 +91,10 @@
       static function correctEncoding($cad)
       {
           return \lib\php\Encoding::fixUTF8($cad);
+      }
+      function getEmptyValue()
+      {
+          return "";
       }
   }
 

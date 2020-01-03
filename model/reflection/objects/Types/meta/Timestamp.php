@@ -1,12 +1,15 @@
-<?php
-namespace model\reflection\Types\meta;
-class Timestamp extends DateTime
+<?php namespace model\reflection\Types\meta;
+class Timestamp extends \model\reflection\Meta\BaseMetadata
 {
-        function __construct($definition,$value=false)
-        {
-                $definition["TYPE"]="Timestamp";
-                $definition["DEFAULT"]="NOW";
-                DateTime::__construct($definition,$value);
-                $this->flags |= BaseType::TYPE_NOT_EDITABLE;
-        }
+    function getMeta()
+    {
+        return [
+            "TYPE"=>"Container",
+            "FIELDS"=>[
+                "TYPE"=>["TYPE"=>"String","FIXED"=>"Timestamp"],
+                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false]
+            ]
+        ];
+    }
+
 }

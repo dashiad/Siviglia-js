@@ -82,7 +82,7 @@ class ReflectorFactoryException extends \lib\model\BaseException
            $packages=ReflectorFactory::getReflectionPackages();
            foreach($packages as $key=>$value)
            {
-               call_user_func($cb,[$value]);
+               call_user_func($cb,$value);
            }
        }
 

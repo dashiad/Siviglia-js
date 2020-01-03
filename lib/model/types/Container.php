@@ -54,6 +54,12 @@ class Container extends BaseContainer
         }
         if($nSet>0)
             $this->valueSet=true;
+        else
+        {
+            if(isset($this->definition["SET_ON_EMPTY"]) && $this->definition["SET_ON_EMPTY"]==true) {
+                $this->valueSet=true;
+            }
+        }
     }
 
     function _validate($value)
@@ -65,9 +71,11 @@ class Container extends BaseContainer
             $tempType->setParent($this);
             if(!isset($value[$key]) && isset($curDef["REQUIRED"]) && $curDef["REQUIRED"]!=false)
                 throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key));
-            if(!$tempType->validate($value[$key]))
-                return false;
-            $tempType->__rawSet($value[$key]);
+            if(isset($value[$key])) {
+                if (!$tempType->validate($value[$key]))
+                    return false;
+                $tempType->__rawSet($value[$key]);
+            }
             if($curDef["REQUIRED"] && $tempType->hasValue()===false)
                 throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key));
         }
@@ -104,7 +112,10 @@ class Container extends BaseContainer
         }
         if($nSet==0)
         {
-            return null;
+            if(!isset($this->definition["SET_ON_EMPTY"]) || $this->definition["SET_ON_EMPTY"]==false) {
+                return null;
+            }
+            return [];
         }
         return $result;
     }
@@ -188,8 +199,14 @@ class Container extends BaseContainer
         if($fieldName[0]=="*")
         {
             $fieldName=substr($fieldName,1);
-            if(!isset($this->__fields[$fieldName]))
-                throw new ContainerException(ContainerException::ERR_NOT_A_FIELD,["field"=>$fieldName]);
+            if(!isset($this->__fields[$fieldName])) {
+                if(!isset($this->definition["FIELDS"][$fieldName]))
+                    throw new ContainerException(ContainerException::ERR_NOT_A_FIELD, ["field" => $fieldName]);
+                else {
+                    $this->__fields[$fieldName] = \lib\model\types\TypeFactory::getType($this, $this->definition["FIELDS"][$fieldName]);
+                    $this->__fields[$fieldName]->setParent($this);
+                }
+            }
             return $this->__fields[$fieldName];
         }
         if(!isset($this->__fields[$fieldName]))
@@ -215,5 +232,9 @@ class Container extends BaseContainer
     {
         include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Container.php");
         return '\model\reflection\Types\meta\Container';
+    }
+    function getEmptyValue()
+    {
+        return [];
     }
 }

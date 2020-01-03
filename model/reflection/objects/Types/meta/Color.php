@@ -1,9 +1,19 @@
 <?php namespace model\reflection\Types\meta;
-  class Color extends _String
-  {
-      function __construct($def,$value=false)
-      {
-          String::__construct(array("TYPE"=>"Color","MAXLENGTH"=>10),$value);
-      }
-  }
-?>
+class Color extends \model\reflection\Meta\BaseMetadata
+{
+    function getMeta()
+    {
+        return [
+            "TYPE"=>"Container",
+            "FIELDS"=>[
+                "TYPE"=>["TYPE"=>"String","FIXED"=>"Color"],
+                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false],
+                "SET_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","SET_ON_EMPTY"=>false],
+                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","SET_ON_EMPTY"=>false],
+                "DEFAULT"=>["TYPE"=>"Color","LABEL"=>"Valor por defecto","SET_ON_EMPTY"=>false],
+                "SOURCE"=>BaseType::getSourceMeta()
+            ]
+        ];
+    }
+
+}

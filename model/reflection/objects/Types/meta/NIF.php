@@ -1,31 +1,19 @@
-<?php
-/**
- * Created by JetBrains PhpStorm.
- * User: Usuario
- * Date: 30/10/13
- * Time: 14:57
- * To change this template use File | Settings | File Templates.
- */
-
-namespace model\reflection\Types\meta;
-
-
-class NIF extends _String{
-    function __construct(& $definition,$value)
+<?php namespace model\reflection\Types\meta;
+class NIF extends \model\reflection\Meta\BaseMetadata
+{
+    function getMeta()
     {
-        $definition['TYPE']='NIF';
-        $definition['MINLENGTH']=9;
-        $definition['MAXLENGTH']=9;
-        String::__construct($definition,$value);
+        return [
+            "TYPE"=>"Container",
+            "FIELDS"=>[
+                "TYPE"=>["TYPE"=>"String","FIXED"=>"NIF"],
+                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false],
+                "SET_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","SET_ON_EMPTY"=>false],
+                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","SET_ON_EMPTY"=>false],
+                "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","SET_ON_EMPTY"=>false],
+                "SOURCE"=>BaseType::getSourceMeta()
+            ]
+        ];
     }
 
-    function validate($val)
-    {
-        $val=strtoupper($val);
-        if(!parent::validate($val))
-            return false;
-        if(substr("TRWAGMYFPDXBNJZSQVHLCKE",strtr(substr($val,0,-1),"XYZ","012")%23,1)!=substr($val,-1))
-            throw new \model\reflection\Types\meta\BaseTypeException(\model\reflection\Types\meta\BaseTypeException::ERR_INVALID);
-        return true;
-    }
 }

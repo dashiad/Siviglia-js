@@ -56,6 +56,14 @@ class ArraySourceTest extends TestCase
                 ]
             ]);
     }
+    function getSource4($parent)
+    {
+        return new \lib\model\types\sources\ArraySource($parent,
+            [
+                "TYPE"=>"Array",
+                "VALUES"=>["a","b","c","d"]
+            ]);
+    }
     function testSimple()
     {
         $s=$this->getSource1(null);
@@ -75,6 +83,12 @@ class ArraySourceTest extends TestCase
     {
         $s=$this->getSource2(null);
         $this->assertEquals(false,$s->contains(5));
+    }
+    function testSimple5()
+    {
+        $s=$this->getSource4(null);
+        $this->assertEquals(false,$s->contains("x"));
+        $this->assertEquals(true,$s->contains("a"));
     }
     function testFieldNames()
     {

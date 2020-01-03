@@ -1,28 +1,19 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: JoseMaria
- * Date: 16/06/14
- * Time: 23:15
- */
-namespace model\reflection\Types\meta;
-class PHPVariableException extends \model\reflection\Meta\BaseMetadataException {
-
-}
-
-class PHPVariable extends \model\reflection\Types\meta\BaseType {
-
-    function setValue($val)
+<?php namespace model\reflection\Types\meta;
+class PHPVariable extends \model\reflection\Meta\BaseMetadata
+{
+    function getMeta()
     {
-        parent::setValue($val);
+        return [
+            "TYPE"=>"Container",
+            "FIELDS"=>[
+                "TYPE"=>["TYPE"=>"String","FIXED"=>"PHPVariable"],
+                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","SET_ON_EMPTY"=>false],
+                "SET_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","SET_ON_EMPTY"=>false],
+                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","SET_ON_EMPTY"=>false],
+                "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","SET_ON_EMPTY"=>false],
+                "SOURCE"=>BaseType::getSourceMeta()
+            ]
+        ];
     }
 
-    function getUnserializedValue()
-    {
-        if($this->valueSet)
-            return unserialize($this->value);
-        if($this->hasDefaultValue())
-            return unserialize($this->getDefaultValue());
-        return null;
-    }
 }

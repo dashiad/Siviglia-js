@@ -1,16 +1,19 @@
 <?php
 namespace model\reflection\Types\meta;
-
-// Modela un tipo de dato que es la transformacion de una string, a otra que debe ser unica, y modificada para
-// aparecer en links.
-
-class UrlPathString extends _String
+class UrlPathString extends \model\reflection\Meta\BaseMetadata
 {
-    function __construct($def,$value=null)
+    function getMeta()
     {
-        parent::__construct(
-            array("ALLOWHTML"=>false,"TRIM"=>true,"MINLENGTH"=>1,"MAXLENGTH"=>100),
-            $value);
-
+        return [
+            "TYPE" => "Container",
+            "FIELDS" => [
+                "TYPE" => ["TYPE" => "String", "FIXED" => "UrlPathString"],
+                "HELP" => ["LABEL" => "Ayuda", "TYPE" => "Text", "SET_ON_EMPTY" => false],
+                "SET_ON_EMPTY" => ["LABEL" => "Permitir valor vacío", "TYPE" => "Boolean", "SET_ON_EMPTY" => false],
+                "REQUIRED" => ["TYPE" => "Boolean", "DEFAULT" => false, "LABEL" => "Requerido", "SET_ON_EMPTY" => false],
+                "DEFAULT" => ["TYPE" => "String", "LABEL" => "Valor por defecto", "SET_ON_EMPTY" => false]
+            ]
+        ];
     }
+
 }

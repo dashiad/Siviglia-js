@@ -5,25 +5,32 @@
       const ERR_FILE_TOO_BIG=101;
       const ERR_INVALID_FILE=102;
       const ERR_NOT_WRITABLE_PATH=103;
-      const ERR_INVALID_ARRAY_VALUE=104;
       const ERR_FILE_DOESNT_EXISTS=105;
       const ERR_CANT_MOVE_FILE=106;
       const ERR_CANT_CREATE_DIRECTORY=107;
-      const ERR_UPLOAD_ERR_PARTIAL=108;
-      const ERR_UPLOAD_ERR_CANT_WRITE=109;
-      const ERR_UPLOAD_ERR_INI_SIZE=110;
-      const ERR_UPLOAD_ERR_FORM_SIZE=111;
+
+
+     const TXT_FILE_TOO_SMALL="File size [%actualsize%] is below minimum of [%fsize%]";
+     const TXT_FILE_TOO_BIG="File size [%actualsize%] is above maximum of [%fsize%]";
+     const TXT_INVALID_FILE="File extension [%extension%] is not allowed ([%allowed%])";
+     const TXT_NOT_WRITABLE_PATH="Path [%path%] is not writable";
+     const TXT_FILE_DOESNT_EXISTS="File [%fileName%] does not exist";
+     const TXT_CANT_MOVE_FILE="Cant move file from [%src%] to [%dest%]";
+     const TXT_CANT_CREATE_DIRECTORY="Cant create directory [%dir%]";
+
+
 
   }
 
   class File extends BaseType
   {
       var $mustCopy=false;
-      var $srcFile='';
-      var $uploadedFileName=null;
+      var $srcFile=null;
+      var $isUpload=false;
       function __construct($def,$neutralValue=null)
       {
         parent::__construct($def,$neutralValue);
+
         $this->setFlags(BaseType::TYPE_IS_FILE | BaseType::TYPE_REQUIRES_UPDATE_ON_NEW | BaseType::TYPE_REQUIRES_SAVE | BaseType::TYPE_NOT_MODIFIED_ON_NULL);
       }
       function setFlags($flags)
@@ -43,113 +50,106 @@
               $this->valueSet=true;
           }
       }
+      function importFile($fileName,$isUpload=false)
+      {
+          $this->validateImportedFile($fileName);
+          $this->isUpload=$isUpload;
+          $this->srcFile = $fileName;
+      }
+      function importUploadedFile($fileName)
+      {
+          $this->importFile($fileName,true);
+      }
 
       function _setValue($val)
       {
-          $osName=PHP_OS;
-          $relative=false;
-          if($osName[0]=="W") // WINDOWS,WINNT
-          {
-               // Se mira si el path es un path relativo.En caso de que sea asi, se ajusta.
-              if($val[0]!="/" && $val[0]!='\\' && !($val[1]==":" && $val[1]!='\\'))
-                  $relative=true;
-          }
-          else
-          {
-              if($val[0]!="/")
-                  $relative=true;
-          }
-
-          // En caso de que el valor sea un path relativo, se presupone que parte de PROJECTPATH.
-          if($relative)
-              $newPath=realpath(PROJECTPATH."/".$val);
-          else
-              $newPath=realpath($val);
-          // Si no hay $fileInfo, es que el fichero no existe.
-          if(!$newPath)
-          {
-              clean_debug_backtrace();
-              throw new FileException(FileException::ERR_FILE_DOESNT_EXISTS,array("path"=>$val));
-          }
-
-          $val=$newPath;
-          $this->validate($val);
-
-          if($this->hasOwnValue())
-          {
-              if($this->value==$val)
-                  return;
-              $this->oldValue=$this->value;
-          }
-
-          $this->srcFile=$val;
-          $this->valueSet=true;
-          $this->dirty=true;
           // Ojo..En caso de que estemos en un upload de HTML, este val es el fichero temporal PHP.Esto es asi, porque este tipo de dato,
           // usa el contexto para decidir el nombre y el path de fichero.Y ese contexto no estara listo hasta que se haya hecho save() del
           // modelo.Por ejemplo, esto ocurre cuando en el nombre del fichero debe ir un id autogenerado.
+          if(isset($this->definition["TARGET_FILEPATH"]))
+              $val=str_replace($this->definition["TARGET_FILEPATH"],"",$val);
           $this->value=$val;
       }
 
       function _equals($value)
       {
-          if($this->value===null || $value===null)
-              return $this->value===$value;
-          return $this->value==$value;
+          if($this->value===$value)
+              return true;
+          $normalizedV=File::normalizePath($value);
+          $normalizedVV=File::normalizePath($this->value);
+          if(isset($this->definition["TARGET_FILEPATH"]))
+          {
+              $normalizedBase=File::normalizePath($this->definition["TARGET_FILEPATH"]);
+              $normalizedV=str_replace($normalizedBase,"",$normalizedV);
+              $normalizedVV=str_replace($normalizedBase,"",$normalizedVV);
+          }
+          return $normalizedV==$normalizedVV;
       }
 
       function _getValue()
       {
-          if($this->valueSet)
-            return $this->value;
-          if($this->hasDefaultValue())
-            return $this->getDefaultValue();
-          return null;
+          return $this->value;
+      }
+      function validateImportedFile($fileName)
+      {
+          if(!is_file($fileName))
+          {
+              throw new FileException(FileException::ERR_FILE_DOESNT_EXISTS,array("path"=>$fileName));
+          }
+          $fsize=filesize($fileName);
+          if(isset($this->definition["MINSIZE"]) && $this->definition["MINSIZE"] > $fsize)
+              throw new FileException(FileException::ERR_FILE_TOO_SMALL,array("minsize"=>$this->definition["MINSIZE"],"actualsize"=>$fsize));
+
+          if(isset($this->definition["MAXSIZE"]) && $this->definition["MAXSIZE"] < $fsize)
+              throw new FileException(FileException::ERR_FILE_TOO_BIG,array("minsize"=>$this->definition["MAXSIZE"],"actualsize"=>$fsize));
+
+
+          if(isset($this->definition["EXTENSIONS"]))
+          {
+              if(!is_array($this->definition["EXTENSIONS"]))
+                  $allowedExtensions=array($this->definition["EXTENSIONS"]);
+              else
+                  $allowedExtensions=$this->definition["EXTENSIONS"];
+
+              $extension=array_pop(explode(".",$fileName));
+
+              if(!in_array($extension,array_map(function($i){return strtolower($i);},$allowedExtensions)))
+              {
+                  throw new FileException(FileException::ERR_INVALID_FILE,array("extension"=>$extension,"allowed"=>implode(",",$allowedExtensions)));
+              }
+          }
+          return true;
       }
 
-      function _validate($srcValue)
+      // La validacion de ficheros solo se hace a traves de validateImportedFile.
+      function _validate($value)
       {
+            return true;
+      }
+      static function normalizePath($path)
+      {
+          $path=str_replace('\\','/',$path);
+          $parts=explode("/",$path);
+          $res=[];
+          $n=count($parts);
+          for($k=0;$k<$n;$k++)
+          {
+              if($parts[$k]=="" || $parts[$k]==".")
+                continue;
+              if($parts[$k]=="..")
+                  array_pop($res);
+              else
+                  $res[]=$parts[$k];
 
-        $value=$srcValue;
-        $fsize=filesize($value);
-        if(isset($this->definition["MINSIZE"]) && $this->definition["MINSIZE"] > $fsize)
-            throw new FileException(FileException::ERR_FILE_TOO_SMALL,array("minsize"=>$this->definition["MINSIZE"],"actualsize"=>$fsize));
-
-        if(isset($this->definition["MAXSIZE"]) && $this->definition["MAXSIZE"] < $fsize)
-            throw new FileException(FileException::ERR_FILE_TOO_BIG,array("minsize"=>$this->definition["MAXSIZE"],"actualsize"=>$fsize));
-
-        // El nombre original del fichero no  tiene por que ser lo que nos han pasado como "value", ya que, en un input HTML, el value
-        // sera el nombre del fichero temporal.
-        // El deserializador HTML es el que tiene que llamar a setOriginalFileName, para especificar el nombre original del fichero en el disco
-        // del usuario.Por ello, para comprobar las extensiones de fichero, hay que mirar si se ha especificado el originalFileName.
-        if(isset($this->uploadedFileName))
-            $fname=$this->uploadedFileName;
-        else
-            $fname=$value;
-
-        if(isset($this->definition["EXTENSIONS"]))
-        {
-            if(!is_array($this->definition["EXTENSIONS"]))
-                $allowedExtensions=array($this->definition["EXTENSIONS"]);
-            else
-                $allowedExtensions=$this->definition["EXTENSIONS"];
-
-            $extension=array_pop(explode(".",$fname));
-
-            if(!in_array($extension,array_map(strtolower,$allowedExtensions)))
-            {
-                throw new FileException(FileException::ERR_INVALID_FILE,array("extension"=>$extension,"allowed"=>$allowedExtensions));
-            }
-        }
-
-       return true;
-
+          }
+          $sP=implode("/",$res);
+          if($parts[0]=="")
+              $sP="/".$sP;
+          return $sP;
       }
 
       function calculateFinalPath($filename)
       {
-          global $globalPath;
-          global $globalContext;
           $filePath=$this->definition["TARGET_FILEPATH"];
           // Si esta establecido TARGET_FILENAME, no especifica una extension, asi que hay que copiarla de $filename.
 
@@ -159,12 +159,14 @@
           }
              else
                  $filePath.="/".$filename;
-          return $globalPath->parseString($filePath,$globalContext);
+             if($this->parent!==null) {
+                 return \lib\php\ParametrizableString::getParametrizedString($filePath, $this->parent->getValue());
+             }
+             return $filePath;
       }
 
       function postValidate($value)
       {
-
           if(!$this->hasValue())
           {
               return;
@@ -181,13 +183,13 @@
 
               // En el metodo "save", que se ha tenido que llamar antes, se ha calculado $value.
 
-              $destFile=$this->getFullFilePath();
+              $destFile=$this->calculateFinalPath($this->srcFile);
 
-              if($this->uploadedFileName)
+              if($this->isUpload)
               {
                   if(!move_uploaded_file($this->srcFile,$destFile))
                   {
-                      throw new FileException(FileException::ERR_ERR_CANT_MOVE_FILE,array("src"=>$this->srcFile,"dest"=>$destFile));
+                      throw new FileException(FileException::ERR_CANT_MOVE_FILE,array("src"=>$this->srcFile,"dest"=>$destFile));
                   }
               }
               else
@@ -200,17 +202,17 @@
               $this->uploadedFileName=null;
               $this->srcFile=null;
           }
-
       }
       function getFullFilePath()
       {
           if(!$this->hasOwnValue())
-              return "";
-          if(isset($this->definition["PATHTYPE"]) && $this->definition["PATHTYPE"]=="ABSOLUTE")
-                  return $this->value;
-              else
-                  return PROJECTPATH."html/".$this->value;
+              return null;
+          if(isset($this->definition["TARGET_FILEPATH"]))
+              return $this->definition["TARGET_FILEPATH"]."/".$this->value;
+          return $this->value;
+
       }
+
       function clear()
       {
           if($this->hasOwnValue())
@@ -222,24 +224,13 @@
                       @unlink($this->value);
               }
           }
-          parent::clear();
-      }
-      function setUploadedFilename($filename)
-      {
-          $this->uploadedFileName=$filename;
-      }
-      function setUnserialized($value)
-      {
-          $this->valueSet=true;
-          $this->value=$value;
           $this->srcFile=null;
           $this->isUpload=null;
+          parent::clear();
       }
+
       function save()
       {
-          if(!$this->dirty)
-              return;
-          $this->dirty=false;
           if($this->srcFile)
           {
               // Ahora hay que mover el fichero a su path final.El procedimiento para hacer esto es distinto segun si el fichero
@@ -248,13 +239,12 @@
               // y que el tipo de dato, lo vuelva a mover a su destino final.Esta complejidad es lo que no me gusta de moverlo al serializador.
               // Pero, a la vez, hacerlo en el tipo de dato (esta clase), supone chequear si se ha establecido o no cierta variable, no directamente
               // relacionada con move_uploaded_file.
-              if($this->uploadedFileName)
+              if($this->isUpload)
 
-                  $filePath=$this->calculateFinalPath($this->uploadedFileName);
+                  $filePath=$this->calculateFinalPath($this->srcFile);
               else
                   $filePath=$this->calculateFinalPath(basename($this->srcFile));
-
-
+              $filePath=File::normalizePath($filePath);
               $destDir=dirname($filePath);
               if(!is_dir($destDir))
               {
@@ -269,8 +259,10 @@
 
               if(!isset($this->definition["PATHTYPE"]) || $this->definition["PATHTYPE"]=="RELATIVE")
               {
-                  $filePath=trim(str_replace(PROJECTPATH."html/","",$filePath),"/");
+                  $nrm=File::normalizePath($this->definition["TARGET_FILEPATH"]);
+                  $filePath=trim(str_replace($nrm,"",$filePath),"/");
               }
+              $this->valueSet=true;
               $this->value=$filePath;
           }
           $this->postValidate(null);
@@ -287,7 +279,7 @@
               $this->valueSet=true;
               $this->value=$type->getValue();
               $this->srcFile=$type->srcFile;
-              $this->uploadedFileName=$type->uploadedFileName;
+              $this->isUpload=$type->isUpload;
 
 
           }
@@ -298,9 +290,9 @@
               $this->valueSet=false;
               $this->value=null;
               $this->srcFile=null;
-              $this->uploadedFileName=null;
+              $this->isUpload=false;
           }
-          $this->dirty=true;
+
       }
 
       function getMetaClassName()
@@ -310,6 +302,3 @@
       }
 
   }
-
-
-
