@@ -60,12 +60,10 @@ class MethodDataSource extends \lib\datasource\ArrayDataSource
         $method = $definition['METHOD'];
         $params = $this->parameters;
         $data = $mdl->{$method}($params);
-
-        foreach($data as $key=>$value) {
-            $j = 0;
+        for($k=0;$k<count($data);$k++)
+        {
             foreach($def['FIELDS'] as $fieldName=>$fieldDef) {
-                $this->data[$key][$fieldName] = $value[$j];
-                $j++;
+                $this->data[$k][$fieldName] = $data[$k][$fieldName];
             }
         }
         $this->nRows = count($this->data);

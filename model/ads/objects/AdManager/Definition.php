@@ -1,8 +1,5 @@
 <?php
-
-namespace lib\Google\DFP;
-use AdManager\Dimension;
-use AdManager\Column;
+namespace model\ads\AdManager;
 include_once(LIBPATH . "/data/DataTransform.php");
 /**
  * Created by PhpStorm.
@@ -12,11 +9,11 @@ include_once(LIBPATH . "/data/DataTransform.php");
  */
 
 
-class Definition extends \lib\data\DataTransform
+class Definition extends \lib\model\BaseModelDefinition
 {
     function __construct()
     {
-        parent::__construct(DataDefinition::$definition);
+        parent::__construct(Definition::$definition);
 
     }
 

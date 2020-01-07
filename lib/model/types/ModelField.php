@@ -29,7 +29,9 @@ class ModelField extends Container{
                 "SOURCE"=>[
                     "TYPE"=>"DataSource",
                     "MODEL"=>'\model\reflection\Model',
-                    "DATASOURCE"=>'ModelList'
+                    "DATASOURCE"=>'ModelList',
+                    "VALUE"=>"fullName"
+
                     ]
                 ],
             "FIELD"=>[

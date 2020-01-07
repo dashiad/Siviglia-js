@@ -20,11 +20,11 @@ class ModelConfiguration extends ConfigurationFile
     {
         $this->parentModel=$parentModel;
         
-        $className=$parentModel->objectName->getNormalizedName();
+        $className=$parentModel->modelDescriptor->getNormalizedName();
         
-        $package=$parentModel->objectName->package;
-        $path=$parentModel->objectName->getPath("config.php");
-        $namespace=$parentModel->objectName->getNamespaced();
+        $package=$parentModel->modelDescriptor->package;
+        $path=$parentModel->modelDescriptor->getPath("config.php");
+        $namespace=$parentModel->modelDescriptor->getNamespaced();
         ConfigurationFile::__construct($path,$namespace,$package);
     }
        

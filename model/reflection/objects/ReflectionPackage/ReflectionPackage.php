@@ -14,8 +14,9 @@ class ReflectionPackage
     var $name;
     var $pkg;
     var $configInstance;
-    static $objectCache;
-    static $objectTree;
+
+    static $objectTree=[];
+    static $modelList=[];
     function __construct($packageName)
     {
         $this->name=$packageName;
@@ -33,33 +34,38 @@ class ReflectionPackage
     }
     function getModels()
     {
-        if(isset(ReflectionPackage::$objectCache[$this->name]))
-            return ReflectionPackage::$objectCache[$this->name];
+        if(isset(ReflectionPackage::$objectTree[$this->name]))
+            return ReflectionPackage::$objectTree[$this->name];
         $rawModels=$this->pkg->getModels();
-        $this->generateReflectionModels($rawModels);
+        $plainModels=$this->generateReflectionModels($rawModels);
         ReflectionPackage::$objectTree[$this->name]=$rawModels;
-        return ReflectionPackage::$objectCache[$this->name];
+        ReflectionPackage::$modelList[$this->name]=$plainModels;
+        return $plainModels;
 
     }
 
     function generateReflectionModels(& $modelList)
     {
+        $result=[];
         for($k=0;$k<count($modelList);$k++)
         {
             $instance=new \model\reflection\Model($modelList[$k]["class"]);
             $modelList[$k]["instance"]=$instance;
-            ReflectionPackage::$objectCache[$this->name][$modelList[$k]["class"]]=$instance;
-            if(isset($modelList["subobjects"]))
-                $this->generateReflectionModels($modelList["subobjects"]);
+            ReflectionPackage::$objectTree[$this->name][$modelList[$k]["class"]]=$instance;
+            $result[]=$modelList[$k];
+            if(isset($modelList[$k]["subobjects"]))
+                $result=array_merge($result,$this->generateReflectionModels($modelList[$k]["subobjects"]));
         }
+        return $result;
     }
     function iterateOnModels($cb)
     {
         $allModels=$this->getModels();
         // La key es el nombre de la clase, el valor es una instancia de model de reflection.
-        foreach($allModels as $k=>$v)
-        {
-            call_user_func($cb,$v["instance"],$v["class"]);
+        if($allModels!==null) {
+            foreach ($allModels as $k => $v) {
+                call_user_func($cb, $v["instance"], $v["class"]);
+            }
         }
     }
 

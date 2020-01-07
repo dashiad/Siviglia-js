@@ -51,7 +51,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
       {
           $this->hasDefinition=false;
       }
-      $this->config=new \model\reflection\base\ModelConfiguration($this);
+     // $this->config=new \model\reflection\base\ModelConfiguration($this);
     }
 
     function initialize($definition=null)
