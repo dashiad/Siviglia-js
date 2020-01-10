@@ -440,8 +440,8 @@ class CWidgetGrammarParser extends CGrammarParser {
 
     }
     function dumpBoth($layout,$widget,$result,$title,$resIsArray=false)
-    {
-      /*  echo '<div style="margin-left:20px"><h2>'.$title.'</h2>';
+    {/*
+        echo '<div style="margin-left:20px"><h2>'.$title.'</h2>';
         echo '<table border=1><tr><td valign="top">';
         $this->dumpArr2($layout,"LAYOUT");
         echo '</td><td valign="top">';
@@ -718,8 +718,10 @@ class CWidgetGrammarParser extends CGrammarParser {
                 $c = $cc[$k];
                 if ($c["selector"] == "widget")
                     $results = array_merge($results, $c["result"]);
-                else
-                    $results[] = $params["result"][$k]["result"];
+                else {
+                    if($params["result"][$k]["result"]!==null)
+                        $results[] = $params["result"][$k]["result"];
+                }
             }
         }
         return $results;

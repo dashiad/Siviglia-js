@@ -108,7 +108,6 @@
         function route()
         {
 
-$b = 11;
           if(isset($_GET["action"]))
           {
               switch($_GET["action"])

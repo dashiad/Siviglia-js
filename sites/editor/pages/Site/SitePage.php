@@ -11,9 +11,10 @@ namespace sites\editor\pages\Site;
 
 class SitePage extends \model\web\Page
 {
-    function initializePage($params)
+    function initializePage($definition)
     {
-        $curSite=$params["namespace"];
+        $curSite=$definition->namespace;
+        $t=11;
     }
 
 }

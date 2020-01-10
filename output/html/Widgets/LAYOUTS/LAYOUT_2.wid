@@ -1,9 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-[@CSS]
-    [_FILE]admin[#]
+
+[@DEPENDENCY]
+[_BUNDLE]Global[#]
+    [_CONTENTS]
+    [_CSS]
+        [_CODE]
+<style>
 .background3 { background-color: #222 }
 .background2 { background-color: black }
 .background1 { background-color: black }
@@ -105,27 +106,30 @@ padding: 4px 0;
 margin: 10px; /*Margins for inner DIV inside each column (to provide padding)*/
 margin-top: 0;
 }
+</style>
+        [#]
 
+    [#]
+    [_SCRIPT]
+        [_FILE]/node_modules/jquery/dist/jquery.slim.js[#]
+        [_FILE]/packages/Siviglia/Siviglia.js[#]
+        [_CODE]
+        <script>
+            $(document).ready(function()
+            {
+
+                top.Widgets={};
+                var root=new Siviglia.model.PathRoot();
+                var oManager=new Siviglia.UI.Dom.Expando.ExpandoManager(root,root.context);
+                oManager.parse($(document.body),null);
+            });
+
+        </script>
+        [#]
+    [#]
 [#]
-[_STYLE][_*][#]
-    <link href="<?php echo WEBPATH?>/css/admin.css" rel="stylesheet" type="text/css" />
-<script src="<?php echo WEBPATH?>/scripts/jquery.js"></script>
-<script src="<?php echo WEBPATH?>/scripts/Siviglia.js"></script>
-<script src="<?php echo WEBPATH?>/scripts/widgets/Widgets.js"></script>
-<script>
-   $(document).ready(function()
-    {
-       
-        top.Widgets={};
-        var root=new Siviglia.model.PathRoot();
-        var oManager=new Siviglia.UI.Dom.Expando.ExpandoManager(root,root.context);
-        oManager.parse($(document.body),null);
-    });
+[#]
 
-</script>
-[_SCRIPTS][_*][#]
-</head>
-<body class="background1 fontSize1 color1">
 <div id="maincontainer" class="background1">
 
     <div id="topsection" class="background3 bordercolor4">
@@ -137,20 +141,20 @@ margin-top: 0;
             <div id="contentcolumn" >
                 <div class="innertube">[_CONTENT][_*][#CONTENT]</div>
             </div>
-        
+
         </div>
 
         <div id="leftcolumn" class="cbackground2 bordercolor2 ccolor2">
-            <div class="innertube">[_SIDEBAR][_*][#SIDEBAR]</div>
+            <div class="innertube">[_LEFTSIDEBAR][_*][#SIDEBAR]</div>
             <div style="clear:both"></div>
         </div>
         <div style="clear:both"></div>
+        [_BOLD]<div style="background-color:red;color:white">aa [_*]</div>[#]
     </div>
 
     <div id="footer" class="background3">[_FOOTER][_*][#FOOTER]</div>
 </div>
-</body>
-</html>
+
 
 
 

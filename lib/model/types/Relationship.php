@@ -26,7 +26,6 @@ class Relationship extends BaseType {
 
               foreach($flist as $key=>$value)
                 $subTypes[$value]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($obj,$value);
-
           }
           else
           {
@@ -49,8 +48,12 @@ class Relationship extends BaseType {
       function _setValue($val)
       {
           $this->value=$val;
+          $this->valueSet=true;
       }
-
+      function _validate($val)
+      {
+          return true;
+      }
       function _getValue()
       {
           return $this->value;

@@ -571,12 +571,12 @@ class RelationFields
                 {
                     return;
                 }
-                $value->set($setVal);
+                $value->setValue($setVal);
               }
             else
               {
                 if($rawModelData[$key])
-                    $value->set($rawModelData[$key]);
+                    $value->setValue($rawModelData[$key]);
                 else
                     return;
               }
@@ -604,7 +604,7 @@ class RelationFields
              else
              {
 
-                $this->types[$field]->set($targetType->getValue());
+                $this->types[$field]->setValue($targetType->getValue());
              }
         }
         else
@@ -689,7 +689,7 @@ class RelationFields
             $this->state=ModelBaseRelation::SET;
         }
 
-        $typeField->set($newVal);
+        $typeField->setValue($newVal);
     }
     function is_set()
     {

@@ -8,7 +8,6 @@
 <html lang="<?php echo $site->getDefaultIso();?>">
 <head>
     [_TITLE]<title>[_*]</title>[#]
-
     [_META]
         [*:/TAGS/META][_:NAME][_NAME][_*][#][#][_:VALUE][_VALUE][_*][#][#][#]
     [#]

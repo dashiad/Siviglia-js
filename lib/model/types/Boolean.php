@@ -8,7 +8,7 @@
       function _setValue($val)
       {
           $this->valueSet=true;
-          $this->value=($val!==0)?true:false;
+          $this->value=($val!=0)?true:false;
       }
       function _getValue()
       {

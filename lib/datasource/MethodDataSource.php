@@ -58,7 +58,7 @@ class MethodDataSource extends \lib\datasource\ArrayDataSource
         else
             $mdl = \getModel($definition['MODEL']);
         $method = $definition['METHOD'];
-        $params = $this->parameters;
+        $params = $this;
         $data = $mdl->{$method}($params);
         for($k=0;$k<count($data);$k++)
         {

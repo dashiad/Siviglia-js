@@ -75,7 +75,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'ISLABEL'=>true
                            ),
                      'id_type'=>array(
-                           'DEFAULT'=>'1',
+                           //'DEFAULT'=>'1',
                            'SHORTLABEL'=>'id_type',
                            'TYPE'=>'Integer',
                            'LABEL'=>'id_type',

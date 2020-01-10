@@ -8,16 +8,16 @@
         [#]
 
    </div>
-   <div>   
+   <div>
        <table width="100%">
-              
+
     [_LISTING]
         [_COLUMNHEADERS]
            <tr>
             [_COLUMN][_LABEL]<th  style="border-bottom:1px solid #AAAAAA;">[_*]</th>[#][#]
            </tr>
          [#]
-        
+
             [*:DATASOURCE]
                 [_:PARAMETERS({"object":"$object","name":"$dsName","serializer":"$serializer","params":"$params"})][#]
                 [_:ITERATOR({"iterator":"&$iterator"})]
@@ -30,7 +30,7 @@
                         [#]
                     </tr>
                     [#]
-                
+
                 [#]
         [#]
     [#]

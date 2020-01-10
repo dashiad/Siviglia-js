@@ -22,7 +22,7 @@ class Definition extends \model\web\Page\PageDefinition
             'FIELDS'=>array(
                 "namespace"=>array(
                     "MODEL"=>'\model\web\Site',
-                    "FIELD"=>"websiteNamespace"
+                    "FIELD"=>"namespace"
                 )
             )
         );

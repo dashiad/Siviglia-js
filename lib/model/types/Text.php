@@ -5,6 +5,10 @@
       {
           return $this->value;
       }
+      function _validate($val)
+      {
+          return true;
+      }
       function _setValue($val)
       {
           $this->value=$val;

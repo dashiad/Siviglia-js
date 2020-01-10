@@ -1,99 +1,99 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<style type="text/css">
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_CSS]
+            [_CODE]
+        <style>
+        body{
+            margin:0;
+            padding:0;
+            line-height: 1.5em;
+        }
 
-body{
-margin:0;
-padding:0;
-line-height: 1.5em;
-}
+        b{font-size: 110%;}
+            em{color: red;}
 
-b{font-size: 110%;}
-em{color: red;}
+        #maincontainer{
+            width: 840px; /*Width of main container*/
+            margin: 0 auto; /*Center container on page*/
+        }
 
-#maincontainer{
-width: 840px; /*Width of main container*/
-margin: 0 auto; /*Center container on page*/
-}
+        #topsection{
+            background: #EAEAEA;
+            height: 90px; /*Height of top section*/
+        }
 
-#topsection{
-background: #EAEAEA;
-height: 90px; /*Height of top section*/
-}
+        #topsection h1{
+            margin: 0;
+            padding-top: 15px;
+        }
 
-#topsection h1{
-margin: 0;
-padding-top: 15px;
-}
+        #contentwrapper{
+            float: left;
+            width: 100%;
+        }
 
-#contentwrapper{
-float: left;
-width: 100%;
-}
+        #contentcolumn{
+            margin: 0 190px 0 180px; /*Margins for content column. Should be "0 RightColumnWidth 0 LeftColumnWidth*/
+        }
 
-#contentcolumn{
-margin: 0 190px 0 180px; /*Margins for content column. Should be "0 RightColumnWidth 0 LeftColumnWidth*/
-}
+        #leftcolumn{
+            float: left;
+            width: 180px; /*Width of left column in pixel*/
+            margin-left: -840px; /*Set margin to that of -(MainContainerWidth)*/
+            background: #C8FC98;
+        }
 
-#leftcolumn{
-float: left;
-width: 180px; /*Width of left column in pixel*/
-margin-left: -840px; /*Set margin to that of -(MainContainerWidth)*/
-background: #C8FC98;
-}
+        #rightcolumn{
+            float: left;
+            width: 190px; /*Width of right column*/
+            margin-left: -190px; /*Set left margin to -(RightColumnWidth)*/
+            background: #FDE95E;
+        }
 
-#rightcolumn{
-float: left;
-width: 190px; /*Width of right column*/
-margin-left: -190px; /*Set left margin to -(RightColumnWidth)*/
-background: #FDE95E;
-}
+        #footer{
+            clear: left;
+            width: 100%;
+            background: black;
+            color: #FFF;
+            text-align: center;
+            padding: 4px 0;
+        }
 
-#footer{
-clear: left;
-width: 100%;
-background: black;
-color: #FFF;
-text-align: center;
-padding: 4px 0;
-}
+        #footer a{
+            color: #FFFF80;
+        }
 
-#footer a{
-color: #FFFF80;
-}
+        .innertube{
+            margin: 10px; /*Margins for inner DIV inside each column (to provide padding)*/
+            margin-top: 0;
+        }
+        </style>
+            [#]
+        [#]
+    [#]
+[#]
 
-.innertube{
-margin: 10px; /*Margins for inner DIV inside each column (to provide padding)*/
-margin-top: 0;
-}
 
-</style>
-</head>
-<body>
     <div id="maincontainer">
 
-    <div id="topsection"><div class="innertube">[_TITLE][_*][#TITLE]</div></div>
+    <div id="topsection"><div class="innertube">[_TITLE][_*][#]</div></div>
 
     <div id="contentwrapper">
     <div id="contentcolumn">
-    <div class="innertube">[_CONTENT][_*][#CONTENT]</div>
+    <div class="innertube">[_CONTENT][_*][#]</div>
     </div>
     </div>
 
     <div id="leftcolumn">
-    <div class="innertube">[_SIDEBAR][_*][#SIDEBAR]</div>
+    <div class="innertube">[_LEFTSIDEBAR][_*][#]</div>
 
     </div>
 
     <div id="rightcolumn">
-    <div class="innertube">[_SIDEBAR][_*][#SIDEBAR]</div>
+    <div class="innertube">[_RIGHTSIDEBAR][_*][#]</div>
     </div>
 
-    <div id="footer">[_FOOTER][_*][#FOOTER]</div>
+    <div id="footer">[_FOOTER][_*][#]</div>
 
     </div>
-</body>
-
-</html>

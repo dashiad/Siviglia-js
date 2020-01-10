@@ -11,6 +11,25 @@
           $def["TRIM"]=true;
           parent::__construct($def,$value);
       }
+      function _validate($val)
+      {
+          if(strpos($val,'$argon2i$')===0 ||
+              strpos($val,'$2y$')===0)
+              return true;
+          return parent::_validate($val);
+      }
+      function _setValue($val)
+      {
+          $this->value=$val;
+          // Los sistemas de encriptacion ponen como primer caracter el $. Como $ no es valido
+          // en teoria deberia servir.
+
+
+          if($val[0]!='$')
+              $this->encode();
+          $this->valueSet=true;
+      }
+
       function encode($configuration=null)
       {
           if(!$configuration)
@@ -50,7 +69,6 @@
           return $passwd;
       }
 
-
       function check($string)
       {
           return password_verify($string,$this->value);
@@ -60,15 +78,5 @@
       {
           include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Password.php");
           return '\model\reflection\Types\meta\Password';
-      }
-
-  }
-class PasswordMeta extends \lib\model\types\BaseTypeMeta
-  {
-      function getMeta($type)
-      {
-          $def=$type->getDefinition();
-          unset($def["SALT"]);
-          return $def;
       }
   }

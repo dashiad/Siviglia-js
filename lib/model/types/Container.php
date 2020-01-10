@@ -217,16 +217,8 @@ class Container extends BaseContainer
     {
         $curDef=$this->definition["FIELDS"];
         $nSet=0;
-        foreach($curDef as $key=>$value) {
-            if (isset($ins->__fields[$key])) {
-                $nSet++;
-                $this->__fields[$key] = \lib\model\types\TypeFactory::getType($this, $value);
-                $this->__fields[$key]->setParent($this);
-                $this->__fields[$key]->setValue($ins->{$key});
-            }
-        }
-        if($nSet>0)
-            $this->valueSet=true;
+        $this->setValue($ins->getValue());
+        $this->valueSet=$ins->valueSet;
     }
     function getMetaClassName()
     {

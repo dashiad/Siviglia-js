@@ -28,7 +28,7 @@ class HtmlRenderer
          ),
              "DEPENDENCY"=>array(
                  "BUNDLES"=>array(
-                         "Site"=>$rootPath."/".$site->getName()."/bundles",
+                         "Global"=>$rootPath."/".$site->getName()."/bundles",
                          "Page"=>$rootPath."/".$site->getName()."/bundles"
                 ),
                 "DOCUMENT_ROOT"=>$rootPath,

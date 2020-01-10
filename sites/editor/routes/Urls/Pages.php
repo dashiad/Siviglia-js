@@ -13,7 +13,7 @@ class Pages
 {
     static $definition = array(
         "/" => "index",
-        "/editor"=>"editor",
+        "/Page/{id_page}/edit"=>"page",
         "/error"=>"error",
         "/Site/{namespace}"=>"site"
     );

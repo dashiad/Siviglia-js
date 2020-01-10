@@ -6,10 +6,14 @@ namespace lib\model\types\sources;
 
 abstract class BaseSource
 {
-    function __construct($parent,$definition)
+    var $parent;
+    var $definition;
+    var $useValidatingData;
+    function __construct($parent,$definition,$useValidatingData=false)
     {
         $this->parent=$parent;
         $this->definition=$definition;
+        $this->useValidatingData=$useValidatingData;
     }
 
     abstract function getData();

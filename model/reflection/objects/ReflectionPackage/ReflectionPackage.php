@@ -47,6 +47,8 @@ class ReflectionPackage
     function generateReflectionModels(& $modelList)
     {
         $result=[];
+        if($modelList==null)
+            $modelList=[];
         for($k=0;$k<count($modelList);$k++)
         {
             $instance=new \model\reflection\Model($modelList[$k]["class"]);

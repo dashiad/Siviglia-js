@@ -1,7 +1,15 @@
-[*/PAGE/PAGE]
-    [_TITLE]Editor[#]
-    [_CONTENT_TITLE]Editor[#]
+[*PAGE/HTMLPAGE]
     [_CONTENT]
-        El editor
+
+        [*:LAYOUTS/LAYOUT_3]
+            [_:LEFTSIDEBAR]
+                [*::/model/web/objects/Site/html/views/SitesMenu][#]
+            [#]
+            [_:CONTENT]
+
+            [#]
+            [_:RIGHTSIDEBAR]aa[#]
+        [#]
     [#]
+
 [#]

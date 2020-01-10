@@ -1,218 +1,152 @@
 <?php
-   $v1ds=\lib\datasource\DataSourceFactory::getDataSource('\model\web\Site','FullList');
-   $v1it=$v1ds->fetchAll();
-?><!-- @DEPENDENCY LIST--><?php
-    $v4page=\Registry::getService("page");
-    $v4site=\Registry::getService("site");
-    $v4name=$v4page->getPageName();
-    $v4siteName=$v4site->getName();
+    $v6page=\Registry::getService("page");
+    $v6site=\Registry::getService("site");
+    $v6name=$v6page->getPageName();
+    $v6siteName=$v6site->getName();
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $v4site->getDefaultIso();?>">
+<html lang="<?php echo $v6site->getDefaultIso();?>">
 <head>
-    <title>Editor</title><?php $__serialized__bundle__Site=file_get_contents('/var/www/adtopy//sites/statics/html//bundles/bundle_Site.srl');?><link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/bundles/Site-HEADERS-<?php echo $__serialized__bundle__Site;?>.css"/>
-<script type="text/javascript" src="http://statics.adtopy.com/bundles/Site-HEADERS-<?php echo $__serialized__bundle__Site;?>.js" ></script>
+    <?php $__serialized__bundle__Global=file_get_contents('c:/xampp7/htdocs/adtopy//sites/statics/html//editor/bundles/bundle_Global.srl');?><link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/editor/bundles/Global-HEADERS-<?php echo $__serialized__bundle__Global;?>.css"/>
 
 
 </head>
-<body id="<?php echo $v4name;?>" class="<?php echo 'site_'.$v4siteName.' page_'.$v4name.' ';?>nav-md">
-
-    <div class="container body">
-
-    <div class="main_container">
-        <div class="col-md-3 left_col">
-            <div class="left_col scroll-view">
-                <div class="navbar nav_title" style="border: 0;">
-                    <a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>Gentelella Alela!</span></a>
-                </div>
-
-                <div class="clearfix"></div>
-
-                <!-- menu profile quick info -->
-                <div class="profile clearfix">
-                    <div class="profile_pic">
-                        <img src="images/img.jpg" alt="..." class="img-circle profile_img">
-                    </div>
-                    <div class="profile_info">
-                        <span>Welcome,</span>
-                        <h2>John Doe</h2>
-                    </div>
-                </div>
-                <!-- /menu profile quick info -->
-
-                <br />
-
-                <!-- sidebar menu -->
-                <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-    
-    <div class="menu_section">
-            <h3>Site Admin</h3>
-                <ul class="nav side-menu">
-                    
-                    <li>
-                        <a><i class="fa fa-globe"></i>Sites <span class="fa fa-chevron-down"></span></a>
-                        
-                            <ul class="nav child_menu">
-                                <?php for($v1k=0;$v1k < $v1it->count();$v1k++){?>
-                                    <li><a href="<?php $v1f=1;echo Registry::getService("router")->generateUrl("site",array('namespace'=>$v1it[$v1k]->websiteName));?>"><?php echo $v1it[$v1k]->websiteName;?></a></li>
-                                <?php } ?>
-                            </ul>
-                        
-                    </li>
-                    
-                </ul>
-            
-    </div>
+<body id="<?php echo $v6name;?>" class="<?php echo 'site_'.$v6siteName.' page_'.$v6name.' ';?>">
+<div style="display:none">
     
 </div>
-                <!-- /sidebar menu -->
 
-                <!-- /menu footer buttons -->
-                <div class="sidebar-footer hidden-small">
-                    <a data-toggle="tooltip" data-placement="top" title="Settings">
-                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                    </a>
-                    <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-                        <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-                    </a>
-                    <a data-toggle="tooltip" data-placement="top" title="Lock">
-                        <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-                    </a>
-                    <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
-                        <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-                    </a>
-                </div>
-                <!-- /menu footer buttons -->
-            </div>
-        </div>
 
-        <!-- top navigation -->
-        <div class="top_nav">
-            <div class="nav_menu">
-                <nav>
-                    <div class="nav toggle">
-                        <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-                    </div>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="">
-                            <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                <img src="images/img.jpg" alt="">John Doe
-                                <span class=" fa fa-angle-down"></span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-usermenu pull-right">
-                                <li><a href="javascript:;"> Profile</a></li>
-                                <li>
-                                    <a href="javascript:;">
-                                        <span class="badge bg-red pull-right">50%</span>
-                                        <span>Settings</span>
-                                    </a>
-                                </li>
-                                <li><a href="javascript:;">Help</a></li>
-                                <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
-                            </ul>
-                        </li>
+    <div id="maincontainer">
 
-                        <li role="presentation" class="dropdown">
-                            <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
-                                <i class="fa fa-envelope-o"></i>
-                                <span class="badge bg-green">6</span>
-                            </a>
-                            <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <div class="text-center">
-                                        <a>
-                                            <strong>See All Alerts</strong>
-                                            <i class="fa fa-angle-right"></i>
-                                        </a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        <!-- /top navigation -->
+    <div id="topsection"><div class="innertube"></div></div>
 
-        <!-- page content -->
-        <div class="right_col" role="main">
-            <div class="page-title">
-            
-                <div class="title_left"><h3>Editor</h3></div>
-            
-                <div class="title_right"></div>
-            
-            </div>
-            <div class="clearfix"></div>
-            
-        El editor
-    
-        </div>
-        <!-- /page content -->
+    <div id="contentwrapper">
+    <div id="contentcolumn">
+    <div class="innertube"></div>
+    </div>
+    </div>
 
-        <!-- footer content -->
-        <footer>
-            <div class="pull-right">
-                Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
-            </div>
-            <div class="clearfix"></div>
-        </footer>
-        <!-- /footer content -->
+    <div id="leftcolumn">
+    <div class="innertube"><?php
+$v1serializer=\Registry::getService("storage")->getSerializerByName('web');
+$v1currentPage=Registry::$registry["currentPage"];
+$v1params=Registry::$registry["params"];
+?><?php $v3currentPage=$v1currentPage;
+$v3object='/model/web/Site';
+$v3dsName='FullList';
+$v3serializer=$v1serializer;
+$v3params=$v1params;
+$v3iterator=&$v1iterator;
+ ?><div style="border:1px solid #DDDDDD;background-color:#EEEEEE">
+   <div style="background-color:#CCCCCC">
+        Sites
+
+   </div>
+   <div>
+       <table width="100%">
+
+    <?php 
+$v4object= $v3object;
+$v4name= $v3dsName;
+$v4serializer= $v3serializer;
+$v4params= $v3params;
+
+?><?php
+
+        if($v4object)
+        {
+            $v4ds=\lib\datasource\DataSourceFactory::getDataSource(str_replace("/","\\",$v4object),$v4name);
+            if($v4params)
+            {
+                $v4defDs=$v4ds->getDefinition();
+
+                if(is_object($v4params))
+                {
+                    $v4def=$v4params->getDefinition();
+
+                    if(isset($v4defDs["INDEXFIELDS"]))
+                    {
+                        foreach($v4defDs["INDEXFIELDS"] as $v4key=>$v4value)
+                            $v4ds->{$v4key}=$v4params->{$v4key};
+
+                    }
+                    if(isset($v4defDs["PARAMS"]))
+                    {
+                        foreach($v4defDs["PARAMS"] as $v4key=>$v4value)
+                        {
+                            if(isset($v4def["FIELDS"][$v4key]))
+                                $v4ds->{$v4key}=$v4params->{$v4key};
+                        }
+                    }
+                }
+                else
+                {
+                    foreach($v4defDs["PARAMS"] as $v4key=>$v4value)
+                    {
+                        if(isset($v4params[$v4key]))
+                            $v4ds->{$v4key}=$v4params[$v4key];
+                    }
+                }
+            }
+            if(isset($v4dsParams))
+            {
+                $v4pagingParams=$v4ds->getPagingParameters();
+                foreach($v4dsParams as $v4key=>$v4value)
+                    $v4pagingParams->{$v4key}=$v4value;
+            }
+
+            $v4ds->initialize();
+
+         }
+        ?><?php 
+$v4iterator= &$v3iterator;
+
+?><?php
+
+      global $globalPath;
+      global $globalContext;
+
+      if(isset($v4subDs))
+          $v4it=$globalPath->getPath($v4subDs,$globalContext);
+      else
+          $v4it=$v4ds->fetchAll();
+
+      $globalPath->addPath($v4name,$v4it);
+      $v4nItems=$v4it->count();
+
+      for($v4k=0;$v4k<$v4nItems;$v4k++)
+      {
+          $globalPath->addPath($v4name,$v4it[$v4k]);
+          $v4iterator=$v4it[$v4k];
+
+
+     ?>
+                    <tr>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <a href="/Site/<?php echo $v1iterator->namespace;?>"><?php echo $v1iterator->namespace;?></a>
+
+                        </td>
+                        
+                    </tr>
+                    <?php }?>
+    </table>
     </div>
 </div>
 
+</div>
 
+    </div>
 
-    <script type="text/javascript" src="http://statics.adtopy.com/bundles/Site-BODYEND-<?php echo $__serialized__bundle__Site;?>.js" ></script>
+    <div id="rightcolumn">
+    <div class="innertube">aa</div>
+    </div>
+
+    <div id="footer"></div>
+
+    </div>
 
 </body>
 </html>

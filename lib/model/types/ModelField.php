@@ -42,7 +42,8 @@ class ModelField extends Container{
                     "DATASOURCE"=>'FieldList',
                     "PARAMS"=>[
                         "model"=>"[%MODEL%]"
-                    ]
+                    ],
+                    "VALUE"=>"NAME"
                 ]
             ]
         ];

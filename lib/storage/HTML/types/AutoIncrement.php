@@ -5,10 +5,11 @@
 
       function unserialize($name,$type,$val,$serializer)
       {
-          $value=$name[$val];
+          $value=$val[$name];
           if($value!==null && is_numeric($value)) {
               $inted=intval($value);
               $type->setValue($inted);
+
           }
       }
   }

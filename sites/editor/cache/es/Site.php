@@ -1,247 +1,332 @@
 <?php
-   $v4ds=\lib\datasource\DataSourceFactory::getDataSource('\model\web\Site','FullList');
-   $v4it=$v4ds->fetchAll();
-?><!-- @DEPENDENCY LIST--><?php
-    $v7page=\Registry::getService("page");
-    $v7site=\Registry::getService("site");
-    $v7name=$v7page->getPageName();
-    $v7siteName=$v7site->getName();
+    $v20page=\Registry::getService("page");
+    $v20site=\Registry::getService("site");
+    $v20name=$v20page->getPageName();
+    $v20siteName=$v20site->getName();
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $v7site->getDefaultIso();?>">
+<html lang="<?php echo $v20site->getDefaultIso();?>">
 <head>
-    <title></title><?php $__serialized__bundle__Site=file_get_contents('/var/www/adtopy//sites/statics/html//bundles/bundle_Site.srl');?><link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/bundles/Site-HEADERS-<?php echo $__serialized__bundle__Site;?>.css"/>
-<script type="text/javascript" src="http://statics.adtopy.com/bundles/Site-HEADERS-<?php echo $__serialized__bundle__Site;?>.js" ></script>
+    <title>El titulo</title><?php $__serialized__bundle__Global=file_get_contents('c:/xampp7/htdocs/adtopy//sites/statics/html//editor/bundles/bundle_Global.srl');?><link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/editor/bundles/Global-HEADERS-<?php echo $__serialized__bundle__Global;?>.css"/>
 
 
 </head>
-<body id="<?php echo $v7name;?>" class="<?php echo 'site_'.$v7siteName.' page_'.$v7name.' ';?>nav-md">
-
-    <div class="container body">
-
-    <div class="main_container">
-        <div class="col-md-3 left_col">
-            <div class="left_col scroll-view">
-                <div class="navbar nav_title" style="border: 0;">
-                    <a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>Gentelella Alela!</span></a>
-                </div>
-
-                <div class="clearfix"></div>
-
-                <!-- menu profile quick info -->
-                <div class="profile clearfix">
-                    <div class="profile_pic">
-                        <img src="images/img.jpg" alt="..." class="img-circle profile_img">
-                    </div>
-                    <div class="profile_info">
-                        <span>Welcome,</span>
-                        <h2>John Doe</h2>
-                    </div>
-                </div>
-                <!-- /menu profile quick info -->
-
-                <br />
-
-                <!-- sidebar menu -->
-                <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+<body id="<?php echo $v20name;?>" class="<?php echo 'site_'.$v20siteName.' page_'.$v20name.' ';?>">
+<div style="display:none">
     
-    <div class="menu_section">
-            <h3>Site Admin</h3>
-                <ul class="nav side-menu">
-                    
-                    <li>
-                        <a><i class="fa fa-cubes"></i>Sites <span class="fa fa-chevron-down"></span></a>
+</div>
+
+
+
+    <div id="maincontainer">
+
+    <div id="topsection"><div class="innertube"></div></div>
+
+    <div id="contentwrapper">
+    <div id="contentcolumn">
+    <div class="innertube"><?php
+$v5serializer=\Registry::getService("storage")->getSerializerByName('web');
+$v5currentPage=Registry::$registry["currentPage"];
+$v5params=$v5currentPage->getPageParams();
+?><?php $v17currentPage=$v5currentPage;
+$v17object='/model/web/Page';
+$v17dsName='FullList';
+$v17serializer=$v5serializer;
+$v17params=$v5params;
+$v17iterator=&$v5iterator;
+ ?><div style="border:1px solid #DDDDDD;background-color:#EEEEEE">
+   <div style="background-color:#CCCCCC">
+        Titulo de la listaDescripcion de la lista
+
+   </div>
+   <div>
+       <table width="100%">
+
+    
+           <tr>
+            <th  style="border-bottom:1px solid #AAAAAA;">id_page</th><th  style="border-bottom:1px solid #AAAAAA;">Tag</th><th  style="border-bottom:1px solid #AAAAAA;">name</th><th  style="border-bottom:1px solid #AAAAAA;">date_add</th><th  style="border-bottom:1px solid #AAAAAA;">date_modified</th><th  style="border-bottom:1px solid #AAAAAA;">id_type</th><th  style="border-bottom:1px solid #AAAAAA;">isPrivate</th><th  style="border-bottom:1px solid #AAAAAA;">path</th><th  style="border-bottom:1px solid #AAAAAA;">title</th><th  style="border-bottom:1px solid #AAAAAA;">tags</th><th  style="border-bottom:1px solid #AAAAAA;">description</th>
+           </tr>
+         <?php 
+$v18object= $v17object;
+$v18name= $v17dsName;
+$v18serializer= $v17serializer;
+$v18params= $v17params;
+
+?><?php
+
+        if($v18object)
+        {
+            $v18ds=\lib\datasource\DataSourceFactory::getDataSource(str_replace("/","\\",$v18object),$v18name);
+            if($v18params)
+            {
+                $v18defDs=$v18ds->getDefinition();
+
+                if(is_object($v18params))
+                {
+                    $v18def=$v18params->getDefinition();
+
+                    if(isset($v18defDs["INDEXFIELDS"]))
+                    {
+                        foreach($v18defDs["INDEXFIELDS"] as $v18key=>$v18value)
+                            $v18ds->{$v18key}=$v18params->{$v18key};
+
+                    }
+                    if(isset($v18defDs["PARAMS"]))
+                    {
+                        foreach($v18defDs["PARAMS"] as $v18key=>$v18value)
+                        {
+                            if(isset($v18def["FIELDS"][$v18key]))
+                                $v18ds->{$v18key}=$v18params->{$v18key};
+                        }
+                    }
+                }
+                else
+                {
+                    foreach($v18defDs["PARAMS"] as $v18key=>$v18value)
+                    {
+                        if(isset($v18params[$v18key]))
+                            $v18ds->{$v18key}=$v18params[$v18key];
+                    }
+                }
+            }
+            if(isset($v18dsParams))
+            {
+                $v18pagingParams=$v18ds->getPagingParameters();
+                foreach($v18dsParams as $v18key=>$v18value)
+                    $v18pagingParams->{$v18key}=$v18value;
+            }
+
+            $v18ds->initialize();
+
+         }
+        ?><?php 
+$v18iterator= &$v17iterator;
+
+?><?php
+
+      global $globalPath;
+      global $globalContext;
+
+      if(isset($v18subDs))
+          $v18it=$globalPath->getPath($v18subDs,$globalContext);
+      else
+          $v18it=$v18ds->fetchAll();
+
+      $globalPath->addPath($v18name,$v18it);
+      $v18nItems=$v18it->count();
+
+      for($v18k=0;$v18k<$v18nItems;$v18k++)
+      {
+          $globalPath->addPath($v18name,$v18it[$v18k]);
+          $v18iterator=$v18it[$v18k];
+
+
+     ?>
+                    <tr>
                         
-                            <ul class="nav child_menu">
-                                <?php for($v4k=0;$v4k < $v4it->count();$v4k++){?>
-                                    <li><a href="<?php $v4f=1;echo Registry::getService("router")->generateUrl("site",array('namespace'=>$v4it[$v4k]->websiteName));?>"><?php echo $v4it[$v4k]->websiteName;?></a></li>
-                                <?php } ?>
-                            </ul>
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <?php $v6name='id_page';
+$v6model=$v5iterator;
+ ?><?php echo $v6model->{$v6name};?>
+                        </td>
                         
-                    </li>
-                    
-                </ul>
-            
-    </div>
-    
-</div>
-                <!-- /sidebar menu -->
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <?php $v7name='tag';
+$v7model=$v5iterator;
+ ?><span style="font-family:Verdana;"><?php echo $v7model->{$v7name};?></span>
 
-                <!-- /menu footer buttons -->
-                <div class="sidebar-footer hidden-small">
-                    <a data-toggle="tooltip" data-placement="top" title="Settings">
-                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                    </a>
-                    <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-                        <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-                    </a>
-                    <a data-toggle="tooltip" data-placement="top" title="Lock">
-                        <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-                    </a>
-                    <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
-                        <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-                    </a>
-                </div>
-                <!-- /menu footer buttons -->
-            </div>
-        </div>
+                        </td>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <a href="/Page/<?php echo $v5iterator->id_page;?>/edit"><?php echo $v5iterator->name;?></a>
 
-        <!-- top navigation -->
-        <div class="top_nav">
-            <div class="nav_menu">
-                <nav>
-                    <div class="nav toggle">
-                        <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-                    </div>
+                        </td>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <?php $v9name='date_add';
+$v9model=$v5iterator;
+ ?><?php echo $v9model->{$v9name};?>
+                        </td>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <?php $v10name='date_modified';
+$v10model=$v5iterator;
+ ?><?php echo $v10model->{$v10name};?>
+                        </td>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <?php $v11name='id_type';
+$v11model=$v5iterator;
+ ?><?php echo $v11model->{$v11name};?>
+                        </td>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <?php $v12name='isPrivate';
+$v12model=$v5iterator;
+ ?><?php if($v12model->{$v12name}){?>
+    <div style="width:20px;height:20px;background-color:green"></div>
+<?php } else{ ?>
+    <div style="width:20px;height:20px;background-color:blue"></div>
+<?php }?>
+                        </td>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <?php $v13name='path';
+$v13model=$v5iterator;
+ ?><span style="font-family:Verdana;"><?php echo $v13model->{$v13name};?></span>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="">
-                            <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                <img src="images/img.jpg" alt="">John Doe
-                                <span class=" fa fa-angle-down"></span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-usermenu pull-right">
-                                <li><a href="javascript:;"> Profile</a></li>
-                                <li>
-                                    <a href="javascript:;">
-                                        <span class="badge bg-red pull-right">50%</span>
-                                        <span>Settings</span>
-                                    </a>
-                                </li>
-                                <li><a href="javascript:;">Help</a></li>
-                                <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
-                            </ul>
-                        </li>
+                        </td>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <?php $v14name='title';
+$v14model=$v5iterator;
+ ?><span style="font-family:Verdana;"><?php echo $v14model->{$v14name};?></span>
 
-                        <li role="presentation" class="dropdown">
-                            <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
-                                <i class="fa fa-envelope-o"></i>
-                                <span class="badge bg-green">6</span>
-                            </a>
-                            <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <div class="text-center">
-                                        <a>
-                                            <strong>See All Alerts</strong>
-                                            <i class="fa fa-angle-right"></i>
-                                        </a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        <!-- /top navigation -->
+                        </td>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <?php $v15name='tags';
+$v15model=$v5iterator;
+ ?><span style="font-family:Verdana;"><?php echo $v15model->{$v15name};?></span>
 
-        <!-- page content -->
-        <div class="right_col" role="main">
-            <div class="page-title">
-            
-                <div class="title_left"><h3></h3></div>
-            
-                <div class="title_right"></div>
-            
-            </div>
-            <div class="clearfix"></div>
-            <div class="col-md-12 col-sm-12 col-xs-12">
-    <div class="x_panel">
-    
-        <div class="x_title">
-            <h2><i class="fa"></i>Site editor</h2>
+                        </td>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <?php $v16name='description';
+$v16model=$v5iterator;
+ ?><span style="font-family:Verdana;"><?php echo $v16model->{$v16name};?></span>
 
-        <ul class="nav navbar-right panel_toolbox">
-            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-            </li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">Settings 1</a>
-                    </li>
-                    <li><a href="#">Settings 2</a>
-                    </li>
-                </ul>
-            </li>
-            <li><a class="close-link"><i class="fa fa-close"></i></a>
-            </li>
-        </ul>
-        <div class="clearfix"></div>
-    </div>
-    
-    <div class="x_content">
-        
-                    El contenudo
-                
-    </div>
-    
-</div><div class="clearfix"></div>
-</div>
-        </div>
-        <!-- /page content -->
-
-        <!-- footer content -->
-        <footer>
-            <div class="pull-right">
-                Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
-            </div>
-            <div class="clearfix"></div>
-        </footer>
-        <!-- /footer content -->
+                        </td>
+                        
+                    </tr>
+                    <?php }?>
+    </table>
     </div>
 </div>
 
+</div>
+    </div>
+    </div>
+
+    <div id="leftcolumn">
+    <div class="innertube"><?php
+$v1serializer=\Registry::getService("storage")->getSerializerByName('web');
+$v1currentPage=Registry::$registry["currentPage"];
+$v1params=Registry::$registry["params"];
+?><?php $v3currentPage=$v1currentPage;
+$v3object='/model/web/Site';
+$v3dsName='FullList';
+$v3serializer=$v1serializer;
+$v3params=$v1params;
+$v3iterator=&$v1iterator;
+ ?><div style="border:1px solid #DDDDDD;background-color:#EEEEEE">
+   <div style="background-color:#CCCCCC">
+        Sites
+
+   </div>
+   <div>
+       <table width="100%">
+
+    <?php 
+$v4object= $v3object;
+$v4name= $v3dsName;
+$v4serializer= $v3serializer;
+$v4params= $v3params;
+
+?><?php
+
+        if($v4object)
+        {
+            $v4ds=\lib\datasource\DataSourceFactory::getDataSource(str_replace("/","\\",$v4object),$v4name);
+            if($v4params)
+            {
+                $v4defDs=$v4ds->getDefinition();
+
+                if(is_object($v4params))
+                {
+                    $v4def=$v4params->getDefinition();
+
+                    if(isset($v4defDs["INDEXFIELDS"]))
+                    {
+                        foreach($v4defDs["INDEXFIELDS"] as $v4key=>$v4value)
+                            $v4ds->{$v4key}=$v4params->{$v4key};
+
+                    }
+                    if(isset($v4defDs["PARAMS"]))
+                    {
+                        foreach($v4defDs["PARAMS"] as $v4key=>$v4value)
+                        {
+                            if(isset($v4def["FIELDS"][$v4key]))
+                                $v4ds->{$v4key}=$v4params->{$v4key};
+                        }
+                    }
+                }
+                else
+                {
+                    foreach($v4defDs["PARAMS"] as $v4key=>$v4value)
+                    {
+                        if(isset($v4params[$v4key]))
+                            $v4ds->{$v4key}=$v4params[$v4key];
+                    }
+                }
+            }
+            if(isset($v4dsParams))
+            {
+                $v4pagingParams=$v4ds->getPagingParameters();
+                foreach($v4dsParams as $v4key=>$v4value)
+                    $v4pagingParams->{$v4key}=$v4value;
+            }
+
+            $v4ds->initialize();
+
+         }
+        ?><?php 
+$v4iterator= &$v3iterator;
+
+?><?php
+
+      global $globalPath;
+      global $globalContext;
+
+      if(isset($v4subDs))
+          $v4it=$globalPath->getPath($v4subDs,$globalContext);
+      else
+          $v4it=$v4ds->fetchAll();
+
+      $globalPath->addPath($v4name,$v4it);
+      $v4nItems=$v4it->count();
+
+      for($v4k=0;$v4k<$v4nItems;$v4k++)
+      {
+          $globalPath->addPath($v4name,$v4it[$v4k]);
+          $v4iterator=$v4it[$v4k];
 
 
-    <script type="text/javascript" src="http://statics.adtopy.com/bundles/Site-BODYEND-<?php echo $__serialized__bundle__Site;?>.js" ></script>
+     ?>
+                    <tr>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <a href="/Site/<?php echo $v1iterator->namespace;?>"><?php echo $v1iterator->namespace;?></a>
+
+                        </td>
+                        
+                    </tr>
+                    <?php }?>
+    </table>
+    </div>
+</div>
+
+</div>
+
+    </div>
+
+    <div id="rightcolumn">
+    <div class="innertube"></div>
+    </div>
+
+    <div id="footer"></div>
+
+    </div>
 
 </body>
 </html>

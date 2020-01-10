@@ -50,24 +50,24 @@
 [#]
 [_ITERATOR]
 <?php
-    
+
       global $globalPath;
       global $globalContext;
-      
+
       if(isset($subDs))
           $it=$globalPath->getPath($subDs,$globalContext);
       else
           $it=$ds->fetchAll();
 
       $globalPath->addPath($name,$it);
-      $nItems=$it->count();      
-      
+      $nItems=$it->count();
+
       for($k=0;$k<$nItems;$k++)
       {
           $globalPath->addPath($name,$it[$k]);
           $iterator=$it[$k];
 
-      
+
      ?>
         [_*]
 <?php }?>
@@ -75,8 +75,8 @@
 
 [_NOROWS]
     <?php if($nItems==0){?>
-         [_*] 
-    <?php }?>          
+         [_*]
+    <?php }?>
 [#]
 
 

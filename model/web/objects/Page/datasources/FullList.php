@@ -23,6 +23,11 @@ class FullList
                          'FIELD'=>'id_site',
                          'TRIGGER_VAR'=>'id_site'
                      ),
+                     'namespace'=>array(
+                        'MODEL'=>'\model\web\Site',
+                        'FIELD'=>'namespace',
+                        'TRIGGER_VAR'=>'namespace'
+                     ),
                      'tag'=>array(
                            'MODEL'=>'\model\web\Page',
                            'FIELD'=>'tag',
@@ -264,8 +269,15 @@ class FullList
                                              'TRIGGER_VAR'=>'description',
                                              'DISABLE_IF'=>'0',
                                              'FILTERREF'=>'description'
-                                             )
-                                       )
+                                             ),
+
+                                        array(
+                                            'FILTER'=>"id_site in (SELECT id_site from websites where namespace=[%namespace%])",
+
+                                            'TRIGGER_VAR'=>'namespace',
+                                            'FILTERREF'=>'namespace'
+                                        )
+                                 )
                                  )
                            )
                      )

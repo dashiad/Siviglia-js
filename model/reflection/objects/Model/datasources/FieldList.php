@@ -20,10 +20,10 @@ class FieldList
             ]
         ],
         'FIELDS'=>array(
-            'name'=>array(
+            'NAME'=>array(
                 'TYPE'=>'String',
             ),
-            'type'=>array(
+            'TYPE'=>array(
                 'TYPE'=>"String"
             )
         ),
@@ -34,12 +34,10 @@ class FieldList
             )
         ),
         'SOURCE'=>[
-        'STORAGE'=>array(
-            'DICTIONARY'=>array(
-                'DEFINITION'=>array(
-                    "MODEL"=>'self',
-                    "METHOD"=>'getFieldList'
-                )
+        'METHOD'=>array(
+            'DEFINITION'=>array(
+                "MODEL"=>'self',
+                "METHOD"=>'getFieldList'
             )
         )
             ]

@@ -23,11 +23,15 @@ class DataSource extends BaseSource
         {
             foreach($this->definition["PARAMS"] as $k=>$v)
             {
+                // $this->parent apunta al tipo de dato al que pertenece el source.
+                // $this->parent->parent apunta al container que contiene al tipo al que pertenece el source.
+                if($this->useValidatingData)
+                    $source=$this->parent->parent->getValidatingValue();
+                else
+                    $source=$this->parent->parent;
                 $actualParams[$k]=\lib\php\ParametrizableString::getParametrizedString(
                     $v,
-                    // $this->parent apunta al tipo de dato al que pertenece el source.
-                    // $this->parent->parent apunta al container que contiene al tipo al que pertenece el source.
-                    $this->parent->parent
+                    $source
                 );
             }
         }

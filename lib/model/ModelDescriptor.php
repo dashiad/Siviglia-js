@@ -69,10 +69,11 @@ class ModelDescriptor
 
     function getNormalizedName()
     {
+        $base='\model\\'.$this->package->getName().'\\';
         if ($this->isPrivate) {
-            return '\model\\' . $this->namespaceClassName . '\\' . $this->className;
+            return $base . $this->namespaceClassName . '\\' . $this->className;
         } else {
-            return '\model\\' . $this->className;
+            return $base.$this->className;
         }
     }
 

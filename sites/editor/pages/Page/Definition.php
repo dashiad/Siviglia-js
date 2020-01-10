@@ -6,7 +6,7 @@
  * Time: 1:22
  */
 
-namespace sites\editor\pages\Editor;
+namespace sites\editor\pages\Page;
 
 include_once(PROJECTPATH."/model/web/objects/Page/PageDefinition.php");
 class Definition extends \model\web\Page\PageDefinition
@@ -20,6 +20,10 @@ class Definition extends \model\web\Page\PageDefinition
             'SOURCES'=>array(
             ),
             'FIELDS'=>array(
+                'id_page'=>[
+                    "MODEL"=>"/model/web/Page",
+                    "FIELD"=>"id_page"
+                ]
             )
         );
     }

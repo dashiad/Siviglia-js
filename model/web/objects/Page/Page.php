@@ -119,7 +119,8 @@ class Page extends \lib\model\BaseModel
         $fullName=$namespace.'\\'.$pageName;
         $defName=$namespace.'\\Definition';
         $definition=new $defName();
-        $definition->loadFields($params,"HTML");
+        $serializer=new \lib\storage\HTML\HTMLSerializer();
+        $definition->loadFields($params,$serializer);
         if(!class_exists($fullName))
         {
             debug("Error instanciando pagina ".$fullName,true);
@@ -144,6 +145,10 @@ class Page extends \lib\model\BaseModel
         {
             return parent::__get($varName);
         }
+    }
+    public function getPageParams()
+    {
+        return $this->__pageDef;
     }
 
      function initializePage($params){}
@@ -310,7 +315,7 @@ EOT;
     function getLayoutPath($isWork=false)
     {
         $site=$this->id_site[0];
-        return $this->id_site[0]->getPagePath($this->path)."/".$this->getPageName().($isWork==true?"_work":"").".php";
+        return $site->getPagePath($this->path)."/".$this->getPageName().($isWork==true?"_work":"").".php";
     }
     function getWorkLayoutPath()
     {

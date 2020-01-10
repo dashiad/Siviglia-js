@@ -6,14 +6,15 @@
  * Time: 0:22
  */
 
-namespace sites\editor\pages\Editor;
+namespace sites\editor\pages\Page;
 
 
-class EditorPage extends \model\web\Page
+class PagePage extends \model\web\Page
 {
     function initializePage($params)
     {
-
+        $id_page=$this->id_page;
+        echo "ID_PAGE::".$id_page;
     }
 
 }

@@ -5,6 +5,7 @@
   abstract class BaseType
   {
       var $valueSet=false;
+      var $validatingValue=null;
       var $value=null;
       var $definition;
       var $flags=0;
@@ -30,12 +31,16 @@
           $this->setOnEmpty=false;
           if(isset($def["SET_ON_EMPTY"]) && $def["SET_ON_EMPTY"]==true)
               $this->setOnEmpty=true;
-          if($this->hasDefaultValue())
+          if($this->hasDefaultValue() && !isset($definition["DISABLE_DEFAULT"]))
               $this->__rawSet($this->getDefaultValue());
           if(isset($def["FIXED"])) {
               $this->__rawSet($def["FIXED"]);
               $this->flags|=BaseType::TYPE_NOT_EDITABLE;
           }
+
+      }
+      function applyDefault()
+      {
 
       }
       function setParent($parent)
@@ -46,9 +51,9 @@
       {
           return isset($this->definition["SOURCE"]);
       }
-      function getSource()
+      function getSource($validating=false)
       {
-          return \lib\model\types\sources\SourceFactory::getSource($this,$this->definition["SOURCE"]);
+          return \lib\model\types\sources\SourceFactory::getSource($this,$this->definition["SOURCE"],$validating);
       }
 
       function setFlags($flags)
@@ -88,17 +93,25 @@
 
       final function validate($value)
       {
+
             if($value===null)
                 return true;
+            $this->validatingValue=$value;
             if(!$this->checkSource($value))
                 throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$value]);
-            return $this->_validate($value);
+            $res=$this->_validate($value);
+            $this->validatingValue=null;
+            return $res;
+      }
+      function getValidatingValue()
+      {
+          return $this->validatingValue;
       }
       function checkSource($value)
       {
           if(!$this->hasSource())
               return true;
-          $s=$this->getSource();
+          $s=$this->getSource(true);
           return $s->contains($value);
       }
       function postValidate($value)
@@ -153,9 +166,9 @@
       function is_set()
       {
 
-          if(!($this->flags & BaseType::TYPE_SET_ON_SAVE) &&
-             !($this->flags & BaseType::TYPE_SET_ON_ACCESS))
-              return false;
+          if(($this->flags & BaseType::TYPE_SET_ON_SAVE) ||
+             ($this->flags & BaseType::TYPE_SET_ON_ACCESS))
+              return true;
           return $this->valueSet;
       }
 
