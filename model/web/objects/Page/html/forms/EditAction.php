@@ -43,15 +43,8 @@ class EditAction extends \lib\output\html\Form
                                        )
                                  )
                            )
-                     ),
-               'INDEXFIELDS'=>array(
-                     'id_page'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'id_page',
-                           'MODEL'=>'\model\web\Page'
-                           )
                      )
-               );
+     );
 
 
 	/**

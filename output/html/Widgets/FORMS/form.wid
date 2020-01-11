@@ -20,9 +20,9 @@
 
 
 ?>
-
 [*:/containers/TITLED_CONTAINER]
     [_:TITLE]
+
         [_TITLE]
             [_*]
         [#]
@@ -66,6 +66,7 @@
                     ?>
 
                 [_FORMGROUP]
+
                         [*:/FORMS/group_1]
                             [_:TITLE]
                                 [_TITLE][_*][#]                               

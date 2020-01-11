@@ -361,7 +361,10 @@ class CWidgetGrammarParser extends CGrammarParser {
         // elementos de nivel 0 del widget.
         // Atencion, que lo que hay en $widget es un objeto de tipo SUBWIDGET_FILE
         $isTop=$this->context->isTopLayout()?0:1;
+        $tmpLevel=$this->curLevel;
+        $this->curLevel=$info["LEVEL"];
         $tempResult=$this->resolveWidgetReferences($c,$widget["CONTENTS"],$isTop,$result);
+        $this->curLevel=$tmpLevel;
         $this->dumpBoth($c,$widget["CONTENTS"],$tempResult,"**WIDGET::".$params["tag"]["tag"],true);
 
         if($paramSpec!=null)
@@ -382,9 +385,10 @@ class CWidgetGrammarParser extends CGrammarParser {
     {
         $result=array();
         $n=count($tempResult);
+        $current='';
         for($k=0;$k<$n;$k++)
         {
-            $current='';
+
             while($k<$n && ($tempResult[$k]==null || $tempResult[$k]["TYPE"]=="HTML"))
             {
                 if($tempResult[$k]!=null)
@@ -404,7 +408,7 @@ class CWidgetGrammarParser extends CGrammarParser {
                 $result[]=array("TYPE"=>"PHP","TEXT"=>$current);
 
             if($k<$n)
-                $result[]=$tempResult[$k];
+                $current=$tempResult[$k]["TEXT"];
         }
         return $result;
     }
@@ -487,7 +491,7 @@ class CWidgetGrammarParser extends CGrammarParser {
 
                         if($cl["TYPE"]=="SUBWIDGET")
                         {
-                            if($sourceLevel > $cl["LEVEL"])
+                            if($this->curLevel != $cl["LEVEL"])
                             {
                                 /* Estamos en el caso de que entre 2 subwidgets remotos, hay un subwidget local
                                    Tenemos que copiar el local, y sus hijos, siempre que no sea un subwidget de nivel 1
@@ -497,9 +501,10 @@ class CWidgetGrammarParser extends CGrammarParser {
                                 unset($sres["CONTENTS"]);
                                 if(isset($cl["CONTENTS"])) {
                                     //$sres["CONTENTS"] = $this->resolveWidgetReferences($cl["CONTENTS"], array($widget[$k]), $widget[$k]["LEVEL"]); // $sourceLevel);
-                                    $sres["CONTENTS"] = $this->resolveWidgetReferences($cl["CONTENTS"], array($widget[$k]), $widget[$k]["LEVEL"]); // $sourceLevel);
+                                    $sres["CONTENTS"] = $this->resolveWidgetReferences($cl["CONTENTS"], $widget[$k]["CONTENTS"], $widget[$k]["LEVEL"]); // $sourceLevel);
+                                    //$sres=($result,$this->resolveWidgetReferences($cl["CONTENTS"], $widget[$k]["CONTENTS"], $widget[$k]["LEVEL"])); // $sourceLevel);
                                 }
-                                $this->dumpBoth(array($cl),array($widget[$k]),$sres,"Subwidget diferente nivel");
+                                //$this->dumpBoth(array($cl),array($widget[$k]),$sres,"Subwidget diferente nivel");
                                 $result[]=$sres;
                                 continue;
 

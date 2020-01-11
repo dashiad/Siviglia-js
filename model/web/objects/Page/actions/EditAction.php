@@ -19,14 +19,13 @@ class EditAction extends \lib\action\Action
                            )
                      ),
                'IS_ADMIN'=>false,
-               'INDEXFIELDS'=>array(
-                     'id_page'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'id_page',
-                           'MODEL'=>'\model\web\Page'
-                           )
-                     ),
+               'INDEXFIELDS'=>array("id_page"),
                'FIELDS'=>array(
+                   'id_page'=>array(
+                       'REQUIRED'=>1,
+                       'FIELD'=>'id_page',
+                       'MODEL'=>'\model\web\Page'
+                   ),
                      'tag'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'tag',

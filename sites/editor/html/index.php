@@ -11,8 +11,9 @@ try {
     Registry::$registry["response"]->generate();
 } catch (Exception $e) {
     header('Content-type: text/html');
-
+    echo "<pre>";
     print_r($e);
+    echo "</pre>";
 }
 
 Registry::save();
