@@ -185,12 +185,11 @@ class Form extends \lib\model\BaseTypedObject
             $field=$def["FIELD"];
             $remDef=$this->__findRemoteType(explode("/",$field),$def["MODEL"]);
             $this->__fields[$fieldName]=\lib\model\ModelField::getModelField($fieldName,$this,$remDef);
-            if($this->__fields[$fieldName]->isRelation())
+     /*       if($this->__fields[$fieldName]->isRelation())
             {
                 $def=$this->__fields[$fieldName]->getType()->getRelationshipType()->getDefinition();
                 $this->__fields[$fieldName]=\lib\model\ModelField::getModelField($fieldName,$this,$def);
-            }
-
+            }*/
         }
         return $this->__fields[$fieldName];
     }

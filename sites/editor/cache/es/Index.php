@@ -122,4 +122,31 @@ $v4iterator= &$v3iterator;
           $v4iterator=$v4it[$v4k];
 
 
-     ?><?php }?>
+     ?>
+                    <tr>
+                        
+                        <td style="border-bottom:1px solid #AAAAAA;">
+                            <a href="/Site/<?php echo $v1iterator->namespace;?>"><?php echo $v1iterator->namespace;?></a>
+
+                        </td>
+                        
+                    </tr>
+                    <?php }?>
+    </table>
+    </div>
+</div>
+
+</div>
+
+    </div>
+
+    <div id="rightcolumn">
+    <div class="innertube">aa</div>
+    </div>
+
+    <div id="footer"></div>
+
+    </div>
+
+</body>
+</html>

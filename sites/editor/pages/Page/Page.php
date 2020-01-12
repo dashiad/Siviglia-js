@@ -1,1 +1,17 @@
-[*::/model/web/objects/Page/html/forms/EditAction][#]
+[*PAGE/HTMLPAGE]
+    [_TITLE]El titulo[#]
+    [_CONTENT]
+        [*:LAYOUTS/LAYOUT_3]
+            [_:LEFTSIDEBAR]
+                [*::/model/web/objects/Site/html/views/SitesMenu][#]
+            [#]
+            [_:CONTENT]
+                [*::/model/web/objects/Page/html/forms/EditAction][#]
+            [#]
+            [_:RIGHTSIDEBAR]
+
+            [#]
+        [#]
+    [#]
+[#]
+

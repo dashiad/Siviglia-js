@@ -385,10 +385,9 @@ class CWidgetGrammarParser extends CGrammarParser {
     {
         $result=array();
         $n=count($tempResult);
-        $current='';
         for($k=0;$k<$n;$k++)
         {
-
+            $current='';
             while($k<$n && ($tempResult[$k]==null || $tempResult[$k]["TYPE"]=="HTML"))
             {
                 if($tempResult[$k]!=null)
@@ -408,7 +407,7 @@ class CWidgetGrammarParser extends CGrammarParser {
                 $result[]=array("TYPE"=>"PHP","TEXT"=>$current);
 
             if($k<$n)
-                $current=$tempResult[$k]["TEXT"];
+                $result[]=$tempResult[$k];
         }
         return $result;
     }

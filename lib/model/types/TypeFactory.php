@@ -151,7 +151,8 @@ include_once(LIBPATH."/model/types/BaseType.php");
               }
               $objName=\lib\model\ModelService::getModelDescriptor($objName,$layer);
           }
-
+          if($objName==null)
+              $s=11;
           $objName->getDefinition();
           $className=$objName->getNamespaced().'\Definition';
           if(!class_exists($className))
