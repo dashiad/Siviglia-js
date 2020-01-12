@@ -100,7 +100,7 @@ class CWidgetGrammarParser extends CGrammarParser {
     var $context;
     var $layoutManager;
     var $codeExpr;
-    var $curLevel;
+    var $curLevel=0;
 
     function __construct($codeExpr,$curLevel,$parentWidget,$manager,$context)
     {
@@ -361,10 +361,10 @@ class CWidgetGrammarParser extends CGrammarParser {
         // elementos de nivel 0 del widget.
         // Atencion, que lo que hay en $widget es un objeto de tipo SUBWIDGET_FILE
         $isTop=$this->context->isTopLayout()?0:1;
-        $tmpLevel=$this->curLevel;
+        $oldLevel=$this->curLevel;
         $this->curLevel=$info["LEVEL"];
         $tempResult=$this->resolveWidgetReferences($c,$widget["CONTENTS"],$isTop,$result);
-        $this->curLevel=$tmpLevel;
+        $this->curLevel=$oldLevel;
         $this->dumpBoth($c,$widget["CONTENTS"],$tempResult,"**WIDGET::".$params["tag"]["tag"],true);
 
         if($paramSpec!=null)
@@ -385,10 +385,9 @@ class CWidgetGrammarParser extends CGrammarParser {
     {
         $result=array();
         $n=count($tempResult);
-        $current='';
         for($k=0;$k<$n;$k++)
         {
-
+            $current='';
             while($k<$n && ($tempResult[$k]==null || $tempResult[$k]["TYPE"]=="HTML"))
             {
                 if($tempResult[$k]!=null)
@@ -408,7 +407,7 @@ class CWidgetGrammarParser extends CGrammarParser {
                 $result[]=array("TYPE"=>"PHP","TEXT"=>$current);
 
             if($k<$n)
-                $current=$tempResult[$k]["TEXT"];
+                $result[]=$tempResult[$k];
         }
         return $result;
     }
@@ -444,8 +443,8 @@ class CWidgetGrammarParser extends CGrammarParser {
 
     }
     function dumpBoth($layout,$widget,$result,$title,$resIsArray=false)
-    {/*
-        echo '<div style="margin-left:20px"><h2>'.$title.'</h2>';
+    {
+      /*  echo '<div style="margin-left:20px"><h2>'.$title.'</h2>';
         echo '<table border=1><tr><td valign="top">';
         $this->dumpArr2($layout,"LAYOUT");
         echo '</td><td valign="top">';
@@ -501,10 +500,9 @@ class CWidgetGrammarParser extends CGrammarParser {
                                 unset($sres["CONTENTS"]);
                                 if(isset($cl["CONTENTS"])) {
                                     //$sres["CONTENTS"] = $this->resolveWidgetReferences($cl["CONTENTS"], array($widget[$k]), $widget[$k]["LEVEL"]); // $sourceLevel);
-                                    $sres["CONTENTS"] = $this->resolveWidgetReferences($cl["CONTENTS"], $widget[$k]["CONTENTS"], $widget[$k]["LEVEL"]); // $sourceLevel);
-                                    //$sres=($result,$this->resolveWidgetReferences($cl["CONTENTS"], $widget[$k]["CONTENTS"], $widget[$k]["LEVEL"])); // $sourceLevel);
+                                    $sres["CONTENTS"] = $this->resolveWidgetReferences($cl["CONTENTS"], array($widget[$k]), $widget[$k]["LEVEL"]); // $sourceLevel);
                                 }
-                                //$this->dumpBoth(array($cl),array($widget[$k]),$sres,"Subwidget diferente nivel");
+                                $this->dumpBoth(array($cl),array($widget[$k]),$sres,"Subwidget diferente nivel");
                                 $result[]=$sres;
                                 continue;
 
@@ -599,7 +597,7 @@ class CWidgetGrammarParser extends CGrammarParser {
                     for($s=0;$s<count($layout);$s++)
                     {
                         if(!$layout[$s])
-                            break;
+                            continue;
                         $result[]=$layout[$s];
                     }
                 }break;
@@ -717,16 +715,13 @@ class CWidgetGrammarParser extends CGrammarParser {
         $results=array();
         $cc=& $params["result"];
         if($cc!=null) {
-
             $nItems = count($cc);
             for ($k = 0; $k < $nItems; $k++) {
                 $c = $cc[$k];
                 if ($c["selector"] == "widget")
                     $results = array_merge($results, $c["result"]);
-                else {
-                    if($params["result"][$k]["result"]!==null)
-                        $results[] = $params["result"][$k]["result"];
-                }
+                else
+                    $results[] = $params["result"][$k]["result"];
             }
         }
         return $results;
@@ -1015,9 +1010,10 @@ class CLayoutManager
     var $preCompilers;
     var $layoutParser;
     var $layoutLoader;
+    var $testing=false;
     static $defaultWidgetPath;
 
-    function __construct($basePath,$targetProtocol,$widgetPath=null,$pluginParams=array(),$lang="es")
+    function __construct($basePath,$targetProtocol,$widgetPath=null,$pluginParams=array(),$lang="es",$testing=false)
     {
         $this->targetProtocol=$targetProtocol;
         if(!$widgetPath)
@@ -1030,6 +1026,7 @@ class CLayoutManager
         $this->lang=$lang;
         $this->basePath=$basePath;
         $this->preCompilers=null;
+        $this->testing=$testing;
 
     }
     static function setDefaultWidgetPath($path)
@@ -1133,23 +1130,29 @@ class CLayoutManager
 
         $this->currentWidget=array("FILE"=>$fileName);
 
-        $mustRebuild=$this->checkCacheFile($fileName,$compiledFile,$depsFile);
+
+        if($this->testing)
+            $mustRebuild=true;
+        else
+            $mustRebuild=$this->checkCacheFile($fileName,$compiledFile,$depsFile);
+
 
 
         //$mustRebuild=true;
         if($mustRebuild)
-
         {
-            @mkdir($compiledDir,0777,true);
+            if(!$this->testing) {
+                @mkdir($compiledDir, 0777, true);
 
-            // Se obtiene el lock
-            $lock=new Lock($compiledDir,$base);
+                // Se obtiene el lock
+                $lock = new Lock($compiledDir, $base);
 
-            $lock->lock();
+                $lock->lock();
 
 
-            // Cuando se obtiene el lock, se comprueba si realmente tenemos que reconstruir.
-            $mustRebuild=$this->checkCacheFile($fileName,$compiledFile,$depsFile);
+                // Cuando se obtiene el lock, se comprueba si realmente tenemos que reconstruir.
+                $mustRebuild = $this->checkCacheFile($fileName, $compiledFile, $depsFile);
+            }
             if(true || $mustRebuild)
             {
 
@@ -1179,6 +1182,9 @@ class CLayoutManager
                     $obj=new $cName(null,null,$this);
                     $result=$obj->postParse($result);
                 }
+                if($this->testing)
+                    return $result;
+
                 file_put_contents($compiledFile,$result);
 
                 // Se almacenan las dependencias

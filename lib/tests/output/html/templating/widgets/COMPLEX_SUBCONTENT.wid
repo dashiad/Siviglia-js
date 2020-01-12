@@ -1,0 +1,13 @@
+<?php
+   $data=[["a"=>1,"b"=>2],["a"=>3,"b"=>4]];
+   $it=null;
+?>
+[*LIST({"data":"$data","iterator":"$it"})]
+    [_ROWS]
+        [_ROW]
+            [_FIELD]<?php echo $it["a"];?>[#]
+            [_FIELD]<?php echo $it["b"];?>[#]
+        [#]
+    [#]
+[#]
+

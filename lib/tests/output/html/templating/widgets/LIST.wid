@@ -1,0 +1,11 @@
+<table>
+    [*:ITERATOR({"data":"$data","it":"&$iterator"})]
+        [_ROWS]
+            [_ROW]
+            <tr>
+                [_FIELD][_*][#]
+            </tr>
+            [#]
+        [#]
+    [#]
+</table>
