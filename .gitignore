@@ -8,3 +8,4 @@ adminator/*
 sites/statics/html/reflection/bundles/*
 sites/statics/html/editor/bundles/*
 /lib/tests/output/html/templating/cache/
+/sites/editor/cache/
