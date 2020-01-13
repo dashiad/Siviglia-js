@@ -82,6 +82,8 @@ class Form extends \lib\model\BaseTypedObject
 
     function initialize($keys)
     {
+        if(isset($this->formDefinition["MODEL"]))
+            $this->srcModelInstance=$this->getModelInstance($keys);
 /*        if(isset($this->formDefinition["MODEL"]))
         {
             //$this->srcModelInstance=$this->getModelInstance($keys);

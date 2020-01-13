@@ -13,8 +13,9 @@ class PagePage extends \model\web\Page
 {
     function initializePage($params)
     {
-        $id_page=$this->id_page;
-        echo "ID_PAGE::".$id_page;
     }
-
+    function getFormKeys($model,$form)
+    {
+        return array("id_page"=>$this->id_page);
+    }
 }

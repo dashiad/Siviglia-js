@@ -1,6 +1,8 @@
 <?php
-$serializer=\Registry::getService("storage")->getSerializerByName('web');
 $params=Registry::$registry["PAGE"];
+$formKeys=$params->getFormKeys("Page","EditAction");
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+
 ?>
 [*/FORMS/form({"object":"/model/web/Page","layer":"web","name":"EditAction","form":"&$form"})]
     [_TITLE]EditAction \model\Page[#]

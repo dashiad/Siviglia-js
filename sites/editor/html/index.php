@@ -1,4 +1,5 @@
 <?php
+
 ini_set("html_errors","on");
 ini_set("display_errors","on");
 try {
