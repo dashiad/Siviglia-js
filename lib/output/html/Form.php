@@ -27,19 +27,10 @@ class Form extends \lib\model\BaseTypedObject
             foreach($this->formDefinition["INDEXFIELDS"] as $key=>$value)
                 $this->formDefinition["FIELDS"][$key]=$value;
         }
-
         $this->actionResult=& $actionResult;
-        // Aunque sea la misma accion, hay que resetear el resultado, ya que en caso de que este sea el resultado
-        // de una action anterior, el resultado seguramente es "false", por lo que ni se reevaluaria.
-
-
         parent::__construct($this->formDefinition);
         if(isset($this->formDefinition["FIELDMAP"]))
             $this->fieldMapping=array_flip($this->formDefinition["FIELDMAP"]);
-    }
-    function resetResult()
-    {
-        $this->actionResult->reset();
     }
     static function getFormDefinition(& $definition)
     {
@@ -63,7 +54,6 @@ class Form extends \lib\model\BaseTypedObject
     private static function buildHashString($formName,$object,$siteName,$url,$keys=null,$sessionId=null)
     {
         $hash=$formName.$object.$siteName.$url;
-
         if($keys)
             $hash.=implode("",$keys);
         $hash.=$sessionId?$sessionId:"";
@@ -80,44 +70,36 @@ class Form extends \lib\model\BaseTypedObject
         return password_verify($hashString,$hash);
     }
 
-    function initialize($keys)
+    function initialize($keys,$baseTypedObject=null)
     {
-        if(isset($this->formDefinition["MODEL"]))
-            $this->srcModelInstance=$this->getModelInstance($keys);
-/*        if(isset($this->formDefinition["MODEL"]))
-        {
-            //$this->srcModelInstance=$this->getModelInstance($keys);
-            if($this->actionResult->isOk())
-            {
-                $this->copy($this->srcModelInstance);
-                $stateTarget=$this->srcModelInstance;
-//                $this->__stateDef=new \lib\model\states\StatedDefinition($stateTarget);
-            }
+        // Si tenemos un modelo, y no nos pasan un modelo ya construido
+        if($baseTypedObject===null) {
+            if (isset($this->formDefinition["MODEL"]) && $baseTypedObject === null)
+                $this->srcModelInstance = $this->getModelInstance($keys);
         }
         else
-        {
-            $this->__stateDef=new \lib\model\states\StatedDefinition($this);
-        }
-*/
+            $this->srcModelInstance=$baseTypedObject;
 
+        $remFields=$this->srcModelInstance->__getFields();
+
+        foreach($this->formDefinition["FIELDS"] as $key=>$value)
+        {
+            if(isset($remFields[$key]) && $remFields[$key]->is_set())
+                $this->{"*".$key}->copy($remFields[$key]->getType());
+
+        }
     }
 
-    static function getForm($object,$name,$keys,$modelInstance=null)
+    static function getForm($object,$name,$keys,$baseTypedObject=null)
     {
-
         $instanceError=false;
-        if(Form::isLast($object,$name,$keys))
-        {
-            $modelInstance=\lib\output\html\Form::getLastForm();
-            return $modelInstance;
-        }
 
         $objName=\lib\model\ModelService::getModelDescriptor(str_replace("/",'\\',$object));
         include_once($objName->getFormFileName($name));
         $formClass=$objName->getNamespacedForm($name);
         $actionResult=new \lib\action\ActionResult();
         $form=new $formClass($actionResult);
-        $form->initialize($keys);
+        $form->initialize($keys,$baseTypedObject);
         return $form;
     }
     static function resolve($request)
@@ -213,24 +195,27 @@ class Form extends \lib\model\BaseTypedObject
 
     function getModelInstance($keys)
     {
-/*        if($this->srcModelInstance!=null)
+        if($this->srcModelInstance!=null)
             return $this->srcModelInstance;
+
+        $service=\Registry::getService("model");
 
         $this->srcModelInstance=\lib\model\BaseModel::getModelInstance($this->srcModelName);
         if($keys)
         {
             try
             {
-                $serializer=$this->srcModelInstance->__getSerializer();
-                $this->srcModelInstance->setId($keys);
-                $this->srcModelInstance->unserialize($serializer);
+                $this->srcModelInstance=$service->loadModel($this->srcModelName,$keys);
             }
             catch(\Exception $e)
             {
+
                  $this->actionResult->addGlobalError($e);
             }
         }
-        return $this->srcModelInstance;*/
+        else
+            $this->srcModelInstance=$service->getModel($this->srcModelName);
+        return $this->srcModelInstance;
     }
 
 
@@ -333,14 +318,6 @@ class Form extends \lib\model\BaseTypedObject
 
         if ($this->actionResult->isOk()) {
             if ($this->processAction($this->actionResult)) {
-                // Se destruye la informacion de LastForm del registro.
-                unset(\Registry::$registry["lastForm"]);
-                $session=\Registry::getService("session");
-
-                unset($session["Registry/lastForm"]);
-                unset(\Registry::$registry["newForm"]);
-                unset(\Registry::$registry["lastAction"]);
-                unset(\Registry::$registry["newAction"]);
                 $this->onSuccess($this->actionResult);
             } else {
 
@@ -471,41 +448,6 @@ class Form extends \lib\model\BaseTypedObject
         return false;
     }
 
-    // TODO: Filtrar por las keys.
-    static function isLast($object,$name)
-    {
-        if(!isset(\Registry::$registry["lastForm"]))
-            return false;
-        $lastForm=\Registry::$registry["lastForm"];
-        if ( $lastForm && $lastForm["MODEL"]==$object && $lastForm["NAME"]==$name)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    static function getLastForm()
-    {
-
-        $lastForm=\Registry::$registry["lastForm"];
-        if(! $lastForm )
-            return null;
-
-        $formInfo=Form::getFormPath($lastForm["MODEL"],$lastForm["NAME"]);
-        include_once($formInfo["PATH"]);
-        $className=$formInfo["CLASS"];
-
-
-        $formClass=new $className(\Registry::$registry["lastAction"]);
-        $formClass->loadFromArray($lastForm["DATA"],"HTML",true);
-        // Se almacenan las keys.
-        if(isset($formClass->formDefinition["INDEXFIELDS"]))
-        {
-            foreach($formClass->formDefinition["INDEXFIELDS"] as $key=>$value)
-                $formClass->srcModelKeys[$key]=$lastForm["DATA"][$key];
-        }
-        return $formClass;
-    }
 
     static function getFormPath($object,$name)
     {
@@ -533,28 +475,6 @@ class Form extends \lib\model\BaseTypedObject
     {
         if(isset($this->formDefinition["INPUTS"]) && isset($this->formDefinition["INPUTS"][$name]))
             return $this->formDefinition["INPUTS"][$name]["PARAMS"];
-    }
-    function copy(& $remoteObject)
-    {
-             $remFields=$remoteObject->__getFields();
-
-             foreach($remFields as $key=>$value)
-             {
-                 // Preguntamos 2 cosas: si existe el campo, y si hemos accedido a el previamente, lo que
-                 // significa que se ha establecido el valor.En $this->__fields solo estan los campos a los que
-                 // se ha accedido.
-                 if(isset($this->formDefinition["FIELDS"][$key]) && isset($this->__fields[$key]))
-                 {
-                     $types=$value->getTypes();
-                     foreach($types as $tKey=>$tValue)
-                     {
-                         $field=$this->__getField($tKey);
-                         $field->copyField($tValue);
-                     }
-                 }
-             }
-             $this->__dirtyFields=$remoteObject->__dirtyFields;
-             $this->__isDirty=$remoteObject->__isDirty;
     }
 
 }

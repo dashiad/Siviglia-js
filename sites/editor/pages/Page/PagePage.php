@@ -14,8 +14,10 @@ class PagePage extends \model\web\Page
     function initializePage($params)
     {
     }
-    function getFormKeys($model,$form)
+    function getFormModel($model,$form)
     {
-        return array("id_page"=>$this->id_page);
+        $s=\Registry::getService("model");
+        $ins=$s->loadModel('\model\web\Page',["id_page"=>$this->id_page]);
+        return $ins;
     }
 }

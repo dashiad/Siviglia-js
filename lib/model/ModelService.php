@@ -111,6 +111,14 @@ class ModelService extends \lib\service\Service
         $obj=new $namespacedName($serializer);
         return $obj;
     }
+    static function loadModel($objectName,$fields,$serializer=null)
+    {
+        $ins=ModelService::getModel($objectName,$serializer);
+        foreach($fields as $k=>$v)
+            $ins->{$k}=$v;
+        $ins->loadFromFields();
+        return $ins;
+    }
     static function getDataSource($objectName,$datasource,$serializer=null)
     {
         return \lib\datasource\DataSourceFactory::getDataSource($objectName,$datasource,$serializer);
