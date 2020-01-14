@@ -17,6 +17,8 @@ class Form extends \lib\model\BaseTypedObject
     var $srcModelKeys=null;
     var $srcModelName=null;
     var $fieldMapping=null;
+    var $formName=null;
+    var $formModel=null;
     function __construct($definition,& $actionResult)
     {
         Form::getFormDefinition($definition);
@@ -51,27 +53,31 @@ class Form extends \lib\model\BaseTypedObject
         return $definition;
 
     }
-    private static function buildHashString($formName,$object,$siteName,$url,$keys=null,$sessionId=null)
+    function buildHashString($siteName,$url,$keys=null,$sessionId=null)
     {
-        $hash=$formName.$object.$siteName.$url;
+        $hash=$this->formName.$this->formModel.$siteName.$url;
         if($keys)
             $hash.=implode("",$keys);
         $hash.=$sessionId?$sessionId:"";
         return $hash;
     }
-    static function getHash($formName,$object,$siteName,$url,$keys=null,$sessionId=null)
+    function getHash($siteName,$url,$keys=null,$sessionId=null)
     {
-        $hashString=Form::buildHashString($formName,$object,$siteName,$url,$keys,$sessionId);
-        return password_hash($hashString,PASSWORD_DEFAULT);
+        if($this->hash==null) {
+            $hashString = $this->buildHashString($siteName, $url, $keys, $sessionId);
+            return password_hash($hashString, PASSWORD_DEFAULT);
+        }
     }
-    static function checkHash($hash,$formName,$object,$siteName,$url,$keys=null,$sessionId)
+    function checkHash($hash,$siteName,$url,$keys=null,$sessionId=null)
     {
-        $hashString=Form::buildHashString($formName,$object,$siteName,$url,$keys,$sessionId);
+        $hashString=Form::buildHashString($siteName,$url,$keys,$sessionId);
         return password_verify($hashString,$hash);
     }
 
-    function initialize($keys,$baseTypedObject=null)
+    function initialize($formName,$formModel,$keys,$baseTypedObject=null)
     {
+        $this->formModel=$formModel;
+        $this->formName=$formName;
         // Si tenemos un modelo, y no nos pasan un modelo ya construido
         if($baseTypedObject===null) {
             if (isset($this->formDefinition["MODEL"]) && $baseTypedObject === null)
@@ -99,7 +105,7 @@ class Form extends \lib\model\BaseTypedObject
         $formClass=$objName->getNamespacedForm($name);
         $actionResult=new \lib\action\ActionResult();
         $form=new $formClass($actionResult);
-        $form->initialize($keys,$baseTypedObject);
+        $form->initialize($name,$object,$keys,$baseTypedObject);
         return $form;
     }
     static function resolve($request)
