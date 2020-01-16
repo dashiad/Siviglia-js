@@ -1,0 +1,34 @@
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT][_URL]https://code.jquery.com/jquery-3.4.1.min.js[#][#]
+        [_SCRIPT]
+
+            [_CODE]
+            <script>
+                var __s__base=(function(){
+                    var config={
+                        statics:'http://statics.adtopy.com',
+                        metadata:'http://metadata.adtopy.com'
+                    };
+                    var obj={};
+
+                    obj.callEndPoint=function(p){
+                        var url=null;
+                        switch(p.endPoint)
+                        {
+                            case 'validation':
+                            {
+                                url=config.metadata+"/validation.php";
+                            }break;
+                        }
+                        return $.getJSON(url,(typeof p.params=="undefined"?null:p.params));
+                    }
+                    return obj;
+                })();
+            </script>
+            [#]
+
+        [#]
+    [#]
+[#]

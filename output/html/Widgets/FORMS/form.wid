@@ -30,16 +30,19 @@
                         var m=this;
                         instance.addEventListener("change",function(){
                             __s__base.callEndPoint({
-                                url:__s__form.validationUrl,
-                                type:"form",
-                                name:m.name,
-                                model:m.model,
-                                keys:m.keys,
-                                field:m.dataset.sivname,
-                                prefix:m.dataset.sivprefix
-                            })
+                                endPoint:'validation',
+                                params: {
+                                    type: "form",
+                                    name: m.name,
+                                    model: m.model,
+                                    keys: m.keys,
+                                    field: instance.dataset.sivname,
+                                    prefix: instance.dataset.sivprefix
+                                }}).then(function(r){
+                                    console.dir(r);
+                                });
                         });
-                    }
+                    };
                 }
             </script>
             [#]

@@ -1,13 +1,13 @@
--- MySQL dump 10.16  Distrib 10.1.38-MariaDB, for Win64 (AMD64)
+-- MariaDB dump 10.17  Distrib 10.4.10-MariaDB, for Win64 (AMD64)
 --
 -- Host: localhost    Database: adtopy
 -- ------------------------------------------------------
--- Server version	10.1.38-MariaDB
+-- Server version	10.4.10-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -51,7 +51,7 @@ CREATE TABLE `_permission_groups` (
   `id` smallint(8) NOT NULL AUTO_INCREMENT,
   `group_name` varchar(30) DEFAULT NULL,
   `group_type` smallint(2) DEFAULT NULL,
-  `group_parent` smallint(8) DEFAULT '0',
+  `group_parent` smallint(8) DEFAULT 0,
   `group_path` varchar(200) DEFAULT NULL,
   `group_charPath` char(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -111,11 +111,11 @@ CREATE TABLE `_permissions` (
   `aco_type` smallint(1) DEFAULT NULL,
   `aro_id` smallint(8) DEFAULT NULL,
   `aco_id` smallint(8) DEFAULT NULL,
-  `axo_type` smallint(1) DEFAULT '0',
-  `axo_id` smallint(8) DEFAULT '0',
-  `allow` smallint(1) DEFAULT '1',
-  `enabled` smallint(1) DEFAULT '1',
-  `ACLDATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `axo_type` smallint(1) DEFAULT 0,
+  `axo_id` smallint(8) DEFAULT 0,
+  `allow` smallint(1) DEFAULT 1,
+  `enabled` smallint(1) DEFAULT 1,
+  `ACLDATE` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `aro_type` (`aro_type`,`aro_id`,`aco_type`,`aco_id`,`axo_type`,`axo_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
@@ -171,12 +171,12 @@ DROP TABLE IF EXISTS `lang`;
 CREATE TABLE `lang` (
   `id_lang` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
-  `active` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `active` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `iso_code` char(2) NOT NULL,
   `language_code` char(5) NOT NULL,
   `date_format_lite` char(32) NOT NULL DEFAULT 'Y-m-d',
   `date_format_full` char(32) NOT NULL DEFAULT 'Y-m-d H:i:s',
-  `is_rtl` tinyint(1) NOT NULL DEFAULT '0',
+  `is_rtl` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_lang`),
   KEY `lang_iso_code` (`iso_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
@@ -286,7 +286,7 @@ CREATE TABLE `page` (
   `name` varchar(30) DEFAULT NULL,
   `date_add` datetime DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
-  `id_type` int(11) DEFAULT '1',
+  `id_type` int(11) DEFAULT 1,
   `isPrivate` tinyint(1) DEFAULT NULL,
   `path` varchar(255) DEFAULT NULL,
   `title` varchar(200) DEFAULT NULL,
@@ -294,7 +294,7 @@ CREATE TABLE `page` (
   `description` varchar(255) DEFAULT NULL,
   `role` enum('View','List','Edit','Create','Generic') DEFAULT NULL,
   PRIMARY KEY (`id_page`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -303,7 +303,7 @@ CREATE TABLE `page` (
 
 LOCK TABLES `page` WRITE;
 /*!40000 ALTER TABLE `page` DISABLE KEYS */;
-INSERT INTO `page` VALUES (1,'index',1,'Index','2017-11-18 16:36:21','2017-11-18 16:36:21',1,0,'index','Index',NULL,NULL,NULL),(2,'index',2,'Index','2017-11-26 18:56:11','2017-11-26 18:56:11',1,0,'index','Index',NULL,NULL,NULL),(4,'index',3,'Index','2017-11-27 02:33:05','2017-11-27 02:33:05',1,0,'index','Index',NULL,NULL,NULL),(5,'login',2,'Login','2017-12-10 16:22:52','2017-12-10 16:22:52',1,0,'User/Login','Login',NULL,NULL,NULL),(6,'error',2,'Error','2017-12-26 16:51:08','2017-12-26 16:51:08',1,0,'error','Error',NULL,NULL,NULL),(7,'editor',2,'page','2017-12-26 16:51:24','2017-12-26 16:51:24',1,0,'Page','Editor',NULL,NULL,NULL),(8,'test',3,'Test','2018-01-26 02:27:48','2018-01-26 02:27:48',1,0,'test','Test',NULL,NULL,NULL),(9,'site',2,'Site',NULL,NULL,1,0,'site','Site',NULL,NULL,NULL),(10,'namespaces',3,'Namespaces',NULL,NULL,1,0,'Reflection/Namespaces','Namespaces',NULL,NULL,NULL),(11,'editDefinitions',3,'EditArrayDefinition',NULL,NULL,1,0,'Reflection/ArrayDefinitions','Edit Definition',NULL,NULL,NULL),(12,'migrate',3,'Migrate','2018-12-23 00:59:02','2018-12-23 00:59:02',1,0,'migrate','Migrate',NULL,NULL,NULL),(13,'meta',3,'Meta','2019-12-12 18:59:17','2019-12-12 18:59:17',1,0,'/meta','Meta',NULL,NULL,'View'),(14,'test',3,'Test','2019-12-12 18:59:43','2019-12-12 18:59:43',1,0,'/test','Test',NULL,NULL,'View'),(15,'login',3,'Login','2019-12-12 19:00:07','2019-12-12 19:00:07',1,0,'/login','Login',NULL,NULL,'View'),(16,'modeldatasources',3,'ModelDatasources','2019-12-12 19:03:54','2019-12-12 19:03:54',1,0,'/Reflection/Datasources','ModelDataSources',NULL,NULL,'View');
+INSERT INTO `page` VALUES (1,'index',1,'Index','2017-11-18 16:36:21','2017-11-18 16:36:21',1,0,'index','Index',NULL,NULL,NULL),(2,'index',2,'Index','2017-11-26 18:56:11','2017-11-26 18:56:11',1,0,'index','Index',NULL,NULL,NULL),(4,'index',3,'Index','2017-11-27 02:33:05','2017-11-27 02:33:05',1,0,'index','Index',NULL,NULL,NULL),(5,'login',2,'Login','2017-12-10 16:22:52','2017-12-10 16:22:52',1,0,'User/Login','Login',NULL,NULL,NULL),(6,'error',2,'Error','2017-12-26 16:51:08','2017-12-26 16:51:08',1,0,'error','Error',NULL,NULL,NULL),(7,'editor',2,'page','2017-12-26 16:51:24','2017-12-26 16:51:24',1,0,'Page','Editor',NULL,NULL,NULL),(8,'test',3,'Test','2018-01-26 02:27:48','2018-01-26 02:27:48',1,0,'test','Test',NULL,NULL,NULL),(9,'site',2,'Site',NULL,NULL,1,0,'site','Site',NULL,NULL,NULL),(10,'namespaces',3,'Namespaces',NULL,NULL,1,0,'Reflection/Namespaces','Namespaces',NULL,NULL,NULL),(11,'editDefinitions',3,'EditArrayDefinition',NULL,NULL,1,0,'Reflection/ArrayDefinitions','Edit Definition',NULL,NULL,NULL),(12,'migrate',3,'Migrate','2018-12-23 00:59:02','2018-12-23 00:59:02',1,0,'migrate','Migrate',NULL,NULL,NULL),(13,'meta',3,'Meta','2019-12-12 18:59:17','2019-12-12 18:59:17',1,0,'/meta','Meta',NULL,NULL,'View'),(14,'test',3,'Test','2019-12-12 18:59:43','2019-12-12 18:59:43',1,0,'/test','Test',NULL,NULL,'View'),(15,'login',3,'Login','2019-12-12 19:00:07','2019-12-12 19:00:07',1,0,'/login','Login',NULL,NULL,'View'),(16,'modeldatasources',3,'ModelDatasources','2019-12-12 19:03:54','2019-12-12 19:03:54',1,0,'/Reflection/Datasources','ModelDataSources',NULL,NULL,'View'),(17,'index',5,'index','2020-01-16 23:35:59','2020-01-16 23:35:59',1,0,'index','index','index','index','View');
 /*!40000 ALTER TABLE `page` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -340,11 +340,11 @@ DROP TABLE IF EXISTS `translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `translations` (
-  `value` text,
+  `value` text DEFAULT NULL,
   `lang` char(10) DEFAULT NULL,
   `id_string` char(40) DEFAULT NULL,
   `id_translation` bigint(20) NOT NULL AUTO_INCREMENT,
-  `dirty` tinyint(1) DEFAULT '0',
+  `dirty` tinyint(1) DEFAULT 0,
   `realm` enum('Site','Back','Editor','Reflection') DEFAULT 'Site',
   PRIMARY KEY (`id_translation`),
   KEY `aa` (`id_string`)
@@ -357,7 +357,7 @@ CREATE TABLE `translations` (
 
 LOCK TABLES `translations` WRITE;
 /*!40000 ALTER TABLE `translations` DISABLE KEYS */;
-INSERT INTO `translations` VALUES ('USUARIO','es','422560cb24964b0483b703a42bcd7500',1,0,'Site'),('CLAVE','es','230554a3a50cbfa648f233d46df9ca36',2,0,'Site'),('Aceptar','es','d1cdc7bc8e002ceb7405de577046402c',3,0,'Site'),(NULL,'es','46c0bea962f74ccf845c7a7a4e75f930',4,1,'Site'),(NULL,'es','9036c3b63b31ed00781efc960ff5638b',5,1,'Site'),('','es','A',6,1,'Site');
+INSERT INTO `translations` VALUES ('USUARIO','es','422560cb24964b0483b703a42bcd7500',1,0,'Site'),('CLAVE','es','230554a3a50cbfa648f233d46df9ca36',2,0,'Site'),('Aceptar','es','d1cdc7bc8e002ceb7405de577046402c',3,0,'Site'),(NULL,'es','46c0bea962f74ccf845c7a7a4e75f930',4,0,'Site'),(NULL,'es','9036c3b63b31ed00781efc960ff5638b',5,0,'Site'),('','es','A',6,1,'Site');
 /*!40000 ALTER TABLE `translations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -365,10 +365,10 @@ UNLOCK TABLES;
 -- Table structure for table `websites`
 --
 
-DROP TABLE IF EXISTS `Websites`;
+DROP TABLE IF EXISTS `websites`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Websites` (
+CREATE TABLE `websites` (
   `id_site` bigint(20) NOT NULL AUTO_INCREMENT,
   `host` varchar(40) DEFAULT NULL,
   `canonical_url` varchar(255) DEFAULT NULL,
@@ -376,17 +376,17 @@ CREATE TABLE `Websites` (
   `namespace` varchar(45) DEFAULT '',
   `websiteName` varchar(45) DEFAULT '',
   PRIMARY KEY (`id_site`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `websites`
 --
 
-LOCK TABLES `Websites` WRITE;
-/*!40000 ALTER TABLE `Websites` DISABLE KEYS */;
-INSERT INTO `Websites` VALUES (1,'adtopy','http://www.adtopy.com',0,'adtopy','Adtopy'),(2,'editor','http://editor.adtopy.com',0,'editor','Editor'),(3,'reflection','http://reflection.adtopy.com',0,'reflection','Reflection'),(4,'statics','http://statics.adtopy.com',0,'statics','Statics');
-/*!40000 ALTER TABLE `Websites` ENABLE KEYS */;
+LOCK TABLES `websites` WRITE;
+/*!40000 ALTER TABLE `websites` DISABLE KEYS */;
+INSERT INTO `websites` VALUES (1,'adtopy','http://www.adtopy.com',0,'adtopy','Adtopy'),(2,'editor','http://editor.adtopy.com',0,'editor','Editor'),(3,'reflection','http://reflection.adtopy.com',0,'reflection','Reflection'),(4,'statics','http://statics.adtopy.com',0,'statics','Statics'),(5,'metadata','http://metadata.adtopy.com',0,'metadata','Metadata');
+/*!40000 ALTER TABLE `websites` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -401,13 +401,13 @@ CREATE TABLE `webuser` (
   `PASSWORD` char(128) DEFAULT NULL,
   `USER_ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `EMAIL` char(128) DEFAULT NULL,
-  `active` tinyint(1) DEFAULT '1',
+  `active` tinyint(1) DEFAULT 1,
   `lastlogin` datetime DEFAULT NULL,
   `date_add` datetime DEFAULT NULL,
   `firstname` char(128) DEFAULT NULL,
   `date_upd` datetime DEFAULT NULL,
   `lastname` char(128) DEFAULT NULL,
-  `deleted` tinyint(1) DEFAULT '0',
+  `deleted` tinyint(1) DEFAULT 0,
   `last_passwd_gen` datetime DEFAULT NULL,
   `FAILEDLOGINATTEMPTS` int(8) DEFAULT NULL,
   PRIMARY KEY (`USER_ID`),
@@ -434,4 +434,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-01-10 19:07:01
+-- Dump completed on 2020-01-17  0:34:39
