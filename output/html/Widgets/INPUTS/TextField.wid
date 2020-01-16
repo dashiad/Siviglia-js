@@ -1,3 +1,7 @@
 <input type="hidden" name="INPUTS[<?php echo $name?>]" value="TextField">
+<input type="text" name="FIELDS[<?php echo $prefix;?>][<?php echo $name;?>]" data-sivprefix="<?php echo $prefix;?>" data-sivname="<?php echo $name;?>" value="<?php echo $value;?>">
+<script>
+    var q=document.currentScript.previousElementSibling;
+    __s__form.curForm.addInput(q);
 
-<input type="text" name="FIELDS[<?php echo $name;?>]" value="<?php echo $value;?>">
+</script>

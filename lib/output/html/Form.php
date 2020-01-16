@@ -19,6 +19,7 @@ class Form extends \lib\model\BaseTypedObject
     var $fieldMapping=null;
     var $formName=null;
     var $formModel=null;
+    var $hash;
     function __construct($definition,& $actionResult)
     {
         Form::getFormDefinition($definition);

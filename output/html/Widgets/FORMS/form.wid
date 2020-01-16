@@ -1,19 +1,44 @@
+<?php
+  $site=\Registry::$registry["site"];
+  $siteUrl=$site->canonical_url;
+  ?>
+[*:BASE_SYSTEM][#]
 [@DEPENDENCY]
     [_BUNDLE]Global[#]
     [_CONTENTS]
         [_SCRIPT]
             [_CODE]
             <script>
-                var S_FormRegistry=[];
-                function getFormById(id)
+                var __s__form={
+                    validationUrl:"/validate.php",
+                    curForm:null};
+                __s__form.S_FormRegistry=[];
+                __s__form.getFormById=function(id)
                 {
-                    return S_FormRegistry[id];
+                    return __s__form.S_FormRegistry[id];
                 }
-                function S_Form(node,id,model,keys){
+                __s__form.form = function (node,id,model,name,keys){
+                    this.node=node;
+                    this.id=id;
+                    this.model=model;
+                    this.name=name;
+                    this.keys=keys;
                     this.inputs=[];
-                    S_FormRegistry[id]=this;
+                    __s__form.S_FormRegistry[id]=this;
                     this.addInput=function(instance){
-                        this.inputs[instance.getName()]=instance;
+                        this.inputs[instance.name]=instance;
+                        var m=this;
+                        instance.addEventListener("change",function(){
+                            __s__base.callEndPoint({
+                                url:__s__form.validationUrl,
+                                type:"form",
+                                name:m.name,
+                                model:m.model,
+                                keys:m.keys,
+                                field:m.dataset.sivname,
+                                prefix:m.dataset.sivprefix
+                            })
+                        });
                     }
                 }
             </script>
@@ -65,12 +90,12 @@
                     $keys[]=$curValue;
                 }
             }
-            $hash=\lib\output\html\Form::getHash($name,$object,$curSiteName,$curUrl,$hk,\Registry::$registry["session"]);
+            $hash=$form->getHash($curSiteName,$curUrl,$hk,\Registry::$registry["session"]);
 
         ?>
         <form method="POST" enctype="multipart/form-data" action="/action" id="<?php echo $hash;?>">
             <script>
-                var curForm=new S_Form('$hash','<?php echo $object;?>',<?php echo json_encode($keys);?>)
+                __s__form.curForm=new __s__form.form(document.currentScript.previousElementSibling,'$hash','<?php echo $object;?>','<php echo $name;?>',"<?php echo json_encode($keys);?>");
             </script>
             <input type="hidden" name="FORM" value="<?php echo $name?>">
             <input type="hidden" name="MODEL" value="<?php echo $object?>">

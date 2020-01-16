@@ -272,7 +272,7 @@ class FullList
                                              ),
 
                                         array(
-                                            'FILTER'=>"id_site in (SELECT id_site from websites where namespace=[%namespace%])",
+                                            'FILTER'=>"id_site in (SELECT id_site from Websites where namespace=[%namespace%])",
 
                                             'TRIGGER_VAR'=>'namespace',
                                             'FILTERREF'=>'namespace'
