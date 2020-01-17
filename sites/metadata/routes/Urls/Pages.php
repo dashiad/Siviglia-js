@@ -6,15 +6,15 @@
  * Time: 19:22
  */
 
-namespace sites\adtopy\routes\Urls;
+namespace sites\metadata\routes\Urls;
 
 
 class Pages
 {
     static $definition = array(
-        "/model/{%modelName%}/definition",
-        "/model/{%modelName%}/field/{%fieldName%}",
-        "/model/{%modelName%}/forms/{%formName%}/definition" => "indexForms",
-        "/model/{%modelName%}/forms/{%formName%}/field/{%fieldName%}" => "indexFormsField"
+        "/model/{*modelName}/definition"=>"indexModel",
+        "/model/{*modelName}/field/{fieldName}"=>"indexModelField",
+        "/model/{*modelName}/forms/{formName}/definition" => "indexForms",
+        "/model/{*modelName}/forms/{formName}/field/{fieldName}" => "indexFormsField"
     );
 }

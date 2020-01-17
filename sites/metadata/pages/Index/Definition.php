@@ -6,7 +6,7 @@
  * Time: 1:22
  */
 
-namespace sites\adtopy\pages\Index;
+namespace sites\metadata\pages\Index;
 
 include_once(PROJECTPATH."/model/web/objects/Page/PageDefinition.php");
 class Definition extends \model\web\Page\PageDefinition
@@ -20,6 +20,7 @@ class Definition extends \model\web\Page\PageDefinition
             'SOURCES'=>array(
             ),
             'FIELDS'=>array(
+                "type"=>["TYPE"=>"String"]
             )
         );
     }

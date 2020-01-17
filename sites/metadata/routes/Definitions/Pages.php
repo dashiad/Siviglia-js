@@ -1,12 +1,14 @@
 <?php
 
-namespace sites\adtopy\routes\Definitions;
+namespace sites\metadata\routes\Definitions;
 
 
 class Pages
 {
     static $definition = array(
         "indexForms" => array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"formDefinition"]),
-        "indexFormsField" => array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"formDefinitionField"])
+        "indexFormsField" => array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"formDefinitionField"]),
+        "indexModel" => array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"modelDefinition"]),
+        "indexModelField" => array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"modelDefinitionField"])
     );
 }

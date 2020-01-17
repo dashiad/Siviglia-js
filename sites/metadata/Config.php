@@ -6,7 +6,7 @@
  * Time: 12:22
  */
 
-namespace sites\adtopy;
+namespace sites\metadata;
 include_once(PROJECTPATH."/model/web/objects/Site/SiteConfig.php");
 
 

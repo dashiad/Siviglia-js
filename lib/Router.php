@@ -230,7 +230,7 @@ class Router
         // Sobre estos, tienen prioridad aquellos que se fijan en la definicion.
         $definedParams = isset($d["PARAMS"]) ? $d["PARAMS"] : array();
         foreach ($definedParams as $param => $paramValue) {
-            $params[$param] = $this->getValueFromRoute($paramValue);
+            $params[$param] = $paramValue;
         }
         $value = $d;
         switch ($d["TYPE"]) {
@@ -246,7 +246,7 @@ class Router
                 $r->resolve();
                 break;
             case "PAGE":
-                $r=new \lib\routing\Page($name,$value,$params,$this->request);
+                $r=new \lib\routing\Page($d["PAGE"],$value,$params,$this->request);
                 $r->resolve();
                 break;
             case "DATASOURCE":

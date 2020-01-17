@@ -368,7 +368,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `websites`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `websites` (
+CREATE TABLE `Websites` (
   `id_site` bigint(20) NOT NULL AUTO_INCREMENT,
   `host` varchar(40) DEFAULT NULL,
   `canonical_url` varchar(255) DEFAULT NULL,
@@ -383,10 +383,10 @@ CREATE TABLE `websites` (
 -- Dumping data for table `websites`
 --
 
-LOCK TABLES `websites` WRITE;
-/*!40000 ALTER TABLE `websites` DISABLE KEYS */;
-INSERT INTO `websites` VALUES (1,'adtopy','http://www.adtopy.com',0,'adtopy','Adtopy'),(2,'editor','http://editor.adtopy.com',0,'editor','Editor'),(3,'reflection','http://reflection.adtopy.com',0,'reflection','Reflection'),(4,'statics','http://statics.adtopy.com',0,'statics','Statics'),(5,'metadata','http://metadata.adtopy.com',0,'metadata','Metadata');
-/*!40000 ALTER TABLE `websites` ENABLE KEYS */;
+LOCK TABLES `Websites` WRITE;
+/*!40000 ALTER TABLE `Websites` DISABLE KEYS */;
+INSERT INTO `Websites` VALUES (1,'adtopy','http://www.adtopy.com',0,'adtopy','Adtopy'),(2,'editor','http://editor.adtopy.com',0,'editor','Editor'),(3,'reflection','http://reflection.adtopy.com',0,'reflection','Reflection'),(4,'statics','http://statics.adtopy.com',0,'statics','Statics'),(5,'metadata','http://metadata.adtopy.com',0,'metadata','Metadata');
+/*!40000 ALTER TABLE `Websites` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

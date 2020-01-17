@@ -6,7 +6,7 @@
  * Time: 23:44
  */
 
-namespace sites\adtopy\pages\Index;
+namespace sites\metadata\pages\Index;
 
 
 class IndexPage extends \model\web\Page
@@ -14,5 +14,6 @@ class IndexPage extends \model\web\Page
     function initializePage($params)
     {
         // TODO: Implement initializePage() method.
+        echo $this->type;
     }
 }
