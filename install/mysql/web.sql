@@ -1,8 +1,8 @@
--- MariaDB dump 10.17  Distrib 10.4.10-MariaDB, for Win64 (AMD64)
+-- MySQL dump 10.16  Distrib 10.1.43-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: adtopy
 -- ------------------------------------------------------
--- Server version	10.4.10-MariaDB
+-- Server version	10.1.43-MariaDB-0ubuntu0.18.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,34 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `Websites`
+--
+
+DROP TABLE IF EXISTS `Websites`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Websites` (
+  `id_site` bigint(20) NOT NULL AUTO_INCREMENT,
+  `host` varchar(40) DEFAULT NULL,
+  `canonical_url` varchar(255) DEFAULT NULL,
+  `hasSSL` tinyint(1) DEFAULT NULL,
+  `namespace` varchar(45) DEFAULT '',
+  `websiteName` varchar(45) DEFAULT '',
+  PRIMARY KEY (`id_site`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Websites`
+--
+
+LOCK TABLES `Websites` WRITE;
+/*!40000 ALTER TABLE `Websites` DISABLE KEYS */;
+INSERT INTO `Websites` VALUES (1,'adtopy','http://www.adtopy.com',0,'adtopy','Adtopy'),(2,'editor','http://editor.adtopy.com',0,'editor','Editor'),(3,'reflection','http://reflection.adtopy.com',0,'reflection','Reflection'),(4,'statics','http://statics.adtopy.com',0,'statics','Statics'),(5,'metadata','http://metadata.adtopy.com',0,'metadata','Metadata');
+/*!40000 ALTER TABLE `Websites` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `_permission_group_items`
@@ -51,7 +79,7 @@ CREATE TABLE `_permission_groups` (
   `id` smallint(8) NOT NULL AUTO_INCREMENT,
   `group_name` varchar(30) DEFAULT NULL,
   `group_type` smallint(2) DEFAULT NULL,
-  `group_parent` smallint(8) DEFAULT 0,
+  `group_parent` smallint(8) DEFAULT '0',
   `group_path` varchar(200) DEFAULT NULL,
   `group_charPath` char(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -111,11 +139,11 @@ CREATE TABLE `_permissions` (
   `aco_type` smallint(1) DEFAULT NULL,
   `aro_id` smallint(8) DEFAULT NULL,
   `aco_id` smallint(8) DEFAULT NULL,
-  `axo_type` smallint(1) DEFAULT 0,
-  `axo_id` smallint(8) DEFAULT 0,
-  `allow` smallint(1) DEFAULT 1,
-  `enabled` smallint(1) DEFAULT 1,
-  `ACLDATE` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `axo_type` smallint(1) DEFAULT '0',
+  `axo_id` smallint(8) DEFAULT '0',
+  `allow` smallint(1) DEFAULT '1',
+  `enabled` smallint(1) DEFAULT '1',
+  `ACLDATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `aro_type` (`aro_type`,`aro_id`,`aco_type`,`aco_id`,`axo_type`,`axo_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
@@ -171,12 +199,12 @@ DROP TABLE IF EXISTS `lang`;
 CREATE TABLE `lang` (
   `id_lang` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
-  `active` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `active` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `iso_code` char(2) NOT NULL,
   `language_code` char(5) NOT NULL,
   `date_format_lite` char(32) NOT NULL DEFAULT 'Y-m-d',
   `date_format_full` char(32) NOT NULL DEFAULT 'Y-m-d H:i:s',
-  `is_rtl` tinyint(1) NOT NULL DEFAULT 0,
+  `is_rtl` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_lang`),
   KEY `lang_iso_code` (`iso_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
@@ -286,7 +314,7 @@ CREATE TABLE `page` (
   `name` varchar(30) DEFAULT NULL,
   `date_add` datetime DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
-  `id_type` int(11) DEFAULT 1,
+  `id_type` int(11) DEFAULT '1',
   `isPrivate` tinyint(1) DEFAULT NULL,
   `path` varchar(255) DEFAULT NULL,
   `title` varchar(200) DEFAULT NULL,
@@ -340,11 +368,11 @@ DROP TABLE IF EXISTS `translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `translations` (
-  `value` text DEFAULT NULL,
+  `value` text,
   `lang` char(10) DEFAULT NULL,
   `id_string` char(40) DEFAULT NULL,
   `id_translation` bigint(20) NOT NULL AUTO_INCREMENT,
-  `dirty` tinyint(1) DEFAULT 0,
+  `dirty` tinyint(1) DEFAULT '0',
   `realm` enum('Site','Back','Editor','Reflection') DEFAULT 'Site',
   PRIMARY KEY (`id_translation`),
   KEY `aa` (`id_string`)
@@ -362,34 +390,6 @@ INSERT INTO `translations` VALUES ('USUARIO','es','422560cb24964b0483b703a42bcd7
 UNLOCK TABLES;
 
 --
--- Table structure for table `websites`
---
-
-DROP TABLE IF EXISTS `websites`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Websites` (
-  `id_site` bigint(20) NOT NULL AUTO_INCREMENT,
-  `host` varchar(40) DEFAULT NULL,
-  `canonical_url` varchar(255) DEFAULT NULL,
-  `hasSSL` tinyint(1) DEFAULT NULL,
-  `namespace` varchar(45) DEFAULT '',
-  `websiteName` varchar(45) DEFAULT '',
-  PRIMARY KEY (`id_site`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `websites`
---
-
-LOCK TABLES `Websites` WRITE;
-/*!40000 ALTER TABLE `Websites` DISABLE KEYS */;
-INSERT INTO `Websites` VALUES (1,'adtopy','http://www.adtopy.com',0,'adtopy','Adtopy'),(2,'editor','http://editor.adtopy.com',0,'editor','Editor'),(3,'reflection','http://reflection.adtopy.com',0,'reflection','Reflection'),(4,'statics','http://statics.adtopy.com',0,'statics','Statics'),(5,'metadata','http://metadata.adtopy.com',0,'metadata','Metadata');
-/*!40000 ALTER TABLE `Websites` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `webuser`
 --
 
@@ -401,13 +401,13 @@ CREATE TABLE `webuser` (
   `PASSWORD` char(128) DEFAULT NULL,
   `USER_ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `EMAIL` char(128) DEFAULT NULL,
-  `active` tinyint(1) DEFAULT 1,
+  `active` tinyint(1) DEFAULT '1',
   `lastlogin` datetime DEFAULT NULL,
   `date_add` datetime DEFAULT NULL,
   `firstname` char(128) DEFAULT NULL,
   `date_upd` datetime DEFAULT NULL,
   `lastname` char(128) DEFAULT NULL,
-  `deleted` tinyint(1) DEFAULT 0,
+  `deleted` tinyint(1) DEFAULT '0',
   `last_passwd_gen` datetime DEFAULT NULL,
   `FAILEDLOGINATTEMPTS` int(8) DEFAULT NULL,
   PRIMARY KEY (`USER_ID`),
@@ -434,4 +434,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-01-17  0:34:39
+-- Dump completed on 2020-01-18  0:00:29
