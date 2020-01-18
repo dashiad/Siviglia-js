@@ -20,7 +20,7 @@ class Definition extends \model\web\Page\PageDefinition
             'SOURCES'=>array(
             ),
             'FIELDS'=>array(
-                "type"=>["TYPE"=>"String"]
+
             )
         );
     }

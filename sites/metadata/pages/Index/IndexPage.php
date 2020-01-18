@@ -19,20 +19,40 @@ class IndexPage extends \model\web\Page
         $out=null;
         switch($params->type)
         {
-            case "formDefinition":{}break;
-            case "formDefinitionField":{}break;
+            case "formDefinition":{
+                $out=$mDProv->getMetaData(MetaDataProvider::META_FORM,MetaDataProvider::GET_DEFINITION,$model,$params->formName);
+            }break;
+            case "formDefinitionField":{
+                $out=$mDProv->getMetaData(MetaDataProvider::META_FORM,MetaDataProvider::GET_DEFINITION,$model,$params->formName,$params->fieldName);
+            }break;
             case "modelDefinition":{
                 $out=$mDProv->getMetaData(MetaDataProvider::META_MODEL,MetaDataProvider::GET_DEFINITION,$model);
             }break;
             case "modelDefinitionField":{
-                $out=$mDProv->getMetaData(MetaDataProvider::META_MODEL,MetaDataProvider::GET_FIELD,$model,$params->fieldName);
+                $out=$mDProv->getMetaData(MetaDataProvider::META_MODEL,MetaDataProvider::GET_FIELD,$model,null,$params->fieldName);
             }break;
-            case "datasourceDefinition":{}break;
-            case "datasourceDefinitionField":{}break;
-            case "datasourceParams":{}break;
-            case "datasourceParamsField":{}break;
-            case "actionDefinition":{}break;
-            case "actionDefinitionField":{}break;
+            case "datasourceDefinition":{
+                $out=$mDProv->getMetaData(MetaDataProvider::META_DATASOURCE,MetaDataProvider::GET_DEFINITION,$model,$params->datasourceName);
+            }break;
+            case "datasourceDefinitionField":{
+                $out=$mDProv->getMetaData(MetaDataProvider::META_DATASOURCE,MetaDataProvider::GET_FIELD,$model,$params->datasourceName,$params->fieldName);
+            }break;
+            case "datasourceParams":{
+                $out=$mDProv->getMetaData(MetaDataProvider::META_DATASOURCE,MetaDataProvider::GET_PARAM_DEFINITION,$model,$params->datasourceName);
+            }break;
+            case "datasourceParamsField":{
+                $out=$mDProv->getMetaData(MetaDataProvider::META_DATASOURCE,MetaDataProvider::GET_PARAM,$model,$params->datasourceName,$params->fieldName);
+            }break;
+            case "actionDefinition":{
+                $out=$mDProv->getMetaData(MetaDataProvider::META_ACTION,MetaDataProvider::GET_DEFINITION,$model,$params->actionName);
+            }break;
+            case "actionDefinitionField":{
+                $out=$mDProv->getMetaData(MetaDataProvider::META_ACTION,MetaDataProvider::GET_FIELD,$model,$params->actionName,$params->fieldName);
+            }break;
+            case "validateFormField":{
+
+            }
+
             case "pageDefinition":{}break;
             case "pageDefinitionField":{}break;
             case "typeDefinition":{}break;

@@ -174,14 +174,28 @@ class Router
 
         $fullPath = urldecode($fullPath);
         $n = count($this->regexp);
-        for ($k = 0; $k < $n && !($res = preg_match($this->regexp[$k], $fullPath, $matches1, PREG_OFFSET_CAPTURE)); $k++)
-            ;
-        if (!$res) {
+        $maxMatch=0;
+        $curMatch=null;
+        for ($k = 0; $k < $n; $k++)
+        {
+            if($res = preg_match($this->regexp[$k], $fullPath, $matches1, PREG_OFFSET_CAPTURE))
+            {
+                $regexp = $this->regexp[$k];
+                $nMatches=count($matches1);
+                if($nMatches > $maxMatch)
+                {
+                    $curMatch = $matches1;
+                    $maxMatch=$nMatches;
+                }
+            }
+        }
+
+        if (!$curMatch) {
             throw new RouterException(RouterException::ERR_PAGE_NOT_FOUND, array("route" => $fullPath));
         }
         $matches = array();
         $urlParams = array();
-        foreach ($matches1 as $key => $value) {
+        foreach ($curMatch as $key => $value) {
             if (($key[0] == "P" && $value[1] == -1) || ($key[0] != 'X' && $key[0] != 'P'))
                 continue;
             $parts = explode("_", $key);

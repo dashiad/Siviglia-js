@@ -11,7 +11,7 @@ class EditAction extends \lib\output\html\Form
 {
 	 static  $definition=array(
                'NAME'=>'EditAction',
-               'MODEL'=>'\model\Page',
+               'MODEL'=>'\model\web\Page',
                'ACTION'=>array(
                      'MODEL'=>'\model\web\Page',
                      'ACTION'=>'EditAction',
@@ -63,7 +63,7 @@ class EditAction extends \lib\output\html\Form
 	{
 
 			parent::__construct(EditAction::$definition,$actionResult);
-	
+
 	}
 
 
@@ -85,9 +85,9 @@ class EditAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -109,9 +109,9 @@ class EditAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

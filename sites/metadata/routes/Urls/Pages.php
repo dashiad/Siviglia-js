@@ -20,5 +20,9 @@ class Pages
         "/model/{*modelName}/datasources/{datasourceName}/field/{fieldName}" => "indexDatasourceField",
         "/model/{*modelName}/datasources/{datasourceName}/params/definition" => "indexDatasourceParams",
         "/model/{*modelName}/datasources/{datasourceName}/params/{fieldName}" => "indexDatasourceParamsField",
+        "/model/{*modelName}/actions/{actionName}/definition" => "indexAction",
+        "/model/{*modelName}/actions/{actionName}/field/{fieldName}" => "indexActionField",
+        "/validate/model/{*modelName}/forms/{formName}/field/{fieldName}?value={fieldValue}" => "validateFormsField",
+
     );
 }

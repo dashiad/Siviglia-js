@@ -14,15 +14,12 @@ class Pages
         "indexDatasourceField"=>array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"datasourceDefinitionField"]),
         "indexDatasourceParams"=>array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"datasourceParams"]),
         "indexDatasourceParamsField"=>array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"datasourceParamsField"]),
+        "indexAction"=>array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"actionDefinition"]),
+        "indexActionField"=>array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"actionDefinitionField"]),
+        "validateFormsField"=>array("TYPE" => "PAGE", "PAGE" => "index","PARAMS"=>["type"=>"validateFormField"]),
+
         /*
-         case "formDefinition":{}break;
-case "formDefinitionField":{}break;
-            case "modelDefinition":{}break;
-            case "modelDefinitionField":{}break;
-            case "datasourceDefinition":{}break;
-            case "datasourceDefinitionField":{}break;
-            case "actionDefinition":{}break;
-            case "actionDefinitionField":{}break;
+
             case "pageDefinition":{}break;
             case "pageDefinitionField":{}break;
             case "typeDefinition":{}break;

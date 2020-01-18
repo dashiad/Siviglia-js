@@ -207,7 +207,7 @@ class Form extends \lib\model\BaseTypedObject
 
         $service=\Registry::getService("model");
 
-        $this->srcModelInstance=\lib\model\BaseModel::getModelInstance($this->srcModelName);
+        $this->srcModelInstance=$service->getModel($this->srcModelName);
         if($keys)
         {
             try

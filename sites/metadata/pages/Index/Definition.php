@@ -22,7 +22,10 @@ class Definition extends \model\web\Page\PageDefinition
             'FIELDS'=>array(
                 "type"=>["TYPE"=>"String"],
                 "modelName"=>["TYPE"=>"String"],
-                "fieldName"=>["TYPE"=>"String"]
+                "fieldName"=>["TYPE"=>"String"],
+                "formName"=>["TYPE"=>"String"],
+                "datasourceName"=>["TYPE"=>"String"],
+                "actionName"=>["TYPE"=>"String"]
             )
         );
     }
