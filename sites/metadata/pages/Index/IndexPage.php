@@ -50,7 +50,7 @@ class IndexPage extends \model\web\Page
                 $out=$mDProv->getMetaData(MetaDataProvider::META_ACTION,MetaDataProvider::GET_FIELD,$model,$params->actionName,$params->fieldName);
             }break;
             case "validateFormField":{
-
+                $out=$mDProv->validate()
             }
 
             case "pageDefinition":{}break;

@@ -79,6 +79,18 @@ class MetaDataProvider
             return $this->getBaseTypedObjectMeta($a,$target==MetaDataProvider::GET_DEFINITION?null:$field,$mode);
         }
     }
+    function validate($type,$modelName,$targetName,$field,$path,$value)
+    {
+        switch($type)
+        {
+            case MetaDataProvider::META_FORM:{
+                $formField=$this->getForm(MetaDataProvider::GET_FIELD,$modelName,$targetName,$field,MetaDataProvider::MODE_RESOLVED);
+                $type=\lib\model\types\TypeFactory::getType(null,$formField);
+                if($path!="")
+                    $type=$type->getT
+            }
+        }
+    }
 
 
 

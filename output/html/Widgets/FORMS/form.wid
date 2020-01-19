@@ -35,9 +35,9 @@
                                     type: "form",
                                     name: m.name,
                                     model: m.model,
-                                    keys: m.keys,
                                     field: instance.dataset.sivname,
                                     prefix: instance.dataset.sivprefix
+                                    value:instance.value
                                 }}).then(function(r){
                                     console.dir(r);
                                 });
