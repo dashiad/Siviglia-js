@@ -16,7 +16,8 @@
                 __s__form.getFormById=function(id)
                 {
                     return __s__form.S_FormRegistry[id];
-                }
+                };
+
                 __s__form.form = function (node,id,model,name,keys){
                     this.node=node;
                     this.id=id;
@@ -24,10 +25,14 @@
                     this.name=name;
                     this.keys=keys;
                     this.inputs=[];
+                    this.parents=[];
+                    this.curParent=null;
                     __s__form.S_FormRegistry[id]=this;
                     this.addInput=function(instance){
                         this.inputs[instance.name]=instance;
                         var m=this;
+                        (function(parent){
+
                         instance.addEventListener("change",function(){
                             __s__base.callEndPoint({
                                 endPoint:'validation',
@@ -37,12 +42,25 @@
                                     model: m.model,
                                     keys: m.keys,
                                     field: instance.dataset.sivname,
-                                    prefix: instance.dataset.sivprefix
                                 }}).then(function(r){
                                     console.dir(r);
                                 });
                         });
+                        })(this.curParent)
                     };
+                    this.pushParent=function(p)
+                    {
+                        this.parents.push(p);
+                        this.curParent=p;
+                    };
+                    this.popParent=function()
+                    {
+                        this.parents.pop();
+                        if(this.parents.length==0)
+                            this.curParent=null;
+                        this.curParent=this.parents[this.parents.length-1];
+                    };
+
                 }
             </script>
             [#]

@@ -240,4 +240,22 @@ class TypeSwitcher extends BaseContainer
         include_once(PROJECTPATH."/model/reflection/objects/Types/meta/TypeSwitcher.php");
         return '\model\reflection\Types\meta\TypeSwitcher';
     }
+
+    function getTypeFromPath($path)
+    {
+        if(!is_array($path))
+        {
+            $path=explode("/",$path);
+            if($path[0]=="")
+                array_shift($path);
+        }
+        if(count($path)==0)
+            return $this;
+        // Consumimos un field, que deberia ser el tipo del typeswitcher que queremos navegar (no tiene por que ser el del
+        // valor actual del typeswitcher, que, por otro lado, posiblemente no se le ha asignado ningun valor, ya que solo
+        // estamos interesados en el tipo de dato)
+        $field=array_shift($path);
+        $type = $this->getTypeInstance($field);
+        return $type->getTypeFromPath($path);
+    }
 }

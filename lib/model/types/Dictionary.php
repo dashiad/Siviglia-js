@@ -216,4 +216,20 @@ class Dictionary extends BaseContainer
     {
         return [];
     }
+    // Un diccionario, indepenedientemente de la key, siempre tiene el mismo tipo.
+    function getTypeFromPath($path)
+    {
+        if(!is_array($path))
+        {
+            $path=explode("/",$path);
+            if($path[0]=="")
+                array_shift($path);
+        }
+        if(count($path)==0)
+            return $this;
+        // Consumimos un field, que deberia ser la key.
+        $field=array_shift($path);
+        $type = \model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+        return $type->getTypeFromPath($path);
+    }
 }

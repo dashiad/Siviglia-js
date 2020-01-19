@@ -25,7 +25,9 @@ class Definition extends \model\web\Page\PageDefinition
                 "fieldName"=>["TYPE"=>"String"],
                 "formName"=>["TYPE"=>"String"],
                 "datasourceName"=>["TYPE"=>"String"],
-                "actionName"=>["TYPE"=>"String"]
+                "actionName"=>["TYPE"=>"String"],
+                "fieldValue"=>["TYPE"=>"PHPVariable"],
+                "fieldPath"=>["TYPE"=>"String"]
             )
         );
     }

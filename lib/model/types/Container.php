@@ -229,4 +229,18 @@ class Container extends BaseContainer
     {
         return [];
     }
+    function getTypeFromPath($path)
+    {
+        if(!is_array($path))
+        {
+            $path=explode("/",$path);
+            if($path[0]=="")
+                array_shift($path);
+        }
+        if(count($path)==0)
+            return $this;
+        $field=array_shift($path);
+        $type=$this->{"*".$field};
+        return $type->getTypeFromPath($path);
+    }
 }
