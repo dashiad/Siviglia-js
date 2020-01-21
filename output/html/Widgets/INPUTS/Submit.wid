@@ -1,1 +1,8 @@
-<input type="submit" value="[_LABEL][_*][#]">
+<input type="button" value="[_LABEL][_*][#]">
+<script>
+    var __s__temp=document.currentScript.previousElementSibling;
+    __s__temp.addEventListener("click",function(){
+        __s__form.S_FormRegistry["<?php echo $form->getHash();?>"].submit();
+    });
+</script>
+

@@ -14,9 +14,9 @@ class LoginException extends \lib\model\BaseException
 class Login extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ROLE'=>'SEARCH',
-               'LABEL'=>'Edit',               
+               'LABEL'=>'Edit',
                'FIELDS'=>array(
                      'LOGIN'=>array(
                            'REQUIRED'=>1,
@@ -27,7 +27,7 @@ class Login extends \lib\action\Action
                            'REQUIRED'=>1,
                            'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'PASSWORD'
-                           ),                     
+                           ),
                      ),
                'PERMISSIONS'=>array(null)
                );
@@ -47,7 +47,7 @@ class Login extends \lib\action\Action
 	{
 
 		\lib\action\Action::__construct(Login::$definition);
-	
+
 	}
 
 
@@ -69,7 +69,7 @@ class Login extends \lib\action\Action
 	 */
     var $newUser;
 	function validate ( $actionResult )
-	{        
+	{
             try{
                 $this->newUser=\model\web\WebUser::login($this->LOGIN,$this->PASSWORD);
    /*             include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
@@ -81,15 +81,15 @@ class Login extends \lib\action\Action
                     throw new \backoffice\WebUserException(\backoffice\WebUserException::ERR_UNAUTHORIZED);
                 }
      */
-                global $oCurrentUser;                
+                global $oCurrentUser;
                 $oCurrentUser=$this->newUser;
             }
             catch(\backoffice\WebUserException $e)
-            {               
+            {
                 //_d("ADDING ERROR");
                 $actionResult->addGlobalError($e);
-            }                        
-            /* Insert the validation code here */	
+            }
+            /* Insert the validation code here */
             return $actionResult->isOk();
 	}
 
@@ -113,7 +113,7 @@ class Login extends \lib\action\Action
             {
                 return $this->newUser;
             }
-            /* Insert callback code here */	
+            /* Insert callback code here */
             return false;
 	}
 
@@ -137,9 +137,9 @@ class Login extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

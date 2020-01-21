@@ -19,7 +19,7 @@
                         [_FIELDS]
 
 
-				[*/FORMS/inputContainer({"name":"LOGIN"})]
+				[*/FORMS/inputContainer({"name":"LOGIN","form":"&$form"})]
 					[_LABEL]LOGIN[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -35,7 +35,7 @@
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"PASSWORD"})]
+				[*/FORMS/inputContainer({"name":"PASSWORD","form":"&$form"})]
 					[_LABEL]PASSWORD[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -51,7 +51,7 @@
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"USER_ID"})]
+				[*/FORMS/inputContainer({"name":"USER_ID","form":"&$form"})]
 					[_LABEL]USER_ID[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -64,7 +64,7 @@
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"EMAIL"})]
+				[*/FORMS/inputContainer({"name":"EMAIL","form":"&$form"})]
 					[_LABEL]EMAIL[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -82,6 +82,6 @@
                         [#]
                 [#]
                 [_BUTTONS]
-                        [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
+                        [*:/INPUTS/Submit({"form":"&$form"})][_LABEL][@L]Aceptar[#][#][#]
                 [#]
           [#]

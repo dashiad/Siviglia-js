@@ -1,5 +1,5 @@
 <?php
-namespace web\objects\WebUser\html\forms;
+namespace model\web\WebUser\html\forms;
 /**
  FILENAME:c:/xampp/htdocs/framework//web/objects/WebUser//html/forms/SetEditorAction.php
   CLASS:SetEditorAction
@@ -11,14 +11,14 @@ class SetEditorAction extends \lib\output\html\Form
 {
 	 static  $definition=array(
                'NAME'=>'SetEditorAction',
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
-                     'MODEL'=>'\web\objects\WebUser',
+                     'MODEL'=>'\model\web\objects\WebUser',
                      'ACTION'=>'SetEditorAction'
                      ),
                'FIELDS'=>array(
                      'SectionEditors'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'SectionEditors',
                            'REQUIRED'=>1,
                            'TYPE'=>'DataSet',
@@ -51,7 +51,7 @@ class SetEditorAction extends \lib\output\html\Form
                      'USER_ID'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'USER_ID',
-                           'MODEL'=>'\web\objects\WebUser'
+                           'MODEL'=>'\model\web\objects\WebUser'
                            )
                      )
                );
@@ -72,7 +72,7 @@ class SetEditorAction extends \lib\output\html\Form
 	{
 
 			parent::__construct(SetEditorAction::$definition,$actionResult);
-	
+
 	}
 
 
@@ -97,9 +97,9 @@ class SetEditorAction extends \lib\output\html\Form
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -120,9 +120,9 @@ class SetEditorAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -143,9 +143,9 @@ class SetEditorAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

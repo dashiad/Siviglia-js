@@ -8,9 +8,9 @@ class Definition extends \lib\model\BaseModelDefinition
         'DEFAULT_SERIALIZER'=>'web',
         'DEFAULT_WRITE_SERIALIZER'=>'web',
         'INDEXFIELDS'=>array('id_user'),
-        'TABLE'=>'Admin',
+        'TABLE'=>'admin',
         'LABEL'=>'Admin',
-        'SHORTLABEL'=>'Admin',
+        'SHORTLABEL'=>'admin',
         'CARDINALITY'=>'3000',
         'CARDINALITY_TYPE'=>'FIXED',
         'FIELDS'=>array(

@@ -238,6 +238,7 @@ class Router
     function resolveDefinition($name,$d, $params)
     {
         global $response;
+        $this->request->setCurrentRoute($name,$d);
         $response=new \lib\Response($d);
         \Registry::$registry["response"]=$response;
         // Los parametros son lo que se ha encontrado que ha hecho match en la url.
@@ -247,6 +248,17 @@ class Router
             $params[$param] = $paramValue;
         }
         $value = $d;
+        // Se permite que las paginas, en su definicion, fuercen un tipo de salida independientemente de los parametros GET recibidos.
+        if(isset($d["RESPONSE"])) {
+            if (isset($d["RESPONSE"]["TYPE"])) {
+                switch (strtolower($d["RESPONSE"]["TYPE"])) {
+                    case "json":{
+                        $this->request->setOutputType(\Request::OUTPUT_JSON);
+                    }break;
+
+                }
+            }
+        }
         switch ($d["TYPE"]) {
             default:
             case "META":
@@ -260,6 +272,7 @@ class Router
                 $r->resolve();
                 break;
             case "PAGE":
+
                 $r=new \lib\routing\Page($d["PAGE"],$value,$params,$this->request);
                 $r->resolve();
                 break;

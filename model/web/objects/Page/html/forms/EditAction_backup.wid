@@ -13,7 +13,7 @@ $currentModel=$params->getFormModel("Page","EditAction");
         [_DESCRIPTION]Form Group Description[#]
         [_FORMERRORS][#]
         [_FIELDS]
-        [*:/FORMS/inputContainer({"name":"tag"})]
+        [*:/FORMS/inputContainer({"name":"tag","form":"&$form"})]
             [_:LABEL]tag[#]
             [_:HELP]**Insert Field Help**[#]
             [_:INPUT][*::/types/inputs/_String({"model":"$currentModel","name":"tag","form":"$form"})][#][#]
@@ -28,7 +28,7 @@ $currentModel=$params->getFormModel("Page","EditAction");
 
 
 
-				[*:/FORMS/inputContainer({"name":"name"})]
+				[*:/FORMS/inputContainer({"name":"name","form":"&$form"})]
 					[_:LABEL]name[#]
 					[_:HELP]**Insert Field Help**[#]
 					[_:INPUT]

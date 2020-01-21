@@ -1,5 +1,5 @@
 <?php
-namespace backoffice\WebUser\actions;
+namespace model\web\WebUser\actions;
 /**
  FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser/actions/EditAction.php
   CLASS:EditAction
@@ -10,11 +10,11 @@ namespace backoffice\WebUser\actions;
 class EditAction extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'PERMISSION'=>'edit'
                            )
                      ),
@@ -23,22 +23,22 @@ class EditAction extends \lib\action\Action
                      'LOGIN'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'LOGIN',
-                           'MODEL'=>'WebUser'
+                           'MODEL'=>'\model\web\WebUser'
                            ),
                      'PASSWORD'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'PASSWORD',
-                           'MODEL'=>'WebUser'
+                           'MODEL'=>'\model\web\WebUser'
                            ),
                      'USER_ID'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'USER_ID',
-                           'MODEL'=>'WebUser'
+                           'MODEL'=>'\model\web\WebUser'
                            ),
                      'EMAIL'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'EMAIL',
-                           'MODEL'=>'WebUser'
+                           'MODEL'=>'\model\web\WebUser'
                            )
                      )
                );
@@ -58,7 +58,7 @@ class EditAction extends \lib\action\Action
 	{
 
 			parent::__construct(EditAction::$definition);
-	
+
 	}
 
 
@@ -83,9 +83,9 @@ class EditAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -107,9 +107,9 @@ class EditAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -132,9 +132,9 @@ class EditAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

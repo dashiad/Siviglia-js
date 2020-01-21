@@ -49,7 +49,7 @@ class FullListParam
         'STORAGE'=>array(
             'MYSQL'=>array(
                 'DEFINITION'=>array(
-                    'TABLE'=>'user',
+                    'TABLE'=>'User',
                     'BASE'=>"SELECT id, Name from User where [%0%] and [%1%]",
                     'CONDITIONS'=>array(
                         array(

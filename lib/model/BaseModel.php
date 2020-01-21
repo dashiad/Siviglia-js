@@ -487,12 +487,18 @@ class BaseModel extends BaseTypedObject
         return $permsService->canAccess($perms,$this,$user->getId());
     }
 
-    function getOwner()
+    function getOwnershipField()
     {
 
-        if ($this->__objectDef["OWNERSHIP"])
+        if (isset($this->__objectDef["OWNERSHIP"]))
             return $this->{$this->__objectDef["OWNERSHIP"]};
         return null;
+    }
+    function getRole()
+    {
+        if (isset($this->__objectDef["ROLE"]))
+            return $this->{$this->__objectDef["ROLE"]};
+        return "ENTITY";
     }
 
     function is_equal_to(& $model)

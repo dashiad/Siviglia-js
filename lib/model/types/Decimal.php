@@ -4,6 +4,7 @@ class Decimal extends BaseType
     function _setValue($val)
     {
         $this->value=$val;
+        $this->valueSet=true;
     }
     function _getValue()
     {
@@ -12,6 +13,10 @@ class Decimal extends BaseType
     function _copy($val)
     {
         $this->value=$val->value;
+    }
+    function _validate($val)
+    {
+        return is_numeric($val);
     }
     function _equals($v)
     {

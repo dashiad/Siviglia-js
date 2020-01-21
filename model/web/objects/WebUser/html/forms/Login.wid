@@ -32,6 +32,6 @@
     [#]
 
     [_BUTTONS]
-        [*/INPUTS/Submit][_LABEL][@T][_ID]d1cdc7bc8e002ceb7405de577046402c[#][_C]Aceptar[#][#][#][#]
+        [*:/INPUTS/Submit({"form":"&$form"})][_LABEL][@T][_ID]d1cdc7bc8e002ceb7405de577046402c[#][_C]Aceptar[#][#][#][#]
     [#]
 [#]

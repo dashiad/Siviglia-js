@@ -18,7 +18,7 @@
                         [_FIELDS]
 
 
-				[*/FORMS/inputContainer({"name":"value"})]
+				[*/FORMS/inputContainer({"name":"value","form":"&$form"})]
 					[_LABEL]value[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -31,7 +31,7 @@
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"lang"})]
+				[*/FORMS/inputContainer({"name":"lang","form":"&$form"})]
 					[_LABEL]lang[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -47,7 +47,7 @@
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"id_string"})]
+				[*/FORMS/inputContainer({"name":"id_string","form":"&$form"})]
 					[_LABEL]id_string[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -62,6 +62,6 @@
                         [#]
                 [#]
                 [_BUTTONS]
-                        [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
+                        [*:/INPUTS/Submit({"form":"&$form"})][_LABEL][@L]Aceptar[#][#][#]
                 [#]
           [#]

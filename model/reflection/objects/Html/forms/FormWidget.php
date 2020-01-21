@@ -52,7 +52,7 @@ TEMPLATE;
                         [#]
                 [#]
                 [_BUTTONS]
-                        [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
+                        [*:/INPUTS/Submit({"form":"&$form"})][_LABEL][@L]Aceptar[#][#][#]
                 [#]        
           [#]
 TEMPLATE;

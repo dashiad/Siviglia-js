@@ -134,7 +134,14 @@
               return false;
           return isset($this->subObjects[$index]);
       }
-
+      function __get($index)
+      {
+          return $this->subObjects[$index];
+      }
+      function __set($index,$value)
+      {
+          $this->subObjects[$index]->setValue($value);
+      }
       function offsetGet($index)
       {
           return $this->subObjects[$index];
@@ -200,5 +207,18 @@
       function getEmptyValue()
       {
           return [];
+      }
+      function getTypeFromPath($path)
+      {
+          if(!is_array($path))
+          {
+              $path=explode("/",$path);
+              if($path[0]=="")
+                  array_shift($path);
+          }
+          if(count($path)==0)
+              return $this;
+          $type=$this->getSubtypeInstance();
+          return $type->getTypeFromPath($path);
       }
   }

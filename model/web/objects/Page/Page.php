@@ -127,7 +127,7 @@ class Page extends \lib\model\BaseModel
         }
         $instance = new $fullName();
         $instance->loadFromArray($data->getRow(),"MYSQL");
-        $instance->setPageDefinition($definition,$params);
+        $instance->setPageDefinition($definition);
         return $instance;
     }
     /*
@@ -183,17 +183,9 @@ class Page extends \lib\model\BaseModel
             $this->getPageDefinition();
         return $this->__pageDef;
     }
-    function setPageDefinition($obj,$params)
+    function setPageDefinition($obj)
     {
         $this->__pageDef=$obj;
-
-        try
-        {
-            $obj->loadFromArray($params,"HTML");
-        }catch(\lib\model\BaseTypedException $e)
-        {
-            throw new PageException(PageException::ERR_INVALID_PARAMETERS);
-        }
         $this->__pageConfig = $obj->getDefinition();
     }
     function getPagePath()

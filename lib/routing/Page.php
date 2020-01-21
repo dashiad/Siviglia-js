@@ -28,6 +28,7 @@ class Page
         $this->pageInstance = \model\web\Page::getPageFromName($name,io($def,"SITE",null),$request,$params);
         if($this->pageInstance!=null)
         {
+
             $currentPage = $this->pageInstance;
             Registry::$registry[Registry::SERVICE_CONTAINER]->addService("page",$this->pageInstance);
             \Registry::store("currentPage", $this->pageInstance);
@@ -49,6 +50,7 @@ class Page
                 $this->onUnauthorized($response);
                 return;
             }
+
             $this->pageInstance->initializePage($this->pageInstance->getPageDefinitionObject(), $this->request);
             $response->setBuilder(function () use ($m) {
                 $this->pageInstance->render($this->request->getOutputType(), $m->request, isset($m->definition["OUTPUT_PARAMS"]) ? $m->definition["OUTPUT_PARAMS"] : array());

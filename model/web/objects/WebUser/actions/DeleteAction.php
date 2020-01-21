@@ -1,5 +1,5 @@
 <?php
-namespace backoffice\WebUser\actions;
+namespace model\web\WebUser\actions;
 /**
  FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser/actions/DeleteAction.php
   CLASS:DeleteAction
@@ -10,11 +10,11 @@ namespace backoffice\WebUser\actions;
 class DeleteAction extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ROLE'=>'Delete',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'PERMISSION'=>'delete'
                            )
                      ),
@@ -36,7 +36,7 @@ class DeleteAction extends \lib\action\Action
 	{
 
 			parent::__construct(DeleteAction::$definition);
-	
+
 	}
 
 
@@ -61,9 +61,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -85,9 +85,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -110,9 +110,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

@@ -1,80 +1,80 @@
 <?php
-namespace web\objects\WebUser\html\forms;
+namespace model\web\WebUser\html\forms;
 /**
  FILENAME:c:/xampp/htdocs/rentasignal2//web/objects/WebUser//html/forms/Create.php
-  CLASS:Create
+CLASS:Create
 *
 *
 **/
 
 class Create extends \lib\output\html\Form
 {
-	 var $definition=array(
+	 static $definition=array(
                'NAME'=>'Create',
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
-                     'MODEL'=>'\web\objects\WebUser',
+                     'MODEL'=>'\model\web\WebUser',
                      'ACTION'=>'Create'
                      ),
                'FIELDS'=>array(
                      'LOGIN'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'LOGIN'
                            ),
                      'PASSWORD'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'PASSWORD'
                            ),
                      'EMAIL'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'EMAIL'
                            ),
                      'EXTTYPE'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'EXTTYPE'
                            ),
                      'EXTID'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'EXTID'
                            ),
                      'NLOGINS'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'NLOGINS'
                            ),
                      'LASTLOGIN'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'LASTLOGIN'
                            ),
                      'LASTIP'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'LASTIP'
                            ),
                      'STATE'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'STATE'
                            ),
                      'CREATIONDATE'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'CREATIONDATE'
                            ),
                      'FAILEDLOGINATTEMPTS'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'FAILEDLOGINATTEMPTS'
                            ),
                      'VALIDATED'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'VALIDATED'
                            )
                      ),
@@ -136,6 +136,24 @@ class Create extends \lib\output\html\Form
                'INDEXFIELD'=>array()
                );
 
+	/**
+	 *
+	 * NAME:__construct
+	 *
+	 * DESCRIPTION: Constructor for Create
+	 *
+	 * PARAMS:
+	 *
+	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object
+	 *
+	 * RETURNS:
+	 */
+	function __construct( $actionResult=null)
+	{
+
+		parent::__construct(Create::$definition,$actionResult);
+
+	}
 
 	/**
 	 *
@@ -157,9 +175,9 @@ class Create extends \lib\output\html\Form
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -180,9 +198,9 @@ class Create extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -203,9 +221,9 @@ class Create extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

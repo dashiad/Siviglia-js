@@ -247,5 +247,16 @@
           $this->referencedField=$field;
           $this->typeReference=true;
       }
+      /*
+       * La funcion getTypeFromPath sirve para obtener el tipo de un subcampo definido en algun tipo de container.
+       * Es decir, no devuelve valores.Devuelve un tipo de dato, util para validar campos individuales de un formulario.
+       */
+      function getTypeFromPath($path)
+      {
+          // Un tipo basico tiene siempre que ser el ultimo elemento de un path.
+          if(count($path)>0)
+              throw new BaseTypeException(BaseTypeException::ERR_PATH_NOT_FOUND,["path"=>implode("/",$path)]);
+          return $this;
+      }
       abstract function getMetaClassName();
   }

@@ -268,7 +268,7 @@ class BaseTypedObjectTest extends TestCase
                 "arr"=>array("TYPE"=>"Array","ELEMENTS"=>[
                     "TYPE"=>"String"
                 ]),
-                "dict"=>array("TYPE"=>"Composite",
+                "dict"=>array("TYPE"=>"Container",
                     "FIELDS"=>[
                         "c1"=>["TYPE"=>"String"],
                         "c2"=>["TYPE"=>"Array",
@@ -337,7 +337,7 @@ class BaseTypedObjectTest extends TestCase
         $obj->one="one";
         $this->expectException('\lib\model\types\_StringException');
         $this->expectExceptionCode(\lib\model\types\_StringException::ERR_TOO_SHORT);
-        $obj->one="";
+        $obj->one="w";
     }
 
     /**
@@ -381,7 +381,7 @@ class BaseTypedObjectTest extends TestCase
     {
         $obj=$this->getDefinition2();
         $this->assertEquals("status",$obj->getStateField());
-        $this->assertEquals('None',$obj->getState());
+        $this->assertEquals('None',$obj->{"*status"}->getLabel());
         $obj->three="thr";
         $obj->loadFromArray(array("status"=>"None","three"=>"qq","one"=>"lala"),"PHP");
         $this->expectException('\lib\model\BaseTypedException');
@@ -632,11 +632,15 @@ class BaseTypedObjectTest extends TestCase
         $obj=$this->getDefinition6();
         $obj->one="str_one";
         $obj->arr=["c1","c2"];
-        $obj->dict->c1="f1";
-        $obj->dict->c2=["first","second"];
+        $obj->{"*dict"}->c1="f1";
+        $obj->{"*dict"}->c2=["first","second"];
         $context=new \lib\model\SimpleContext();
         $val=$obj->getPath("/arr/0",$context);
         $this->assertEquals("c1",$val);
+        $val2=$obj->getPath("/dict/c1",$context);
+        $this->assertEquals("f1",$val2);
+        $val3=$obj->getPath("/dict/c2/1",$context);
+        $this->assertEquals("second",$val3);
     }
     function testPath2()
     {
@@ -660,11 +664,11 @@ class BaseTypedObjectTest extends TestCase
         $obj=$this->getDefinition6();
         $obj->one="str_one";
         $obj->arr=["c1","c2"];
-        $obj->dict->c1="f1";
-        $obj->dict->c2=["first","second"];
+        $obj->{"*dict"}->c1="f1";
+        $obj->{"*dict"}->c2=["first","second"];
         $obj2=$this->getDefinition6();
         $obj2->copy($obj);
-        $this->assertEquals("first",$obj2->dict->c2[0]);
+        $this->assertEquals("first",$obj2->{"*dict"}->c2[0]);
 
     }
     function testAsAssociative()
@@ -672,8 +676,8 @@ class BaseTypedObjectTest extends TestCase
         $obj=$this->getDefinition6();
         $obj->one="str_one";
         $obj->arr=["c1","c2"];
-        $obj->dict->c1="f1";
-        $obj->dict->c2=["first","second"];
+        $obj->{"*dict"}->c1="f1";
+        $obj->{"*dict"}->c2=["first","second"];
         $data=$obj->normalizeToAssociativeArray();
         $this->assertEquals("second",$data["dict"]["c2"][1]);
         $this->assertEquals("str_one",$data["one"]);
@@ -747,7 +751,7 @@ class BaseTypedObjectTest extends TestCase
     {
 
         $obj2=$this->getDefinition4();
-        $obj2->{"*status"}->set("Last");
+        $obj2->{"*status"}->setValue("Last");
         $obj2->__setRaw("three","aVal");
         $obj2->save();
         $result=$obj2->__validateArray(["status"=>"Another"]);

@@ -48,7 +48,7 @@ class FullList
         'STORAGE'=>array(
             'MYSQL'=>array(
                 'DEFINITION'=>array(
-                    'TABLE'=>'Post',
+                    'TABLE'=>'post',
                     'BASE'=>array(
                         'id','creator_id','title','content'
                     ),

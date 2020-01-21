@@ -133,7 +133,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                         $subtype = \lib\model\types\TypeFactory::getType($this, $elementType);
                         $subVals = [];
                         for ($s = 0; $s < $n; $s++) {
-                            $subtype->setValue($type[$s]);
+                            $subtype->setValue($type[$s]->getValue());
                             $serialized = $this->serializer->serializeType($key, $subtype);
                             $subVals[] = $serialized[$key];
                         }

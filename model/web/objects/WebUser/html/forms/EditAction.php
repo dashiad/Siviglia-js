@@ -1,5 +1,5 @@
 <?php
-namespace backoffice\WebUser\html\forms;
+namespace model\web\WebUser\html\forms;
 /**
  FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser//html/forms/EditAction.php
   CLASS:EditAction
@@ -11,29 +11,29 @@ class EditAction extends \lib\output\html\Form
 {
 	 static  $definition=array(
                'NAME'=>'EditAction',
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
                      'MODEL'=>'\model\web\WebUser',
                      'ACTION'=>'EditAction'
                      ),
                'FIELDS'=>array(
                      'LOGIN'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'LOGIN',
                            'REQUIRED'=>1
                            ),
                      'PASSWORD'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'PASSWORD',
                            'REQUIRED'=>1
                            ),
                      'USER_ID'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'USER_ID',
                            'REQUIRED'=>1
                            ),
                      'EMAIL'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'EMAIL',
                            'REQUIRED'=>1
                            )
@@ -63,7 +63,7 @@ class EditAction extends \lib\output\html\Form
 	{
 
 			parent::__construct(EditAction::$definition,$actionResult);
-	
+
 	}
 
 
@@ -88,9 +88,9 @@ class EditAction extends \lib\output\html\Form
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -111,9 +111,9 @@ class EditAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -134,9 +134,9 @@ class EditAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

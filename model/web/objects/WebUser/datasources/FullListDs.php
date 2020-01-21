@@ -1,5 +1,5 @@
 <?php
-namespace backoffice\WebUser\datasources;
+namespace model\web\WebUser\datasources;
 /**
  FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser/datasources/FullListDs.php
   CLASS:FullListDs
@@ -14,37 +14,37 @@ class FullListDs
                'DATAFORMAT'=>'Table',
                'PARAMS'=>array(
                      'LOGIN'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'LOGIN',
                            'TRIGGER_VAR'=>'LOGIN'
                            ),
                      'dynLOGIN'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'LOGIN',
                            'PARAMTYPE'=>'DYNAMIC'
                            ),
                      'PASSWORD'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'PASSWORD',
                            'TRIGGER_VAR'=>'PASSWORD'
                            ),
                      'dynPASSWORD'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'PASSWORD',
                            'PARAMTYPE'=>'DYNAMIC'
                            ),
                      'USER_ID'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'USER_ID',
                            'TRIGGER_VAR'=>'USER_ID'
                            ),
                      'EMAIL'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'EMAIL',
                            'TRIGGER_VAR'=>'EMAIL'
                            ),
                      'dynEMAIL'=>array(
-                           'MODEL'=>'WebUser',
+                           'MODEL'=>'\model\web\WebUser',
                            'FIELD'=>'EMAIL',
                            'PARAMTYPE'=>'DYNAMIC'
                            )

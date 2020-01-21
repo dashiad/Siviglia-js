@@ -1,20 +1,20 @@
 <?php
-namespace model\reflection\Types\meta;
-class DictionaryException extends \model\reflection\Types\meta\BaseTypeException
+namespace lib\model\types;
+class DictionaryException extends \lib\model\types\BaseTypeException
 {
     const ERR_INVALID_VALUE=101;
     const ERR_INVALID_KEY=102;
     const TXT_INVALID_VALUE="This dictionary doesnt accept values of type [%type%]";
     const TXT_INVALID_KEY="Invalid key:[%key%]";
 }
-class Dictionary extends BaseContainer
+class Dictionary extends \lib\model\types\BaseContainer
 {
     function __construct($def,$neutralValue=null)
     {
         parent::__construct($def,null);
         $this->value=null;
     }
-    function setValue($val)
+    function _setValue($val)
     {
         $this->valueSet = false;
         if ($val === null) {
@@ -24,8 +24,9 @@ class Dictionary extends BaseContainer
         }
         $nSet=0;
         foreach ($val as $key => $value) {
-            $subType = \model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+            $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
             $subType->setValue($value);
+            $subType->setParent($this);
             $this->value[$key] = $subType;
             $nSet++;
         }
@@ -33,17 +34,28 @@ class Dictionary extends BaseContainer
             $this->valueSet=true;
     }
 
-    function validate($val)
+    function _validate($val)
     {
         if($val===null)
             return true;
 
         foreach ($val as $key => $value) {
-            $subType = \model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+            $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
             $subType->validate($value);
         }
+        return true;
     }
-    function getValue()
+    function _copy($ins)
+    {
+        $val=$ins->value;
+        foreach($val as $key=>$value)
+        {
+            $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+            $subType->setValue($value->getValue());
+            $subType->setParent($this);
+        }
+    }
+    function _getValue()
     {
         if($this->valueSet==false)
             return null;
@@ -72,7 +84,7 @@ class Dictionary extends BaseContainer
     {
         return $this->valueSet;
     }
-    function equals($value)
+    function _equals($value)
     {
         if($this->value==null && $value==null)
             return true;
@@ -97,7 +109,7 @@ class Dictionary extends BaseContainer
     {
         if(!is_a($value,'\model\reflection\Types\meta\BaseType'))
         {
-            $v=\model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+            $v=\lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
             $v->setValue($value);
             $this->value[$key]=$v;
         }
@@ -134,8 +146,9 @@ class Dictionary extends BaseContainer
         }
         $nSet=0;
         foreach ($val as $key => $value) {
-            $subType = \model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+            $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
             $subType->__rawSet($value);
+            $subType->setParent($this);
             $this->value[$key] = $subType;
             $nSet++;
         }
@@ -157,7 +170,7 @@ class Dictionary extends BaseContainer
 
     function clear()
     {
-        $this->valueSet=true;
+        $this->valueSet=false;
         $this->value=null;
     }
 
@@ -177,11 +190,12 @@ class Dictionary extends BaseContainer
     }
     function __set($fieldName,$value)
     {
-        $subType = \model\reflection\Types\meta\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+        $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
         if(is_object($value))
         {
             if(get_class($subType)==get_class($value)) {
                 $this->value[$fieldName] = $value;
+                $value->setParent($this);
                 if($value->hasOwnValue())
                     $this->valueSet=true;
             }
@@ -190,8 +204,8 @@ class Dictionary extends BaseContainer
         }
         else
         {
-            $subType->validate($value);
             $subType->setValue($value);
+            $subType->setParent($this);
             if($subType->hasOwnValue()) {
                 $this->value[$fieldName]=$subType;
                 $this->valueSet = true;
@@ -215,5 +229,49 @@ class Dictionary extends BaseContainer
     function getEmptyValue()
     {
         return [];
+    }
+    // Un diccionario, indepenedientemente de la key, siempre tiene el mismo tipo.
+    function getTypeFromPath($path)
+    {
+        if(!is_array($path))
+        {
+            $path=explode("/",$path);
+            if($path[0]=="")
+                array_shift($path);
+        }
+        if(count($path)==0)
+            return $this;
+        // Consumimos un field, que deberia ser la key.
+        $field=array_shift($path);
+        $type = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+        return $type->getTypeFromPath($path);
+    }
+    function __getPathProperty($pathProperty,$mode)
+    {
+        if($pathProperty[0]=="{")
+        {
+            $pathProperty=substr($pathProperty,1,-1);
+            if($pathProperty=="keys")
+            {
+                if($this->valueSet==true)
+                    return array_keys($this->value);
+                return [];
+            }
+            $results=[];
+            if($this->valueSet==true) {
+                foreach ($this->value as $key => $val) {
+                    $results[] = $this->value[$key]->getPath($pathProperty);
+                }
+            }
+            return $results;
+        }
+        if($mode=="reference")
+            return $this->{"*".$pathProperty};
+        return $this->{$pathProperty};
+    }
+    function getMetaClassName()
+    {
+        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Dictionary.php");
+        return '\model\reflection\Types\meta\Dictionary';
     }
 }

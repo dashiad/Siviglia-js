@@ -23,6 +23,7 @@ class BaseTypeException extends \lib\model\BaseException{
     const TXT_INCOMPLETE_TYPE="Type is incomplete";
     const TXT_SERIALIZER_NOT_FOUND="Serializer [%serializer%] not found";
     const TXT_TYPE_NOT_EDITABLE="Type is not editable";
+
     var $params;
     public function __construct($code,$params=null)
     {

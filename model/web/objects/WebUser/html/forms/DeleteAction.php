@@ -1,5 +1,5 @@
 <?php
-namespace backoffice\WebUser\html\forms;
+namespace model\web\WebUser\html\forms;
 /**
  FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser//html/forms/DeleteAction.php
   CLASS:DeleteAction
@@ -11,7 +11,7 @@ class DeleteAction extends \lib\output\html\Form
 {
 	 static  $definition=array(
                'NAME'=>'DeleteAction',
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
                      'MODEL'=>'\model\web\WebUser',
                      'ACTION'=>'DeleteAction'
@@ -43,7 +43,7 @@ class DeleteAction extends \lib\output\html\Form
 	{
 
 			parent::__construct(DeleteAction::$definition,$actionResult);
-	
+
 	}
 
 
@@ -68,9 +68,9 @@ class DeleteAction extends \lib\output\html\Form
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -91,9 +91,9 @@ class DeleteAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -114,9 +114,9 @@ class DeleteAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

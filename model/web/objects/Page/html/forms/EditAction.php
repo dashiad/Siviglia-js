@@ -115,4 +115,3 @@ class EditAction extends \lib\output\html\Form
 	}
 
 }
-?>

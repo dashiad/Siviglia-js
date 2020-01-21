@@ -283,7 +283,7 @@ abstract class StorageDataSource extends TableDataSource
             $val=$this->iterator->getColumn($value);
             if(!(count($val)==1 && $val[0]==null))
             {
-                $newField->setValue($this->iterator->getColumn($value));
+                $newField->setValue($val);
                 $nJoins++;
             }
         }

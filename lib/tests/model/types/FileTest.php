@@ -20,6 +20,8 @@ class FileTest extends TestCase
 
     function initialize()
     {
+        if(!is_dir(__DIR__."/res/tmp"))
+            mkdir(__DIR__."/res/tmp");
         chmod(__DIR__."/res/tmp",0777);
         copy(__DIR__."/res/img.png",__DIR__."/res/test.png");
         if(is_file(__DIR__."/res/tmp/destFile.png"))

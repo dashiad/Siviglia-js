@@ -66,6 +66,18 @@ class MysqlSerializerTest extends TestCase
         }
         $ser->createStorage($obj,[],MysqlSerializerTest::TEST_TABLE);
     }
+    function createTestTable2($obj)
+    {
+        $ser=$this->getDefaultSerializer();
+        try{
+            $ser->destroyStorage($obj,MysqlSerializerTest::TEST_TABLE,true);
+        }catch(\Exception $e)
+        {
+
+        }
+        $ser->createStorage($obj,null,MysqlSerializerTest::TEST_TABLE);
+    }
+
     function testCreateSerializer()
     {
         $obj=$this->getSimpleDefinedObject();
@@ -77,7 +89,7 @@ class MysqlSerializerTest extends TestCase
     function testDestroyStorage()
     {
         $obj=$this->getSimpleDefinedObject();
-        $this->createTestTable($obj);
+        $this->createTestTable2($obj);
         $ser=$this->getDefaultSerializer();
         $ser->destroyStorage($obj,MysqlSerializerTest::TEST_TABLE);
         $client=$ser->getConnection();

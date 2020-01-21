@@ -49,7 +49,7 @@ class FullList
         'STORAGE'=>array(
             'MYSQL'=>array(
                 'DEFINITION'=>array(
-                    'TABLE'=>'user',
+                    'TABLE'=>'User',
                     'BASE'=>array(
                         'id','Name'
                     ),

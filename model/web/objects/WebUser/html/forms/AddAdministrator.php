@@ -1,5 +1,5 @@
 <?php
-namespace web\objects\WebUser\html\forms;
+namespace model\web\WebUser\html\forms;
 /**
  FILENAME:c:/xampp/htdocs/rentasignal2//web/objects/WebUser//html/forms/AddAdministrator.php
   CLASS:AddAdministrator
@@ -11,18 +11,18 @@ class AddAdministrator extends \lib\output\html\Form
 {
 	 var $definition=array(
                'NAME'=>'AddAdministrator',
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
-                     'MODEL'=>'\web\objects\WebUser',
+                     'MODEL'=>'\model\web\objects\WebUser',
                      'ACTION'=>'AddAdministrator'
                      ),
                'FIELDS'=>array(
                      'USER_ID'=>array(
                            'REQUIRED'=>1,
                            'TYPE'=>'Relationship',
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'USER_ID'
-                           ),                   
+                           ),
                      'ADMIN_TYPE'=>array(
                          'REQUIRED'=>1,
                          'TYPE'=>'Enum',
@@ -60,11 +60,11 @@ class AddAdministrator extends \lib\output\html\Form
 	 */
 	function validate ( $actionResult )
 	{
-                
+
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -85,9 +85,9 @@ class AddAdministrator extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -108,9 +108,9 @@ class AddAdministrator extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

@@ -164,7 +164,7 @@ class StatedDefinition
                     return null;
 
             if($this->stateType->hasOwnValue())
-                return $this->stateType->get();
+                return $this->stateType->getValue();
             return $this->getDefaultState();
         }
         function getStateField()
@@ -318,7 +318,12 @@ class StatedDefinition
         $orig=$next;
         if(is_string($next))
         {
-            $next=$this->getStateId($next);
+            try {
+                $next = $this->getStateId($next);
+            }catch(\lib\model\types\BaseTypeException $e)
+            {
+                throw new BaseTypedException(BaseTypedException::ERR_UNKNOWN_STATE,array("state"=>$orig));
+            }
         }
         if($next===false)
             throw new BaseTypedException(BaseTypedException::ERR_UNKNOWN_STATE,array("state"=>$orig));

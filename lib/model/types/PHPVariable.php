@@ -15,6 +15,7 @@ class PHPVariable extends \lib\model\types\BaseType {
     function _setValue($val)
     {
         $this->value=$val;
+        $this->valueSet=true;
     }
     function _getValue()
     {
@@ -27,6 +28,11 @@ class PHPVariable extends \lib\model\types\BaseType {
     function _equals($v)
     {
         return $this->value==$v->value;
+    }
+    function _validate($v)
+    {
+        // No hay en principio un criterio de validacion...
+        return true;
     }
     function getMetaClassName()
     {

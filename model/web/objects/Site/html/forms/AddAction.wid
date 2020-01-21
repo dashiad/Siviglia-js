@@ -19,7 +19,7 @@ $params=Registry::$registry["PAGE"];
                         [_FIELDS]
 
 
-				[*/FORMS/inputContainer({"name":"host"})]
+				[*/FORMS/inputContainer({"name":"host","form":"&$form"})]
 					[_LABEL]host[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -35,7 +35,7 @@ $params=Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"canonical_url"})]
+				[*/FORMS/inputContainer({"name":"canonical_url","form":"&$form"})]
 					[_LABEL]canonical_url[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -51,7 +51,7 @@ $params=Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"hasSSL"})]
+				[*/FORMS/inputContainer({"name":"hasSSL","form":"&$form"})]
 					[_LABEL]hasSSL[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -64,7 +64,7 @@ $params=Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"namespace"})]
+				[*/FORMS/inputContainer({"name":"namespace","form":"&$form"})]
 					[_LABEL]namespace[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -80,7 +80,7 @@ $params=Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"websiteName"})]
+				[*/FORMS/inputContainer({"name":"websiteName","form":"&$form"})]
 					[_LABEL]websiteName[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -98,6 +98,6 @@ $params=Registry::$registry["PAGE"];
                         [#]
                 [#]
                 [_BUTTONS]
-                        [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
+                        [*:/INPUTS/Submit({"form":"&$form"})][_LABEL][@L]Aceptar[#][#][#]
                 [#]
           [#]

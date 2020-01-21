@@ -15,4 +15,10 @@ class PHPVariable extends BaseType
             return [$name=>json_encode($type->value)];
         return '';
     }
+    function unserialize($name,$type,$val,$serializer)
+    {
+        $s=json_decode($val[$name],true);
+        $type->setValue($s);
+
+    }
 }

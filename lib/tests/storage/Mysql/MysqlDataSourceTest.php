@@ -90,7 +90,9 @@ class MysqlDataSourceTest extends TestCase
         $datasource->__sort="id";
         $datasource->__sortDir="ASC";
         $res=$datasource->fetchAll();
+        $all=$res->count();
         $posts=$res[0]->Posts->count();
+        $p1=$res[1]->Posts->count();
         $title=$res[1]->Posts[1]->title;
         $this->assertEquals("Post-2-2",$title);
         $posts2=$res[1]->Posts->count();

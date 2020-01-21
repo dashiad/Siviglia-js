@@ -453,7 +453,9 @@ class BaseTypedObject extends PathObject
                     if (isset($this->__dirtyFields[$varName]))
                         throw(new BaseTypedException(BaseTypedException::ERR_DOUBLESTATECHANGE));
                     $this->__stateDef->setOldState($this->__getField($varName)->get());
-                    $this->__stateDef->changeState($value);
+
+                        $this->__stateDef->changeState($value);
+
                     // El cambiar el estado en si, lo hace la definicion de estados, en el metodo changeState
                 }
                 else
@@ -601,7 +603,7 @@ class BaseTypedObject extends PathObject
                  if (isset($fieldArray[$stateFieldName])) {
                      try {
                          $oldState=$targetModel->{$stateFieldName};
-                         $newState = $stateType->get();
+                         $newState = $stateType->getValue();
                          if($oldState!=$newState) {
                              if (isset($targetModel->__dirtyFields[$stateFieldName]))
                                  $result->addFieldTypeError($stateFieldName, null, new BaseTypedException(BaseTypedException::ERR_DOUBLESTATECHANGE));
@@ -635,12 +637,9 @@ class BaseTypedObject extends PathObject
                          (isset($value["UPDATE_ON_NULL"]) && !$value[$key]["UPDATE_ON_NULL"]))
                          $isset=true;
                  }
-                 $reference=$newType->getTypeReference();
+
                  $targetField=$key;
-                 if($reference)
-                 {
-                     $targetField=$reference["FIELD"];
-                 }
+
 
                  // NOTE: si en el array inicial no estaba esta key, lo deserializamos con null.
                  // Esto es importante ya que si el campo es requerido, aunque no tuviera valor, podria haber

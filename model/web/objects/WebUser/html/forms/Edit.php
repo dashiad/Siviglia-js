@@ -1,5 +1,5 @@
 <?php
-namespace web\objects\WebUser\html\forms;
+namespace model\web\WebUser\html\forms;
 /**
  FILENAME:c:/xampp/htdocs/rentasignal2//web/objects/WebUser//html/forms/Edit.php
   CLASS:Edit
@@ -11,70 +11,70 @@ class Edit extends \lib\output\html\Form
 {
 	 var $definition=array(
                'NAME'=>'Edit',
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
-                     'MODEL'=>'\web\objects\WebUser',
+                     'MODEL'=>'\model\web\objects\WebUser',
                      'ACTION'=>'Edit'
                      ),
                'FIELDS'=>array(
                      'LOGIN'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'LOGIN'
                            ),
                      'PASSWORD'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'PASSWORD'
                            ),
                      'EMAIL'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'EMAIL'
                            ),
                      'EXTTYPE'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'EXTTYPE'
                            ),
                      'EXTID'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'EXTID'
                            ),
                      'NLOGINS'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'NLOGINS'
                            ),
                      'LASTLOGIN'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'LASTLOGIN'
                            ),
                      'LASTIP'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'LASTIP'
                            ),
                      'STATE'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'STATE'
                            ),
                      'CREATIONDATE'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'CREATIONDATE'
                            ),
                      'FAILEDLOGINATTEMPTS'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'FAILEDLOGINATTEMPTS'
                            ),
                      'VALIDATED'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'VALIDATED'
                            )
                      ),
@@ -136,7 +136,7 @@ class Edit extends \lib\output\html\Form
                'INDEXFIELD'=>array(
                      'USER_ID'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'USER_ID'
                            )
                      )
@@ -163,9 +163,9 @@ class Edit extends \lib\output\html\Form
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -186,9 +186,9 @@ class Edit extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -209,9 +209,9 @@ class Edit extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

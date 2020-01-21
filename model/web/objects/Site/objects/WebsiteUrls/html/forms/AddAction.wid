@@ -19,7 +19,7 @@ $params=Registry::$registry["PAGE"];
                         [_FIELDS]
 
 
-				[*/FORMS/inputContainer({"name":"id_website"})]
+				[*/FORMS/inputContainer({"name":"id_website","form":"&$form"})]
 					[_LABEL]id_website[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -32,7 +32,7 @@ $params=Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"url"})]
+				[*/FORMS/inputContainer({"name":"url","form":"&$form"})]
 					[_LABEL]url[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -48,7 +48,7 @@ $params=Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"priority"})]
+				[*/FORMS/inputContainer({"name":"priority","form":"&$form"})]
 					[_LABEL]priority[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -63,6 +63,6 @@ $params=Registry::$registry["PAGE"];
                         [#]
                 [#]
                 [_BUTTONS]
-                        [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
+                        [*:/INPUTS/Submit({"form":"&$form"})][_LABEL][@L]Aceptar[#][#][#]
                 [#]
           [#]

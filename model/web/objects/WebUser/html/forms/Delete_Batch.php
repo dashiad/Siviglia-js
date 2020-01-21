@@ -1,5 +1,5 @@
 <?php
-namespace web\objects\WebUser\html\forms;
+namespace model\web\WebUser\html\forms;
 /**
  FILENAME:c:/xampp/htdocs/rentasignal2//web/objects/WebUser//html/forms/Delete_Batch.php
   CLASS:Delete_Batch
@@ -11,9 +11,9 @@ class Delete_Batch extends \lib\output\html\Form
 {
 	 var $definition=array(
                'NAME'=>'Delete_Batch',
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
-                     'MODEL'=>'\web\objects\WebUser',
+                     'MODEL'=>'\model\web\objects\WebUser',
                      'ACTION'=>'Delete_Batch'
                      ),
                'FIELDS'=>array(),
@@ -26,7 +26,7 @@ class Delete_Batch extends \lib\output\html\Form
                'INDEXFIELD'=>array(
                      'USER_ID'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'USER_ID'
                            )
                      ),
@@ -54,9 +54,9 @@ class Delete_Batch extends \lib\output\html\Form
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -77,9 +77,9 @@ class Delete_Batch extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -100,9 +100,9 @@ class Delete_Batch extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

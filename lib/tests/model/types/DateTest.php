@@ -91,10 +91,10 @@ class DateTest extends TestCase
         $ins=new \lib\model\types\Date([
             "TYPE"=>"Date"
         ]);
-        $ins->setValue("16-06-2020");
-        $p=$ins->getValue();
+
         $this->expectException('\lib\model\types\BaseTypeException');
         $this->expectExceptionCode(\lib\model\types\BaseTypeException::ERR_INVALID);
+        $ins->setValue("06-16-2020");
 
     }
 }

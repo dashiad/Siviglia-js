@@ -12,13 +12,14 @@ abstract class Request implements \ArrayAccess
     const OUTPUT_XML="xml";
     static $instance;
     static $request;
-
+    var $currentRoute=null;
+    var $currentRouteDefinition=null;
     private function __construct()
-    {                
+    {
 
     }
     static function getInstance()
-    {        
+    {
         if( Request::$instance!=null) {
             return Request::$instance;
         }
@@ -35,12 +36,28 @@ abstract class Request implements \ArrayAccess
         Request::$request=Request::$instance;
         return Request::$instance;
     }
+    function setCurrentRoute($name,$definition)
+    {
+        $this->currentRoute=$name;
+        $this->currentRouteDefinition=$definition;
+    }
+    function getCurrentRouteName()
+    {
+        return $this->currentRoute;
+    }
+    function getCurrentRouteDefinition()
+    {
+        return $this->currentRouteDefinition;
+    }
+
     abstract function getCurrentSite();
     abstract function getParameters();
     abstract function getActionData();
     abstract function getClientData();
 
+
     abstract function getUser();
+    abstract function setOutputType($type);
     abstract function getOutputType();
     abstract function getUrl();
     abstract function getUnserializerType();

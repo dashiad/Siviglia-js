@@ -1,5 +1,5 @@
 <?php
-namespace backoffice\WebUser\datasources;
+namespace model\web\WebUser\datasources;
 /**
  FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser/datasources/ViewDs.php
   CLASS:ViewDs

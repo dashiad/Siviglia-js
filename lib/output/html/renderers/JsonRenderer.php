@@ -8,17 +8,27 @@ class JsonRenderer
         header('Content-Type: application/json');
         global $oCurrentUser;
 
-        if(!$page->definition["SOURCES"])
+
+        $curRoute=$requestedPath->getCurrentRouteDefinition();
+        if(!isset($curRoute["SOURCES"]))
         {
+
             die(json_encode(array("success"=>0,"errCode"=>1,"errText"=>'No sources for this path')));
         }
 
-        $sources=$page->definition["SOURCES"];
+        $sources=$curRoute["SOURCES"];
 
         foreach($sources as $key=>$definition)
         {
             switch($definition["ROLE"])
             {
+                case 'method':
+                    {
+                        $methodName=$definition["NAME"];
+                        $result=$page->$methodName();
+                        echo json_encode($result);
+                        return;
+                    }break;
                 case 'action':
                 {
                     $actionName=$definition["NAME"];

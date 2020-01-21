@@ -62,12 +62,17 @@ class Form extends \lib\model\BaseTypedObject
         $hash.=$sessionId?$sessionId:"";
         return $hash;
     }
-    function getHash($siteName,$url,$keys=null,$sessionId=null)
+    function createHash($siteName,$url,$keys=null,$sessionId=null)
     {
         if($this->hash==null) {
             $hashString = $this->buildHashString($siteName, $url, $keys, $sessionId);
-            return password_hash($hashString, PASSWORD_DEFAULT);
+            $this->hash=password_hash($hashString, PASSWORD_DEFAULT);
         }
+        return $this->hash;
+    }
+    function getHash()
+    {
+        return $this->hash;
     }
     function checkHash($hash,$siteName,$url,$keys=null,$sessionId=null)
     {

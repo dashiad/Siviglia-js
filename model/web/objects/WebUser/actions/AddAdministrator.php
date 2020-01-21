@@ -1,5 +1,5 @@
 <?php
-namespace web\objects\WebUser\actions;
+namespace model\web\WebUseractions;
 /**
  FILENAME:c:/xampp/htdocs/rentasignal2//web/objects/WebUser/actions/AddAdministrator.php
   CLASS:AddAdministrator
@@ -10,14 +10,14 @@ namespace web\objects\WebUser\actions;
 class AddAdministrator extends \lib\controller\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'WebUser',
+               'MODEL'=>'\model\web\WebUser',
                'ROLE'=>'SEARCH',
                'LABEL'=>'Add Administrator',
                "INDEXFIELDS"=>null,
                'FIELDS'=>array(
                      'USER_ID'=>array(
                            'REQUIRED'=>1,
-                           'MODEL'=>'\web\objects\WebUser',
+                           'MODEL'=>'\model\web\objects\WebUser',
                            'FIELD'=>'USER_ID'
                            ),
                      'ADMIN_TYPE'=>array(
@@ -45,7 +45,7 @@ class AddAdministrator extends \lib\controller\Action
 	{
 
 			\lib\controller\Action::__construct(AddAdministrator::$definition);
-	
+
 	}
 
 
@@ -67,9 +67,9 @@ class AddAdministrator extends \lib\controller\Action
 	 */
 	function validate ( $actionResult )
 	{
-            /* Insert the validation code here */            
+            /* Insert the validation code here */
             return $actionResult->isOk();
-	
+
 	}
 
 
@@ -88,15 +88,15 @@ class AddAdministrator extends \lib\controller\Action
 	 */
 	function onSuccess( $model, $user)
 	{
-            
+
             include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
             $oManager=new \AclManager();
-            $label=$model->{"*ADMIN_TYPE"}->getLabel();            
-            $oManager->addUserToGroup($label,$model->USER_ID->USER_ID);            
+            $label=$model->{"*ADMIN_TYPE"}->getLabel();
+            $oManager->addUserToGroup($label,$model->USER_ID->USER_ID);
             /* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -119,9 +119,9 @@ class AddAdministrator extends \lib\controller\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

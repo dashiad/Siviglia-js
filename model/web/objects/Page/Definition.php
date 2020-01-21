@@ -33,6 +33,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'TYPE'=>'String',
                            'LABEL'=>'Tag',
                            'MAXLENGTH'=>30,
+                           'REGEXP'=>'/^[^w]+$/',
                            'DESCRIPTIVE'=>'true',
                            'SHORTLABEL'=>'tag',
                            'ISLABEL'=>true

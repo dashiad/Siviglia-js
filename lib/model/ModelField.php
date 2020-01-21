@@ -230,7 +230,7 @@ class ModelField
                 //$val=$type->getValue();
                 // El valor se copia a traves del padre, ya que hay algunos tipos de campo (por ejemplo,
                 // los campos STATE), que al cambiar de valor, tienen repercusiones en el padre.
-                $this->model->{$this->name}=$type; //val;
+                $this->model->{$this->name}=$type->getValue(); //val;
             }
             else
             {

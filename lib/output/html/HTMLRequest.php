@@ -96,6 +96,12 @@ class HTMLRequest extends \Request implements \ArrayAccess
 
 
     }
+    function setOutputType($type)
+    {
+        // TODO: Implement setOutputType() method.
+        $this->outputType=$type;
+    }
+
     function getCurrentSite()
     {
         return $this->site;

@@ -65,7 +65,7 @@ class Grouped
                         'TABLE'=>'Posts',
                         'DEFAULT_ORDER'=>'created_on',
                         'DEFAULT_ORDER_DIRECTION'=>'DESC',
-                        'BASE'=>"SELECT * from Post WHERE [%0%] AND [%1%]",
+                        'BASE'=>"SELECT * from post WHERE [%0%] AND [%1%]",
                         'CONDITIONS'=>array(
                             array(
                                 'FILTER'=>'id=[%id]',

@@ -19,7 +19,7 @@ $params=\Registry::$registry["PAGE"];
                         [_FIELDS]
 
 
-				[*/FORMS/inputContainer({"name":"name"})]
+				[*/FORMS/inputContainer({"name":"name","form":"&$form"})]
 					[_LABEL]name[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -35,7 +35,7 @@ $params=\Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"is_rtl"})]
+				[*/FORMS/inputContainer({"name":"is_rtl","form":"&$form"})]
 					[_LABEL]is_rtl[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -48,7 +48,7 @@ $params=\Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"language_code"})]
+				[*/FORMS/inputContainer({"name":"language_code","form":"&$form"})]
 					[_LABEL]language_code[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -64,7 +64,7 @@ $params=\Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"iso_code"})]
+				[*/FORMS/inputContainer({"name":"iso_code","form":"&$form"})]
 					[_LABEL]iso_code[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -80,7 +80,7 @@ $params=\Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"active"})]
+				[*/FORMS/inputContainer({"name":"active","form":"&$form"})]
 					[_LABEL]active[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -93,7 +93,7 @@ $params=\Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"date_format_full"})]
+				[*/FORMS/inputContainer({"name":"date_format_full","form":"&$form"})]
 					[_LABEL]date_format_full[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -109,7 +109,7 @@ $params=\Registry::$registry["PAGE"];
 				[#]
 
 
-				[*/FORMS/inputContainer({"name":"date_format_lite"})]
+				[*/FORMS/inputContainer({"name":"date_format_lite","form":"&$form"})]
 					[_LABEL]date_format_lite[#]
 					[_HELP]**Insert Field Help**[#]
 					[_INPUT]
@@ -127,6 +127,6 @@ $params=\Registry::$registry["PAGE"];
                         [#]
                 [#]
                 [_BUTTONS]
-                        [*/INPUTS/Submit][_LABEL][@L]Aceptar[#][#][#]
+                        [*:/INPUTS/Submit({"form":"&$form"})][_LABEL][@L]Aceptar[#][#][#]
                 [#]
           [#]

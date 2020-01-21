@@ -1,52 +1,53 @@
-<?php
-
-    
-    $actionResult=isset(Registry::$registry["lastAction"])?Registry::$registry["lastAction"]:null;
-    $errored=0;
-    if($actionResult)
-    {
-        $fieldErrors=$actionResult->getFieldErrors($name);        
-        if($fieldErrors)
-        {
-            $errored=1;
-            $extraClass=" errored";
-        }  
-        
-    }
-?>
-[_ERRORS]
-     <?php                     
-       if($errored){                     
-     ?>                
-     <tr><td colspan=3 class="inputErrors">
-       <ul class="inputErrorList">
-          [_ERROR]
-             <?php                     
-              if($fieldErrors[$type][$code]){ 
-             ?>
-                <li class="inputError">[_*]</li>
-             <?php }?>
-          [#]
-         </ul>
-         </td>
-      </tr>
-        <?php } ?>
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_CODE]
+            [#]
+        [#]
+        [_CSS]
+            [_CODE]
+            <style>
+                .fieldError {display:none}
+                .errored {display:block !important}
+            </style>
+            [#]
+        [#]
     [#]
-
-
-<tr>
+[#]
+<div class="fieldContainer">
+    <script>
+        var __prev__=document.currentScript.parentElement;
+        var cForm=__s__form.S_FormRegistry["<?php echo $form->getHash();?>"];
+        cForm.pushContainer(__prev__);
+    </script>
+    <div class="errorContainer">
+[_ERRORS]
+        [_ERROR]
+        <div class="fieldError error<?php echo $code?>container containerError<?php echo $code;?>">
+            [_*]
+        </div>
+        [#]
+[#]
+    </div>
+    <div class="inputContainer">
     <?php $extra=isset($extraClass)?$extraClass:""; $sc=isset($styleClass)?$styleClass:"";?>
-    <td class="inputLabel<?php echo $extra;?> <?php echo $sc;?>">
-    [_LABEL][_*][#]</td>
-    <td class="inputContainer<?php echo $extra;?> <?php echo $sc;?>">
+    <span class="inputLabel<?php echo $extra;?> <?php echo $sc;?>">
+    [_LABEL][_*][#]</span>
+    <span class="inputContainer<?php echo $extra;?> <?php echo $sc;?>">
            [_INPUT]
                 [_*]
            [#]
-    </td>
-    <td class="inputHelp<?php echo $extra;?> <?php echo $sc;?>">
+    </span>
+    <span class="inputHelp<?php echo $extra;?> <?php echo $sc;?>">
            [_HELP]
                 [_*]
            [#]
-    </td>
-</tr>
+    </span>
+    </div>
 
+</div>
+<script>
+    var cForm=__s__form.S_FormRegistry["<?php echo $form->getHash();?>"];
+    cForm.popContainer();
+</script>
