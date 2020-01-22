@@ -12,7 +12,7 @@ class MysqlSerializerException extends \lib\model\BaseException
 
 }
 
-class MysqlSerializer extends \lib\storage\StorageSerializer
+class MYSQLSerializer extends \lib\storage\StorageSerializer
 {
 
     var $conn;
@@ -305,6 +305,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
     {
         if (!$extraDef)
         {
+            // BUG: si no se pasa un array intenta cargar opciones por defecto y falla porque no es un campo 
             $mysqlDesc = \model\reflection\Storage\Mysql\MysqlOptionsDefinition::createDefault($modelDef);
             $extraDef = $mysqlDesc->getDefinition();
         }
@@ -317,7 +318,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
             $fields = $definition["FIELDS"];
 
         // Los objetos privados tienen como prefijo el objeto publico.
-        $tableName = $tableName!==null?$tableName:str_replace('\\','_',$modelDef->getTableName());
+        $tableName = $tableName!==null?$tableName:str_replace('\\','_',$modelDef->__getTableName());
         $fields = $modelDef->__getFields();
 
         $keys = (array) (isset($extraDefinition["KEY"]) ? $extraDefinition["KEY"] : $definition["INDEXFIELDS"]);

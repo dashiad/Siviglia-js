@@ -67,8 +67,8 @@ class Site extends \model\reflection\base\BaseDefinition
         {
             $definition["SERIALIZERS"][$layer]=array(
                 "TYPE"=>"MYSQL","ADDRESS"=>array("host"=>"127.0.0.1",
-                    "user"=>"root",
-                    "password"=>"",
+                    "user"=>"adtopy",
+                    "password"=>"adtopy",
                     "database"=>array("NAME"=>$layer))
             );
 

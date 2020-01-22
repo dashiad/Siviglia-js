@@ -9,6 +9,7 @@ include_once(PROJECTPATH . "/lib/model/BaseTypedObject.php");
 include_once(PROJECTPATH . "/vendor/autoload.php");
 
 use PHPUnit\Framework\TestCase;
+use lib\storage\Mysql\MysqlSerializer;
 
 class ModelTest extends TestCase
 {
@@ -236,4 +237,70 @@ class ModelTest extends TestCase
         $this->assertEquals("UserModified",$ins->Name);
     }
 
+    function testCreateJobsTable()
+    {
+        $model = new \model\web\Job;
+        $res = \Registry::getService("storage")->getSerializerByName('web');
+        $res->createStorage($model, ["test"=>"test"], 'Job');
+    }
+    
+    function testCreateWorkersTable()
+    {
+        $model = new \model\web\Worker;
+        $res = \Registry::getService("storage")->getSerializerByName('web');
+        $res->createStorage($model, ["test"=>"test"], 'Worker');
+    }
+    
+    function testCreateJobs()
+    {
+        $job = new \model\web\Job;
+        $job->job_id = uniqid('test_job_');
+        $job->name = 'test_job';
+        $job->save();
+        
+        for ($i=0;$i<2;$i++) {
+            $child = new \model\web\Job();
+            $child->job_id = uniqid('child_job_');
+            $child->parent = $job->job_id;
+            $child->name = 'child_job';
+            $child->save();
+            for($j=0;$j<4;$j++) {
+                $worker = new \model\web\Worker();
+                $worker->name = "TestWorker";
+                $worker->job_id = $child->job_id;
+                $worker->worker_id = uniqid($worker->job_id.'.'.$worker->name.'_');
+                $worker->index = $j;
+                $worker->number_of_parts=4;
+                $worker->status = 1;
+                //$worker->result = '';
+                $worker->object = '<objeto_serializado>';
+                //$worker->object(serialize($worker));
+                $worker->save();
+            }
+        }
+    }
+    
+    function testFindJobs()
+    {
+        $job = new \model\web\Job;
+        $job->id_job = 3;
+        $job->loadFromFields();
+        $this->assertEquals("waiting", \model\web\Job::getStatus($job->status));
+    }
+    
+    function testListJobs()
+    {
+        $job = new \model\web\Job;
+        $job->id_job=3;
+        $job->loadFromFields();
+        $job->workers->getRelationValues();
+        $this->assertEquals(4, $job->workers->count());
+    }
+    
 }
+$test=new ModelTest();
+/*$test->testCreateJobsTable();
+$test->testCreateWorkersTable();
+$test->testCreateJobs();*/
+$test->testFindJobs();
+$test->testListJobs();

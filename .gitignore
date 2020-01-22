@@ -12,3 +12,7 @@ sites/statics/html/editor/bundles/*
 .history/*
 .vscode/*
 cache/*
+.buildpath
+.project
+.settings/*
+

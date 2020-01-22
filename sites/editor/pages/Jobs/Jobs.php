@@ -1,0 +1,17 @@
+[*PAGE/HTMLPAGE]
+    [_TITLE]Tareas[#]
+    [_CONTENT]
+        [*:LAYOUTS/LAYOUT_3]
+            [_:LEFTSIDEBAR]
+                [*::/model/web/objects/Site/html/views/SitesMenu][#]
+            [#]
+            [_:CONTENT]
+                [*::/model/web/objects/Jobs/html/forms/EditAction][#]
+            [#]
+            [_:RIGHTSIDEBAR]
+
+            [#]
+        [#]
+    [#]
+[#]
+
