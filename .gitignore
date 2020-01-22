@@ -15,4 +15,4 @@ cache/*
 .buildpath
 .project
 .settings/*
-
+sites/editor/html/localConfig.php
