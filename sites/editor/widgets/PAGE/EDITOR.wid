@@ -1,0 +1,26 @@
+<!-- Dentro de lo que es el CONTENT, cargamos el layout que 
+queramos asociado a la pagina EDITOR -->
+
+<?php $sidebar=0;
+?>
+[_SIDEBAR]
+
+<?php $sidebar=1;?>
+[#]
+
+[*:HTML/HTMLPAGE]
+    [_TITLE]
+        [_:TITLE][_*][#]
+    [#]
+
+    [_:CONTENT]
+        [*::LAYOUTS/EDITOR_LAYOUT({"useSidebar":"$sidebar"})]
+            [_::CONTENT]
+                [_CONTENT][_*][#]
+            [#]
+            [_::SIDEBAR({"useSidebar2":"$sidebar"})]
+                [_SIDEBAR][_*][#]
+            [#]            
+        [#]
+    [#]
+[#]
