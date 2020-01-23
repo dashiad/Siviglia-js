@@ -8,8 +8,11 @@ include_once(LIBPATH."/autoloader.php");
 include_once(PROJECTPATH . "/lib/model/BaseTypedObject.php");
 include_once(PROJECTPATH . "/vendor/autoload.php");
 
+use BASE_SITE\Box as Box;
+
 use PHPUnit\Framework\TestCase;
-use lib\storage\Mysql\MysqlSerializer;
+use \model\web\Job;
+use \model\web\Worker;
 
 class ModelTest extends TestCase
 {
@@ -239,42 +242,43 @@ class ModelTest extends TestCase
 
     function testCreateJobsTable()
     {
-        $model = new \model\web\Job;
+        $model = new Job;
         $res = \Registry::getService("storage")->getSerializerByName('web');
         $res->createStorage($model, ["test"=>"test"], 'Job');
     }
     
     function testCreateWorkersTable()
     {
-        $model = new \model\web\Worker;
+        $model = new Worker;
         $res = \Registry::getService("storage")->getSerializerByName('web');
         $res->createStorage($model, ["test"=>"test"], 'Worker');
     }
     
     function testCreateJobs()
     {
-        $job = new \model\web\Job;
+        $job = new Job;
         $job->job_id = uniqid('test_job_');
         $job->name = 'test_job';
+        $job->object = '<objeto_serializado>';
         $job->save();
         
         for ($i=0;$i<2;$i++) {
-            $child = new \model\web\Job();
+            $child = new Job();
             $child->job_id = uniqid('child_job_');
             $child->parent = $job->job_id;
             $child->name = 'child_job';
+            $child->object = '<objeto_serializado>';
             $child->save();
             for($j=0;$j<4;$j++) {
-                $worker = new \model\web\Worker();
+                $worker = new Worker();
                 $worker->name = "TestWorker";
                 $worker->job_id = $child->job_id;
                 $worker->worker_id = uniqid($worker->job_id.'.'.$worker->name.'_');
                 $worker->index = $j;
                 $worker->number_of_parts=4;
                 $worker->status = 1;
-                //$worker->result = '';
+                $worker->items = json_encode([1,2,3,4]);
                 $worker->object = '<objeto_serializado>';
-                //$worker->object(serialize($worker));
                 $worker->save();
             }
         }
@@ -282,7 +286,7 @@ class ModelTest extends TestCase
     
     function testFindJobs()
     {
-        $job = new \model\web\Job;
+        $job = new Job;
         $job->id_job = 3;
         $job->loadFromFields();
         $this->assertEquals("waiting", \model\web\Job::getStatus($job->status));
@@ -290,11 +294,22 @@ class ModelTest extends TestCase
     
     function testListJobs()
     {
-        $job = new \model\web\Job;
+        $job = new Job;
         $job->id_job=3;
         $job->loadFromFields();
         $job->workers->getRelationValues();
         $this->assertEquals(4, $job->workers->count());
+    }
+    function testInvokeDatasource()
+    {
+        $ds=\lib\datasource\DataSourceFactory::getDataSource("\model\web\Job", "FullList");
+        $ds->status=Job::WAITING;
+        $it = $ds->fetchAll();
+        $data = $it->getFullData();
+        foreach($data as $job) {
+            echo $job->job_id;
+        }
+        $this->assertEquals(3, $it->count());
     }
     
 }
@@ -302,5 +317,7 @@ $test=new ModelTest();
 /*$test->testCreateJobsTable();
 $test->testCreateWorkersTable();
 $test->testCreateJobs();*/
+
 $test->testFindJobs();
 $test->testListJobs();
+$test->testInvokeDatasource();

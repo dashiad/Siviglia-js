@@ -5,6 +5,14 @@
         [*:LAYOUTS/EDITOR_LAYOUT({"useSidebar":"$sidebar"})]
             [_:CONTENT]
 
+				[*::COMPONENTS/CARD]
+				    [_::TITLE]Tareas en curso[#]
+				    [_::FOOTER]Hay xx tareas en ejecución[#]
+				    [_::CONTENT]
+				    	[*:/model/web/objects/Job/html/views/FullList2][#]
+				    [#]
+				[#]
+
                 [*::COMPONENTS/CARD]
                     [_::CONTENT]Ejemplo de card SIN titulo y sin pie de pagina[#]
                     [_::FOOTER]Pie de pagina de la tabla fulllist2[#]

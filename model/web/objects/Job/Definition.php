@@ -44,9 +44,9 @@ class Definition extends BaseModelDefinition
                            'TYPE' => 'String',
                            'MINLENGTH' => 2,
                            'MAXLENGTH' => 64,
-                           'LABEL' => 'name',
+                           'LABEL' => 'Nombre',
                            'SEARCHABLE' => 1,
-                           'SHORTLABEL' => 'name',
+                           'SHORTLABEL' => 'Nombre',
                            'DESCRIPTIVE' => 'true',
                            'ISLABEL' => true
                            ],
@@ -60,16 +60,22 @@ class Definition extends BaseModelDefinition
                              Job::FAILED,
                          ],
                          'DEFAULT'    => Job::WAITING,
-                         'LABEL'      => 'Status',
-                         'SHORTLABEL' => 'status',
+                         'LABEL'      => 'Estado',
+                         'SHORTLABEL' => 'Estado',
                      ],
                      'parent' => [
                          'TYPE' => 'Relationship',
                          'MODEL' => '\model\web\Job',
                          'ROLE' => 'HAS_MANY',
+                         'LABEL' => 'Padre',
                          'MULTIPLICITY' => '1:N',
                          'CARDINALITY' => 100,
                          'FIELDS' => ['parent' => 'job_id'],
+                     ],
+                     'object' => [
+                         'TYPE' => 'String',
+                         'LABEL' => 'object',
+                         'SHORTLABEL' => 'object',
                      ],
                  ],
         	     'ALIASES'=>[
@@ -79,7 +85,24 @@ class Definition extends BaseModelDefinition
         	             'ROLE'=>'HAS_MANY',
         	             'MULTIPLICITY'=>'1:N',
         	             'CARDINALITY'=>100,
-        	             'FIELDS'=>array('job_id'=>'job_id')
+        	             'FIELDS'=>['job_id'=>'job_id'],
+        	         ],
+        	         'pending_workers'=>[
+        	             'TYPE'=>'InverseRelation',
+        	             'MODEL'=>'\model\web\Worker',
+        	             'ROLE'=>'HAS_MANY',
+        	             'MULTIPLICITY'=>'1:N',
+        	             'CARDINALITY'=>100,
+        	             'FIELDS'=>['job_id'=>'job_id'],
+        	             'CONDITIONS'=>[
+        	                 [
+        	                     'FILTER'=>array(
+        	                         'F'=>'status',
+        	                         'OP'=>'=',
+        	                         'V'=>Job::PENDING
+        	                     )
+        	                 ]        	                 
+        	             ]
         	         ]
         	   ],
                'PERMISSIONS' => [],

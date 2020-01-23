@@ -40,7 +40,7 @@ class Definition extends BaseModelDefinition
                 'SHORTLABEL' => 'tag',
                 'ISLABEL' => true,
             ],
-            'job_id' => [
+            /*'job_id' => [
                 'TYPE' => 'String',
                 'LABEL' => 'Job Id',
                 'MINLENGTH' => 16,
@@ -48,7 +48,18 @@ class Definition extends BaseModelDefinition
                 'DESCRIPTIVE' => 'true',
                 'SHORTLABEL' => 'tag',
                 'ISLABEL' => true,
-            ],
+            ],*/
+            'job_id' => [
+                'DEFAULT' => 'NULL',
+                'FIELDS' => ['job_id' => 'job_id'],
+                'MODEL' =>  '\model\web\Job',
+                'LABEL' => 'Job',
+                'SHORTLABEL' => 'Job',
+                'TYPE' => 'Relationship',
+                'MULTIPLICITY' => '1:N',
+                'ROLE' => 'HAS_ONE',
+                'CARDINALITY' => 1
+             ],
             'name' => [
                 'TYPE' => 'String',
                 'MINLENGTH' => 2,
@@ -70,6 +81,15 @@ class Definition extends BaseModelDefinition
                 'MIN'   => 1,
                 'MAX'   => 65536,
                 'LABEL' => 'Number of parts',
+            ],
+            'items' => [
+                'TYPE' => 'String',
+                'LABEL' => 'Items',
+            ],
+            'last_completed_item_index' => [
+                'TYPE' => 'Integer',
+                'LABEL' => 'Last completed',
+                'DEFAULT' => null,
             ],
             'status' => [
                 'TYPE'       => 'Enum',

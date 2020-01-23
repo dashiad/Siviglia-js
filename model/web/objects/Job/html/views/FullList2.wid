@@ -3,10 +3,10 @@ $serializer=\Registry::getService("storage")->getSerializerByName('web');
 $currentPage=Registry::$registry["currentPage"];
 $params=$currentPage->getPageParams();
 ?>
-[*:LIST_DS({"currentPage":"$currentPage","object":"/model/web/Job","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+[*:LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Job","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_:HEADER]
-                    [_:TITLE]Titulo de la lista[#]
-                    [_:DESCRIPTION]Descripcion de la lista[#]
+                    [_:TITLE]Jobs[#]
+					[_:ICONO]statics[#]
                 [#]
                 [_:LISTING]
                     [_:COLUMNHEADERS]
@@ -23,6 +23,7 @@ $params=$currentPage->getPageParams();
 						[_:ROW][_:VALUE][*::/types/_String({"name":"name","model":"$iterator"})][#][#][#]
 						[_:ROW][_:VALUE][*::/types/_String({"name":"parent","model":"$iterator"})][#][#][#]
 						[_:ROW][_:VALUE][*::/types/Integer({"name":"status","model":"$iterator"})][#][#][#]
+
                     [#]
                     [_:LISTINGFOOTER]
                     [#]
