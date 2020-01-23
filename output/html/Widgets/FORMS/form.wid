@@ -18,6 +18,7 @@
                     return __s__form.S_FormRegistry[id];
                 }
                 __s__form.form = function (node,id,model,name,keys){
+                    __s__form.S_FormRegistry[id]=this;
                     this.node=node;
                     this.id=id;
                     this.model=model;
@@ -44,7 +45,7 @@
 
                     }
                     this.popContainer=function(){this.containers.pop();}
-                    __s__form.S_FormRegistry[id]=this;
+                    
                     this.addInput=function(instance){
                         this.inputs[instance.name]={input:instance};
 
