@@ -1,0 +1,3 @@
+[submodule "sites/jobs"]
+	path = sites/jobs
+	url = git@github.com:apurrinos-smartclip/jobs.git
