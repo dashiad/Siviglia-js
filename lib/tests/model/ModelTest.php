@@ -312,12 +312,77 @@ class ModelTest extends TestCase
         $this->assertEquals(3, $it->count());
     }
     
+    function testServerStart()
+    {
+        define("DEBUG", \Jobs\Config::get('main', 'debug'));
+        $server = new \Jobs\Server();
+        $server->init();
+    }
+    
+    function testJobCreate()
+    {
+        define("DEBUG", \Jobs\Config::get('main', 'debug'));
+        $args = [
+            "type" => "job",
+            "name" => "simplest_job",
+            "task" => [
+                "type" => "task",
+                "name" => "data_mixer",
+                "args" => [
+                    "task" => "Test",
+                    "type" => "DateRange",
+                    "params" => [
+                        "start_date" => "2019-11-01 00:00:00",
+                        "end_date" => "2019-11-30 23:59:59",
+                        "max_chunk_size" => 10
+                    ]
+                ]
+            ]
+        ];
+        $queue = \Jobs\Queue::connect('test');
+        $job = new \Jobs\Runnables\Job($queue, $args);
+        $job->start();
+        $dbJob = new \model\web\Job();
+        $dbJob->job_id = $job->getId();
+        $dbJob->name = $job->getName();
+        $dbJob->status = $job->getStatus();
+        $dbJob->object = serialize($job);
+        $dbJob->save();
+        $children = $job->getChildren();
+        /*foreach ($children as $child) 
+        {
+            $worker = new \model\web\Worker();
+            $worker->job_id = $child['parent'];
+            $worker->items  = $child['data']['status'];
+            $worker->items  = $child['data']['task'];
+            $worker->items  = json_encode($child['data']['items']);
+            $worker->index = $child['data']['index'];
+            $worker->number_of_parts = count($children);
+            $worker->object = serialize($child);
+            $worker->worker_id = $child['id'];
+            $worker->save();
+        }*/
+        $this->assertEquals(3, count($children));
+    }
+    
+    public function testSendQueue()
+    {
+        $queue = \Jobs\Queue::connect('test');
+        $msg = new \Jobs\Messages\SimpleMessage();
+        $msg->from = 'test';
+        $msg->to = 'test';
+        $msg->data = '';
+        $queue->publish($msg, $queue->getDefaultChannel(), 'main');
+    }
+    
 }
 $test=new ModelTest();
-/*$test->testCreateJobsTable();
-$test->testCreateWorkersTable();
-$test->testCreateJobs();*/
-
-$test->testFindJobs();
-$test->testListJobs();
-$test->testInvokeDatasource();
+//$test->testCreateJobsTable();
+//$test->testCreateWorkersTable();
+//$test->testCreateJobs();
+//$test->testFindJobs();
+//$test->testListJobs();
+//$test->testInvokeDatasource();
+//$test->testServerStart();
+//$test->testJobCreate();
+$test->testSendQueue();

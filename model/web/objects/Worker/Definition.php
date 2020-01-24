@@ -111,6 +111,7 @@ class Definition extends BaseModelDefinition
             ],
             'object' => [
                 'TYPE' => 'String',
+                'MAXLENGTH' => 65535*16,
                 'LABEL' => 'object',
                 'SHORTLABEL' => 'object',
              ],
