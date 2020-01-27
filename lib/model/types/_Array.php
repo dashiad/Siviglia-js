@@ -18,7 +18,7 @@
       {
           $this->subTypeDef=$def["ELEMENTS"];
           $this->subObjects=null;
-          $ins=$this->getSubtypeInstance();
+          $ins=$this->getSubtypeInstance(0);
           $this->remoteTypeName=get_class($ins);
           parent::__construct($def);
       }
@@ -26,10 +26,10 @@
       {
           return $this->subTypeDef;
       }
-      function getSubtypeInstance()
+      function getSubtypeInstance($fieldName)
       {
          $instance= TypeFactory::getType(null,$this->subTypeDef,null);
-         $instance->setParent($this);
+         $instance->setParent($this,$fieldName);
          return $instance;
       }
       function _setValue($val)
@@ -47,11 +47,11 @@
                     $this->subObjects[]=$v;
                 }
                 else
-                    throw new ArrayException(ArrayException::ERR_INVALID_ARRAY_TYPE,["type"=>get_class($v)]);
+                    throw new ArrayException(ArrayException::ERR_INVALID_ARRAY_TYPE,["type"=>get_class($v)],$this);
               }
               else
               {
-                  $ninst=$this->getSubtypeInstance();
+                  $ninst=$this->getSubtypeInstance($k);
                   $ninst->__rawSet($v);
                   $this->subObjects[]=$ninst;
               }
@@ -64,10 +64,11 @@
       {
         if(!is_array($value))
                 $value=array($value);
-         $remoteType=$this->getSubtypeInstance();
-         $remoteClass=get_class($remoteType);
+
          for($k=0;$k<count($value);$k++)
          {
+             $remoteType=$this->getSubtypeInstance($k);
+             $remoteClass=get_class($remoteType);
              if(is_a($value[$k],$remoteClass))
                  continue;
              if(!$remoteType->validate($value[$k]))
@@ -172,7 +173,7 @@
           $this->subObjects=[];
           for($k=0;$k<$n;$k++)
           {
-            $subins=$this->getSubtypeInstance();
+            $subins=$this->getSubtypeInstance($k);
             $subins->copy($ins[$n]);
             $this->subObjects[]=$subins;
           }
@@ -218,7 +219,7 @@
           }
           if(count($path)==0)
               return $this;
-          $type=$this->getSubtypeInstance();
+          $type=$this->getSubtypeInstance($path[0]);
           return $type->getTypeFromPath($path);
       }
   }

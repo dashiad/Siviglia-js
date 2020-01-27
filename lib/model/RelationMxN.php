@@ -303,6 +303,7 @@ class MultipleRelationValues extends RelationValues
         $def=$relInstance->getDefinition();
         $index=$def["INDEXFIELDS"][0];
         $type=\lib\model\types\TypeFactory::getType($relInstance,$def["FIELDS"][$index]);
+        $type->setParent($this,$index);
 
         // se obtiene el valor serializado de esta relacion.Este valor va a ser siempre fijo.
         $local=$this->relField->getLocalMapping();

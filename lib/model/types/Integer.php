@@ -42,17 +42,17 @@
       {
           $value=trim($value);
           if(!preg_match("/^(?:[0-9]+)+$/",$value))
-              throw new IntegerException(IntegerException::ERR_NOT_A_NUMBER);
+              throw new IntegerException(IntegerException::ERR_NOT_A_NUMBER,["val"=>$value],$this);
 
           if(isset($this->definition["MIN"]))
           {
               if($value < intval($this->definition["MIN"]))
-                  throw new IntegerException(IntegerException::ERR_TOO_SMALL,["min"=>$this->definition["MIN"]]);
+                  throw new IntegerException(IntegerException::ERR_TOO_SMALL,["val"=>$value,"min"=>$this->definition["MIN"]],$this);
           }
           if(isset($this->definition["MAX"]))
           {
               if($value > intval($this->definition["MAX"]))
-                throw new IntegerException(IntegerException::ERR_TOO_BIG,["max"=>$this->definition["MAX"]]);
+                throw new IntegerException(IntegerException::ERR_TOO_BIG,["val"=>$value,"max"=>$this->definition["MAX"]],$this);
           }
           return true;
       }

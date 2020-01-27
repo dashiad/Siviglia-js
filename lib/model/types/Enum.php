@@ -9,7 +9,7 @@ class Enum extends BaseType
         {
             if(!in_array($val,$this->definition["VALUES"]))
             {
-                throw new BaseTypeException(BaseTypeException::ERR_INVALID);
+                throw new BaseTypeException(BaseTypeException::ERR_INVALID,["val"=>$val],$this);
             }
 
             $val=array_search($val,$this->definition["VALUES"]);
@@ -17,7 +17,7 @@ class Enum extends BaseType
 
 
         if(!isset($this->definition["VALUES"][$val]))
-            throw new BaseTypeException(BaseTypeException::ERR_INVALID);
+            throw new BaseTypeException(BaseTypeException::ERR_INVALID,["val"=>$val],$this);
         return true;
     }
 
@@ -51,7 +51,7 @@ class Enum extends BaseType
     {
         $pos=array_search($label,$this->definition["VALUES"]);
         if($pos===false)
-            throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$label]);
+            throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$label],$this);
         return $pos;
     }
     function getLabelFromValue($value)

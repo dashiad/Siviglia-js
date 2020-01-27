@@ -25,7 +25,7 @@ class NIF extends _String{
         if(!parent::validate($val))
             return false;
         if(substr("TRWAGMYFPDXBNJZSQVHLCKE",strtr(substr($val,0,-1),"XYZ","012")%23,1)!=substr($val,-1))
-            throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_INVALID);
+            throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_INVALID,null,$this);
         return true;
     }
 

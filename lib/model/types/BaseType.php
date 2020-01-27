@@ -19,6 +19,7 @@
       const TYPE_NOT_MODIFIED_ON_NULL=0x20;
       const TYPE_REQUIRES_UPDATE_ON_NEW=0x40;
 
+      var $fieldName;
       function __construct($def)
       {
           $this->parent=null;
@@ -39,9 +40,18 @@
       {
 
       }
-      function setParent($parent)
+      function setParent($parent,$fieldName)
       {
           $this->parent=$parent;
+          $this->fieldName=$fieldName;
+      }
+      function getFieldName()
+      {
+          return $this->fieldName;
+      }
+      function getParent()
+      {
+          return $this->parent;
       }
       function hasSource()
       {
@@ -98,7 +108,7 @@
                 return true;
             $this->validatingValue=$value;
             if(!$this->checkSource($value))
-                throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$value]);
+                throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$value],$this);
             $res=$this->_validate($value);
             $this->validatingValue=null;
             return $res;
@@ -249,7 +259,7 @@
       {
           // Un tipo basico tiene siempre que ser el ultimo elemento de un path.
           if(count($path)>0)
-              throw new BaseTypeException(BaseTypeException::ERR_PATH_NOT_FOUND,["path"=>implode("/",$path)]);
+              throw new BaseTypeException(BaseTypeException::ERR_PATH_NOT_FOUND,["path"=>implode("/",$path)],$this);
           return $this;
       }
       abstract function getMetaClassName();

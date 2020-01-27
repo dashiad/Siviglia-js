@@ -9,6 +9,8 @@
 namespace lib\model\types;
 
 
+use lib\storage\Persistence\NullSession;
+
 class BaseTypeException extends \lib\model\BaseException{
 
     const ERR_UNSET=1;
@@ -25,9 +27,26 @@ class BaseTypeException extends \lib\model\BaseException{
     const TXT_TYPE_NOT_EDITABLE="Type is not editable";
 
     var $params;
-    public function __construct($code,$params=null)
+    var $source;
+    public function __construct($code,$params=null,$source=null)
     {
+        $this->source=$source;
         $this->params=$params;
         parent::__construct($code,$params);
+    }
+    public function getPath()
+    {
+        $pathParts=[];
+
+        if($this->source)
+        {
+            $source=$this->source;
+            while(is_a($source,'\lib\model\types\BaseType'))
+            {
+                $pathParts[]=$source->getFieldName();
+                $source=$source->getParent();
+            }
+        }
+        return implode("/",array_reverse($pathParts));
     }
 }

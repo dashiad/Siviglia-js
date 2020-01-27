@@ -54,27 +54,27 @@
          {
             if($len < $this->definition["MINLENGTH"])
             {
-                throw new _StringException(_StringException::ERR_TOO_SHORT,["min"=>$this->definition["MINLENGTH"]]);
+                throw new _StringException(_StringException::ERR_TOO_SHORT,["val"=>$len,"min"=>$this->definition["MINLENGTH"]],$this);
             }
          }
 
          if(isset($this->definition["MAXLENGTH"]))
          {
             if($len > $this->definition["MAXLENGTH"])
-                throw new _StringException(_StringException::ERR_TOO_LONG,["max"=>$this->definition["MAXLENGTH"]]);
+                throw new _StringException(_StringException::ERR_TOO_LONG,["val"=>$len,"max"=>$this->definition["MAXLENGTH"]],$this);
 
          }
          if(isset($this->definition["REGEXP"]))
          {
              if(!preg_match($this->definition["REGEXP"],$val))
              {
-                throw new _StringException(_StringException::ERR_INVALID_CHARACTERS);
+                throw new _StringException(_StringException::ERR_INVALID_CHARACTERS,null,$this);
              }
          }
          if(isset($this->definition["EXCLUDE"]))
          {
              if(in_array($val,$this->definition["EXCLUDE"]))
-                 throw new _StringException(_StringException::ERR_EXCLUDED_VALUE,["value"=>$val]);
+                 throw new _StringException(_StringException::ERR_EXCLUDED_VALUE,["value"=>$val],$this);
          }
 
          return true;

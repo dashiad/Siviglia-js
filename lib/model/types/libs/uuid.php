@@ -6,7 +6,7 @@
 
    See http://jkingweb.ca/code/php/lib.uuid/
     for documentation
-    
+
    Last revised 2010-02-15
 */
 
@@ -65,15 +65,15 @@ class UUID {
  protected $variant;
  protected $node;
  protected $time;
- 
+
  public static function mint($ver = 1, $node = NULL, $ns = NULL, $time = NULL) {
   /* Create a new UUID based on provided data. */
   switch((int) $ver) {
    case 1:
     return new self(self::mintTime($node, $time));
    case 2:
-    // Version 2 is not supported 
-    throw new UUIDException("Version 2 is unsupported.");
+    // Version 2 is not supported
+    throw new UUIDException("Version 2 is unsupported.",null,null);
    case 3:
     return new self(self::mintName(self::MD5, $node, $ns));
    case 4:
@@ -81,14 +81,14 @@ class UUID {
    case 5:
     return new self(self::mintName(self::SHA1, $node, $ns));
    default:
-    throw new UUIDException("Selected version is invalid or unsupported.");
+    throw new UUIDException("Selected version is invalid or unsupported.",$null);
   }
  }
 
  public static function import($uuid) {
   /* Import an existing UUID. */
   return new self(self::makeBin($uuid, 16));
- }   
+ }
 
  public static function compare($a, $b) {
   /* Compares the binary representations of two UUIDs.
@@ -130,13 +130,13 @@ class UUID {
     if (ord($this->bytes[6])>>4==1)
      return bin2hex(substr($this->bytes,10));
     else
-     return NULL; 
+     return NULL;
    case "time":
     if (ord($this->bytes[6])>>4==1) {
      // Restore contiguous big-endian byte order
      $time = bin2hex($this->bytes[6].$this->bytes[7].$this->bytes[4].$this->bytes[5].$this->bytes[0].$this->bytes[1].$this->bytes[2].$this->bytes[3]);
      // Clear version flag
-     $time[0] = "0"; 
+     $time[0] = "0";
      // Do some reverse arithmetic to get a Unix timestamp
      $time = (hexdec($time) - self::interval) / 10000000;
      return $time;
@@ -153,7 +153,7 @@ class UUID {
    throw new UUIDException("Input must be a 128-bit integer.");
   $this->bytes  = $uuid;
   // Optimize the most common use
-  $this->string = 
+  $this->string =
    bin2hex(substr($uuid,0,4))."-".
    bin2hex(substr($uuid,4,2))."-".
    bin2hex(substr($uuid,6,2))."-".
@@ -172,10 +172,10 @@ class UUID {
 
 
  protected static function mintTime($node = NULL, $time_arg = NULL) {
-  /* Generates a Version 1 UUID.  
+  /* Generates a Version 1 UUID.
      These are derived from the time at which they were generated. */
   // Get time since Gregorian calendar reform in 100ns intervals
-  // This is exceedingly difficult because of PHP's (and pack()'s) 
+  // This is exceedingly difficult because of PHP's (and pack()'s)
   //  integer size limits.
   // Note that this will never be more accurate than to the microsecond.
   if ($time_arg == NULL) {
@@ -198,10 +198,10 @@ class UUID {
   // set version
   $uuid[6] = chr(ord($uuid[6]) & self::clearVer | self::version1);
   // Set the final 'node' parameter, a MAC address
-  if ($node) 
+  if ($node)
    $node = self::makeBin($node, 6);
-  if (!$node) { 
-    // If no node was provided or if the node was invalid, 
+  if (!$node) {
+    // If no node was provided or if the node was invalid,
     //  generate a random MAC address and set the multicast bit
    $node = self::randomBytes(6);
    $node[0] = pack("C", ord($node[0]) | 1);
@@ -211,7 +211,7 @@ class UUID {
  }
 
  protected static function mintRand() {
-  /* Generate a Version 4 UUID.  
+  /* Generate a Version 4 UUID.
      These are derived soly from random numbers. */
   // generate random fields
   $uuid = self::randomBytes(16);
@@ -232,7 +232,7 @@ class UUID {
   if (!$ns)
    throw new UUIDException("A binary namespace is required for Version 3 or 5 UUIDs.");
   switch($ver) {
-   case self::MD5: 
+   case self::MD5:
     $version = self::version3;
     $uuid = md5($ns.$node,1);
     break;
@@ -279,11 +279,11 @@ class UUID {
    catch(Exception $e) {}
   }
   return self::$randomFunc;
- } 
+ }
 
  public static function randomBytes($bytes) {
   return call_user_func(array('self', self::$randomFunc), $bytes);
- } 
+ }
 
  protected static function randomTwister($bytes) {
   /* Get the specified number of random bytes, using mt_rand().
@@ -291,17 +291,17 @@ class UUID {
   $rand = "";
   for ($a = 0; $a < $bytes; $a++) {
    $rand .= chr(mt_rand(0, 255));
-  } 
+  }
   return $rand;
  }
- 
+
  protected static function randomFRead($bytes) {
-  /* Get the specified number of random bytes using a file handle 
+  /* Get the specified number of random bytes using a file handle
      previously opened with UUID::initRandom().
      Randomness is returned as a string of bytes. */
   return fread(self::$randomSource, $bytes);
  }
- 
+
  protected static function randomCOM($bytes) {
   /* Get the specified number of random bytes using Windows'
      randomness source via a COM object previously created by UUID::initRandom().
@@ -310,15 +310,15 @@ class UUID {
  }
 
    static public function uuid1($node=null, $time=null) {
-       
+
         $uuid = UUID::mint(1, $node, null, $time);
-        $txt=UUID::import($uuid->bytes);        
+        $txt=UUID::import($uuid->bytes);
         return $txt;
     }
 
     /**
      * Generate a v3 UUID
-     * @return string a byte[] representation of a UUID 
+     * @return string a byte[] representation of a UUID
      */
     static public function uuid3($node=null, $namespace=null) {
         $uuid = UUID::mint(3, $node, $namespace);
@@ -327,7 +327,7 @@ class UUID {
 
     /**
      * Generate a v4 UUID
-     * @return string a byte[] representation of a UUID 
+     * @return string a byte[] representation of a UUID
      */
     static public function uuid4() {
         $uuid = UUID::mint(4);

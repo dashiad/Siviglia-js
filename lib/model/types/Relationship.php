@@ -42,7 +42,12 @@ class Relationship extends BaseType {
           {
               $m->{$value}=$val;
           }
-          $m->loadFromFields();
+          try {
+              $m->loadFromFields();
+          }catch(\Exception $e)
+          {
+              throw new BaseTypeException(BaseTypeException::ERR_INVALID,["val"=>$val],$this);
+          }
           return true;
       }
       function _getValue()

@@ -806,6 +806,7 @@ class BaseTypedObject extends PathObject
                                  else
                                  {
                                      $relType=\lib\model\types\TypeFactory::getType($targetModel,$localField->getDefinition());
+                                     $relType->setParent($this,$fieldName);
                                      $relType->validate($fieldValue);
                                  }
                              }catch(\Exception $e)

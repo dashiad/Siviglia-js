@@ -215,24 +215,24 @@ class ActionTest extends TestCase
 
             "title"=>"Ultimo post",
             "comments"=>[
+                ['title'=>'Comentario 2','content'=>'Content comentario 2'],
             ['title'=>'Comentario 1Comentario 1Comentario 1Comentario 1Comentario 1Comentario 1Comentario 1',
                 'content'=>'Content comentario 1'],
-            ['title'=>'Comentario 2','content'=>'Content comentario 2'],
+
             ['title'=>'Comentario 3','content'=>'Content comentario 3'],
         ]];
 
 
         $act->process($data, $actionResult, $oCurrentUser);
         // Se comprueba que la accion esta ok
-        $this->assertEquals(true,$actionResult->isOk());
+        $this->assertEquals(false,$actionResult->isOk());
 
-        // Se comprueba que se ha insertado el post y los comentarios:
-        $ins=new \model\tests\Post();
-        $ins->id=11;
-        $ins->loadFromFields();
-        $this->assertEquals("Ultimo post",$ins->title);
-        $this->assertEquals(3,$ins->comments->count());
-        $this->assertEquals("Content comentario 3",$ins->comments[2]->content);
+        $errors=$actionResult->getFieldErrors();
+        $keys=array_keys($errors);
+        $this->assertEquals("comments/1/title",$keys[0]);
+        $data=$errors[$keys[0]];
+        $keys2=array_keys($data);
+        $this->assertEquals('lib\model\types\_StringException::TOO_LONG',$keys2[0]);
     }
 
 }

@@ -36,7 +36,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
              // if(!class_exists($cName))
              // {
               //echo $type;
-                  throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type));
+                  throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type),null);
              // }
           }
           return $cName;
@@ -67,7 +67,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
                     }
                     return $newType;
                 }
-                throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def));
+                throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def),null);
             }
 
             $type=$def["TYPE"];
@@ -158,7 +158,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
           $className=$objName->getNamespaced().'\Definition';
           if(!class_exists($className))
           {
-              throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$className));
+              throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$className),null);
           }
           // Se instancia, por si hay que hacer inicializacion de la definicion en el constructor.
           $n=new $className();

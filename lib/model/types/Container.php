@@ -29,7 +29,7 @@ class Container extends BaseContainer
         foreach($curDef as $key=>$value)
         {
             $this->__fields[$key]=\lib\model\types\TypeFactory::getType($this,$value);
-            $this->__fields[$key]->setParent($this);
+            $this->__fields[$key]->setParent($this,$key);
 
             $wasEmpty=true;
             if(isset($val[$key])) {
@@ -44,7 +44,7 @@ class Container extends BaseContainer
                 else
                 {
                     if(isset($value["REQUIRED"]))
-                        throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,["field"=>$key]);
+                        throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,["field"=>$key],$this);
                     if(isset($value["KEEP_KEY_ON_EMPTY"]))
                         $nSet++;
                 }
@@ -68,9 +68,9 @@ class Container extends BaseContainer
         {
             $curDef=$this->definition["FIELDS"][$key];
             $tempType=\lib\model\types\TypeFactory::getType($this,$curDef);
-            $tempType->setParent($this);
+            $tempType->setParent($this,$key);
             if(!isset($value[$key]) && isset($curDef["REQUIRED"]) && $curDef["REQUIRED"]!=false)
-                throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key));
+                throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key),$this);
             if(isset($value[$key])) {
 
                 if (!$tempType->validate($value[$key]))
@@ -78,7 +78,7 @@ class Container extends BaseContainer
                 $tempType->__rawSet($value[$key]);
             }
             if($curDef["REQUIRED"] && $tempType->hasValue()===false)
-                throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key));
+                throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key),$this);
         }
         return true;
     }
@@ -136,7 +136,7 @@ class Container extends BaseContainer
                 return false;
             $curDef = $this->definition["FIELDS"][$key];
             $tempType=\lib\model\types\TypeFactory::getType($this,$curDef);
-            $tempType->setParent($this);
+            $tempType->setParent($this,$key);
             $tempType->__rawSet($value[$key]);
             if(!$tempType->equals($this->__fields[$key]->getValue()))
                 return false;
@@ -176,13 +176,13 @@ class Container extends BaseContainer
     function __set($fieldName,$value)
     {
         if(!isset($this->definition["FIELDS"][$fieldName]))
-            throw new BaseTypeException(\lib\model\types\BaseTypeException::ERR_NOT_A_FIELD,array("field"=>$fieldName));
+            throw new BaseTypeException(\lib\model\types\ContainerException::ERR_NOT_A_FIELD,array("field"=>$fieldName),$this);
         $instance=\lib\model\types\TypeFactory::getType($this,$this->definition["FIELDS"][$fieldName]);
-        $instance->setParent($this);
+        $instance->setParent($this,$fieldName);
         if(is_object($value))
         {
             if(get_class($value)!=get_class($instance))
-                throw new ContainerException(ContainerException::ERR_INVALID_TYPE_FOR_FIELD,["type"=>get_class($value),"field"=>$fieldName]);
+                throw new ContainerException(ContainerException::ERR_INVALID_TYPE_FOR_FIELD,["type"=>get_class($value),"field"=>$fieldName],$this);
 
             $instance->validate($value->getValue());
             $this->__fields[$fieldName]=$value;
@@ -202,16 +202,16 @@ class Container extends BaseContainer
             $fieldName=substr($fieldName,1);
             if(!isset($this->__fields[$fieldName])) {
                 if(!isset($this->definition["FIELDS"][$fieldName]))
-                    throw new ContainerException(ContainerException::ERR_NOT_A_FIELD, ["field" => $fieldName]);
+                    throw new ContainerException(ContainerException::ERR_NOT_A_FIELD, ["field" => $fieldName],$this);
                 else {
                     $this->__fields[$fieldName] = \lib\model\types\TypeFactory::getType($this, $this->definition["FIELDS"][$fieldName]);
-                    $this->__fields[$fieldName]->setParent($this);
+                    $this->__fields[$fieldName]->setParent($this,$fieldName);
                 }
             }
             return $this->__fields[$fieldName];
         }
         if(!isset($this->__fields[$fieldName]))
-            throw new ContainerException(ContainerException::ERR_NOT_A_FIELD,["field"=>$fieldName]);
+            throw new ContainerException(ContainerException::ERR_NOT_A_FIELD,["field"=>$fieldName],$this);
         return $this->__fields[$fieldName]->getValue();
     }
     function _copy($ins)

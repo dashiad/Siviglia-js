@@ -29,13 +29,13 @@ class Image extends File
         $maxHeight=isset($this->definition["MAXHEIGHT"]);
 
         if($minWidth && $size[0] < $this->definition["MINWIDTH"])
-            throw new ImageException(ImageException::ERR_TOO_SMALL,array("min"=>$this->definition["MINWIDTH"],"current"=>$size[0]));
+            throw new ImageException(ImageException::ERR_TOO_SMALL,array("min"=>$this->definition["MINWIDTH"],"current"=>$size[0]),$this);
         if($maxWidth && $size[0] > $this->definition["MAXWIDTH"])
-            throw new ImageException(ImageException::ERR_TOO_WIDE,array("max"=>$this->definition["MAXWIDTH"],"current"=>$size[0]));
+            throw new ImageException(ImageException::ERR_TOO_WIDE,array("max"=>$this->definition["MAXWIDTH"],"current"=>$size[0]),$this);
         if($minHeight && $size[1] < $this->definition["MINHEIGHT"])
-            throw new ImageException(ImageException::ERR_TOO_SHORT,array("min"=>$this->definition["MINHEIGHT"],"current"=>$size[1]));
+            throw new ImageException(ImageException::ERR_TOO_SHORT,array("min"=>$this->definition["MINHEIGHT"],"current"=>$size[1]),$this);
         if($maxHeight && $size[1] > $this->definition["MAXHEIGHT"])
-            throw new ImageException(ImageException::ERR_TOO_TALL,array("max"=>$this->definition["MAXHEIGHT"],"current"=>$size[1]));
+            throw new ImageException(ImageException::ERR_TOO_TALL,array("max"=>$this->definition["MAXHEIGHT"],"current"=>$size[1]),$this);
     }
 
     function save()

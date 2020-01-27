@@ -37,9 +37,9 @@ class RowDataSet extends \lib\model\BaseTypedObject{
     Definicion de un dataset:
     array(
         "FIELDS"=>array($key=>array(...))
-    )    
- 
- 
+    )
+
+
 */
 class DataSet extends BaseType implements \ArrayAccess // TableDataSet
 {
@@ -58,21 +58,21 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
     var $rangeStart=0;
     var $rangeEnd=0;
 
-    function __construct($definition,$value=null,$count=-1,$fullCount=-1,$parentDs=null,$reIndexField=null)    
+    function __construct($definition,$value=null,$count=-1,$fullCount=-1,$parentDs=null,$reIndexField=null)
     {
-        $this->definition=$definition;      
-        $this->parentDs=$parentDs;    
-        
+        $this->definition=$definition;
+        $this->parentDs=$parentDs;
+
         if($count == -1)
         {
            $this->valueSet=false;
            return;
         }
-        
+
         $this->initialize($value,$count,$fullCount,$reIndexField);
         $this->rowSet=new RowDataSet($definition,$this);
-        $this->setFlags(BaseType::TYPE_NOT_EDITABLE);        
-    }        
+        $this->setFlags(BaseType::TYPE_NOT_EDITABLE);
+    }
     function initialize($value,$count,$fullCount,$reIndexField=null)
     {
         $this->value=$value;
@@ -99,7 +99,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
             if($value==null)
                 $this->value=null;
             else
-                throw new BaseTypeException(BaseTypeException::ERR_INVALID);
+                throw new BaseTypeException(BaseTypeException::ERR_INVALID,null,$this);
         }
         else
         {
@@ -107,11 +107,11 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
             $this->initialize($value,$nValues,$nValues,null);
         }
         $this->valueSet=true;
-    }      
+    }
 
     function _validate($value)
-    {                       
-            return true;                                            
+    {
+            return true;
     }
     function postValidate($value)
     {
@@ -132,13 +132,13 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         $this->count=$type->count;
         $this->valueSet=true;
         $this->fullCount=$type->fullCount;
-        $this->parentDs=$type->parentDs;        
+        $this->parentDs=$type->parentDs;
         $this->reIndexField=$type->reIndexField;
         $this->definition=$type->definition;
     }
 
     function getDiff($value)
-    {          
+    {
         if($value->count!=$this->count || $value->fullCount!=$this->fullCount)
             return false;
 
@@ -173,14 +173,14 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         $this->valueSet=true;
         $this->initialize(array(),0,0,null);
     }
-        
+
     function _getValue()
     {
         return $this->value;
     }
     function __toString()
     {
-          
+
           if(!$this->valueSet)
           {
               return "";
@@ -268,7 +268,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
     }
 
     function rebuildIndexes()
-    {       
+    {
         for($k=0;$k<$this->count;$k++)
         {
             $val=$this->value[$k][$this->reIndexField];
@@ -278,7 +278,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
     function setIndex($index)
     {
         if($this->reIndexField && $this->currentIndex!==$index)
-        {            
+        {
             $this->currentIndex=$index;
             $this->currentOffset=0;
             $this->mappedOffset=$this->reIndexData[$index][0];
@@ -308,21 +308,21 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
     }
     function getFullRow()
     {
-       return $this->getRow();       
+       return $this->getRow();
     }
     function getSubDataSources()
     {
         return $this->subDs;
     }
-    
+
     function getField($varName)
     {
-        
+
        if($this->reIndexField)
              $offset=$this->mappedOffset;
        else
-           $offset=$this->currentOffset;       
-       
+           $offset=$this->currentOffset;
+
         if(array_key_exists($varName,$this->value[$offset]))
         {
                 return $this->value[$offset][$varName];
@@ -361,14 +361,14 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
     {
         $s=$this->parentDs->getSerializer();
         if($this->reIndexField)
-        {            
+        {
             $this->mappedOffset=$this->reIndexData[$this->currentIndex][$index];
             $s->unserializeObjectFromData($this->rowSet,$this->value[$this->mappedOffset]);
 
         }
         else
         {
-            $this->currentOffset=$index;                        
+            $this->currentOffset=$index;
             //if($this->parentDs)
             //{
 

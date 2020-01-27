@@ -28,9 +28,15 @@ class ModelFieldErrorContainer
     {
         $this->isOk=false;
         $code=$exception->getCode();
-        if(count($this->path)>0)
-          $field=implode("/",$this->path)."/".$field;
-        $this->fieldErrors[$field][$exception->getCodeString()][$code]=array("value"=>$value,"code"=>$code);
+        if(is_a($exception,'\lib\model\BaseTypedException'))
+            $path=$field;
+        else
+            $path=$exception->getPath();
+        $this->fieldErrors[$path][$exception->getCodeString()][$code]=array(
+            "value"=>$value,
+            "code"=>$code,
+            "path"=>$path
+        );
     }
     function pushPath($p)
     {

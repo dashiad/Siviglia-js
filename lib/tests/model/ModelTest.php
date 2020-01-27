@@ -323,7 +323,7 @@ class ModelTest extends TestCase
         $keys = array_keys($fieldErrors);
         $this->assertEquals("creator_id", $keys[0]);
         $keys = array_keys($fieldErrors[$keys[0]]);
-        $this->assertEquals('lib\model\BaseModelException::UNKNOWN_OBJECT', $keys[0]);
+        $this->assertEquals('lib\model\types\BaseTypeException::INVALID', $keys[0]);
     }
 
     /*
@@ -464,7 +464,7 @@ class ModelTest extends TestCase
         $this->assertEquals(false, $result->isOk());
         $fieldErrors = $result->getFieldErrors();
         $keys = array_keys($fieldErrors);
-        $this->assertEquals("comments/0/title", $keys[0]);
+        $this->assertEquals("title", $keys[0]);
         $subKeys = array_keys($fieldErrors[$keys[0]]);
         $this->assertEquals('lib\model\types\_StringException::TOO_LONG', $subKeys[0]);
     }

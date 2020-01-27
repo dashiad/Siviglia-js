@@ -26,7 +26,7 @@ class Dictionary extends \lib\model\types\BaseContainer
         foreach ($val as $key => $value) {
             $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
             $subType->setValue($value);
-            $subType->setParent($this);
+            $subType->setParent($this,$key);
             $this->value[$key] = $subType;
             $nSet++;
         }
@@ -41,6 +41,7 @@ class Dictionary extends \lib\model\types\BaseContainer
 
         foreach ($val as $key => $value) {
             $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+            $subType->setParent($this,$key);
             $subType->validate($value);
         }
         return true;
@@ -52,7 +53,7 @@ class Dictionary extends \lib\model\types\BaseContainer
         {
             $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
             $subType->setValue($value->getValue());
-            $subType->setParent($this);
+            $subType->setParent($this,$key);
         }
     }
     function _getValue()
@@ -110,6 +111,7 @@ class Dictionary extends \lib\model\types\BaseContainer
         if(!is_a($value,'\model\reflection\Types\meta\BaseType'))
         {
             $v=\lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+            $v->setParent($this,$key);
             $v->setValue($value);
             $this->value[$key]=$v;
         }
@@ -147,8 +149,9 @@ class Dictionary extends \lib\model\types\BaseContainer
         $nSet=0;
         foreach ($val as $key => $value) {
             $subType = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+
             $subType->__rawSet($value);
-            $subType->setParent($this);
+            $subType->setParent($this,$key);
             $this->value[$key] = $subType;
             $nSet++;
         }
@@ -195,12 +198,12 @@ class Dictionary extends \lib\model\types\BaseContainer
         {
             if(get_class($subType)==get_class($value)) {
                 $this->value[$fieldName] = $value;
-                $value->setParent($this);
+                $value->setParent($this,$fieldName);
                 if($value->hasOwnValue())
                     $this->valueSet=true;
             }
             else
-                throw new DictionaryException(DictionaryException::ERR_INVALID_VALUE,["type"=>get_class($value)]);
+                throw new DictionaryException(DictionaryException::ERR_INVALID_VALUE,["type"=>get_class($value)],$this);
         }
         else
         {
@@ -219,11 +222,11 @@ class Dictionary extends \lib\model\types\BaseContainer
         {
             $fieldName=substr($fieldName,1);
             if(!isset($this->value[$fieldName]))
-                throw new DictionaryException(DictionaryException::ERR_INVALID_KEY,["key"=>$fieldName]);
+                throw new DictionaryException(DictionaryException::ERR_INVALID_KEY,["key"=>$fieldName],$this);
             return $this->value[$fieldName];
         }
         if(!isset($this->value[$fieldName]))
-            throw new DictionaryException(DictionaryException::ERR_INVALID_KEY,["key"=>$fieldName]);
+            throw new DictionaryException(DictionaryException::ERR_INVALID_KEY,["key"=>$fieldName],$this);
         return $this->value[$fieldName]->getValue();
     }
     function getEmptyValue()
@@ -244,6 +247,7 @@ class Dictionary extends \lib\model\types\BaseContainer
         // Consumimos un field, que deberia ser la key.
         $field=array_shift($path);
         $type = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
+        $type->setParent($this,$path[0]);
         return $type->getTypeFromPath($path);
     }
     function __getPathProperty($pathProperty,$mode)

@@ -50,7 +50,7 @@ abstract class BaseContainer extends BaseType
                 $i++;
             }
             if($nBraces>0)
-                throw new BaseContainerException(BaseContainerException::ERR_UNMATCHED_BRACE,["path"=>$path]);
+                throw new BaseContainerException(BaseContainerException::ERR_UNMATCHED_BRACE,["path"=>$path],$this);
             $matches[]=$current;
             // Los paths son del tipo:
             //  /a/b/c/{/a/b/c}
@@ -58,7 +58,7 @@ abstract class BaseContainer extends BaseType
             $pathLength = count($parts);
             return $this->__getPath($parts, 0, $pathLength);
         }catch(\Exception $e) {
-            throw new BaseContainerException(BaseContainerException::ERR_PATH_NOT_FOUND,["path"=>$path]);
+            throw new BaseContainerException(BaseContainerException::ERR_PATH_NOT_FOUND,["path"=>$path],$this);
             }
     }
 
@@ -71,14 +71,14 @@ abstract class BaseContainer extends BaseType
         if($path[$index]=="..")
         {
             if($this->parent===null)
-                throw new BaseContainerException(BaseContainerException::ERR_NO_PARENT);
+                throw new BaseContainerException(BaseContainerException::ERR_NO_PARENT,null,$this);
             return $this->parent->__getPath($path, $next, $pathLength);
         }
         if ($next == $pathLength)
             return $this->__getPathProperty($path[$current],"value");
         $ref = $this->__getPathProperty($path[$current],"reference");
         if ($ref === null) {
-            throw new BaseContainerException(BaseContainerException::ERR_PATH_NOT_FOUND, array("path" => "/" . implode("/", $path), "index" => $next));
+            throw new BaseContainerException(BaseContainerException::ERR_PATH_NOT_FOUND, array("path" => "/" . implode("/", $path), "index" => $next),$this);
         }
         return $ref->__getPath($path, $next, $pathLength);
     }

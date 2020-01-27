@@ -94,14 +94,14 @@
       {
           if(!is_file($fileName))
           {
-              throw new FileException(FileException::ERR_FILE_DOESNT_EXISTS,array("path"=>$fileName));
+              throw new FileException(FileException::ERR_FILE_DOESNT_EXISTS,array("path"=>$fileName),$this);
           }
           $fsize=filesize($fileName);
           if(isset($this->definition["MINSIZE"]) && $this->definition["MINSIZE"] > $fsize)
-              throw new FileException(FileException::ERR_FILE_TOO_SMALL,array("minsize"=>$this->definition["MINSIZE"],"actualsize"=>$fsize));
+              throw new FileException(FileException::ERR_FILE_TOO_SMALL,array("minsize"=>$this->definition["MINSIZE"],"actualsize"=>$fsize),$this);
 
           if(isset($this->definition["MAXSIZE"]) && $this->definition["MAXSIZE"] < $fsize)
-              throw new FileException(FileException::ERR_FILE_TOO_BIG,array("minsize"=>$this->definition["MAXSIZE"],"actualsize"=>$fsize));
+              throw new FileException(FileException::ERR_FILE_TOO_BIG,array("minsize"=>$this->definition["MAXSIZE"],"actualsize"=>$fsize),$this);
 
 
           if(isset($this->definition["EXTENSIONS"]))
@@ -115,7 +115,7 @@
 
               if(!in_array($extension,array_map(function($i){return strtolower($i);},$allowedExtensions)))
               {
-                  throw new FileException(FileException::ERR_INVALID_FILE,array("extension"=>$extension,"allowed"=>implode(",",$allowedExtensions)));
+                  throw new FileException(FileException::ERR_INVALID_FILE,array("extension"=>$extension,"allowed"=>implode(",",$allowedExtensions)),$this);
               }
           }
           return true;
@@ -189,13 +189,13 @@
               {
                   if(!move_uploaded_file($this->srcFile,$destFile))
                   {
-                      throw new FileException(FileException::ERR_CANT_MOVE_FILE,array("src"=>$this->srcFile,"dest"=>$destFile));
+                      throw new FileException(FileException::ERR_CANT_MOVE_FILE,array("src"=>$this->srcFile,"dest"=>$destFile),$this);
                   }
               }
               else
               {
                   if(!@rename($this->srcFile,$destFile))
-                      throw new FileException(FileException::ERR_CANT_MOVE_FILE,array("src"=>$this->srcFile,"dest"=>$destFile));
+                      throw new FileException(FileException::ERR_CANT_MOVE_FILE,array("src"=>$this->srcFile,"dest"=>$destFile),$this);
 
               }
 
@@ -249,10 +249,10 @@
               if(!is_dir($destDir))
               {
                   if(!@mkdir($destDir,0777,true))
-                      throw new FileException(FileException::ERR_CANT_CREATE_DIRECTORY,array("dir"=>$destDir));
+                      throw new FileException(FileException::ERR_CANT_CREATE_DIRECTORY,array("dir"=>$destDir),$this);
               }
               if(!is_writable(dirname($filePath)))
-                   throw new FileException(FileException::ERR_NOT_WRITABLE_PATH,array("path"=>$filePath));
+                   throw new FileException(FileException::ERR_NOT_WRITABLE_PATH,array("path"=>$filePath),$this);
 
               // Establecemos de nuevo el valor.
               // Por defecto, se va a almacenar un path relativo al projectPath

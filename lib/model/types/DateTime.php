@@ -61,33 +61,33 @@
 
           $asArr=$this->asArray($value);
           if($asArr===false)
-              throw new BaseTypeException(BaseTypeException::ERR_INVALID);
+              throw new BaseTypeException(BaseTypeException::ERR_INVALID,["val"=>$value],$this);
           extract($asArr);
 
           if(io($this->definition,"STARTYEAR",false))
           {
               if(intval($year)<intval($this->definition["STARTYEAR"]))
-                  throw new DateTimeTypeException(DateTimeTypeException::ERR_START_YEAR,array("year"=>$this->definition["STARTYEAR"]));
+                  throw new DateTimeTypeException(DateTimeTypeException::ERR_START_YEAR,array("val"=>$year,"year"=>$this->definition["STARTYEAR"]),$this);
           }
           if(io($this->definition,"ENDYEAR",false))
           {
               if(intval($year)>intval($this->definition["ENDYEAR"]))
-                  throw new DateTimeTypeException(DateTimeTypeException::ERR_END_YEAR,array("year"=>$this->definition["ENDYEAR"]));
+                  throw new DateTimeTypeException(DateTimeTypeException::ERR_END_YEAR,array("val"=>$year,"year"=>$this->definition["ENDYEAR"]),$this);
           }
 
           if(intval($hour)<0 || intval($hour)>23)
-              throw new DateTimeTypeException(DateTimeTypeException::ERR_WRONG_HOUR);
+              throw new DateTimeTypeException(DateTimeTypeException::ERR_WRONG_HOUR,["val"=>$hour],$this);
           if(intval($minutes)<0 || intval($minutes)>59)
-              throw new DateTimeTypeException(DateTimeTypeException::ERR_WRONG_MINUTE);
+              throw new DateTimeTypeException(DateTimeTypeException::ERR_WRONG_MINUTE,["val"=>$minutes],$this);
           if(intval($seconds)<0 || intval($seconds)>59)
-              throw new DateTimeTypeException(DateTimeTypeException::ERR_WRONG_SECOND);
+              throw new DateTimeTypeException(DateTimeTypeException::ERR_WRONG_SECOND,["val"=>$seconds],$this);
 
           $timestamp=$this->getTimestamp($value,$asArr);
           $curTimestamp=time();
           if(io($this->definition,"STRICTLYPAST",false) && $curTimestamp < $timestamp)
-              throw new DateTimeTypeException(DateTimeTypeException::ERR_STRICTLY_PAST);
+              throw new DateTimeTypeException(DateTimeTypeException::ERR_STRICTLY_PAST,["val"=>$value],$this);
           if(io($this->definition,"STRICTLYFUTURE",false) && $curTimestamp > $timestamp)
-              throw new DateTimeException(DateTimeTypeException::ERR_STRICTLY_FUTURE);
+              throw new DateTimeException(DateTimeTypeException::ERR_STRICTLY_FUTURE,["val"=>$value],$this);
 
           BaseType::postValidate($value);
 

@@ -42,11 +42,11 @@ class TypeSwitcher extends BaseContainer
         else
         {
             if($this->implicit_type===null)
-                throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD);
+                throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD,null,$this);
             $type=$this->implicit_type;
         }
         if(!$this->isAllowedType($type))
-            throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$type]);
+            throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$type],$this);
 
         // Ahora hay que resolver si hay una subkey para el contenido, o no.
         // Si no lo hay, el propio tipo tiene que tener el campo "type_field".
@@ -76,11 +76,11 @@ class TypeSwitcher extends BaseContainer
         else
         {
             if($this->implicit_type===null)
-                throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD);
+                throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD,$this);
             $type=$this->implicit_type;
         }
         if(!$this->isAllowedType($type))
-            throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$type]);
+            throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$type],$this);
 
         // Ahora hay que resolver si hay una subkey para el contenido, o no.
         // Si no lo hay, el propio tipo tiene que tener el campo "type_field".
@@ -93,7 +93,7 @@ class TypeSwitcher extends BaseContainer
         if($this->content_field!==null)
         {
             if(!isset($val[$this->content_field]))
-                throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_CONTENT_FIELD,["field"=>$this->content_field]);
+                throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_CONTENT_FIELD,["field"=>$this->content_field],$this);
             return $typeInstance->validate($val[$this->content_field]);
         }
         return $typeInstance->validate($val);
@@ -163,7 +163,7 @@ class TypeSwitcher extends BaseContainer
         if($fieldName==$this->type_field)
         {
             if(!$this->isAllowedType($value))
-                throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$value]);
+                throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$value],$this);
             if($value==$this->currentType)
                 return;
             $this->currentType=$value;
@@ -175,7 +175,7 @@ class TypeSwitcher extends BaseContainer
             if($this->currentType===null)
             {
                 if($this->implicit_type===null)
-                    throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>"implicit"]);
+                    throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>"implicit"],$this);
                 $this->currentType=$this->implicit_type;
                 $this->value=$this->getTypeInstance($this->currentType);
                 $this->valueSet=true;
@@ -228,7 +228,7 @@ class TypeSwitcher extends BaseContainer
     {
         $def=$this->allowed_types[$type];
         $instance=\lib\model\types\TypeFactory::getType($this,$def);
-        $instance->setParent($this);
+        $instance->setParent($this,$type);
         return $instance;
     }
     function _copy($ins)

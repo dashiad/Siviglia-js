@@ -79,24 +79,24 @@
 
           extract($asArr);
           if($asArr===false)
-              throw new BaseTypeException(BaseTypeException::ERR_INVALID);
+              throw new BaseTypeException(BaseTypeException::ERR_INVALID,["val"=>$value],$this);
 
           if(isset($this->definition["STARTYEAR"]))
           {
               if(intval($year)<intval($this->definition["STARTYEAR"]))
-                  throw new DateException(DateException::ERR_START_YEAR,array("year"=>$this->definition["STARTYEAR"]));
+                  throw new DateException(DateException::ERR_START_YEAR,array("val"=>$year,"year"=>$this->definition["STARTYEAR"]),$this);
           }
           if(isset($this->definition["ENDYEAR"]))
           {
               if(intval($year)>intval($this->definition["ENDYEAR"]))
-                  throw new DateException(DateException::ERR_END_YEAR,array("year"=>$this->definition["ENDYEAR"]));
+                  throw new DateException(DateException::ERR_END_YEAR,array("val"=>$year,"year"=>$this->definition["ENDYEAR"]),$this);
           }
           $timestamp=$this->getTimestamp($value,$asArr);
           $curTimestamp=time();
           if(isset($this->definition["STRICTLYPAST"]) && $curTimestamp < $timestamp)
-              throw new DateException(DateException::ERR_STRICTLY_PAST);
+              throw new DateException(DateException::ERR_STRICTLY_PAST,["val"=>$value],$this);
           if(isset($this->definition["STRICTLYFUTURE"]) && $curTimestamp > $timestamp)
-              throw new DateException(DateException::ERR_STRICTLY_FUTURE);
+              throw new DateException(DateException::ERR_STRICTLY_FUTURE,["val"=>$value],$this);
 
           BaseType::postValidate($value);
 
@@ -134,7 +134,7 @@
                  $date = new \DateTime($value);
          }catch(\Exception $e)
          {
-             throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$value]);
+             throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$value],$this);
          }
 
         $ret = $date->format("U");
