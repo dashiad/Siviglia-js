@@ -9,3 +9,10 @@ sites/statics/html/reflection/bundles/*
 sites/statics/html/editor/bundles/*
 /lib/tests/output/html/templating/cache/
 /sites/editor/cache/
+.history/*
+.vscode/*
+cache/*
+.buildpath
+.project
+.settings/*
+sites/editor/html/localConfig.php

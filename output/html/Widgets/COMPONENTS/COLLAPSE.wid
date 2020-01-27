@@ -1,0 +1,22 @@
+<?php $myId=uniqid();?>
+<div class="collapsible collapse-icon accordion-icon-rotate">
+    
+    <div class="card collapse-header open">
+        <div id="headingCollapse1" class="card-header" data-toggle="collapse" role="button" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+            <span class="collapse-title">
+                [_ICONO]<i class="bx bx-[_*] align-middle"></i>[#]
+                [_TITLE]<span class="align-middle">[_*]</span>[#]
+            </span>
+        </div>    
+
+    [_CONTENT]
+        <div id="<?php echo $myId; ?>" role="tabpanel" aria-labelledby="headingCollapse1" class="collapse show" style="">
+            <div class="card-content">
+                <div class="card-body">
+                    [_*] 
+                </div>
+            </div>
+        </div>
+    </div>
+    [#]
+</div>

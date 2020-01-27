@@ -1,0 +1,64 @@
+<?php
+    $page=\Registry::getService("page");
+    $site=\Registry::getService("site");
+    $name=$page->getPageName();
+    $siteName=$site->getName();
+?>
+<!DOCTYPE html>
+<html lang="<?php echo $site->getDefaultIso();?>">
+<head>
+    [_TITLE]<title>[_*]</title>[#]
+    [_META]
+        [*:/TAGS/META][_:NAME][_NAME][_*][#][#][_:VALUE][_VALUE][_*][#][#][#]
+    [#]
+    [_ICON][_*][#]
+    [@DEPENDENCY]
+        [_PHASE]Headers[#]
+    [#]
+    [_INLINE_PRESCRIPT][_*][#]
+    [_SCRIPT][*:/TAGS/SCRIPT][_*][#][#]
+    [_INLINESCRIPT][_*][#]
+    [_INLINECSS][_*][#]
+    [_CSS][*:/TAGS/CSS][_*][#][#]
+    [_EXTRA][_*][#]
+
+</head>
+<body class="<?php echo $bodyClasses;?>" [_EXTRA_BODY_PROPERTIES][_*][#]>
+<div style="display:none">
+    [@DEPENDENCY]
+        [_PHASE]WIDGETSTART[#]
+    [#]
+</div>
+
+    [@DEPENDENCY]
+        [_PHASE]BODYSTART[#]
+    [#]
+    
+
+    [_CONTENT][_*][#]
+
+
+    [@DEPENDENCY]
+        [_BUNDLE]Page[#]
+        
+        [_CONTENTS]
+            [_SCRIPT]
+                [_PHASE]BODYEND[#]
+                [_FILE]editor/js/app.js[#]            
+            [#]
+            [_SCRIPT]
+                [_PHASE]BODYEND[#]
+                [_FILE]editor/js/app-menu.js[#]
+            [#]
+            [_SCRIPT]
+                [_PHASE]BODYEND[#]
+                [_FILE]editor/js/vendors/vendors.min.js[#]
+            [#]
+            [_SCRIPT]
+                [_PHASE]BODYEND[#]
+                [_FILE]editor/js/vendors/prism.min.js[#]
+            [#]             
+        [#]
+    [#]
+</body>
+</html>

@@ -1,0 +1,14 @@
+<?php $bodyClasses="vertical-layout vertical-menu-modern semi-dark-layout 2-columns  navbar-sticky footer-static";?>
+[*:HTML/HTMLPAGE({"bodyClasses":"$bodyClasses"})]
+    [_:EXTRA_PAGE_PROPERTIES]data-open="click" data-menu="vertical-menu-modern" data-col="2-columns" data-layout="semi-dark-layout"[#]
+    [_:TITLE][_TITLE][_*][#][#]
+
+    [_:CONTENT]    
+        [*::LAYOUTS/LAYOUT_VERTICAL_2COL({"useSidebar":"$sidebar"})]
+            [_::CONTENT]
+                [_CONTENT][_*][#]
+
+            [#]
+        [#]
+    [#]   
+[#]

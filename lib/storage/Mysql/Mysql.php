@@ -6,8 +6,10 @@ Set global log en servidores
  2) execute "SET GLOBAL log_output = 'TABLE';"
  3) take a look at the table mysql.general_log
 
-
 */
+
+use function  \mysqli_connect;
+
 class MysqlException extends \lib\model\BaseException
 {
 	const ERR_NO_CONNECTION=1;
@@ -41,10 +43,9 @@ class Mysql
     function connect()
     {
         extract($this->definition);
-
+    
         // Siempre se abre una nueva conexion
-
-        $conn=mysqli_connect($host,$user,$password);
+        $conn=mysqli_connect($host,$user,$password); 
         $this->host=$host;
         if(!$conn)
         {

@@ -74,10 +74,16 @@ class DEPENDENCY_BUNDLE {
     {
         if(!$phase)
         {
-            if($type=="CSS" || $type=="SCRIPT")
+            switch($type)
+            {
+                case "CSS":{$phase="HEADERS";}break;
+                case "SCRIPT":{$phase="BODYEND";}break;
+                default:{$phase="BODYSTART";}break;
+            }
+            /*if($type=="CSS" || $type=="SCRIPT")
                 $phase="HEADERS";
             else
-                $phase="BODYSTART";
+                $phase="BODYSTART";*/
         }
         $this->resources[$phase][$type][]=array($code,$info);
     }
