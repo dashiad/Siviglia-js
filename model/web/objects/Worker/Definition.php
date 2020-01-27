@@ -85,6 +85,7 @@ class Definition extends BaseModelDefinition
             'items' => [
                 'TYPE' => 'String',
                 'LABEL' => 'Items',
+                'MAXLENGTH' => 65535,
             ],
             'last_completed_item_index' => [
                 'TYPE' => 'Integer',
