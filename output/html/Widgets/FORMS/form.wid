@@ -1,7 +1,7 @@
 <?php
   $site=\Registry::$registry["site"];
   $siteUrl=$site->canonical_url;
-  ?>
+?>
 [*:BASE_SYSTEM][#]
 [@DEPENDENCY]
     [_BUNDLE]Global[#]
@@ -91,7 +91,7 @@
     $modelSerializer=$serializer;
     $tModel=& $model;
     ?>
-  [#]
+[#]
 <?php
 // Parameters : object / layer / name / & $form
   $curObject=$object;
@@ -103,18 +103,7 @@
   $curUrl=$request->getUrl();
 
 ?>
-[*:/containers/TITLED_CONTAINER]
-    [_:TITLE]
 
-        [_TITLE]
-            [_*]
-        [#]
-    [#]
-
-    [_:CONTENT]
-        [_DESCRIPTION]
-            [_*]
-        [#]
         <?php
             $hk=null;
             if(isset($keys))
@@ -128,7 +117,8 @@
             $hash=$form->createHash($curSiteName,$curUrl,$hk,\Registry::$registry["session"]);
 
         ?>
-        <form method="POST" enctype="multipart/form-data" action="/action" id="<?php echo $hash;?>">
+        <form class="form form-[_LAYOUT][_*][#] <?php echo $layout_form; ?>" method="POST" enctype="multipart/form-data" action="/action" id="<?php echo $hash;?>" noValidate>
+            <div class="form-body">
             <script>
                 __s__form.curForm=new __s__form.form(document.currentScript.previousElementSibling,'<?php echo $hash;?>','<?php echo $object;?>','<?php echo $name;?>',"<?php echo json_encode($keys);?>");
             </script>
@@ -163,8 +153,7 @@
                     ?>
 
                 [_FORMGROUP]
-
-                        [*:/FORMS/group_1]
+                        [*:/FORMS/GROUPS/HORIZONTAL]
                             [_:TITLE]
                                 [_TITLE][_*][#]
                             [#]
@@ -181,11 +170,11 @@
             [#]
 
                 [_BUTTONS]
-                        [*:/FORMS/buttonContainer_1]
-                            [_*]
-                        [#]
+                    [*:/FORMS/BUTTONS/BUTTON_HORIZONTAL]
+                        [_*]
+                    [#]
                 [#]
+            </div>
         </form>
-    [#]
-[#]
+ 
 

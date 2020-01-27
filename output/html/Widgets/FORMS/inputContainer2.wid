@@ -16,38 +16,34 @@
     [#]
 [#]
 
-
+<div class="col-12">
     <script>
         var __prev__=document.currentScript.parentElement;
         var cForm=__s__form.S_FormRegistry["<?php echo $form->getHash();?>"];
         cForm.pushContainer(__prev__);
     </script>
-
-    <div class="col-md-2">
-        <?php $extra=isset($extraClass)?$extraClass:""; $sc=isset($styleClass)?$styleClass:"";?>
-        <label class="inputLabel<?php echo $extra;?> <?php echo $sc;?>">[_LABEL][_*][#]</label>
-    </div>
-
-    <div class="col-md-10 form-group error">
-        <div class="controls">
-            [_INPUT]
-                [_*]
-            [#]
-        </div>
-        [_ERRORS]
-        <div class="help-block">
-            <ul role="alert" class="error">
-                <!-- <li class="error-help">[_ERROR][_*][#]</li> -->
-            </ul>
+    <div class="errorContainer">
+[_ERRORS]
+        [_ERROR]
+        <div class="fieldError error<?php echo $code?>container containerError<?php echo $code;?>">
+            [_*]
         </div>
         [#]
+[#]
+    </div>
+    <div class="form-label-group position-relative has-icon-left">
+        [_INPUT]
+            [_*]
+        [#]
+        <div class="form-control-position">
+            <i class="bx bx-user"></i>
+        </div>
 
+        <label for="first-name-floating-icon">[_LABEL][_*][#]</label>
 
     </div>
 
-
-
-
+</div>
 <script>
     var cForm=__s__form.S_FormRegistry["<?php echo $form->getHash();?>"];
     cForm.popContainer();

@@ -134,6 +134,10 @@ class Definition extends \lib\model\BaseModelDefinition
                'ALIASES'=>array(
 
                      ),
+                'ICONS'=>array(
+                    '16x16'=>null,
+                    '32x32'=>null
+                ),
                'PERMISSIONS'=>array(),
                'STORAGE'=>array(
                      'MYSQL'=>array(

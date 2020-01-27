@@ -1,4 +1,15 @@
-<div class="titled_subcontainer [_CLASS][_*][#]">
-       [_TITLE] <div class="titled_subcontainer_title fontSize2 backgroundColor2 bordercolor2 color2">[_*]</div>[#]
-       [_CONTENTS]<div class="titled_subcontainer_contents">[_*]</div>[#]
+[_TITLE]
+       <div class="row">
+              <h5 class="py-50">[_*]</h5>
+       </div>
+[#]
+
+[_DESCRIPTION]
+       <div class="row">
+              <h6 class="py-50">[_*]</h6>
+       </div>
+[#]
+
+<div class="row [_CLASS][_*][#]">
+       [_CONTENTS]<div class="row">[_*][#]</div>
 </div>
