@@ -464,6 +464,12 @@ class StatedDefinition
         }
         return $statedDef;
     }
+    function getRequiredFields($state)
+    {
+        if(isset($this->definition["STATES"]["STATES"][$state]["FIELDS"]["REQUIRED"]))
+            return $this->definition["STATES"]["STATES"][$state]["FIELDS"]["REQUIRED"];
+        return [];
+    }
 
 }
 

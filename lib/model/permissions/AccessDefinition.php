@@ -87,7 +87,8 @@ class AccessDefinition
                 if(isset($req["MODEL"]))
                 {
                     $curName=$req["MODEL"];
-                    $curModel=\lib\model\BaseModel::getModelInstance($curName);
+                    $s=\Registry::getService("model");
+                    $curModel=$s->getModel($curName);
                 }
                 else
                 {

@@ -29,8 +29,8 @@ if($_GET["action"])
 echo "</h2>";
 
 $objName=str_replace('/','\\',$_GET["object"]);
-
-$ins=\lib\model\BaseModel::getModelInstance($objName);
+$s=\Registry::getService("model");
+$ins=$s->getModel($objName);
 if($_GET["action"])
 {
     $actionDir=$ins->__getObjectNameObj()->getDestinationFile("actions");

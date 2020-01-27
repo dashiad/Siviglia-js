@@ -394,7 +394,7 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     }
     function setDirty($dirty=true)
     {
-
+      $this->__isDirty=true;
         $this->model->addDirtyField($this->name);
     }
     function is_set()
@@ -592,18 +592,11 @@ class RelationFields
 
     function setFieldFromType($field,$targetType)
     {
-        $typeName=get_class($targetType);
-        $relType=$this->types[$field];
-        $r=true;
-        //if($typeName!=get_class($relType))
-        //    throw new BaseModelException(BaseModelException::ERR_INCOMPLETE_KEY,array("model"=>$this->relObject->model->__getObjectName()));
+
         if($targetType->hasValue())
         {
-             if($this->types[$field]->equals($targetType->getValue()))
-                 $r=true;
-             else
+             if(!$this->types[$field]->equals($targetType->getValue()))
              {
-
                 $this->types[$field]->setValue($targetType->getValue());
              }
         }
@@ -615,7 +608,6 @@ class RelationFields
             {
                      foreach($this->types as $key=>$value)
                          $value->clear();
-                     $r=false;
                      //throw new BaseModelException(BaseModelException::ERR_INCOMPLETE_KEY,array("model"=>$this->relObject->model->__getObjectName()));
             }
         }
@@ -627,12 +619,20 @@ class RelationFields
         $this->setDirty();
         return true;
     }
+    // Se copian los valores del modelo, a la relacion.
     function setFromModel($value)
     {
         foreach($this->types as $field=>$type)
         {
-            $targetField=$this->definition["FIELDS"][$field];
-            $targetField=$value->__getField($targetField);
+            // TODO : quitar esta absurdez de "if"
+            if(is_a($this->relObject,'\lib\model\InverseRelation1x1'))
+            {
+                $targetField = $value->__getField($field);
+            }
+            else {
+                $targetField = $this->definition["FIELDS"][$field];
+                $targetField = $value->__getField($targetField);
+            }
             $targetType=$targetField->getType();
             if(!$this->setFieldFromType($field,$targetType))
                 return false;
@@ -640,10 +640,11 @@ class RelationFields
     }
     function setToModel($remObject)
     {
-        foreach($this->types as $field=>$type)
+        foreach($this->definition["FIELDS"] as $key=>$value)
         {
-            $remObject->{$field}=$type->getValue();
+            $remObject->{$value}=$this->types[$key]->getValue();
         }
+
     }
 
     function setFromType($type)
@@ -1020,13 +1021,8 @@ class RelationValues extends \lib\datasource\TableDataSet
 
     public function save()
     {
-        // Si esta relacion impone condiciones sobre el objeto remoto, por ejemplo, inverserelations,
+        // TODO: Si esta relacion impone condiciones sobre el objeto remoto, por ejemplo, inverserelations,
         // las condiciones deben ser copiadas a los objetos modificados.
-        $srcConds=$this->relField->getExtraConditions();
-        if($srcConds)
-            $nSrcConds=count($srcConds);
-        else
-            $nSrcConds=0;
 
          $accessed=array_keys($this->accessedIndexes);
          $nAccessed=count($accessed);
@@ -1052,6 +1048,7 @@ class RelationValues extends \lib\datasource\TableDataSet
                          $f = $curObject->__getField($value);
                          if (!$f->is_set())
                              $curObject->{$value} = $parentModel->{$key};
+
                      }
                  }
              }

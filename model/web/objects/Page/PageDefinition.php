@@ -105,10 +105,11 @@ abstract class PageDefinition extends \lib\model\BaseDefinition
         if(! in_array($this->role,array(\model\web\Page::PAGE_ROLE_VIEW, \model\web\Page::PAGE_ROLE_CREATE,\model\web\Page::PAGE_ROLE_EDIT)))
             return;
         $instance=null;
+        $s=\Registry::getService("model");
         if (isset($pageDefinition["MODELIDS"])) {
             foreach ($pageDefinition["MODELIDS"] as $key => $value) {
                 $modelName = $key;
-                $instance = \lib\model\BaseModel::getModelInstance($modelName);
+                $instance = $s->getModel($modelName);
                 $instance->disableStateChecks();
                 foreach ($value as $fieldKey) {
                     $curField = $this->__getField($fieldKey);
@@ -124,7 +125,11 @@ abstract class PageDefinition extends \lib\model\BaseDefinition
 
         } else {
             if (isset($pageDefinition["MODEL"]))
-                $instance = \lib\model\BaseModel::getModelInstance($pageDefinition["MODEL"]);
+            {
+                $s=\Registry::getService("model");
+                $instance = $s->getModel($pageDefinition["MODEL"]);
+            }
+
         }
         $this->__modelInstance=$instance;
         return $instance;

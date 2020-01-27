@@ -35,7 +35,7 @@ abstract class Datasource
         if(!$this->params)
             $this->params=array();
         try {
-            $ds->loadFromArray($this->params,"HTML");
+            $ds->loadFromArray($this->params);
         }catch(\lib\model\BaseTypedException $e)
         {
             throw $e;

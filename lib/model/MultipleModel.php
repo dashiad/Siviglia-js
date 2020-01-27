@@ -4,10 +4,10 @@ namespace lib\model;
         Sus indexFields deben ser relaciones a las claves del objeto padre
 */
 /**
- *  
- *      HAY QUE HACER QUE EN LOS TYPED, SE GENERE UN ALIAS QUE APUNTE AL TIPO BASE. 
- * 
- * 
+ *
+ *      HAY QUE HACER QUE EN LOS TYPED, SE GENERE UN ALIAS QUE APUNTE AL TIPO BASE.
+ *
+ *
  */
 class MultipleModel extends BaseModel
 {
@@ -23,32 +23,32 @@ class MultipleModel extends BaseModel
             if(!$this->relatedModel)
             {
                 $remModel=parent::__getAlias($this->relatedModelName);
-                if($remModel->count()==0)                
+                if($remModel->count()==0)
                     $remModel[0]=BaseModel::getModelInstance($this->relatedModelName);
-                $this->relatedModel=$remModel[0];                
+                $this->relatedModel=$remModel[0];
                 $this->relatedModel->__allowRelay(false);
             }
-            return $this->relatedModel;            
+            return $this->relatedModel;
         }
-        
-        function __getField($fieldName)
+
+        function __getField($fieldName,$inAliases=false)
         {
-            
+
             if(isset($this->__fieldDef[$fieldName]) || $this->__relayAllowed==false)
             {
-                return parent::__getField($fieldName);
+                return parent::__getField($fieldName,$inAliases);
             }
             $related=$this->__getRelatedModel();
-            return $related->__getField($fieldName);
+            return $related->__getField($fieldName,$inAliases);
         }
 
         function __get($varName)
         {
             try
-            {                
+            {
                 return BaseModel::__get($varName);
             }catch(\Exception $e)
-            {                   
+            {
                 if($this->__relayAllowed==false)
                     throw $e;
                 $related=$this->__getRelatedModel();
@@ -74,7 +74,7 @@ class MultipleModel extends BaseModel
                 else
                     throw $e;
             }
-        }     
+        }
         function & __getFieldDefinition($fieldName)
         {
             try
@@ -97,21 +97,21 @@ class MultipleModel extends BaseModel
            $related=$this->__getRelatedModel();
            $related->copy($remoteModel);
        }
-        
+
      function __call($name,$arguments)
-     {         
+     {
         try
         {
             return BaseModel::__call($name,$arguments);
         }
         catch(\Exception $e)
-        {            
+        {
             if($this->__relayAllowed==false)
                 throw $e;
             $related=$this->__getRelatedModel();
             return call_user_func_array(array($related,$name),$arguments);
-            
-        }        
+
+        }
     }
 
      function getStateField()
@@ -124,10 +124,10 @@ class MultipleModel extends BaseModel
              if(isset($state))
                  return $state;
          }
-         
+
          if(isset($this->__objectDef["STATES"]["FIELD"]))
              return $this->__objectDef["STATES"]["FIELD"];
-         return null;         
+         return null;
      }
 
      function getStates()
@@ -140,7 +140,7 @@ class MultipleModel extends BaseModel
              return $related->getStates();
          }
          catch(BaseModelException $e)
-         {             
+         {
              if(isset($this->__objectDef["STATES"]))
                  return $this->__objectDef["STATES"];
              throw new BaseModelException(BaseModelException::ERR_NO_STATUS_FIELD);
@@ -161,7 +161,7 @@ class MultipleModel extends BaseModel
              if(!isset($this->__objectDef["STATES"]))
                  throw new BaseModelException(BaseModelException::ERR_NO_STATUS_FIELD);
 
-             return $this->__getField($this->__objectDef["STATES"]["FIELD"])->getValue();         
+             return $this->__getField($this->__objectDef["STATES"]["FIELD"])->getValue();
          }
      }
 
@@ -178,7 +178,7 @@ class MultipleModel extends BaseModel
              if(!isset($this->__objectDef["STATES"]))
                  throw new BaseModelException(BaseModelException::ERR_NO_STATUS_FIELD);
 
-             return $this->__getField($this->__objectDef["STATES"]["FIELD"])->getType()->getLabel();         
+             return $this->__getField($this->__objectDef["STATES"]["FIELD"])->getType()->getLabel();
          }
      }
 
@@ -209,7 +209,7 @@ class MultipleModel extends BaseModel
          catch(BaseModelException $e)
          {
              return parent::getState();
-         }         
+         }
      }
 
      function onChangeState($next)
@@ -221,7 +221,7 @@ class MultipleModel extends BaseModel
          if($related->getStateField()!==null)
              return $related->onChangeState($next);
          else
-             return parent::onChangeState($next);         
+             return parent::onChangeState($next);
      }
 
      function getOwner()

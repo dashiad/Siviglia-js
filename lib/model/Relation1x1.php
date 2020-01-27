@@ -87,7 +87,8 @@ class Relation1x1 extends ModelBaseRelation
 
         if ($this->relation->state == ModelBaseRelation::UN_SET)
             return 0;
-        if ($this->definition["LOAD"] == "LAZY")
+
+        if (isset($this->definition["LOAD"]) && $this->definition["LOAD"] == "LAZY")
             $this->relationValues->setCount($this->getSerializer()->count($this->getRelationQueryConditions(), $this->model));
 
         else
@@ -117,7 +118,10 @@ class Relation1x1 extends ModelBaseRelation
         }
         return false;
     }
-
+    function apply()
+    {
+        $this->relationValues->apply();
+    }
     function serialize($serializer)
     {
 

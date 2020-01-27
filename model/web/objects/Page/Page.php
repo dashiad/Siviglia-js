@@ -126,7 +126,7 @@ class Page extends \lib\model\BaseModel
             debug("Error instanciando pagina ".$fullName,true);
         }
         $instance = new $fullName();
-        $instance->loadFromArray($data->getRow(),"MYSQL");
+        $instance->loadFromArray($data->getRow());
         $instance->setPageDefinition($definition);
         return $instance;
     }

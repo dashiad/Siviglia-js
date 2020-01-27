@@ -14,6 +14,7 @@ class ModelFieldErrorContainer
     var $fieldErrors=array();
     var $isOk=true;
     var $parsedFields=array();
+    var $path=array();
     function reset()
     {
         $this->isOk=true;
@@ -27,7 +28,17 @@ class ModelFieldErrorContainer
     {
         $this->isOk=false;
         $code=$exception->getCode();
+        if(count($this->path)>0)
+          $field=implode("/",$this->path)."/".$field;
         $this->fieldErrors[$field][$exception->getCodeString()][$code]=array("value"=>$value,"code"=>$code);
+    }
+    function pushPath($p)
+    {
+        $this->path[]=$p;
+    }
+    function popPath()
+    {
+        array_pop($this->path);
     }
     function isOk()
     {

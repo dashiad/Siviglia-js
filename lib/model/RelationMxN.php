@@ -90,7 +90,23 @@
     }
     function onModelSaved()
     {
-        $this->relation->cleanState();
+        if(!$this->relation->is_set() && $this->model->__isNew())
+        {
+            // Tenemos los objetos A y B. B tiene una relacion con A, asi que A tiene una relacion inversa con B, y esta relacion es un alias, y esta clase es ese alias.
+            // Aqui estamos en caso de que se ha creado un A, y, a traves de el, uno o varios B.Ahora se ha guardado A, asi que tenemos que copiar el campo relacion, de A, a todos
+            // los B que se hayan creado.
+            $nObjects=$this->relationValues->count();
+            $this->relation->setFromModel($this->model);
+            for($k=0;$k<$nObjects;$k++)
+            {
+                $cObject=$this->relationValues[$k];
+                $this->relation->setToModel($cObject);
+            }
+            $this->relationValues->save();
+
+        }
+
+        //$this->relation->cleanState();
     }
     function relationsAreUnique()
     {

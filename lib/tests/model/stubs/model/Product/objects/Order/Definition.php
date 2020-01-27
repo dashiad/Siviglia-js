@@ -1,24 +1,22 @@
 <?php
-namespace model\tests\Post\Comment;
+namespace model\tests\Product\Order;
 class Definition extends \lib\model\BaseModelDefinition
 {
     /*
      * `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_user` int(11) NOT NULL,
-  `id_post` int(11) NOT NULL,
+  `creator_id` int(11) NOT NULL,
   `title` varchar(45) DEFAULT NULL,
-  `content` varchar(45) DEFAULT NULL,
-  `comment` varchar(45) DEFAULT NULL,
-
+  `content` text,
+  `created_on` datetime DEFAULT NULL,
      */
     static  $definition=array(
         'ROLE'=>'ENTITY',
         'DEFAULT_SERIALIZER'=>'web',
         'DEFAULT_WRITE_SERIALIZER'=>'web',
         'INDEXFIELDS'=>array('id'),
-        'TABLE'=>'comment',
-        'LABEL'=>'Comments',
-        'SHORTLABEL'=>'Comments',
+        'TABLE'=>'order',
+        'LABEL'=>'order',
+        'SHORTLABEL'=>'order',
         'CARDINALITY'=>'3000',
         'CARDINALITY_TYPE'=>'FIXED',
         'FIELDS'=>array(
@@ -31,44 +29,53 @@ class Definition extends \lib\model\BaseModelDefinition
                 'DESCRIPTIVE'=>'false',
                 'ISLABEL'=>'false'
             ),
-            'id_user'=>array(
+            "status"=>array('TYPE' => 'State',
+                'VALUES' => array(
+                    'Created','Paid','Shipped','Cancelled'
+                ),
+                'DEFAULT' => 'Created'
+            ),
+            'user_id'=>[
                 'DEFAULT'=>'NULL',
-                'FIELDS'=>array('id_user'=>'id'),
+                'FIELDS'=>array('user_id'=>'id'),
                 'MODEL'=> '\model\tests\User',
-                'LABEL'=>'Creator',
-                'SHORTLABEL'=>'Creator',
+                'LABEL'=>'User',
+                'SHORTLABEL'=>'User',
                 'TYPE'=>'Relationship',
                 'MULTIPLICITY'=>'1:N',
                 'ROLE'=>'HAS_ONE',
                 'CARDINALITY'=>1
-            ),
-            'id_post'=>array(
-                'DEFAULT'=>'NULL',
-                'FIELDS'=>array('id_post'=>'id'),
-                'MODEL'=> '\model\tests\Post',
-                'LABEL'=>'Post',
-                'SHORTLABEL'=>'Post',
-                'TYPE'=>'Relationship',
-                'MULTIPLICITY'=>'1:N',
-                'ROLE'=>'HAS_ONE',
-                'CARDINALITY'=>1
-            ),
-            'title'=>[
+            ],
+            'dummy'=>[
                 'TYPE'=>'String',
-                'MAXLENGTH'=>45,
-                'DESCRIPTIVE'=>'true',
-                'LABEL'=>'Title',
-                'SHORTLABEL'=>'Title',
+                'LABEL'=>'Name',
+                'SHORTLABEL'=>'Name',
                 'ISLABEL'=>'true'
             ],
-            'content'=>[
-                'TYPE'=>'Text',
-                'LABEL'=>'Content',
-                'SHORTLABEL'=>'Content',
-                'ISLABEL'=>'true'
-            ]
+            'shipment_id'=>[
+                'DEFAULT'=>'NULL',
+                'FIELDS'=>array('shipment_id'=>'id'),
+                'MODEL'=> '\model\tests\Product\Shipment',
+                'LABEL'=>'Shipment',
+                'SHORTLABEL'=>'Shipment',
+                'TYPE'=>'Relationship',
+                'MULTIPLICITY'=>'1:N',
+                'ROLE'=>'HAS_ONE',
+                'CARDINALITY'=>1
+            ],
         ),
-
+        'ALIASES'=>array(
+            'products'=>array(
+                'TYPE'=>'RelationMxN',
+                'MODEL'=>'\model\tests\Product\OrderProduct',
+                'REMOTE_MODEL'=>'\model\tests\Product',
+                'FIELDS'=>array('id'=>'id_product'),
+                //'REMOTE_MODEL'=>'ps_feature_value',
+                'ROLE'=>'HAS_MANY',
+                'MULTIPLICTY'=>'M:N',
+                'CARDINALITY'=>100
+            )
+        ),
         'PERMISSIONS'=>array(),
         'SOURCE'=>[
         'STORAGE'=>array(

@@ -9,6 +9,8 @@
 namespace lib\output\commandLine;
 
 
+use Startup;
+
 class CLRequest extends \lib\output\html\HTMLRequest
 {
 
@@ -144,8 +146,9 @@ class CLRequest extends \lib\output\html\HTMLRequest
         global $oCurrentUser;
         if(isset($oCurrentUser))
             return $oCurrentUser;
+        $s=\Registry::getService("model");
+        $oCurrentUser=$s->getModel("\\model\\web\\WebUser");
 
-        $oCurrentUser=\lib\model\BaseModel::getModelInstance("\\model\\web\\WebUser");
         if ($this->userId)
         {
             $oCurrentUser->setLogged($this->userId);
@@ -165,5 +168,10 @@ class CLRequest extends \lib\output\html\HTMLRequest
     {
         $site=\Registry::getService("site");
         return $site->getCanonicalUrl();
+    }
+    function solve()
+    {
+
+        Startup::commonSetup();
     }
 }

@@ -14,9 +14,10 @@ class InheritedModel extends BaseModel
                 BaseModel::__construct($serializer,$definition);
 
                 $this->parentModelName=$this->__objectDef["INHERITS"];
-                $this->parentModel=\lib\model\BaseModel::getModelInstance($this->parentModelName);
+                $s=\Registry::getService("model");
+                $this->parentModel=$s->getModel($this->parentModelName);
                 $parentDef=$this->parentModel->__objectDef;
-                
+
                 foreach($parentDef as $key=>$value)
                 {
                     if($key!="TABLE" && $key!="INDEXES" && $key!="FIELDS" && !$this->__objectDef[$key])
@@ -78,5 +79,5 @@ class InheritedModel extends BaseModel
             {
                 $this->{$this->mainIndex}[0]->{$varName}=$varValue;
             }
-        }            
+        }
 }

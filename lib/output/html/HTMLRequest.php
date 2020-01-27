@@ -2,6 +2,7 @@
 
 namespace lib\output\html;
 use Registry;
+use Startup;
 
 include_once(LIBPATH."/Request.php");
 
@@ -372,5 +373,21 @@ class HTMLRequest extends \Request implements \ArrayAccess
     function getUnSerializerType()
     {
         return "HTML";
+    }
+    function initializePage()
+    {
+
+        global $Container;
+        //session_start();
+        global $currentSite;
+        $currentSite=\model\web\Site::getCurrentWebsite();
+        $Container->addService("site",$currentSite);
+
+    }
+    function solve()
+    {
+       $this->initializePage();
+        Startup::commonSetup();
+        register_shutdown_function('___cleanup');
     }
 }

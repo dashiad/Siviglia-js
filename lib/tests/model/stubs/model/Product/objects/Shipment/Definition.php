@@ -1,5 +1,5 @@
 <?php
-namespace model\tests\Post;
+namespace model\tests\Product\Shipment;
 class Definition extends \lib\model\BaseModelDefinition
 {
     /*
@@ -14,9 +14,9 @@ class Definition extends \lib\model\BaseModelDefinition
         'DEFAULT_SERIALIZER'=>'web',
         'DEFAULT_WRITE_SERIALIZER'=>'web',
         'INDEXFIELDS'=>array('id'),
-        'TABLE'=>'post',
-        'LABEL'=>'Post',
-        'SHORTLABEL'=>'Post',
+        'TABLE'=>'shipment',
+        'LABEL'=>'shipment',
+        'SHORTLABEL'=>'Shipment',
         'CARDINALITY'=>'3000',
         'CARDINALITY_TYPE'=>'FIXED',
         'FIELDS'=>array(
@@ -29,52 +29,33 @@ class Definition extends \lib\model\BaseModelDefinition
                 'DESCRIPTIVE'=>'false',
                 'ISLABEL'=>'false'
             ),
-            'creator_id'=>array(
-                'DEFAULT'=>'NULL',
-                'FIELDS'=>array('creator_id'=>'id'),
-                'MODEL'=> '\model\tests\User',
-                'LABEL'=>'Creator',
-                'SHORTLABEL'=>'Creator',
-                'TYPE'=>'Relationship',
-                'MULTIPLICITY'=>'1:N',
-                'ROLE'=>'HAS_ONE',
-                'CARDINALITY'=>1
-            ),
-            'title'=>[
+            'dummy'=>[
                 'TYPE'=>'String',
-                'MAXLENGTH'=>25,
-                'DESCRIPTIVE'=>'true',
-                'LABEL'=>'Title',
-                'SHORTLABEL'=>'Title',
+                'LABEL'=>'Name',
+                'SHORTLABEL'=>'Name',
                 'ISLABEL'=>'true'
             ],
-            'content'=>[
-                'TYPE'=>'Text',
-                'LABEL'=>'Content',
-                'SHORTLABEL'=>'Content',
+            "status"=>array('TYPE' => 'State',
+                'VALUES' => array(
+                    'Created','Shipped'
+                ),
+                'DEFAULT' => 'Created'
+            ),
+            'destination'=>[
+                'TYPE'=>'String',
+                'LABEL'=>'Destination',
+                'SHORTLABEL'=>'Destination',
                 'ISLABEL'=>'true'
-            ],
-            'created_on'=>[
-                'TYPE'=>'DateTime',
-                'LABEL'=>'Created on',
-                'SHORTLABEL'=>'Created',
-                'ISLABEL'=>'false'
-            ],
-            'likes'=>[
-                'TYPE'=>'Integer',
-                'LABEL'=>'Likes'
             ]
         ),
-
-
         'ALIASES'=>array(
-            'comments'=>array(
+            'order'=>array(
                 'TYPE'=>'InverseRelation',
-                'MODEL'=>'\model\tests\Post\Comment',
+                'MODEL'=>'\model\tests\Product\Order',
                 'ROLE'=>'HAS_MANY',
                 'MULTIPLICITY'=>'1:N',
                 'CARDINALITY'=>100,
-                'FIELDS'=>array('id'=>'id_post')
+                'FIELDS'=>array('id'=>'id_shipment')
             )
         ),
         'PERMISSIONS'=>array(),

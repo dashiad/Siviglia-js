@@ -11,6 +11,7 @@
       }
       function _setValue($val)
       {
+          $this->valueSet=true;
           $this->value=$val;
       }
       function _equals($val)

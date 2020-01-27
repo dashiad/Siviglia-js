@@ -327,11 +327,15 @@ class ESSerializer extends \lib\storage\StorageSerializer
         $nResults = count($results);
 
         $models = array();
+        $s=\Registry::getService("model");
+
+
         for ($k = 0; $k < $nResults; $k++)
         {
-            $newInstance=\lib\model\BaseModel::getModelInstance($objectName);
+
+            $newInstance=$s->getModel($objectName);
             $newInstance->__setSerializer($this);
-            $newInstance->loadFromArray($results[$k], $this);
+            $newInstance->loadFromArray($results[$k],true);
             $normalized=\lib\model\ModelCache::store($newInstance);
             $models[] = $normalized;
         }

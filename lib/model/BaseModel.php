@@ -111,22 +111,22 @@ class BaseModel extends BaseTypedObject
         $this->__key->set($id);
     }
 
-    function __getField($fieldName)
+    function __getField($fieldName,$inAliases=false)
     {
 
         try
         {
-            return parent::__getField($fieldName);
+            return parent::__getField($fieldName,$inAliases);
         }
         catch(\lib\model\BaseTypedException $e)
         {
 
-            if ($this->__aliasDef && isset($this->__aliasDef[$fieldName]))
+            if ($inAliases==true && $this->__aliasDef && isset($this->__aliasDef[$fieldName]))
             {
                 $newField=$this->__addField($fieldName,$this->__aliasDef[$fieldName]);
                 return $newField;
             }
-            include_once(PROJECTPATH."/lib/model/BaseModel.php");
+
             throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
         }
     }
@@ -325,7 +325,6 @@ class BaseModel extends BaseTypedObject
         if($this->__saving || $this->__stateDef->isChangingState())
             return;
         $this->__saving=true;
-        // Ahora, cualquier relacion que tuviera este objeto con otro, a traves de un campo definido en este objeto,
         if (!$serializer)
             $serializer = $this->__getSerializer("WRITE");
         if($this->mustSelfNuke())
@@ -340,7 +339,8 @@ class BaseModel extends BaseTypedObject
             $this->__saving=false;
             return;
         }
-        $this->__checkState();
+        if($this->__stateDef)
+            $this->__stateDef->checkState();
         $this->__loaded = true;
         $isNew=$this->__new;
         do
@@ -358,7 +358,6 @@ class BaseModel extends BaseTypedObject
     private function nuke()
     {
         // Se destruye de la cache
-        \lib\Model\ModelCache::clear($this);
         $this->__new=true;
         $this->__fields=array();
         $this->__isDirty=false;
@@ -421,7 +420,7 @@ class BaseModel extends BaseTypedObject
                     // Esto significa que B tiene una relacion con A.Pero como A es nuevo, aun no tiene INDEX.Hay que esperar a que A se guarde ($this->__new==false) para
                     // guardar B
 
-                    if($value->isAlias() && $value->isDirty())
+                    if($value->isAlias()  && isset($this->__dirtyFields[$key])) //&& $value->isDirty())
                     {
                         $aliasFields[$key]=1;
                         continue;
@@ -455,7 +454,6 @@ class BaseModel extends BaseTypedObject
         if (count($dFields) > 0 || $isNew)
         {
             // Guardamos el estado del objeto.
-            $this->__saveState();
             $serializer->_store($this, $isNew, $dFields);
         }
         foreach($aliasFields as $key=>$val)

@@ -185,6 +185,7 @@ class Definition extends \lib\model\BaseModelDefinition
                         )
                      ),
                'PERMISSIONS'=>array(),
+
                'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(

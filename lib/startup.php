@@ -44,19 +44,12 @@ class Startup
         $Container->addService("storage",$storageService);
         \Registry::$registry["ServiceContainer"]=$Container;
 
-    }
-    static function initializeHTTPPage()
-    {
-        global $Container;
-        //session_start();
         include_once(LIBPATH."/Request.php");
         $request=Request::getInstance();
-        global $currentSite;
-        $currentSite=\model\web\Site::getCurrentWebsite();
-        $Container->addService("site",$currentSite);
         Registry::initialize($request);
 
     }
+
 
     static function commonSetup()
     {
@@ -119,7 +112,8 @@ function getModel($objName,$fields=null)
 
 function getModelInstance($objName,$serializer=null,$definition=null)
 {
-    return \lib\model\BaseModel::getModelInstance($objName,$serializer,$definition);
+    $s=\Registry::getService("model");
+    return $s->getModel($objName,$serializer,$definition);
 }
 
 // La gestion de excepciones se realiza para evitar llamadas a file_exists,etc, que no ayudan al funcionamiento de apc_cache
@@ -151,13 +145,9 @@ function ___cleanup()
 include_once(LIBPATH."/service/ServiceContainer.php");
 global $Container;
 $Container=new \lib\service\ServiceContainer();
-
-if(!defined("__RUNNING_TESTS__")) {
-    Startup::init();
-    Startup::initializeHTTPPage();
-    Startup::commonSetup();
-    register_shutdown_function('___cleanup');
-}
-else{
-    Startup::init();
-}
+Startup::init();
+// TODO : La siguiente linea deberia ir aqui, pero tiene una dependencia con el site,
+// y la ejecucion por linea de comando no tiene site.Hay que resolver eso.
+//Startup::commonSetup();
+$curRequest=\Registry::getRequest();
+$curRequest->solve();

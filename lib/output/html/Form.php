@@ -16,7 +16,6 @@ class Form extends \lib\model\BaseTypedObject
     var $srcModelInstance=null;
     var $srcModelKeys=null;
     var $srcModelName=null;
-    var $fieldMapping=null;
     var $formName=null;
     var $formModel=null;
     var $hash;
@@ -25,15 +24,9 @@ class Form extends \lib\model\BaseTypedObject
         Form::getFormDefinition($definition);
         $this->formDefinition=$definition;
         $this->srcModelName=$definition["MODEL"];
-        if( $this->formDefinition["INDEXFIELDS"] )
-        {
-            foreach($this->formDefinition["INDEXFIELDS"] as $key=>$value)
-                $this->formDefinition["FIELDS"][$key]=$value;
-        }
         $this->actionResult=& $actionResult;
         parent::__construct($this->formDefinition);
-        if(isset($this->formDefinition["FIELDMAP"]))
-            $this->fieldMapping=array_flip($this->formDefinition["FIELDMAP"]);
+
     }
     static function getFormDefinition(& $definition)
     {
@@ -163,10 +156,6 @@ class Form extends \lib\model\BaseTypedObject
         {
             if(!isset($this->__fieldDef[$fieldName]))
             {
-                if($this->fieldMapping && isset($this->fieldMapping[$fieldName]))
-                {
-                    return $this->__getField($this->fieldMapping[$fieldName]);
-                }
 
                 include_once(PROJECTPATH."/lib/model/BaseModel.php");
                 throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
@@ -195,7 +184,6 @@ class Form extends \lib\model\BaseTypedObject
 
         if(count($fName)==1)
         {
-
             return $def;
         }
         if(isset($def["MODEL"]) && isset($def["FIELDS"]))
@@ -246,11 +234,7 @@ class Form extends \lib\model\BaseTypedObject
             if($this->__getField($key)->isDirty())
                     continue;
             $inputName = isset($value["TARGET_RELATION"]) ? $value["TARGET_RELATION"] : $key;
-            if($this->fieldMapping && isset($this->fieldMapping[$key]))
-            {
-                $mapped=$this->fieldMapping[$key];
-            }
-            else
+
                 $mapped=$inputName;
             // Si no viene el tipo de input , se supone textField.
             if(!isset($formData["INPUTS"][$mapped]))
@@ -479,8 +463,8 @@ class Form extends \lib\model\BaseTypedObject
         $objName=$this->__getObjectName();
         if(!$objName)
             return null;
-
-        $instance=\lib\model\BaseModel::getModelInstance($objName);
+        $s=\Registry::getService("model");
+        $instance=$s->getModel($objName);
         return $instance->__getSerializer();
     }
     function __getInputParams($name)

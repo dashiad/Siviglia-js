@@ -113,7 +113,8 @@ include_once(LIBPATH."/model/types/BaseType.php");
               return $def["ALIASES"][$fieldName];
           if(strpos($fieldName,"/")!==false)
           {
-              $model=\lib\model\BaseModel::getModelInstance($objectName);
+              $s=\Registry::getService("model");
+              $model=$s->getModel($objectName);
               return $model->__getField($fieldName)->getDefinition();
           }
           if($def["EXTENDS"])

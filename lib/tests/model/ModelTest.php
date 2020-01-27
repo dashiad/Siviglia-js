@@ -142,6 +142,25 @@ class ModelTest extends TestCase
         $this->assertEquals("Lalas",$user->Name);
 
     }
+    // Accediendo a traves de un path a un campo.
+    function testPathRelationSave()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $ins->{"creator_id/Name"}="Lalas";
+        $ins->title="TITULIN";
+        $ins->save();
+        $id=$ins->{"*creator_id"}->getValue();
+        // La relacion tiene que tener el valor 5
+        $this->assertEquals(5,$id);
+        // Y debe existir un nuevo usuario, con valor 5
+        $user=new \model\tests\User();
+        $user->id=$id;
+        $user->loadFromFields();
+        $this->assertEquals("Lalas",$user->Name);
+
+    }
+
 
     function testAlias()
     {
@@ -165,6 +184,7 @@ class ModelTest extends TestCase
         $comment->loadFromFields();
         $this->assertEquals("Nuevo",$comment->title);
     }
+
 
     function testMultipleInverse()
     {
@@ -235,5 +255,375 @@ class ModelTest extends TestCase
         $name=$ins->Name;
         $this->assertEquals("UserModified",$ins->Name);
     }
+    /*
+     * Test de validacion simple:
+     * 2 campos simples, con valores simples, correctos
+     */
+    function testValidate1()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->__validateArray(
+            ["title"=>"hola",
+            "content"=>"adios"]
+        );
+        $this->assertEquals(true,$result->isOk());
+    }
+    /*
+     * Test de validacion simple:
+     * 2 campos simples, con un valor incorrecto.
+     */
+    function testValidate2()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->__validateArray(
+            ["title"=>"holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "content"=>"adios"]
+        );
+        $this->assertEquals(false,$result->isOk());
+        $fieldErrors=$result->getFieldErrors();
+        $this->assertEquals(1,count($fieldErrors));
+        $keys=array_keys($fieldErrors);
+        $this->assertEquals("title",$keys[0]);
+        $keys=array_keys($fieldErrors[$keys[0]]);
+        $this->assertEquals('lib\model\types\_StringException::TOO_LONG',$keys[0]);
+    }
+    /*
+     * Test de validacion simple, con una relacion incorrecta. Debe ejecutarse la query y validar que el objetivo existe.
+     *
+     */
+    function testValidate3()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->__validateArray(
+            ["title"=>"hola",
+                "content"=>"adios",
+                "creator_id"=>5000
+                ]
+        );
+        $fieldErrors=$result->getFieldErrors();
+        $this->assertEquals(false,$result->isOk());
+        $this->assertEquals(1,count($fieldErrors));
+        $keys=array_keys($fieldErrors);
+        $this->assertEquals("creator_id",$keys[0]);
+        $keys=array_keys($fieldErrors[$keys[0]]);
+        $this->assertEquals('lib\model\BaseModelException::UNKNOWN_OBJECT',$keys[0]);
+    }
+    /*
+     * Test de validacion con path : Establecimiento de un valor nuevo.
+     */
+    function testValidate4()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->__validateArray(
+            [
+                "title"=>"hola",
+                "content"=>"adios",
+                "creator_id/Name"=>"Juanin"
+            ]
+        );
+        $fieldErrors=$result->getFieldErrors();
+        $this->assertEquals(true,$result->isOk());
+
+    }
+    /*
+     *   Validacion de captura de errores de modelo padre
+     */
+    function testValidate4_1()
+    {
+        $this->init();
+        $ins=new \model\tests\User\Admin();
+        $result=$ins->__validateArray(
+            [
+                "Name"=>"holaholaholaholaholaholaholaholaholaholaholaholaholaholaholahola",
+                "adminrole"=>"Normal"
+            ]
+        );
+        $this->assertEquals(false,$result->isOk());
+        $fieldErrors=$result->getFieldErrors();
+        $this->assertEquals(1,count($fieldErrors));
+        $keys=array_keys($fieldErrors);
+        $this->assertEquals("Name",$keys[0]);
+        $keys=array_keys($fieldErrors[$keys[0]]);
+        $this->assertEquals('lib\model\types\_StringException::TOO_LONG',$keys[0]);
+    }
+    /*
+ *   Validacion de captura de errores de modelo hijo
+ */
+    function testValidate4_2()
+    {
+        $this->init();
+        $ins=new \model\tests\User\Admin();
+        $result=$ins->__validateArray(
+            [
+                "Name"=>"hola",
+                "adminrole"=>"NoExiste"
+            ]
+        );
+        $this->assertEquals(false,$result->isOk());
+        $fieldErrors=$result->getFieldErrors();
+        $this->assertEquals(1,count($fieldErrors));
+        $keys=array_keys($fieldErrors);
+        $this->assertEquals("adminrole",$keys[0]);
+        $keys=array_keys($fieldErrors[$keys[0]]);
+        $this->assertEquals('lib\model\types\BaseTypeException::INVALID',$keys[0]);
+    }
+
+
+    /*
+     * Test de validacion con path 2: Establecimiento de una relacion, y modificacion del campo relacionado.
+     */
+    function testValidate5()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->__validateArray(
+            [
+                "title"=>"hola",
+                "content"=>"adios",
+                "creator_id"=>1,
+                "creator_id/Name"=>"Juanin"
+            ]
+        );
+        $fieldErrors=$result->getFieldErrors();
+        $this->assertEquals(true,$result->isOk());
+    }
+    /*
+     * Test de validacion con path 3: Establecimiento de una relacion inversa,con campos ok.
+     */
+    function testValidate6()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->__validateArray(
+            [
+                "comments"=>[
+                    [
+                        "id_user"=>2,
+                        "title"=>"Primer Comentario path",
+                        "content"=>"Contenido Primer Comentario path"
+                    ],
+                    [
+                        "id_user"=>2,
+                        "title"=>"Segundo Comentario path",
+                        "content"=>"Segundo Comentario path"
+                    ],
+                ]
+            ]
+        );
+        $fieldErrors=$result->getFieldErrors();
+        $this->assertEquals(true,$result->isOk());
+    }
+    /*
+     * Test de validacion con path 4: Establecimiento de una relacion inversa,con campos erroneos.
+     */
+    function testValidate7()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->__validateArray(
+            [
+                "comments"=>[
+                    [
+                        "id_user"=>2,
+                        "title"=>"Primer Comentario pathPrimer Comentario pathPrimer Comentario pathPrimer Comentario path",
+                        "content"=>"Contenido Primer Comentario path"
+                    ],
+                    [
+                        "id_user"=>2,
+                        "title"=>"Segundo Comentario path",
+                        "content"=>"Segundo Comentario path"
+                    ],
+                ]
+            ]
+        );
+
+
+        $this->assertEquals(false,$result->isOk());
+        $fieldErrors=$result->getFieldErrors();
+        $keys=array_keys($fieldErrors);
+        $this->assertEquals("comments/0/title",$keys[0]);
+        $subKeys=array_keys($fieldErrors[$keys[0]]);
+        $this->assertEquals('lib\model\types\_StringException::TOO_LONG',$subKeys[0]);
+    }
+    /*
+     *  Test de guardado simple
+     *
+     */
+    function testArrLoad1()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->loadFromArray(
+            ["title"=>"hola",
+                "content"=>"adios"],false,false
+        );
+        $id=$ins->id;
+        $this->assertEquals(11,$id);
+        $ins2=new \model\tests\Post();
+        $ins2->id=$id;
+        $ins2->loadFromFields();
+        $this->assertEquals("adios",$ins2->content);
+
+    }
+    /*
+     * Test de guardado a traves de modelo extendido.
+     *
+     */
+    function testArrLoad2()
+    {
+        $this->init();
+        $ins=new \model\tests\User\Admin();
+        $result=$ins->loadFromArray(
+            ["adminrole"=>"Master",
+                "Name"=>"Juanin"
+            ],false,false
+        );
+        $id=$ins->id;
+
+        $this->assertEquals(5,$id);
+        $ins2=new \model\tests\User\Admin();
+        $ins2->id=$id;
+        $ins2->loadFromFields();
+        $this->assertEquals(5,$ins2->id);
+        $role=$ins2->{"*adminrole"}->getLabel();
+        $this->assertEquals("Master",$role);
+
+
+        $ins2=new \model\tests\User();
+        $ins2->id=$id;
+        $ins2->loadFromFields();
+        $this->assertEquals(5,$ins2->id);
+        $name=$ins2->Name;
+        $this->assertEquals("Juanin",$name);
+    }
+
+    /*
+     * Test de guardado con path : Establecimiento de un valor nuevo.
+     */
+    function testArrLoad4()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->loadFromArray(
+            [
+                "title"=>"hola",
+                "content"=>"adios",
+                "creator_id/Name"=>"Juanin"
+            ],false,false
+        );
+        $id=$ins->id;
+        $cid=$ins->{"!creator_id"};
+        $ins2=new \model\tests\User();
+        $ins2->id=$cid;
+        $ins2->loadFromFields();
+        $this->assertEquals(5,$ins2->id);
+        $name=$ins2->Name;
+        $this->assertEquals("Juanin",$name);
+    }
+    /*
+     * Test de insercion con path 2: Establecimiento de una relacion, y modificacion del campo relacionado.
+     */
+    function testArrLoad5()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->loadFromArray(
+            [
+                "title"=>"hola",
+                "content"=>"adios",
+                "creator_id"=>1,
+                "creator_id/Name"=>"Juanin"
+            ],false,false
+        );
+        $cid=$ins->{"!creator_id"};
+        $ins2=new \model\tests\User();
+        $ins2->id=$cid;
+        $ins2->loadFromFields();
+        $this->assertEquals(1,$ins2->id);
+        $name=$ins2->Name;
+        $this->assertEquals("Juanin",$name);
+    }
+
+    function testAlias2()
+    {
+        $this->init();
+        $post=new \model\tests\Post();
+        $post->title="hola";
+        $post->comments[0]->title="-Nuevo-";
+        $post->save();
+        $id=$post->id;
+        $this->assertEquals(11,$id);
+
+        $post=new \model\tests\Post();
+        $post->id=$id;
+        $post->loadFromFields();
+        $n=$post->comments->count();
+        $this->assertEquals(1,$n);
+        $this->assertEquals("-Nuevo-",$post->comments[0]->title);
+
+
+    }
+    /*
+     * Test de insercion de alias
+     */
+    function testArrLoad6()
+    {
+        $this->init();
+        $ins=new \model\tests\Post();
+        $result=$ins->loadFromArray(
+            [
+                "title"=>"hola",
+                "content"=>"adios",
+                "creator_id"=>1,
+                "comments"=>[
+                    [
+                        "id_user"=>2,
+                        "title"=>"Primer Comentario path",
+                        "content"=>"Contenido Primer Comentario path"
+                    ],
+                    [
+                        "id_user"=>2,
+                        "title"=>"Segundo Comentario path",
+                        "content"=>"Segundo Comentario path"
+                    ],
+                ]
+            ],false,false
+        );
+        $nid=$ins->id;
+        $ins2=new \model\tests\Post();
+        $ins2->id=$nid;
+        $ins2->loadFromFields();
+        $this->assertEquals(2,$ins2->comments->count());
+    }
+    /*
+     * Test de insercion de relacion multiple,combinando tanto asignacion de valores
+     * existentes, como valores nuevos.
+     */
+    function testArrLoad7()
+    {
+        $this->init();
+        $ins=new \model\tests\User();
+        $ins->loadFromArray([
+            "Name"=>"Ursulo",
+            "roles"=>[
+                        ["id_role"=>2],
+                        ["id_role"=>["role"=>"NuevoRol"]]
+                     ]
+        ],false,false);
+
+        $id=$ins->id;
+        $ins2=new \model\tests\User();
+        $ins2->id=$id;
+        $ins2->loadFromFields();
+        $n=$ins2->roles->count();
+        $this->assertEquals(2,$n);
+        $this->assertEquals(2,$ins2->roles[0]->{"!id_role"});
+        $this->assertEquals("NuevoRol",$ins2->roles[1]->id_role->role);
+    }
 
 }
+

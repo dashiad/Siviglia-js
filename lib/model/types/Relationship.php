@@ -15,32 +15,15 @@ class Relationship extends BaseType {
     function getRelationshipType()
       {
           $obj=$this->definition["MODEL"];
-          if(io($this->definition,"MULTIPLICITY","1:1")=="M:N")
-          {
-              $remoteDef=\lib\model\types\TypeFactory::getObjectDefinition($obj);
 
-              if(isset($this->definition["FIELDS"]["REMOTE"]))
-                $flist=$this->definition["FIELDS"]["REMOTE"];
-              else
-                $flist=$remoteDef["INDEXFIELDS"];
-
-              foreach($flist as $key=>$value)
-                $subTypes[$value]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($obj,$value);
-          }
-          else
-          {
-               if(isset($this->definition["FIELD"]))
-                    $fields=(array)$this->definition["FIELD"];
-               else
-                    $fields=& $this->definition["FIELDS"];
-
-               $flist=array_values($fields);
-              $subTypes=array();
-              for($k=0;$k<count($flist);$k++)
+          $fields=$this->definition["FIELDS"];
+          $flist=array_values($fields);
+          $subTypes=array();
+          for($k=0;$k<count($flist);$k++)
               {
                 $subTypes[$flist[$k]]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($obj,$flist[$k]);
               }
-          }
+
           if(count($subTypes)>1)
               return $subTypes;
           return $subTypes[$flist[0]];
@@ -52,6 +35,14 @@ class Relationship extends BaseType {
       }
       function _validate($val)
       {
+          $s=\Registry::getService("model");
+          $m=$s->getModel($this->definition["MODEL"]);
+          $parentModel=$this->parent;
+          foreach($this->definition["FIELDS"] as $key=>$value)
+          {
+              $m->{$value}=$val;
+          }
+          $m->loadFromFields();
           return true;
       }
       function _getValue()

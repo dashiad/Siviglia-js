@@ -30,11 +30,13 @@ class SelectMultiple extends DefaultInput
         if(isset($this->fieldDef["TARGET_RELATION"]))
         {
             // Se obtiene el modelo donde esta definida la relacion
-            $modelInstance=\lib\model\BaseModel::getModelInstance($this->fieldDef["MODEL"]);
+            $s=\Registry::getService("model");
+            $modelInstance=$s->getModel($this->fieldDef["MODEL"]);
             // Se obtiene el alias al que apunta el campo.
             $aliasInstance=$modelInstance->__getField($this->fieldDef["TARGET_RELATION"]);
             $this->aliasInstance=$aliasInstance;
-            $remoteInstance=\lib\model\BaseModel::getModelInstance($aliasInstance->getRemoteModelName()->getNormalizedName());
+            $s=\Registry::getService("model");
+            $remoteInstance=$s->getModel($aliasInstance->getRemoteModelName()->getNormalizedName());
             $valueFields=$this->inputDef["PARAMS"]["VALUE"];
 
             foreach($valueFields as $curField)

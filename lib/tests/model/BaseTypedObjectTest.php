@@ -27,6 +27,7 @@ class SimpleTypedObject extends BaseTypedObject
     public $__five=null;
     public $__testedOk=false;
     public $__testedNok=false;
+    public $__enteringCalled=false;
     function check_five($value){if($value=="five")return true;return false;}
     function process_five($value){return "six";}
     function callback_one(){$this->__one="one";}
@@ -38,6 +39,7 @@ class SimpleTypedObject extends BaseTypedObject
     function get_seven(){return "seven";}
     function check_eight($value){return strlen($value)>3;}
     function process_eight($value){return $value."##";}
+    function enteringState(){$this->__enteringCalled=true;return true;}
 }
 
 class BaseTypedObjectTest extends TestCase
@@ -161,6 +163,7 @@ class BaseTypedObjectTest extends TestCase
                         )
                     ),
                     'Last' => array(
+
                         "FINAL"=>1,
                         "LISTENERS"=>array(
                             "ON_ENTER"=>array(
@@ -204,7 +207,8 @@ class BaseTypedObjectTest extends TestCase
                     "THREE"=>array("TYPE"=>"METHOD","METHOD"=>"callback_three"),
                     "FAIL_TEST"=>array("TYPE"=>"METHOD","METHOD"=>"test_nok"),
                     "TEST_OK"=>array("TYPE"=>"METHOD","METHOD"=>"test_ok"),
-                    "P_ONE"=>array("TYPE"=>"PROCESS","CALLBACKS"=>array("ONE","TWO"))
+                    "P_ONE"=>array("TYPE"=>"PROCESS","CALLBACKS"=>array("ONE","TWO")),
+
                 ),
                 'STATES' => array(
                     'None' => array(
@@ -235,7 +239,7 @@ class BaseTypedObjectTest extends TestCase
                             "ON_ENTER"=>array(
                                 "STATES"=>array("None"=>array("THREE","P_ONE")),
                             ),
-                            "TESTS"=>array("FAIL_TEST")
+                            //"TESTS"=>array("FAIL_TEST")
                         ),
                         'FIELDS' => array(
                             'EDITABLE' => array('one'),
@@ -319,6 +323,87 @@ class BaseTypedObjectTest extends TestCase
             return new SimpleTypedObject($def);
 
     }
+    function getDefinition9()
+    {
+
+        $def=array(
+            "FIELDS"=>array(
+                "one"=>array("TYPE"=>"String","MINLENGTH"=>2,"MAXLENGTH"=>4),
+                "two"=>array("TYPE"=>"String","MINLENGTH"=>2,"MAXLENGTH"=>4),
+                "three"=>array("TYPE"=>"String","MINLENGTH"=>2,"MAXLENGTH"=>4),
+                "four"=>array("TYPE"=>"String","MINLENGTH"=>2,"MAXLENGTH"=>4),
+                "five"=>array("TYPE"=>"String","MINLENGTH"=>2,"MAXLENGTH"=>4),
+                "status"=>array('TYPE' => 'State',
+                    'VALUES' => array(
+                        'None', 'Other', 'Another','Last'
+                    ),
+                    'DEFAULT' => 'None')
+            ),
+            'STATES' => array(
+                "LISTENER_TAGS"=>array(
+                    "ONE"=>array("TYPE"=>"METHOD","METHOD"=>"callback_one"),
+                    "TWO"=>array("TYPE"=>"METHOD","METHOD"=>"callback_two","PARAMS"=>array("set")),
+                    "THREE"=>array("TYPE"=>"METHOD","METHOD"=>"callback_three"),
+                    "FAIL_TEST"=>array("TYPE"=>"METHOD","METHOD"=>"test_nok"),
+                    "TEST_OK"=>array("TYPE"=>"METHOD","METHOD"=>"test_ok"),
+                    "P_ONE"=>array("TYPE"=>"PROCESS","CALLBACKS"=>array("ONE","TWO")),
+                    "ENTERING_OK"=>array("TYPE"=>"METHOD","METHOD"=>"enteringState"),
+
+                ),
+                'STATES' => array(
+                    'None' => array(
+                        "LISTENERS"=>array(
+                            "ON_LEAVE"=>array(
+                                "STATES"=>array(
+                                    "Other"=>array("ONE"),
+                                    "*"=>array("TWO")
+                                ),
+                            ),
+                            "TESTS"=>array("TEST_OK")
+                        ),
+                        'FIELDS' => array(
+                            'EDITABLE' => array('one','three')
+                        )
+                    ),
+                    'Other' => array(
+                        'ALLOW_FROM'=>array("None","Another"),
+                        "LISTENERS"=>array(
+                            "ON_ENTER"=>array("THREE")
+                        ),
+                        'FIELDS' => array(
+                            'EDITABLE' => array('two'),
+                            'FIXED' => array('one'))
+                    ),
+                    'Another' => array(
+                        "LISTENERS"=>array(
+                            "ON_ENTER"=>array(
+                                "STATES"=>array("None"=>array("ENTERING_OK")),
+                            ),
+                            //"TESTS"=>array("FAIL_TEST")
+                        ),
+                        'FIELDS' => array(
+                            'EDITABLE' => array('one'),
+                            'REQUIRED' => array('three')
+                        )
+                    ),
+                    'Last' => array(
+                        "FINAL"=>1,
+                        "LISTENERS"=>array(
+                            "TESTS"=>array("TEST_OK")
+                        ),
+                        'FIELDS' => array(
+                            'EDITABLE' => array('one'),
+                            'REQUIRED' => array('three')
+                        )
+                    )
+                ),
+                'FIELD' => 'status',
+                'DEFAULT' => 'None'
+            )
+        );
+        return new SimpleTypedObject($def);
+    }
+
 
     function test1()
     {
@@ -399,9 +484,9 @@ class BaseTypedObjectTest extends TestCase
     function test6_1()
     {
         $obj=$this->getDefinition2();
-        $this->expectException('\lib\model\BaseTypedException');
-        $this->expectExceptionCode(\lib\model\BaseTypedException::ERR_REQUIRED_FIELD);
         $obj->status="Another";
+        $pending=$obj->__getPendingRequired();
+        $this->assertEquals(1,count($pending));
     }
     function test6_2()
     {
@@ -692,7 +777,7 @@ class BaseTypedObjectTest extends TestCase
         // Es un valor no valido.
         $obj->one="a";
         $obj2=$this->getDefinition4();
-        $result=$obj2->__validate(["one"=>$obj->__getField("one")]);
+        $result=$obj2->__validate(["one"=>$obj->__getField("one")],null,true);
         $this->assertEquals(false,$result->isOk());
         $errors=$result->getFieldErrors();
         $fields=array_keys($errors);
@@ -776,10 +861,21 @@ class BaseTypedObjectTest extends TestCase
     function testValidate6()
     {
         $obj2=$this->getDefinition4();
-        $obj2->loadFromArray(["status"=>"Other","two"=>"aaa","three"=>"sss"]);
+        $this->expectException('\lib\model\BaseTypedException');
+        $this->expectExceptionCode(\lib\model\BaseTypedException::ERR_LOAD_DATA_FAILED);
+        $res=$obj2->loadFromArray(["status"=>"Other","two"=>"aaa","three"=>"sss"],false,false);
         $obj2->save();
         $result=$obj2->__validateArray(["status"=>"Another"]);
         $this->assertEquals(true,$result->isOk());
+    }
+    function testValidateSubChangeState()
+    {
+        $obj2=$this->getDefinition9();
+        $obj2->status="Another";
+        // Aun no ha tenido que llamarse al metodo de cambio de estado, ya que el campo three es requerido.
+        $this->assertEquals(false,$obj2->__enteringCalled);
+        $obj2->three="lala";
+        $this->assertEquals(true,$obj2->__enteringCalled);
     }
 
 }

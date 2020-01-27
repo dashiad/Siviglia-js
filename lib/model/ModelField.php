@@ -135,6 +135,11 @@ class ModelField
     {
         return $this->model;
     }
+    // Un campo "normal"
+    function apply()
+    {
+        return;
+    }
     function set($value)
     {
         if(is_object($value))
@@ -179,8 +184,9 @@ class ModelField
             return;
         }
 
-        $this->setDirty();
+
         $this->type->setValue($val);
+        $this->setDirty();
         $this->model->__setRaw($this->name,$this->type->getValue());
         $this->notifyListeners();
     }

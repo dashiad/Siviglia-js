@@ -283,8 +283,7 @@ class MysqlSerializer extends \lib\storage\StorageSerializer
 
             $newInstance->__setSerializer($this);
             $this->unserializeObjectFromData($newInstance,$results[$k]);
-            $normalized=\lib\model\ModelCache::store($newInstance);
-            $models[] = $normalized;
+            $models[] = $newInstance;
         }
 
         return $models;

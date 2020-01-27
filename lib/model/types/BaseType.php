@@ -89,6 +89,10 @@
       {
           return null;
       }
+      function isEmptyValue($val)
+      {
+          return $val===null || $val==="";
+      }
       abstract function _setValue($val);
 
       final function validate($value)
