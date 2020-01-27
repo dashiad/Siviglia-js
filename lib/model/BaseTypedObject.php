@@ -180,14 +180,14 @@ class BaseTypedObject extends PathObject
         protected $__changingState=false;
         protected $__pendingRequired=[];
         protected $__allowRead=false;
-        protected $__referencedModel;
+
 
         function __construct($definition)
         {
                 $this->__objectDef=$definition;
                 $this->__fieldDef=& $this->__objectDef[$this->getFieldsKey()];
                 $this->__stateDef=new \lib\model\states\StatedDefinition($this);
-                $this->__referencedModel=$this;
+
                 $this->__key=null;
                 if (isset($this->__objectDef["INDEXFIELDS"]))
                     $this->__key = new ModelKey($this, $this->__objectDef);
@@ -298,7 +298,7 @@ class BaseTypedObject extends PathObject
             $relationships=[];
             $relationshipPaths=[];
             $invRelationships=[];
-            $referencedModel=$this->getReferencedModel();
+            $referencedModel=$this;
             $stateField=$referencedModel->getStateField();
             $state=null;
             foreach($data as $k=>$v)
@@ -668,14 +668,7 @@ class BaseTypedObject extends PathObject
             $this->loadFromArray($curVal,true,false);
          }
 
-         function setReferencedModel($model)
-         {
-             $this->__referencedModel=$model;
-         }
-         function getReferencedModel()
-         {
-             return $this->__referencedModel;
-         }
+
          // Normaliza a un array asociativo las siguientes versiones de objetos:
          // Si $fields es null, normaliza el objeto actual.
          // Si $fields es un BaseTypedObject, lo normaliza.
@@ -737,7 +730,7 @@ class BaseTypedObject extends PathObject
 
                  $fieldArray=$this->normalizeToAssociativeArray($fields);
 
-             $targetModel=$this->getReferencedModel();
+             $targetModel=$this;
              $stateFieldName = $targetModel->getStateField();
              $nextState=null;
              // Tomamos todos los campos requeridos, para ver si tras validar los campos

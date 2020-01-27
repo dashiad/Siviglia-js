@@ -97,7 +97,7 @@ class CLRequest extends \lib\output\html\HTMLRequest
             $this->userId=intval($params["userId"]);
         }
         $session=new \lib\storage\Persistence\NullSession();
-        \Registry::$registry[Registry::SERVICE_CONTAINER]->addService("session",$session);
+        \Registry::$registry[\Registry::SERVICE_CONTAINER]->addService("session",$session);
         \Registry::initialize($this);
     }
 
@@ -172,6 +172,6 @@ class CLRequest extends \lib\output\html\HTMLRequest
     function solve()
     {
 
-        Startup::commonSetup();
+    //    Startup::commonSetup();
     }
 }

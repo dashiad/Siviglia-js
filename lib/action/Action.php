@@ -81,7 +81,7 @@ class Action extends \lib\model\BaseTypedObject
                     $unserializing=true;
                 }
 	        }
-	        $this->setReferencedModel($this->destModel);
+
 	        if($keys)
 	        {
 	            foreach($keys as $k=>$v)

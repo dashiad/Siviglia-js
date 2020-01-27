@@ -9,9 +9,6 @@
       var $value=null;
       var $definition;
       var $flags=0;
-      var $typeReference;
-      var $referencedModel;
-      var $referencedField;
       var $parent;
       var $setOnEmpty;
       const TYPE_SET_ON_SAVE=0x1;
@@ -244,12 +241,6 @@
       {
           $metaClassName=$this->getMetaClassName();
           return new $metaClassName();
-      }
-      function setTypeReference($model,$field)
-      {
-          $this->referencedModel=$model;
-          $this->referencedField=$field;
-          $this->typeReference=true;
       }
       /*
        * La funcion getTypeFromPath sirve para obtener el tipo de un subcampo definido en algun tipo de container.
