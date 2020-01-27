@@ -66,15 +66,15 @@ class Definition extends BaseModelDefinition
                      'parent' => [
                          'TYPE' => 'Relationship',
                          'MODEL' => '\model\web\Job',
-                         'ROLE' => 'HAS_MANY',
+                         'ROLE' => 'HAS_ONE',
                          'LABEL' => 'Padre',
                          'MULTIPLICITY' => '1:N',
-                         'CARDINALITY' => 100,
+                         'CARDINALITY' => 1,
                          'FIELDS' => ['parent' => 'job_id'],
                      ],
                      'object' => [
                          'TYPE' => 'String',
-                         'MAXLENGTH' => 65535*16,
+                         'MAXLENGTH' => 16*1024*1024,
                          'LABEL' => 'object',
                          'SHORTLABEL' => 'object',
                      ],
