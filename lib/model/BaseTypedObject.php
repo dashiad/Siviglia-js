@@ -986,5 +986,17 @@ class BaseTypedObject extends PathObject
     {
         return $this->__data;
     }
+    function __transferFields($modelName)
+    {
+        $result=[];
+        foreach($this->__fieldDef as $k=>$v)
+        {
+            if(isset($v["MODEL"]) && $v["MODEL"]==$modelName && isset($v["FIELD"]))
+            {
+                $result[$v["FIELD"]]=$this->{$k};
+            }
+        }
+        return $result;
+    }
 
 }

@@ -58,10 +58,16 @@ class Action extends \lib\model\BaseTypedObject
 
             }
         }
-	    $this->__validate($fields,$actionResult,false);
+        $this->__validateArray($fields,$actionResult);
+	    if(!$actionResult->isOk())
+        {
+            return $this->onError(null, $fields, $actionResult, $user);
+        }
+
+	    $this->loadFromArray($fields,true,false,$actionResult);
+
 
 	    if($actionResult->isOk()) {
-            $this->__fields=$actionResult->getParsedFields();
             $this->__loaded=true;
             $this->validate($actionResult);
         }
@@ -115,7 +121,9 @@ class Action extends \lib\model\BaseTypedObject
                     }break;
                     default:
                     {
-                        $this->destModel->loadFromArray($fields, false, $unserializing, $actionResult);
+
+                        $val=$this->__transferFields($def["MODEL"]);
+                        $this->destModel->loadFromArray($val, false, false, $actionResult);
                         if($actionResult->isOk())
                             $this->onSaved($this->destModel);
                     }

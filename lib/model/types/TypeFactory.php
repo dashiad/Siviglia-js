@@ -59,7 +59,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
                 {
 
                     $newType=TypeFactory::getType(null,TypeFactory::getObjectField($def["MODEL"],$def["FIELD"]),$value);
-                    $newType->setTypeReference($def["MODEL"],$def["FIELD"]);
+                    //$newType->setTypeReference($def["MODEL"],$def["FIELD"]);
                     // En caso de que la referencia defina un DEFAULT, sobreescribe al que llega de la definicion de tipo.
                     if(isset($def["DEFAULT"]) && !empty($def["DEFAULT"]))
                     {

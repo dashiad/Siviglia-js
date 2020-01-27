@@ -22,7 +22,6 @@
       function __construct($def)
       {
           $this->parent=null;
-          $this->typeReference=false;
           $this->definition=$def;
           $this->flags=0;
           $this->setOnEmpty=false;

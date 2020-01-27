@@ -72,6 +72,7 @@ class Container extends BaseContainer
             if(!isset($value[$key]) && isset($curDef["REQUIRED"]) && $curDef["REQUIRED"]!=false)
                 throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key));
             if(isset($value[$key])) {
+
                 if (!$tempType->validate($value[$key]))
                     return false;
                 $tempType->__rawSet($value[$key]);
