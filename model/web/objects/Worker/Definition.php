@@ -35,20 +35,11 @@ class Definition extends BaseModelDefinition
                 'TYPE' => 'String',
                 'LABEL' => 'Worker ID',
                 'MINLENGTH' => 16,
-                'MAXLENGTH' => 64,
+                'MAXLENGTH' => 256,
                 'DESCRIPTIVE' => 'true',
                 'SHORTLABEL' => 'tag',
                 'ISLABEL' => true,
             ],
-            /*'job_id' => [
-                'TYPE' => 'String',
-                'LABEL' => 'Job Id',
-                'MINLENGTH' => 16,
-                'MAXLENGTH' => 64,
-                'DESCRIPTIVE' => 'true',
-                'SHORTLABEL' => 'tag',
-                'ISLABEL' => true,
-            ],*/
             'job_id' => [
                 'DEFAULT' => 'NULL',
                 'FIELDS' => ['job_id' => 'job_id'],
@@ -110,12 +101,6 @@ class Definition extends BaseModelDefinition
                 'DEFAULT' => null,
                 'LABEL' => 'Result',
             ],
-            'object' => [
-                'TYPE' => 'String',
-                'MAXLENGTH' => 65535*16,
-                'LABEL' => 'object',
-                'SHORTLABEL' => 'object',
-             ],
         ],
         'PERMISSIONS' => [],
         'SOURCE' => [

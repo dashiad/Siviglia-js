@@ -35,7 +35,7 @@ class Definition extends BaseModelDefinition
                            'TYPE' => 'String',
                            'LABEL' => 'Job ID',
                            'MINLENGTH' => 16,
-                           'MAXLENGTH' => 64,
+                           'MAXLENGTH' => 256,
                            'DESCRIPTIVE' => 'true',
                            'SHORTLABEL' => 'tag',
                            'ISLABEL' => true,
@@ -71,12 +71,6 @@ class Definition extends BaseModelDefinition
                          'MULTIPLICITY' => '1:N',
                          'CARDINALITY' => 1,
                          'FIELDS' => ['parent' => 'job_id'],
-                     ],
-                     'object' => [
-                         'TYPE' => 'String',
-                         'MAXLENGTH' => 16*1024*1024,
-                         'LABEL' => 'object',
-                         'SHORTLABEL' => 'object',
                      ],
                  ],
         	     'ALIASES'=>[
