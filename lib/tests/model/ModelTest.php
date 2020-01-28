@@ -52,7 +52,13 @@ class ModelTest extends TestCase
             $this->testResolverIncluded = true;
         }
     }
-
+    function testInstance()
+    {
+        $this->init();
+        $ins=new \model\tests\ClassA();
+        $ins->simpleDate='2020-01-01 13:00';
+        $h=11;
+    }
     function testLoadSimple()
     {
         $this->init();
