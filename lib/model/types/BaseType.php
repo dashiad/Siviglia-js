@@ -262,5 +262,14 @@
               throw new BaseTypeException(BaseTypeException::ERR_PATH_NOT_FOUND,["path"=>implode("/",$path)],$this);
           return $this;
       }
+      function getmetaData($key)
+      {
+        
+        if(isset($this->definition["METADATA"]) && isset($this->definition["METADATA"][$key]))
+        {
+            return $this->definition["METADATA"][$key];
+        }
+        return null;
+      }
       abstract function getMetaClassName();
   }
