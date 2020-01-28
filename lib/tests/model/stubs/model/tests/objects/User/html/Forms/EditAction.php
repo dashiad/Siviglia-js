@@ -1,5 +1,5 @@
 <?php
-namespace model\web\WebUser\html\forms;
+namespace model\tests\User\html\forms;
 /**
  FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser//html/forms/EditAction.php
   CLASS:EditAction
@@ -11,40 +11,15 @@ class EditAction extends \lib\output\html\Form
 {
 	 static  $definition=array(
                'NAME'=>'EditAction',
-               'MODEL'=>'\model\web\WebUser',
+               'MODEL'=>'\model\tests\User',
                'ACTION'=>array(
-                     'MODEL'=>'\model\web\WebUser',
-                     'ACTION'=>'EditAction'
-                     ),
-               'FIELDS'=>array(
-                     'LOGIN'=>array(
-                           'MODEL'=>'\model\web\WebUser',
-                           'FIELD'=>'LOGIN',
-                           'REQUIRED'=>1
-                           ),
-                     'PASSWORD'=>array(
-                           'MODEL'=>'\model\web\WebUser',
-                           'FIELD'=>'PASSWORD',
-                           'REQUIRED'=>1
-                           ),
-                     'USER_ID'=>array(
-                           'MODEL'=>'\model\web\WebUser',
-                           'FIELD'=>'USER_ID',
-                           'REQUIRED'=>1
-                           ),
-                     'EMAIL'=>array(
-                           'MODEL'=>'\model\web\WebUser',
-                           'FIELD'=>'EMAIL',
-                           'REQUIRED'=>1
-                           )
+                     'MODEL'=>'\model\tests\User',
+                     'ACTION'=>'EditAction',
+				     'INHERIT'=>1
                      ),
                'ROLE'=>'Edit',
-               'REDIRECT'=>array(
-                     'ON_SUCCESS'=>'',
-                     'ON_ERROR'=>''
-                     ),
                'INPUTS'=>array(),
-               'INDEXFIELDS'=>array()
+               'INDEXFIELDS'=>array("id")
                );
 
 
