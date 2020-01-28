@@ -1,10 +1,10 @@
-<button type="button" class="btn btn-[_COLOR][_*][#] [_REDONDEADO] round[#] [_SOMBRA] shadow[#]">
+<button type="button" class="btn [_COLOR]btn-[_*][#] [_BORDE_COLOR]btn-outline-[_*][#] [_REDONDEADO] round[#] [_SOMBRA] shadow[#]">
     [_ICON][_*][#]
     [_LABEL][_*][#]    
 </button>
 <script>
     var __s__temp=document.currentScript.previousElementSibling;
     __s__temp.addEventListener("click",function(){
-        __s__form.S_FormRegistry["<?php echo $form->getHash();?>"].submit();
+    __s__form.S_FormRegistry["<?php echo $form->getHash();?>"].submit();
     });
 </script>

@@ -62,6 +62,16 @@ class Definition extends BaseModelDefinition
                          'DEFAULT'    => Job::WAITING,
                          'LABEL'      => 'Estado',
                          'SHORTLABEL' => 'Estado',
+                         'METADATA'=>[
+                             "display"=>[
+                                Job::WAITING=>["ICON"=>"xxx"],
+                                Job::PENDING=>["ICON"=>"xxx"],
+                                Job::RUNNING=>["ICON"=>"xxx"],
+                                Job::FINISHED=>["ICON"=>"xxx"],
+                                Job::FAILED=>["ICON"=>"xxx"]
+                             ],                            
+                             
+                         ]
                      ],
                      'parent' => [
                          'TYPE' => 'Relationship',

@@ -83,11 +83,9 @@ if($useSidebar==1)
     <div class="app-content content">
         <div class="content-overlay"></div>
         <div class="content-wrapper">
-
-            [_CONTENT][_*][#]
-
-                          
-                
+            <div class="content-body">
+                [_CONTENT][_*][#]
+            </div>                
             </div>
         </div>
     </div>
@@ -95,4 +93,6 @@ if($useSidebar==1)
     <!-- FOOTER -->
     <footer class="footer footer-static footer-light">
         (TODO) llamada al modulo del footer.
+
+        <button class="btn btn-primary btn-icon scroll-top" type="button" style="display: inline-block;"><i class="bx bx-up-arrow-alt"></i></button>
     </footer>
