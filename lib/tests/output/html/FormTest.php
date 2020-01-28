@@ -6,7 +6,7 @@ namespace lib\tests\output\html;
 use lib\data\Cursor\ArrayReaderCursor;
 use lib\data\Cursor\Cursor;
 
-$dirName= __DIR__ . "/../../../install/config/CONFIG_test.php";
+$dirName= __DIR__ . "/../../../../install/config/CONFIG_test.php";
 include_once($dirName);
 include_once(LIBPATH."/startup.php");
 include_once(LIBPATH."/autoloader.php");
@@ -15,6 +15,19 @@ include_once(PROJECTPATH . "/vendor/autoload.php");
 
 
 use PHPUnit\Framework\TestCase;
+class RequestMocker
+{
+    var $actionData;
+    function __construct($actionData)
+    {
+        $this->actionData=$actionData;
+    }
+    function getActionData()
+    {
+        return $this->actionData;
+    }
+
+}
 class FormTest extends TestCase
 {
     var $testResolverIncluded;
@@ -47,21 +60,38 @@ class FormTest extends TestCase
             $serializer=$serService->getSerializerByName("web");
 
             $conn=$serializer->getConnection();
-            $conn->importDump(__DIR__."/../model/stubs/samplemodel.sql");
+           // $conn->importDump(__DIR__."/../../model/stubs/samplemodel.sql");
             $this->testResolverIncluded=true;
         }
     }
-    function testSimpleAddAction()
+
+    function testSimpleAddForm()
     {
         $this->init();
-        $act=\lib\output\html\Form::getForm('\model\tests\User','AddAction');
 
-        $actionResult=new \lib\action\ActionResult();
-        global $oCurrentUser;
-        $instance=$act->getParametersInstance();
-        $instance->Name="Pepito";
-        $act->process($instance, $actionResult, $oCurrentUser);
-        // Se comprueba que la accion esta ok
+        $form=\lib\output\html\Form::getForm('\model\tests\User','AddAction',null);
+        $hash=$form->createHash("testSite","testUrl",null,"");
+        // AddAction\model\tests\UsertestSitetestUrl1234
+        // AddAction\model\tests\UsertestSitetestUrl
+        $request=new RequestMocker(
+            [
+                "name"=>"AddAction",
+                "object"=>"/model/tests/User",
+                "site"=>"testSite",
+                "validationCode"=>$hash,
+                "page"=>"testUrl",
+                "INPUTS"=>[
+
+                ],
+                "FIELDS"=>[
+                    "Name"=>"Pepito"
+                ]
+            ]
+        );
+        $form->resolve($request);
+
+        $actionResult=$form->getResult();
+
         $this->assertEquals(true,$actionResult->isOk());
         // Se comprueba que se ha insertado el usuario.
         $ds=\lib\datasource\DataSourceFactory::getDataSource('\model\tests\User','FullList');
