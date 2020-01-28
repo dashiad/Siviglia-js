@@ -26,8 +26,8 @@ class Definition extends BaseModelDefinition
                            'TYPE' => 'AutoIncrement',
                            'MIN' => 0,
                            'MAX' => 9999999999,
-                           'LABEL' => 'id_job',
-                           'SHORTLABEL' => 'id_job',
+                           'LABEL' => 'ID',
+                           'SHORTLABEL' => 'ID',
                            'DESCRIPTIVE' => 'true',
                            'ISLABEL' => true
                            ],
@@ -37,7 +37,7 @@ class Definition extends BaseModelDefinition
                            'MINLENGTH' => 16,
                            'MAXLENGTH' => 256,
                            'DESCRIPTIVE' => 'true',
-                           'SHORTLABEL' => 'tag',
+                           'SHORTLABEL' => 'Job',
                            'ISLABEL' => true,
                            ],
                      'name' => [

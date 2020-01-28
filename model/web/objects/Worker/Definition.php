@@ -96,6 +96,10 @@ class Definition extends BaseModelDefinition
                 'LABEL'      => 'Status',
                 'SHORTLABEL' => 'status',
             ],
+            'alive' => [
+                'TYPE'    => 'Boolean',
+                'DEFAULT' => true,
+            ],
             'result' => [
                 'TYPE' => 'String',
                 'DEFAULT' => null,

@@ -36,4 +36,5 @@ class Job extends BaseModel
     {
         return self::STATUS[$status] ?? null;
     }
+        
 }
