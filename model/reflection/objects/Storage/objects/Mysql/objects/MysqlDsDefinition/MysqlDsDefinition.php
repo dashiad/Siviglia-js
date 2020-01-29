@@ -8,7 +8,7 @@ class MysqlDsDefinition
                 $this->parentDs=$parentDs;
                 $this->dsName=$dsName;
                 $this->parentModel=$parentModel;
-                $this->initialize($parentDs->getStorageDefinition("MYSQL"));
+                $this->initialize($parentDs->getStorageDefinition("Mysql"));
         }
         function initialize($definition=null)
         {
@@ -20,7 +20,7 @@ class MysqlDsDefinition
             $this->hasDefinition=true;
             $this->serializer=$this->parentModel->getSerializer();
             $this->discoverFields();
-            $this->parentDs->addStorageDefinition("MYSQL",$this->definition);
+            $this->parentDs->addStorageDefinition("Mysql",$this->definition);
         }
         function generateFromQuery($model,$dsName,$query)
         {
@@ -582,7 +582,7 @@ class MysqlDsDefinition
             {
                 $types=$field->getType();
                 $serializers=array();
-                $serType="MYSQL";
+                $serType="Mysql";
                 foreach($types as $typeKey=>$typeValue)
                 {
                     $def=$typeValue->getDefinition();

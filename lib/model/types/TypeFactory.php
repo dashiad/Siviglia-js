@@ -19,7 +19,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
               $type=$parts[$n-1];
           }
 
-          $type=ucfirst(strtolower($type));
+          //$type=ucfirst(strtolower($type));
           if($type=="String" || $type=="_string")
               $type="_String";
           if($type=="Array" || $type=="_array")
@@ -72,7 +72,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
 
             $type=$def["TYPE"];
             if($type[0]!=='\\') {
-                $type=ucfirst(strtolower($type));
+                //$type=ucfirst(strtolower($type));
                 $targetType = TypeFactory::includeType($type);
                 $t = new $targetType($def, $value);
                 return $t;

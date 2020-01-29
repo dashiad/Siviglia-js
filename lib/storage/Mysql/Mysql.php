@@ -43,9 +43,9 @@ class Mysql
     function connect()
     {
         extract($this->definition);
-    
+
         // Siempre se abre una nueva conexion
-        $conn=mysqli_connect($host,$user,$password); 
+        $conn=mysqli_connect($host,$user,$password);
         $this->host=$host;
         if(!$conn)
         {
@@ -415,8 +415,8 @@ function selectIndexed($q,$field="")
         $fields=$definition["FIELDS"];
 
         $sql="";
-        if(isset($definition["STORAGE"]) && isset($definition["STORAGE"]["MYSQL"]))
-            $sql=$definition["STORAGE"]["MYSQL"];
+        if(isset($definition["STORAGE"]) && isset($definition["STORAGE"]["Mysql"]))
+            $sql=$definition["STORAGE"]["Mysql"];
 
         $fieldNames=array_keys($fields);
         $nFields=count($fieldNames);

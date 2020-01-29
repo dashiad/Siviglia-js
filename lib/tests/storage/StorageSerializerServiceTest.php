@@ -45,7 +45,7 @@ class StorageSerializerServiceTest extends TestCase
          $s->addSerializer("added",
                             array(
                                     "NAME"=>"added",
-                                    "TYPE"=>"MYSQL",
+                                    "TYPE"=>"Mysql",
                                     "ADDRESS"=>$details
                             )
          );
