@@ -72,6 +72,16 @@ class Definition extends BaseModelDefinition
                          'CARDINALITY' => 1,
                          'FIELDS' => ['parent' => 'job_id'],
                      ],
+                     'created_at' => [
+                         'TYPE'  => 'DateTime',
+                         'LABEL' => 'Creado',
+                         'DESCRIPTIVE' => 'true',
+                     ],
+                     'updated_at' => [
+                         'TYPE' => 'DateTime',
+                         'LABEL' => 'Modificado',
+                         'DESCRIPTIVE' => 'true',
+                     ],
                  ],
         	     'ALIASES'=>[
         	         'workers'=>[
