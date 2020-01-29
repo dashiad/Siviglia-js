@@ -1,0 +1,8 @@
+[*CUSTOM/INPUTS/BUTTON({"form":"&$form"})]   
+    [_COLOR]success[#]
+    [_SOMBRA][_*][#]
+    [_ICON]
+        [*:ICONS/ICON({"icon":"enviar"})][#]
+    [#]     
+    [_LABEL]Send[#]
+[#]

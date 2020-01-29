@@ -84,6 +84,15 @@ class Icon
                     echo '<i class="bx bx-fullscreen"></i>';
                 }
                 break;
+            case "simbolo-mas":
+                    echo '<i class="bx bx-plus"></i>';
+                break;
+            case "papelera":
+                    echo '<i class="bx bx-trash-alt"></i>';
+                break;
+            case "enviar":
+                    echo '<i class="bx bx-send"></i>';                
+                break;
             case "collapse": {
                     echo '<i class="bx bx-chevron-down"></i>';
                 }
