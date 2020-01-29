@@ -15,7 +15,7 @@ class ActionResult extends \lib\model\ModelFieldErrorContainer
         $this->permissionError=false;
     }
 
-    function addFieldInputError($field,$input,$value,$exception)
+    function addFieldInputError($field,$value,$exception)
     {
         $this->addFieldTypeError($field,$value,$exception);
         /*$this->isOk=false;

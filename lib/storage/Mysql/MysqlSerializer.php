@@ -18,7 +18,7 @@ class MYSQLSerializer extends \lib\storage\StorageSerializer
     var $conn;
     var $currentDataSpace;
     var $storageManager;
-    const MYSQL_SERIALIZER_TYPE="MYSQL";
+    const MYSQL_SERIALIZER_TYPE="Mysql";
     function __construct($definition,$useDataSpace=true)
     {
 
@@ -39,8 +39,8 @@ class MYSQLSerializer extends \lib\storage\StorageSerializer
         $object->__setSerializer($this);
         if ($queryDef)
         {
- //           $object->__setSerializerFilters("MYSQL",array("DEF" => $queryDef, "VALS" => $filterValues));
-            //$object->filters["MYSQL"] = array("DEF" => $queryDef, "VALS" => $filterValues);
+ //           $object->__setSerializerFilters("Mysql",array("DEF" => $queryDef, "VALS" => $filterValues));
+            //$object->filters["Mysql"] = array("DEF" => $queryDef, "VALS" => $filterValues);
             $table=isset($queryDef["TABLE"])?$queryDef["TABLE"]:$object->__getTableName();
             $queryDef["BASE"] = "SELECT * FROM " . $table;
             if(isset($queryDef["CONDITIONS"]))
@@ -304,7 +304,7 @@ class MYSQLSerializer extends \lib\storage\StorageSerializer
     {
         if (!$extraDef)
         {
-            // BUG: si no se pasa un array intenta cargar opciones por defecto y falla porque no es un campo 
+            // BUG: si no se pasa un array intenta cargar opciones por defecto y falla porque no es un campo
             $mysqlDesc = \model\reflection\Storage\Mysql\MysqlOptionsDefinition::createDefault($modelDef);
             $extraDef = $mysqlDesc->getDefinition();
         }

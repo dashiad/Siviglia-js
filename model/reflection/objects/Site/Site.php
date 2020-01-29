@@ -66,7 +66,7 @@ class Site extends \model\reflection\base\BaseDefinition
         foreach($APP_NAMESPACES as $layer)
         {
             $definition["SERIALIZERS"][$layer]=array(
-                "TYPE"=>"MYSQL","ADDRESS"=>array("host"=>"127.0.0.1",
+                "TYPE"=>"Mysql","ADDRESS"=>array("host"=>"127.0.0.1",
                     "user"=>"adtopy",
                     "password"=>"adtopy",
                     "database"=>array("NAME"=>$layer))

@@ -35,7 +35,7 @@ class MysqlProcessor extends \model\reflection\Processor {
     }
     function generateStorage($objName,$modelDef,$layer)
     {
-        $storageConfig=$modelDef->getStorageConfiguration("MYSQL");
+        $storageConfig=$modelDef->getStorageConfiguration("Mysql");
         if(!$storageConfig)
         {
             $optionsDefinition=\model\reflection\Storage\Mysql\ESOptionsDefinition::createDefault($modelDef);
@@ -47,11 +47,11 @@ class MysqlProcessor extends \model\reflection\Processor {
 
         $layerObj=\model\reflection\ReflectorFactory::getLayer($layer);
         $curSerializer=$layerObj->getSerializer();
-        if($curSerializer->getSerializerType()!="MYSQL")
+        if($curSerializer->getSerializerType()!="Mysql")
         {
             return;
         }
-        $modelDef->addStorageConfiguration("MYSQL",$optionsDefinition->getDefinition());
+        $modelDef->addStorageConfiguration("Mysql",$optionsDefinition->getDefinition());
         printItem("<b>Creando Tablas Mysql para relaciones multiples</b>");
         $curSerializer->createStorage($modelDef,$optionsDefinition->getDefinition());
 
@@ -73,7 +73,7 @@ class MysqlProcessor extends \model\reflection\Processor {
     {
 
         $curSerializer=$modelDef->getSerializer();
-        if($curSerializer->getSerializerType()!="MYSQL")
+        if($curSerializer->getSerializerType()!="Mysql")
             return;
 
         // Se obtienen los datasources generados via el editor.Estan en el fichero Definition.js, key "Queries"

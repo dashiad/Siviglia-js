@@ -675,7 +675,7 @@ class RelationFields
             if($newVal==null)
             {
                 $q=$this->relObject->getRemoteTableQuery();
-                $this->getQueryConditions($q,"MYSQL");
+                $this->getQueryConditions($q,"Mysql");
                 $remoteObject=\lib\model\BaseModel::getModelInstance($this->relObject->getRemoteObject());
                 $serializer=$remoteObject->__getSerializer("WRITE");
                 $qB=new \lib\storage\Mysql\QueryBuilder($q);

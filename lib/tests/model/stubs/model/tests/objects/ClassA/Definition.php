@@ -22,6 +22,9 @@ class Definition extends \lib\model\BaseModelDefinition
                 'DESCRIPTIVE'=>'true',
                 'ISLABEL'=>'true'
             ),
+            'simpleDate'=>array(
+                "TYPE"=>"DateTime"
+            ),
             'host'=>array(
                 'TYPE'=>'String',
                 'MAXLENGTH'=>40,

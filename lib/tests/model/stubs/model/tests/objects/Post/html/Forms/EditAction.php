@@ -1,5 +1,5 @@
 <?php
-namespace model\tests\User\html\forms;
+namespace model\tests\Post\html\forms;
 /**
  FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser//html/forms/DeleteAction.php
   CLASS:DeleteAction
@@ -7,20 +7,19 @@ namespace model\tests\User\html\forms;
 *
 **/
 
-class DeleteAction extends \lib\output\html\Form
+class EditAction extends \lib\output\html\Form
 {
 	 static  $definition=array(
-               'NAME'=>'DeleteAction',
-               'MODEL'=>'\model\tests\User',
+               'NAME'=>'EditAction',
+               'MODEL'=>'\model\tests\Post',
                'ACTION'=>array(
-                     'MODEL'=>'\model\tests\User',
-                     'ACTION'=>'DeleteAction',
-				   'INHERIT'=>1
+                     'MODEL'=>'\model\tests\Post',
+                     'ACTION'=>'EditAction',
+				   	  'INHERIT'=>true
                      ),
                'FIELDS'=>array(),
-               'ROLE'=>'Delete',
+               'ROLE'=>'Edit',
                'INPUTS'=>array(),
-               'NOFORM'=>1,
                'INDEXFIELDS'=>array("id")
                );
 
@@ -39,7 +38,7 @@ class DeleteAction extends \lib\output\html\Form
 	function __construct( $actionResult=null)
 	{
 
-			parent::__construct(DeleteAction::$definition,$actionResult);
+			parent::__construct(EditAction::$definition,$actionResult);
 
 	}
 

@@ -50,7 +50,13 @@ class Form extends \lib\model\BaseTypedObject
     {
         $hash=$this->formName.$this->formModel.$siteName.$url;
         if($keys)
-            $hash.=implode("",$keys);
+        {
+            $keysSorted=array_keys($keys);
+            sort($keysSorted);
+            for($k=0;$k<count($keysSorted);$k++)
+                $hash.=($keysSorted[$k].$keys[$keysSorted[$k]]);
+
+        }
         $hash.=$sessionId?$sessionId:"";
         return $hash;
     }
@@ -108,7 +114,7 @@ class Form extends \lib\model\BaseTypedObject
         $site=$data["site"];
         $seccode=$data["validationCode"];
         $page=$data["page"];
-        $keys=isset($data["KEYS"])?array_values($data["KEYS"]):null;
+        $keys=isset($data["KEYS"])?$data["KEYS"]:null;
         // Se comprueba el codigo de seguridad.
         if(!$this->checkHash($seccode,$site,$page,$keys,\Registry::$registry["session"]))
         {
@@ -130,7 +136,7 @@ class Form extends \lib\model\BaseTypedObject
         include_once($classPath);
         $curForm=new $className($actionResult);
         $curForm->initialize($model,$form,$keys);
-        $curForm->process($request);
+        $this->actionResult=$curForm->process($request);
     }
 
     // Se sobreescribe getField para que la definicion de campos tipo model/field, se creen con definiciones del tipo de dato,
@@ -150,10 +156,12 @@ class Form extends \lib\model\BaseTypedObject
         //$hasState=$this->__stateDef->hasState;
         $unserializedFields=array();
         $htmlSerializer=new \lib\storage\HTML\HTMLSerializer();
+
+
         foreach ($this->formDefinition["FIELDS"] as $key => $value) {
             if($this->__getField($key)->isDirty())
                     continue;
-            
+
             $inputName=$key;
             // Si no viene el tipo de input , se supone textField.
             if(!isset($formData["INPUTS"][$key]))
@@ -176,8 +184,6 @@ class Form extends \lib\model\BaseTypedObject
 
                     // DESERIALIZAR HTML!!!
                     // function unserializeType($name,$mixedType,$value,$model)
-
-
                     $unserializedFields[$key]=$val;
                 }
                 else
@@ -194,6 +200,21 @@ class Form extends \lib\model\BaseTypedObject
                     return;
             }
         }
+        foreach ($this->formDefinition["FIELDS"] as $key => $value) {
+            if(isset($unserializedFields[$key])) {
+                try {
+                    $htmlSerializer->unserializeType($key, $this->{"*" . $key}, $unserializedFields, $this);
+                }catch(\Exception $e)
+                {
+                    $this->actionResult->addFieldInputError($key,$unserializedFields[$key],$e);
+                }
+            }
+        }
+        if(isset($this->formDefinition["INDEXFIELDS"])) {
+            for ($k = 0; $k < count($this->formDefinition["INDEXFIELDS"]); $k++) {
+                $this->{$this->formDefinition["INDEXFIELDS"][$k]} = $value;
+            }
+        }
         $errored=false;
         if($this->actionResult->isOk())
         {
@@ -202,12 +223,10 @@ class Form extends \lib\model\BaseTypedObject
                 $this->onError($this->actionResult);
                 $errored=true;
             }
-            $this->__fields=$this->actionResult->getParsedFields();
             $this->__loaded=true;
         }
         if($this->actionResult->isOk())
             $this->validate($this->actionResult);
-        // _d($this->actionResult);
 
         if ($this->actionResult->isOk()) {
             if ($this->processAction($this->actionResult)) {
@@ -219,17 +238,6 @@ class Form extends \lib\model\BaseTypedObject
             }
         } else {
             $this->onError($this->actionResult);
-            $errored = true;
-
-        }
-
-        if ($errored) {
-            \Registry::$registry["newForm"] = array(
-                "MODEL" => $this->formDefinition["MODEL"],
-                "NAME" => $this->formDefinition["NAME"],
-                "DATA" => $formData["FIELDS"],
-                "RESULT" => $this->actionResult->isOk()
-            );
         }
 
         \Registry::$registry["newAction"] = $this->actionResult;
@@ -289,10 +297,11 @@ class Form extends \lib\model\BaseTypedObject
         {
              if($this->formDefinition["INDEXFIELDS"])
              {
-                 foreach($this->formDefinition["INDEXFIELDS"] as $key=>$value)
+                 for($k=0;$k<count($this->formDefinition["INDEXFIELDS"]);$k++)
                  {
-                     if($this->{"*".$key}->hasOwnValue())
-                        $keys[$key]=$this->{$key};
+                     $c=$this->formDefinition["INDEXFIELDS"][$k];
+                     if($this->{"*".$c}->hasOwnValue())
+                        $keys[$c]=$this->{$c};
                  }
              }
              else

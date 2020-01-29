@@ -23,10 +23,10 @@ $Config=[
     ],
 
      "SERIALIZERS"=>array(
-        "default"=>array("NAME"=>"default","TYPE"=>"MYSQL","ADDRESS"=>array("host"=>"127.0.0.1","user"=>"root","password"=>"","database"=>"adtopy")),
-         "web"=>array("NAME"=>"web","TYPE"=>"MYSQL","ADDRESS"=>array("host"=>"127.0.0.1","user"=>"root","password"=>"","database"=>"adtopy")),
-         "test"=>array("NAME"=>"test","TYPE"=>"MYSQL","ADDRESS"=>array("host"=>"127.0.0.1","user"=>"root","password"=>"","database"=>"test")),
-         "modeltests"=>array("NAME"=>"test","TYPE"=>"MYSQL","ADDRESS"=>array("host"=>"127.0.0.1","user"=>"root","password"=>"","database"=>"modeltests")),
+        "default"=>array("NAME"=>"default","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"adtopy")),
+         "web"=>array("NAME"=>"web","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"adtopy")),
+         "test"=>array("NAME"=>"test","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"test")),
+         "modeltests"=>array("NAME"=>"test","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"modeltests")),
         "es"=>["NAME"=>"MAIN_ES","TYPE"=>"ES","ES"=>["servers"=>["127.0.0.1"],"port"=>9200,"index"=>"testIndex"]],
         "cookie"=>array(
             "NAME"=>"cookie",

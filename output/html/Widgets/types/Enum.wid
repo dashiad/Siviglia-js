@@ -1,0 +1,21 @@
+<?php $type=$model->{"*".$name};
+$display=$type->getMetaData("display");
+$label=$type->getLabel();
+if($display)
+{
+    $d=$display[$label];
+    if(isset($d))
+    {        
+        $icon=isset($d["ICON"])?$d["ICON"]:null;
+        $label=isset($d["TEXTUAL"])?$d["TEXTUAL"]:$label;
+    }
+}
+if($icon){
+?>
+[*:ICONS/ICON({"icon":"$icon"})][#]
+<?php } 
+echo $label;
+?>
+
+
+

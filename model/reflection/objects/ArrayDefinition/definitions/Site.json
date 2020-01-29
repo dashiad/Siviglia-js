@@ -38,7 +38,7 @@
                 "LABEL": "App Database",
                 "TYPE_FIELD": "TYPE",
                 "ALLOWED_TYPES": [
-                  "MYSQL",
+                  "Mysql",
                   "Cassandra"
                 ]
               },
@@ -47,7 +47,7 @@
                 "LABEL": "Web Database",
                 "TYPE_FIELD": "TYPE",
                 "ALLOWED_TYPES": [
-                  "MYSQL",
+                  "Mysql",
                   "Cassandra"
                 ]
               }
