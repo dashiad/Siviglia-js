@@ -16,7 +16,7 @@
                     [_::TAMANO]xl[#]
                     [_::CENTRADO][_*][#]
                     [_::CONTENIDO_MODAL]
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,                        
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,                                                
                     [#]
                 [#]
 

@@ -1,0 +1,5 @@
+[*CUSTOM/INPUTS/BUTTON({"form":"&$form"})]   
+    [_COLOR]danger[#]
+    [_SOMBRA][_*][#]
+    [_LABEL]Cancel[#]
+[#]

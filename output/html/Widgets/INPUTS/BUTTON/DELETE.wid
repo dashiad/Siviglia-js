@@ -1,0 +1,8 @@
+[*CUSTOM/INPUTS/BUTTON({"form":"&$form"})]   
+    [_COLOR]danger[#]
+    [_SOMBRA][_*][#]
+    [_ICON]
+        [*:ICONS/ICON({"icon":"papelera"})][#]
+    [#]    
+    [_LABEL]Delete[#]
+[#]
