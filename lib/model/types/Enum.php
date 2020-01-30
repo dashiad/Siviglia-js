@@ -39,6 +39,18 @@ class Enum extends BaseType
     {
         return $this->definition["VALUES"];
     }
+    function hasSource()
+    {
+        return true;
+    }
+    function getSource($validating=false)
+    {
+
+        return \lib\model\types\sources\SourceFactory::getSource($this,["TYPE"=>"Array",
+                "VALUES"=>$this->definition["VALUES"]
+                ],$validating);
+    }
+
     function getDefaultValue()
     {
         if(isset($this->definition["DEFAULT"]))

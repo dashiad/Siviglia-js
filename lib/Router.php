@@ -31,17 +31,7 @@ class Router
             }break;
         }
     }
-    function resolveActions()
-    {
 
-        $object=\Registry::$registry["action"]["object"];
-        $actionName=\Registry::$registry["action"]["name"];
-        if($actionName=="" || $object=="")
-            return; // TODO : Redirigir a pagina de error.
-
-        $curForm=\lib\output\html\Form::getForm($object,$actionName,\Registry::$registry["action"]["keys"]);
-        $curForm->process();
-    }
     static function routeToReferer()
     {
         $request=\Registry::getRequest();
@@ -98,7 +88,7 @@ class Router
                 $response=new \lib\Response();
                 \Registry::$registry["response"]=$response;
                 $response->setBuilder(function() use ($request){
-                    return \lib\output\html\Form::resolve($request);
+                    return $request->resolveActions();
                 });
             }break;
         }

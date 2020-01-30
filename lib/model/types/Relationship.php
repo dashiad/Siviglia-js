@@ -33,22 +33,42 @@ class Relationship extends BaseType {
           $this->value=$val;
           $this->valueSet=true;
       }
-      function _validate($val)
+      function getRemoteModel()
       {
           $s=\Registry::getService("model");
-          $m=$s->getModel($this->definition["MODEL"]);
-          $parentModel=$this->parent;
-          foreach($this->definition["FIELDS"] as $key=>$value)
-          {
-              $m->{$value}=$val;
-          }
-          try {
-              $m->loadFromFields();
-          }catch(\Exception $e)
-          {
-              throw new BaseTypeException(BaseTypeException::ERR_INVALID,["val"=>$val],$this);
-          }
+          return $s->getModel($this->definition["MODEL"]);
+
+      }
+      function _validate($val)
+      {
+          $s=$this->getSource();
+          return $s->contains($val);
+      }
+      function hasSource()
+      {
           return true;
+      }
+      function getSource($validating=false)
+      {
+          $keys=array_keys($this->definition["FIELDS"]);
+          $metadata=$this->getmetaData("SOURCE");
+          if(isset($metadata["LABEL"])) {
+              $label = $metadata["LABEL"];
+          }
+          else {
+              $model = $this->getRemoteModel();
+              $descriptive=$model->__filterFields("DESCRIPTIVE",true);
+              $label="[%".$descriptive[0]."%]";
+          }
+          $param=["TYPE"=>"DataSource",
+              "MODEL"=>$this->definition["MODEL"],
+              "DATASOURCE"=>isset($metadata["DATASOURCE"])?$metadata["DATASOURCE"]:"FullList",
+              "VALUE"=>$this->definition["FIELDS"][$keys[0]],
+              "LABEL"=>$label
+          ];
+          if(isset($this->definition["CONDITIONS"]))
+              $param["PARAMS"]=$this->definition["PARAMS"];
+          return \lib\model\types\sources\SourceFactory::getSource($this,$param, false);
       }
       function _getValue()
       {

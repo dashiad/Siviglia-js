@@ -9,6 +9,7 @@ abstract class BaseSource
     var $parent;
     var $definition;
     var $useValidatingData;
+
     function __construct($parent,$definition,$useValidatingData=false)
     {
         $this->parent=$parent;
@@ -44,6 +45,7 @@ abstract class BaseSource
     }
     function getLabelField()
     {
+
         return isset($this->definition["LABEL"])?$this->definition["LABEL"]:"LABEL";
     }
     function getValueField()

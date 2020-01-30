@@ -286,7 +286,7 @@ class HTMLRequest extends \Request implements \ArrayAccess
         $params=array_merge($this->parameters,$overridenParams);
         foreach($ignoreParams as $value)
             unset($params[$value]);
-        $link= Router::buildLink($this->urlCandidate["NAME"],$params);
+        $link= \lib\Router::buildLink($this->urlCandidate["NAME"],$params);
         return $link;
     }
 
@@ -332,34 +332,7 @@ class HTMLRequest extends \Request implements \ArrayAccess
         return $_SERVER["HTTP_HOST"];
     }
 
-    static function parseUrl($url) {
 
-        $r  = "(?:(?P<scheme>[a-z0-9+-._]+)://)?";
-        $r .= "(?:";
-        $r .=   "(?:(?P<credentials>(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9a-f]{2})*)@)?";
-        $r .=   "(?:\[((?:[a-z0-9:])*)\])?";
-        $ip="(?:[0-9]{1,3}+\.){3}+[0-9]{1,3}";//ip check
-        $s="(?P<subdomain>[-\w\.]+)\.)?";//subdomain
-        $d="(?P<domain>[-\w]+\.)";//domain
-        $e="(?P<extension>\w+)";//extension
-
-        $r.="(?P<host>(?(?=".$ip.")(?P<ip>".$ip.")|(?:".$s.$d.$e."))";
-        $r .=   "(?::(?P<port>\d*))?";
-        $r .=   "(?P<path>/(?:[a-z0-9-._~!$&'()*+,;=:@/]|%[0-9a-f]{2})*)?";
-        $r .=   "|";
-        $r .=   "(/?";
-        $r .=     "(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+";
-        $r .=     "(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9a-f]{2})*";
-        $r .=    ")?";
-        $r .= ")";
-        $r .= "(?:\?(?P<query_string>(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9a-f]{2})*))?";
-        $r .= "(?:#(?P<fragment>(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9a-f]{2})*))?";
-        $matches=preg_match("`$r`i", $url, $match);
-        if( !$matches )return false;
-        for( $k=0;$k<14;$k++ )
-            unset($match[$k]);
-        return $match;
-    }
     function getParameters()
     {
         return $this->parameters;
@@ -388,6 +361,63 @@ class HTMLRequest extends \Request implements \ArrayAccess
     {
        $this->initializePage();
         Startup::commonSetup();
+
         register_shutdown_function('___cleanup');
+    }
+
+    function resolveActions()
+    {
+        $data=$this->getActionData();
+        $object=$data["object"];
+        $actionName=$data["name"];
+        if($actionName=="" || $object=="")
+            return; // TODO : Redirigir a pagina de error.
+
+        $curForm=\lib\output\html\Form::getForm($object,$actionName,$data["keys"]);
+        $curForm->resolve($this);
+        $result=$curForm->getResult();
+        if($result->isOk())
+        {
+            return json_encode($this->composeResultOk($result,$curForm));
+        }
+        return json_encode(array(
+            "result"=>0,"error"=>1,"action"=>$result
+        ));
+    }
+
+    function composeResultOk($actionResult,$curForm)
+    {
+        $model=$actionResult->getModel();
+        if(!$model)
+        {
+            // No hay modelo.Posiblemente fue una accion "Delete"
+            $result=array("result"=>1,"error"=>0,"action"=>$actionResult,"data"=>null,"start"=>0,"end"=>0,"count"=>0);
+        }
+        else
+        {
+            $objName=$model->__getFullObjectName();
+            $outputDatasource = 'View';
+            $def = $curForm->getDefinition();
+            if($def['OUTPUT_DATASOURCE']) {
+                $outputDatasource = $def['OUTPUT_DATASOURCE'];
+            }
+            $ds=\lib\datasource\DataSourceFactory::getDataSource($model->__getFullObjectName(), $outputDatasource);
+            //$ds=\lib\datasource\DataSourceFactory::getDataSource($model->__getFullObjectName(), "View");
+            $ds->setParameters($model);
+            $ds->fetchAll();
+            $iterator=$ds->getIterator();
+
+            $result=array(
+                "result"=>1,
+                "error"=>0,
+                "action"=>$actionResult,
+                "data"=>$iterator->getFullData(),
+                "start"=>$ds->getStartingRow(),
+                "end"=>$ds->getStartingRow()+$iterator->count(),
+                "count"=>$ds->count()
+            );
+        }
+        header('Content-Type: application/json');
+        return $result;
     }
 }

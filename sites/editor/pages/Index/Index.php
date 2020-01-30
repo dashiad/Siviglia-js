@@ -7,7 +7,7 @@
             [_::TITLE]Tareas en curso[#]
             [_::FOOTER]Hay xx tareas en ejecución[#]
             [_::CONTENT]
-                [*:/model/web/objects/WebUser/html/forms/Add2][#]
+                [*:/model/web/objects/Page/html/forms/AddAction][#]
             [#]
         [#]
 

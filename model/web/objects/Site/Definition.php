@@ -26,13 +26,13 @@ class Definition extends \lib\model\BaseModelDefinition
                            'MAX'=>9999999999,
                            'LABEL'=>'id_website',
                            'SHORTLABEL'=>'id_website',
-                           'DESCRIPTIVE'=>'true',
+
                            'ISLABEL'=>'true'
                            ),
                      'host'=>array(
                            'TYPE'=>'String',
                            'MAXLENGTH'=>40,
-                           'DESCRIPTIVE'=>'true',
+
                            'LABEL'=>'Host',
                            'SHORTLABEL'=>'host',
                            'ISLABEL'=>'true'
@@ -40,7 +40,7 @@ class Definition extends \lib\model\BaseModelDefinition
                      'canonical_url'=>array(
                            'TYPE'=>'String',
                            'MAXLENGTH'=>255,
-                           'LABEL'=>'Canonical url',
+
                            'SHORTLABEL'=>'canonical_url',
                            'DESCRIPTIVE'=>'true',
                            'ISLABEL'=>'true'
@@ -49,7 +49,6 @@ class Definition extends \lib\model\BaseModelDefinition
                            'TYPE'=>'Boolean',
                            'LABEL'=>'Has SSL',
                            'SHORTLABEL'=>'hasSSL',
-                           'DESCRIPTIVE'=>'true',
                            'ISLABEL'=>'true'
                            ),
                      'namespace'=>array(
@@ -97,4 +96,3 @@ class Definition extends \lib\model\BaseModelDefinition
                    ]
                );
 }
-?>

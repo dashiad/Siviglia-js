@@ -16,7 +16,20 @@ namespace lib\model\types\sources;
 
 class DataSource extends BaseSource
 {
-    function getData()
+    function contains($value)
+    {
+        if($value===null)
+            return true;
+        $datasource=$this->buildDataSource();
+        $f=$this->getValueField();
+        $datasource->{$f}=$value;
+        $it=$datasource->fetchAll();
+        if($it->count()==1)
+            return true;
+        return false;
+
+    }
+    function buildDataSource()
     {
         $actualParams=[];
         if(isset($this->definition["PARAMS"]))
@@ -45,6 +58,12 @@ class DataSource extends BaseSource
         {
             $datasource->{$k}=$v;
         }
+        return $datasource;
+    }
+
+    function getData()
+    {
+        $datasource=$this->buildDataSource();
         $it=$datasource->fetchAll();
         return $it->getFullData();
     }

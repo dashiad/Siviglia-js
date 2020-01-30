@@ -11,9 +11,12 @@ class JsonAction extends \lib\output\Action {
 
     function __construct($request)
     {
-        $data=$request->actionData;
-        $json=$data['json'];
-        $data=json_decode(trim($data['json']),true);
+        $data=$request->getActionData();
+        if(isset($data['json'])) {
+            $json = $data['json'];
+            $data = json_decode(trim($data['json']), true);
+        }
+
         if(!$data)
         {
             $cad=str_replace('\"','"',$json);

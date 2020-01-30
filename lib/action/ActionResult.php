@@ -58,4 +58,3 @@ class ActionResult extends \lib\model\ModelFieldErrorContainer
     }
 
 }
-?>

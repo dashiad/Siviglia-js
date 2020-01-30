@@ -23,8 +23,9 @@ class ArraySource extends BaseSource
         if(isset($this->definition["DATA"]))
             $this->source=$this->definition["DATA"];
         if(isset($this->definition["VALUES"])) {
-            $this->source=array_map(function($item){return ["VALUE"=>$item];},$this->definition["VALUES"]);
-            $this->definition["LABEL"]="VALUE";
+            $idx=-1;
+            $this->source=array_map(function($item) use (&$idx) {$idx++;return ["VALUE"=>$idx,"LABEL"=>$item];},$this->definition["VALUES"]);
+            $this->definition["LABEL"]="[%LABEL%]";
             $this->definition["VALUE"]="VALUE";
             }
     }

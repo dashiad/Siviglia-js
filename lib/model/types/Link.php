@@ -50,6 +50,34 @@ class Link extends _String
         return preg_replace(array('/[^a-zA-Z0-9\s\'\:\/\[\]-]/', '/[\s\'\:\/\[\]-]+/', '/[ ]/', '/[\/]/'),
             array('', ' ', '-', '-'), trim($str));
     }
+    static function parseUrl($url) {
+
+        $r  = "(?:(?P<scheme>[a-z0-9+-._]+)://)?";
+        $r .= "(?:";
+        $r .=   "(?:(?P<credentials>(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9a-f]{2})*)@)?";
+        $r .=   "(?:\[((?:[a-z0-9:])*)\])?";
+        $ip="(?:[0-9]{1,3}+\.){3}+[0-9]{1,3}";//ip check
+        $s="(?P<subdomain>[-\w\.]+)\.)?";//subdomain
+        $d="(?P<domain>[-\w]+\.)";//domain
+        $e="(?P<extension>\w+)";//extension
+
+        $r.="(?P<host>(?(?=".$ip.")(?P<ip>".$ip.")|(?:".$s.$d.$e."))";
+        $r .=   "(?::(?P<port>\d*))?";
+        $r .=   "(?P<path>/(?:[a-z0-9-._~!$&'()*+,;=:@/]|%[0-9a-f]{2})*)?";
+        $r .=   "|";
+        $r .=   "(/?";
+        $r .=     "(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+";
+        $r .=     "(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9a-f]{2})*";
+        $r .=    ")?";
+        $r .= ")";
+        $r .= "(?:\?(?P<query_string>(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9a-f]{2})*))?";
+        $r .= "(?:#(?P<fragment>(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9a-f]{2})*))?";
+        $matches=preg_match("`$r`i", $url, $match);
+        if( !$matches )return false;
+        for( $k=0;$k<14;$k++ )
+            unset($match[$k]);
+        return $match;
+    }
     function getMetaClassName()
     {
         include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Link.php");
