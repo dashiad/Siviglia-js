@@ -1,0 +1,8 @@
+[*ELEMENT/BUTTON/BUTTON]
+    [_COLOR]primary[#]
+    [_SOMBRA][_*][#]
+    [_ICON]
+        [*:ELEMENT/MEDIA/ICON({"icon":"simbolo-mas"})][#]
+    [#]    
+    [_LABEL]Add[#]
+[#]

@@ -1,0 +1,2 @@
+<?php $val=$form->{$name}; ?>
+[*:/ELEMENT/FORM/INPUTS/TEXTFIELD({"name":"$name","value":"$val"})][#]

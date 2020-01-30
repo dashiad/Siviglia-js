@@ -1,0 +1,5 @@
+[*ELEMENT/BUTTON/BUTTON]
+    [_COLOR]danger[#]
+    [_SOMBRA][_*][#]
+    [_LABEL]Cancel[#]
+[#]

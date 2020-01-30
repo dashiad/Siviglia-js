@@ -142,7 +142,7 @@ $currentModel=$params->getFormModel("Page","EditAction");
             [*:/INPUTS/BUTTON/SEND({"form":"&$form"})][#]
             [*:/INPUTS/BUTTON/DELETE({"form":"&$form"})][#]
             [*:/INPUTS/BUTTON/ADD({"form":"&$form"})][#]
-            [*:/INPUTS/BUTTON/CUSTOM({"form":"&$form"})][#]
+            [*:/INPUTS/BUTTON/CUSTOM][#]
                        
         [#]
 
