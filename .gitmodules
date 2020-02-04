@@ -1,3 +1,3 @@
-[submodule "sites/jobs"]
-	path = sites/jobs
+[submodule "model/web/objects/Jobs/App"]
+	path = model/web/objects/Jobs/App
 	url = git@github.com:apurrinos-smartclip/jobs.git

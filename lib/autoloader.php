@@ -34,11 +34,6 @@ function mainAutoloader($name)
         {
             include_once(PROJECTPATH.implode("/",$parts).".php");
         }break;
-        
-        case "Jobs":
-        {
-            include_once(PROJECTPATH."sites/jobs/".implode("/",$parts).".php");
-        }break;
         case "model":
         {
             include_once(LIBPATH."/model/ModelService.php");
