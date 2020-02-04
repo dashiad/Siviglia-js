@@ -166,7 +166,7 @@ function testCreateMySqlJob()
                     array (
                         'start_date' => '2019-11-01 00:00:00',
                         'end_date' => '2019-11-30 23:59:59',
-                        'max_chunk_size' => 5,
+                        'max_chunk_size' => 30,
                     ),
                 ),
         ),
@@ -222,9 +222,84 @@ function testCreateTrigger()
     JobManager::createJob($args);    
 }
 
+function testCreateDirectoryJob()
+{
+    $args = [
+        "type" =>  "job",
+        "name" =>  "directory_report",
+        "task" =>  [
+            "type" =>  "task",
+            "name" =>  "directory_listing",
+            "args" =>  [
+                "task" =>  "DirectoryList",
+                "type" =>  "List",
+                "params" =>  [
+                    "items" =>  [
+                        "/var",
+                        "/home",
+                        "/bin"
+                    ],
+                "max_chunk_size" =>  1,
+                ]
+            ]
+        ]
+    ];
+    JobManager::createJob($args);
+}
+
+function testCreateParallelJob()
+{
+    $args = [
+        "type" =>  "job",
+        "name" =>  "monthly_report",
+        "jobs" =>  [
+            [
+                "type" =>  "job",
+                "name" =>  "db_export",
+                "task" =>  [
+                    "type" =>  "task",
+                    "name" =>  "sql_exporter",
+                    "args" =>  [
+                        "task" =>  "Test",
+                        "type" =>  "DateRange",
+                        "params" =>  [
+                            "start_date" =>  "2019-11-01 00:00:00",
+                            "end_date" =>  "2019-11-30 23:59:59",
+                            "max_chunk_size" =>  30
+                        ]
+                    ]
+                ]
+            ],
+            [
+                "type" =>  "job",
+                "name" =>  "file_export",
+                "task" =>  [
+                    "type" =>  "task",
+                    "name" =>  "file_exporter",
+                    "args" =>  [
+                        "task" =>  "DirectoryList",
+                        "type" =>  "List",
+                        "params" =>  [
+                            "items" =>  [
+                                "/var",
+                                "/home",
+                                "/bin"
+                            ],
+                            "max_chunk_size" =>  3
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ];
+    JobManager::createJob($args);
+}
+
 //testCreateJobsTable();
 //testCreateWorkersTable();
 testCreateSimpleJob();
+//testCreateDirectoryJob();
 //testCreateTrigger();
 //testCreateMySqlJob();
 //testCreateEmployeeReport();
+//testCreateParallelJob();

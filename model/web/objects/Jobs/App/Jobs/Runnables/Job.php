@@ -22,10 +22,11 @@ class Job extends AbstractRunnable
     //protected $modelName = 'model\\web\\Jobs\\Jobs';
     protected $modelName = 'model\\web\\Jobs';
     protected $fields = [
-        'job_id' => 'id',
-        'name'   => 'name',
-        'status' => 'status',
-        'parent' => 'parent',
+        'job_id'     => 'id',
+        'name'       => 'name',
+        'status'     => 'status',
+        'parent'     => 'parent',
+        'descriptor' => 'args', 
     ];
     protected $maxRetries = 0; // default: no retries
     protected $waitingForChildren = false;

@@ -21,13 +21,12 @@ trait Persistable
                 $this->model->{$key} = null;
             }
         }
-        /*$date = date('Y-m-d H:i:s', time());
-        if (empty($this->model->created_at))
+        if ($this->model->__isNew())
         {
-            $this->model->created_at = $date;
+            $this->model->created_at = "NOW";
         } else {
-            $this->model->updated_at = $date;
-        }*/
+            $this->model->updated_at = "NOW";
+        }
     }
     
     public function persist()
@@ -36,6 +35,5 @@ trait Persistable
             $this->model = new $this->modelName;
         $this->fill();
         $this->model->save();
-    }
-    
+    }   
 }

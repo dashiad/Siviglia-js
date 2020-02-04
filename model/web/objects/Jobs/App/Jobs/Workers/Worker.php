@@ -37,6 +37,7 @@ abstract class Worker implements StatusInterface
         'last_completed_item_index' => 'lastCompletedItem',
         'result'   => 'result',
         'alive'    => 'alive',
+        'descriptor' => 'args',
     ];
         
     public function __construct($args)
