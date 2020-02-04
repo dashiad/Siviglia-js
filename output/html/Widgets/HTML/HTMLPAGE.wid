@@ -3,6 +3,7 @@
     $site=\Registry::getService("site");
     $name=$page->getPageName();
     $siteName=$site->getName();
+    $layout_structure = 'horizontal';
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $site->getDefaultIso();?>">
@@ -23,7 +24,12 @@
     [_EXTRA][_*][#]
 
 </head>
+
+
 <body class="<?php echo $bodyClasses;?>" [_EXTRA_BODY_PROPERTIES][_*][#]>
+
+
+<!-- <body [_LAYOUT_STRUCTURE][_HORIZONTAL][_*][#][#]> -->
 <div style="display:none">
     [@DEPENDENCY]
         [_PHASE]WIDGETSTART[#]

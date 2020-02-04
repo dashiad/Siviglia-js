@@ -1,3 +1,6 @@
-<footer class="footer [_FOOTER_TYPE]footer-[_*][#] [_FOOTER_COLOR]footer-[_*][#]">
-    (TODO) llamada al modulo del footer.
+<footer class="footer [_FOOTER_FIXED]fixed-footer[#] [_FOOTER_COLOR] footer-[_*][#]">
+    [_FOOTER_CONTENT][_*][#]
+    [_FOOTER_SCROLLTOP]
+        <button class="btn btn-primary btn-icon scroll-top" type="button" style="display: inline-block;"><i class="bx bx-up-arrow-alt"></i></button>
+    [#]
 </footer>

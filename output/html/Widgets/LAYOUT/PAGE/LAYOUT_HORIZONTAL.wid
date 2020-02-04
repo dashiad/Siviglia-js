@@ -1,16 +1,3 @@
-<!-- Los CSS y JS, que vayan a statis:
-    sites/statics/html/nombre_site/css
-    sites/statics/html/nombre_site/js
-
-    Ejemplo:
-    sites/statics/html/editor/css/editor-layaout.css
-    sites/statics/html/editor/css/editor-layaout.js
-
-    Cargado de LAYOUT/PAGE/nombre_layout.wid
-
--->  
-
-
 [@DEPENDENCY]
     [_BUNDLE]Global[#]
     [_PHASE]Headers[#]
@@ -45,15 +32,14 @@
     [#]
 [#]
   
-    <!-- MENU EXTRA -->
-    [*:LAYOUT/NAVIGATION/TOOLBAR/TOOLBAR][#]
-
     <!-- MENU NAVIGATION -->
-    [*:LAYOUT/NAVIGATION/MAIN_MENU][#]
-    
+    [*:LAYOUT/NAVIGATION/MAIN_MENU_HORIZONTAL][#]
+
+    <!-- MENU EXTRA -->
+    [*:LAYOUT/NAVIGATION/TOOLBAR/TOOLBAR_HORIZONTAL][#]
 
     <!-- CONTENT -->
-    <div class="app-content content">
+    <div class="app-content content-horizontal">
         <div class="content-overlay"></div>
         <div class="content-wrapper">
             <div class="content-body">

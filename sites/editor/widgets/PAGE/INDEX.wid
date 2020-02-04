@@ -16,18 +16,3 @@
         [#]
     [#]   
 [#]
-
-<!--
-    Ahora, desde los Index.php, o Site.php o Page.php, llamo a los layouts directamente,
-    de esta forma, separo que cada pagina podria tener un layout diferente.
-
-    TODO:
-
-    [*::LAYOUT/LAYOUT]
-        [_::CONTENT]
-            [_CONTENT][_*][#]
-        [#]
-    [#]
-
-    No resuelve bien el contenido de dentro, de las cards, etc...
--->

@@ -58,6 +58,15 @@ html body .content {
   margin-left: 205px;
 }
 
+html body .content-horizontal {
+  padding: 0;
+  position: relative;
+  transition: 300ms ease all;
+  backface-visibility: hidden;
+  min-height: calc(100% - 3.5rem);
+  margin: 20px;
+}
+
 html body .content.app-content {
   overflow: hidden;
 }
@@ -100,7 +109,7 @@ html body .content.app-content .content-area-wrapper .content-wrapper {
 
 html body .content .content-wrapper {
   padding: calc(2.2rem - 0.4rem) 2.2rem 0;
-  margin-top: 0;
+  margin-top: 4rem;
 }
 
 html body .content .content-wrapper .content-header-title {
@@ -360,7 +369,8 @@ span.livicon-evo {
 /* Footer Css */
 /* ---------- */
 footer.footer {
-  padding: 1rem 2.2rem;
+  /* padding: 1rem 2.2rem; */
+  padding: 1.25rem;
 }
 
 footer.footer a {

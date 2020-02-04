@@ -4,7 +4,7 @@ $currentPage=Registry::$registry["currentPage"];
 $params=Registry::$registry["params"];
 ?>
 
-<div data-scroll-to-active="true" class="main-menu menu-fixed menu-dark menu-accordion menu-shadow">
+<div class="header-navbar navbar-expand-sm navbar navbar-horizontal navbar-fixed navbar-light navbar-without-dd-arrow navbar-brand-center" role="navigation" data-menu="menu-wrapper" data-nav="brand-center">
 [*:LAYOUT/NAVIGATION/LIST_DS_MENU({"currentPage":"$currentPage","object":"/model/web/Site","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
     [_:HEADER]
         [_:TITLE]Smartclip[#]

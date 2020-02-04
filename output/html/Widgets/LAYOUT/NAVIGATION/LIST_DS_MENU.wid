@@ -1,0 +1,27 @@
+<ul class="navbar-nav bg-gradient-info sidebar sidebar-dark accordion">
+    [_HEADER]
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="[_LINK][_*][#]" target="[_TARGET][_*][#]">
+                <div class="sidebar-brand-icon">
+                    <i class="icon-smartclip"></i>
+                </div>
+                <div class="sidebar-brand-text">[_TITLE][_*][#] <sup>(beta)</sup></div>
+        </a>
+    [#]
+<hr class="sidebar-divider my-0">
+
+    [_LISTING]
+            [*:DATASOURCE]
+                [_:PARAMETERS({"object":"$object","name":"$dsName","serializer":"$serializer","params":"$params"})][#]
+                [_:ITERATOR({"iterator":"&$iterator"})]
+                    [_ROWS]
+                        [_ROW]
+                            <li class="nav-item">
+                                [_VALUE][_*][#]
+                            </li>
+                        [#]
+                    [#]
+
+                [#]
+        [#]
+    [#]
+</ul>

@@ -1,0 +1,6 @@
+[*/LAYOUT/FOOTER/FOOTER]
+    [_FOOTER_FIXED][_*][#]
+    [_FOOTER_COLOR]light[#]
+    [_FOOTER_CONTENT](TODO) llamada al modulo del footer sticky[#]
+    [_FOOTER_SCROLLTOP][_*][#]
+[#]
