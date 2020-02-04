@@ -52,6 +52,3 @@ define("DEFAULT_SERIALIZER","default");
 define("DEVELOPMENT",0);
 define("DEFAULT_LANGUAGE","es");
 define("DEFAULT_LANGUAGE_ID",1);
-
-?>
-

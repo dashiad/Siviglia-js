@@ -11,6 +11,8 @@ class Definition extends \lib\model\BaseModelDefinition
 {
 	 static  $definition=array(
                'ROLE'=>'ENTITY',
+                'DEFAULT_SERIALIZER'=>'web',
+                'DEFAULT_WRITE_SERIALIZER'=>'web',
                'TABLE'=>'WebUser',
                'LABEL'=>'WebUser',
                'SHORTLABEL'=>'WebUser',

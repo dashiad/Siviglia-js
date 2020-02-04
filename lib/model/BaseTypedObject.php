@@ -999,5 +999,15 @@ class BaseTypedObject extends PathObject
         }
         return $result;
     }
+    function __filterFields($key,$value)
+    {
+        $result=[];
+        foreach($this->__fieldDef as $k=>$v)
+        {
+            if(isset($v[$key]) && $v[$key]==$value)
+                $result[]=$k;
+        }
+        return $result;
+    }
 
 }

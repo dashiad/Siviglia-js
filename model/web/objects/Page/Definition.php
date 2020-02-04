@@ -78,7 +78,15 @@ class Definition extends \lib\model\BaseModelDefinition
                      'id_type'=>array(
                            //'DEFAULT'=>'1',
                            'SHORTLABEL'=>'id_type',
-                           'TYPE'=>'Integer',
+                           'TYPE'=>'Enum',
+                           'VALUES'=>[
+                               "None",
+                               "View",
+                               "Create",
+                               "Edit",
+                               "List",
+                               "Generic"
+                           ],
                            'LABEL'=>'id_type',
                            'DESCRIPTIVE'=>'true',
                            'ISLABEL'=>true

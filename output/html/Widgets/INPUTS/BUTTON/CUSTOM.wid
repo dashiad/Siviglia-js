@@ -1,4 +1,4 @@
-[*CUSTOM/INPUTS/BUTTON({"form":"&$form"})]   
+[*CUSTOM/INPUTS/BUTTON]
     [_COLOR]dark[#]
     [_REDONDEADO][_*][#]
     [_SOMBRA][_*][#]

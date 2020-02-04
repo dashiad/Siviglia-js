@@ -9,7 +9,7 @@
             <!--Basic Modal -->
             
             <div class="modal fade text-left" id="componentmodal<?php echo $myId; ?>" tabindex="-1" role="dialog" aria-labelledby="ModalLabelComponent<?php echo $myId; ?>" style="display: none;" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-scrollable [_TAMANO]modal-[_*][#]" role="document">
+              <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-full" role="document">
                 <div class="modal-content">                              
                   <div class="modal-body">
                       [_CONTENIDO_MODAL][_*][#]

@@ -31,21 +31,22 @@
                         this.containers.push(e);
                     };
                     this.submit=function(){
+                        var res={};
+                        $(document.getElementById(m.id)).find("input,select").each(
+                            function(idx,el){
+                                res[el.name]=$(el).val();
+                            }
+                        );
                         __s__base.callEndPoint({
                             endPoint:'form',
-                            params:{
-                                type: "form",
-                                name: m.name,
-                                model: m.model,
-                                value:$(this.node).serializeArray()
-                            }
+                            params:res
                         }).then(function(r){
                             console.dir(r);
                         });
 
                     }
                     this.popContainer=function(){this.containers.pop();}
-                    
+
                     this.addInput=function(instance){
                         this.inputs[instance.name]={input:instance};
 
@@ -176,5 +177,5 @@
                 [#]
             </div>
         </form>
- 
+
 

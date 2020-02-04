@@ -36,7 +36,7 @@ class Add2 extends \lib\action\Action
 	function __construct( )
 	{
 
-			parent::__construct(AddAction::$definition);
+			parent::__construct(Add2::$definition);
 
 	}
 

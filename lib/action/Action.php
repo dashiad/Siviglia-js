@@ -132,6 +132,8 @@ class Action extends \lib\model\BaseTypedObject
 	    }
         if (!$actionResult->isOk())
             return $this->onError($keys, $fields, $actionResult, $user);
+        else
+            $actionResult->setModel($this->destModel);
 
     }
 
@@ -161,5 +163,3 @@ class Action extends \lib\model\BaseTypedObject
         return new \lib\model\BaseTypedObject($definition);
     }
 }
-
-?>

@@ -6,6 +6,7 @@ try {
     //include_once 'localConfig.php';
     include_once LIBPATH . '/startup.php';
     //Startup::initializeHTTPPage();
+
     $request = Request::getInstance();
     $router  = Registry::getService("router");
     $router->route($request);

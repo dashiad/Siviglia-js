@@ -58,5 +58,3 @@ $APP_NAMESPACES=array("adtopy","web");
 define("DEVELOPMENT",1);
 define("DEFAULT_LANGUAGE","es");
 define("DEFAULT_LANGUAGE_ID",1);
-?>
-

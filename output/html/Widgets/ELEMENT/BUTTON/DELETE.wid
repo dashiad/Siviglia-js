@@ -1,0 +1,8 @@
+[*ELEMENT/BUTTON/BUTTON]
+    [_COLOR]danger[#]
+    [_SOMBRA][_*][#]
+    [_ICON]
+        [*:ELEMENT/MEDIA/ICON({"icon":"papelera"})][#]
+    [#]    
+    [_LABEL]Delete[#]
+[#]
