@@ -1,0 +1,181 @@
+<?php
+  $site=\Registry::$registry["site"];
+  $siteUrl=$site->canonical_url;
+?>
+[*:BASE_SYSTEM][#]
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_CODE]
+            <script>
+                var __s__form={
+                    validationUrl:"/validate.php",
+                    curForm:null};
+                __s__form.S_FormRegistry=[];
+                __s__form.getFormById=function(id)
+                {
+                    return __s__form.S_FormRegistry[id];
+                }
+                __s__form.form = function (node,id,model,name,keys){
+                    __s__form.S_FormRegistry[id]=this;
+                    this.node=node;
+                    this.id=id;
+                    this.model=model;
+                    this.name=name;
+                    this.keys=keys;
+                    this.inputs=[];
+                    this.containers=[];
+                    var m=this;
+                    this.pushContainer=function(e){
+                        this.containers.push(e);
+                    };
+                    this.submit=function(){
+                        var res={};
+                        $(document.getElementById(m.id)).find("input,select").each(
+                            function(idx,el){
+                                res[el.name]=$(el).val();
+                            }
+                        );
+                        __s__base.callEndPoint({
+                            endPoint:'form',
+                            params:res
+                        }).then(function(r){
+                            console.dir(r);
+                        });
+
+                    }
+                    this.popContainer=function(){this.containers.pop();}
+
+                    this.addInput=function(instance){
+                        this.inputs[instance.name]={input:instance};
+
+                        (function(container){
+                                m.inputs[instance.name].container=container;
+
+                        instance.addEventListener("change",function(){
+                            $(container).find(".help-block").removeClass("help-block");
+                            if(m.inputs[instance.name].extraClass)
+                                $(container).find(m.inputs[instance.name].extraClass).removeClass(m.inputs[instance.name].extraClass);
+                                __s__base.callEndPoint({
+                                endPoint:'validation',
+                                params: {
+                                    type: "form",
+                                    name: m.name,
+                                    model: m.model,
+                                    field: instance.dataset.sivname,
+                                    prefix: instance.dataset.sivprefix,
+                                    value:instance.value
+                                }}).then(function(r){
+                                    if(r.error!==0)
+                                    {
+                                        $(container).find(".help-block"+r.errorCode).addClass("help-block error"+r.errorCode);
+                                        m.inputs[instance.name].extraClass="error"+r.errorCode;
+                                    }
+                                });
+                        });
+                        })(this.containers[this.containers.length-1])
+                    };
+                }
+            </script>
+            [#]
+        [#]
+    [#]
+[#]
+<?php
+ $modelkeys=null;
+ $tModel=null;
+ ?>
+[_MODEL]
+<?php
+    $modelkeys=$keys;
+    $modelSerializer=$serializer;
+    $tModel=& $model;
+    ?>
+[#]
+<?php
+// Parameters : object / layer / name / & $form
+  $curObject=$object;
+  $needModel=true;
+  $form=\lib\output\html\Form::getForm($object,$name,$modelkeys,$tModel);
+  $curSite= \model\web\Site::getCurrentWebsite();
+  $curSiteName=$curSite->getName();
+  $request=\Registry::$registry["request"];
+  $curUrl=$request->getUrl();
+
+?>
+
+        <?php
+            $hk=null;
+            if(isset($keys))
+            {
+                $hk=$keys;
+                foreach($keys as $curKey=>$curValue)
+                {
+                    $keys[]=$curValue;
+                }
+            }
+            $hash=$form->createHash($curSiteName,$curUrl,$hk,\Registry::$registry["session"]);
+
+        ?>
+        <form class="form form-[_LAYOUT][_*][#] <?php echo $layout_form; ?>" method="POST" enctype="multipart/form-data" action="/action" id="<?php echo $hash;?>" noValidate>
+            <div class="form-body">
+            <script>
+                __s__form.curForm=new __s__form.form(document.currentScript.previousElementSibling,'<?php echo $hash;?>','<?php echo $object;?>','<?php echo $name;?>',"<?php echo json_encode($keys);?>");
+            </script>
+            <input type="hidden" name="FORM" value="<?php echo $name?>">
+            <input type="hidden" name="MODEL" value="<?php echo $object?>">
+            <input type="hidden" name="SITE" value="<?php echo $curSiteName;?>">
+            <input type="hidden" name="PAGE" value="<?php echo $curUrl;?>">
+
+            <?php
+            if(isset($keys))
+            {
+                $hk=$keys;
+                foreach($keys as $curKey=>$curValue)
+                {
+                    echo "<input type=\"hidden\" name=\"KEYS[".$curKey."]\" value=\"".$curValue."\">";
+                    $keys[]=$curValue;
+                }
+            }
+            ?>
+
+            <input type="hidden" name="__FROM[SECCODE]" value="<?php echo $hash;?>">
+
+                <?php
+                    if(isset($instanceError)) {
+                        $hasMessage=false;
+                    ?>
+                <div style="background-color:red;padding:5px;color:white">
+                    Elemento no encontrado
+                </div>
+                    <?php
+                    }
+                    ?>
+
+                [_FORMGROUP]
+                        [*:/ELEMENT/FORM/GROUPS/HORIZONTAL]
+                            [_:TITLE]
+                                [_TITLE][_*][#]
+                            [#]
+                            [_:DESCRIPTION]
+                                [_DESCRIPTION][_*][#]
+                            [#]
+                            [_:FIELDS]
+                                [_FIELDS][_*][#]
+                            [#]
+                        [#]
+                [#]
+
+            [_FORMERRORS]
+            [#]
+
+                [_BUTTONS]
+                    [*:/ELEMENT/FORM/BUTTONS/BUTTON_HORIZONTAL]
+                        [_*]
+                    [#]
+                [#]
+            </div>
+        </form>
+
+

@@ -1,0 +1,15 @@
+[_TITLE]
+       <div class="row">
+              <h5 class="py-50">[_*]</h5>
+       </div>
+[#]
+
+[_DESCRIPTION]
+       <div class="row">
+              <h6 class="py-50">[_*]</h6>
+       </div>
+[#]
+
+<div class="card-body [_CLASS][_*][#]">
+       [_CONTENT]<div class="row">[_*]</div>[#]
+</div>

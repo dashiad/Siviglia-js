@@ -1,5 +1,0 @@
-<?php
-    $val=$form->{$name}; 
-    
-?>
-[*:/INPUTS/TextField({"name":"$name","value":"$val"})][#]

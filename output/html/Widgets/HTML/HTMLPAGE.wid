@@ -10,17 +10,17 @@
 <head>
     [_TITLE]<title>[_*]</title>[#]
     [_META]
-        [*:/TAGS/META][_:NAME][_NAME][_*][#][#][_:VALUE][_VALUE][_*][#][#][#]
+        [*:/HTML/METADATA/META][_:NAME][_NAME][_*][#][#][_:VALUE][_VALUE][_*][#][#][#]
     [#]
     [_ICON][_*][#]
     [@DEPENDENCY]
         [_PHASE]Headers[#]
     [#]
     [_INLINE_PRESCRIPT][_*][#]
-    [_SCRIPT][*:/TAGS/SCRIPT][_*][#][#]
+    [_SCRIPT][*:/HTML/METADATA/SCRIPT][_*][#][#]
     [_INLINESCRIPT][_*][#]
     [_INLINECSS][_*][#]
-    [_CSS][*:/TAGS/CSS][_*][#][#]
+    [_CSS][*:/HTML/METADATA/CSS][_*][#][#]
     [_EXTRA][_*][#]
 
 </head>

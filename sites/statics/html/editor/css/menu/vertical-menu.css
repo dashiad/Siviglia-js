@@ -182,7 +182,7 @@ body.vertical-layout.vertical-menu-modern.menu-collapsed .footer {
     border-right: 1px solid #DFE3E7;
   }
   body.vertical-layout.vertical-menu-modern .main-menu.menu-dark {
-    border-right: 1px solid #464d5c;
+    border-right: 1px solid #464d5c; width: 206px;
   }
   body.vertical-layout.vertical-menu-modern .footer {
     /* margin-left: 260px; */
@@ -315,4 +315,8 @@ body.vertical-layout.vertical-menu-modern.menu-collapsed .footer {
   .horizontal-layout.vertical-overlay-menu .app-content .content-wrapper {
     margin-top: 3.5rem;
   }
+}
+
+.navbar-smartclip {
+  background-color: #FDAC41;
 }

@@ -1,4 +1,4 @@
-    <nav class="header-navbar navbar-expand-lg navbar navbar-with-menu navbar-fixed bg-warning navbar-brand-center">
+    <nav class="header-navbar navbar-expand-lg navbar navbar-with-menu navbar-fixed navbar-light navbar-brand-center">
     <div class="navbar-wrapper">
             <div class="navbar-container content">
                 <div class="navbar-collapse" id="navbar-mobile">

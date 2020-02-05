@@ -1,8 +1,0 @@
-<?php
-$val=$form->{$name};
-$field=$form->__getField($name);
-$type=$fdef=$field->getType();
-$def=$type->getDefinition();
-
-?>
-[*:/INPUTS/TextArea({"name":"$name","value":"$val"})][#]

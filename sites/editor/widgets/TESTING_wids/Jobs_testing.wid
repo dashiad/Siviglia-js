@@ -3,7 +3,7 @@ $serializer=\Registry::getService("storage")->getSerializerByName('web');
 $currentPage=Registry::$registry["currentPage"];
 $params=$currentPage->getPageParams();
 ?>
-[*:LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Job","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+[*:LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_:HEADER]
                     [_:TITLE]Jobs[#]
 					[_:ICONO]statics[#]
@@ -19,10 +19,10 @@ $params=$currentPage->getPageParams();
                     [#]
                     [_:ROWS]
 						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/AUTOINCREMENT({"name":"id_job","model":"$iterator"})][#][#][#]
-						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"job_id","model":"$iterator"})][#][#][#]
-						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"name","model":"$iterator"})][#][#][#]
-						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"parent","model":"$iterator"})][#][#][#]
-						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer({"name":"status","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/_STRING({"name":"job_id","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/_STRING({"name":"name","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/_STRING({"name":"parent","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/INTEGER({"name":"status","model":"$iterator"})][#][#][#]
 
                     [#]
                     [_:LISTINGFOOTER]

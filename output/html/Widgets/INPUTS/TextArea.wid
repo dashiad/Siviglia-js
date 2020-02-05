@@ -1,9 +1,0 @@
-<fieldset class="form-group">
-    <textarea class="form-control char-textarea active" id="basicTextarea <?php echo $value;?>" rows="3" placeholder="Textarea placeholder..." data-sivname="<?php echo $name;?>" data-sivprefix="<?php echo $prefix;?>"></textarea>
-    <script>
-        var q=document.currentScript.previousElementSibling;
-        __s__form.curForm.addInput(q);
-    </script>
-
-</fieldset>
-
