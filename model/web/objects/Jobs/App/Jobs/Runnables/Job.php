@@ -178,6 +178,11 @@ class Job extends AbstractRunnable
         return $this->children;
     }
     
+    public function getParent()
+    {
+        return $this->parent;
+    }
+    
     protected function dispatch($task)
     {
         $args = [
@@ -198,6 +203,13 @@ class Job extends AbstractRunnable
         if ($data->type=="task") {
             $this->children[$data->index]['status'] = $data->status;
             $this->children[$data->index]['result'] = $data->result;
+        } else {
+            // *todo: solución más elegante
+            foreach ($this->children as &$child) {
+                if ($child['data']['job_id']==$msg['from']) {
+                    $child['status'] = self::FAILED;
+                }
+            }
         }
         if (DEBUG) echo CLI::colorStr("ha fallado un worker!!", "yellow", "default").PHP_EOL;
         if ($this->children[$data->index]['try']<$this->maxRetries) {
@@ -219,15 +231,17 @@ class Job extends AbstractRunnable
     
     public function children_finish($msg)
     {
-        // *todo: revisar  varios jobs como hijos
         $data = (object) $msg['data'];
         if ($data->type=="task") {
             $this->children[$data->index]['status'] = $data->status;
             $this->children[$data->index]['result'] = $data->result;
         } else {
-            // *todo: actualizar el estado del subtrabajo
-            $this->children[$data->index]['status'] = $data->status;
-            $this->children[$data->index]['result'] = $data->result;
+            // *todo: solución más elegante
+            foreach ($this->children as &$child) {
+                if ($child['data']['job_id']==$msg['from']) {
+                    $child['status'] = self::FINISHED;
+                }
+            }
         }
           
         $this->status = $this->checkStatus();
@@ -289,11 +303,13 @@ class Job extends AbstractRunnable
             self::FINISHED => 0,
             self::FAILED   => 0,
         ];
-        foreach ($this->children as $child) {
-             if ($child['status']==self::FAILED && $child['try']<$this->maxRetries) {
-                $statusCount[self::RUNNING]++; // al worker le quedan reintentos, por lo que el job está en ejecución 
-            } else {
-                $statusCount[$child['status']]++;
+        foreach ($this->children as $index=>$child) {
+            if ($index!=="") {
+                if ($child['status']==self::FAILED && $child['try']<$this->maxRetries) {
+                    $statusCount[self::RUNNING]++; // al worker le quedan reintentos, por lo que el job está en ejecución 
+                } else {
+                    $statusCount[$child['status']]++;
+                }
             }
         }
         if ($statusCount[self::WAITING]>0) $status = self::WAITING;

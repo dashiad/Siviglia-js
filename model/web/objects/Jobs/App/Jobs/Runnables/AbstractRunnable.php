@@ -149,6 +149,7 @@ abstract class AbstractRunnable implements StatusInterface
             'children'  => $children,
             'children_count' => count($this->children),
             'status'    => $this->status,
+            'parent'    => $this->parent,
         ]);
         
         $this->queue->publish($msg, $this->channel, $queue);

@@ -155,8 +155,11 @@ class JobManager implements StatusInterface
     {
         if ($this->existsJob($request['from'])) {
             if (DEBUG) echo "finished ".$request['from'].PHP_EOL;
-            /*if (!empty($request['params']['parent'])) {
-                $this->jobs[$request['params']['parent']]->children_finish($request);
+            /*$job = $this->jobs[$request['from']];
+            if ($this->existsJob($job->getParent())) {
+                $parent = $this->jobs[$job->getParent()];
+                $parent->children_finish($request);
+                
             }*/
             $this->trigger($request['name'], $request);
         }

@@ -140,7 +140,7 @@ function testCreateSimpleJob()
                 array (
                     'start_date' => '2019-11-01 00:00:00',
                     'end_date' => '2019-11-30 23:59:59',
-                    'max_chunk_size' => 5,
+                    'max_chunk_size' => 10,
                 ),
             ),
         ),
@@ -297,9 +297,9 @@ function testCreateParallelJob()
 
 //testCreateJobsTable();
 //testCreateWorkersTable();
-testCreateSimpleJob();
+//testCreateSimpleJob();
 //testCreateDirectoryJob();
 //testCreateTrigger();
 //testCreateMySqlJob();
 //testCreateEmployeeReport();
-//testCreateParallelJob();
+testCreateParallelJob();
