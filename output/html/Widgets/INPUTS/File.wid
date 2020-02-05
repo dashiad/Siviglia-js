@@ -1,5 +1,0 @@
-<?php 
- echo "<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"File\">";
-?>
-<input type="file" name="<?php echo $name;?>">
-

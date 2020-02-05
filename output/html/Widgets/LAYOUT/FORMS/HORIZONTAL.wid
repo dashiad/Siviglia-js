@@ -48,26 +48,14 @@
 
                 [_FORMGROUP]
 
-                        [*:/FORMS/group_1]
-                            [_:TITLE]
-                                [_TITLE][_*][#]
-                            [#]
-                            [_:DESCRIPTION]
-                                [_DESCRIPTION][_*][#]
-                            [#]
-                            [_:FIELDS]
-                                [_FIELDS][_*][#]
-                            [#]
-                        [#]
+                        
                 [#]
 
             [_FORMERRORS]
             [#]
 
                 [_BUTTONS]
-                        [*:/FORMS/buttonContainer_1]
-                            [_*]
-                        [#]
+                        
                 [#]
             </div>
         </form>

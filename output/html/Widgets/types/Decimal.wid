@@ -1,1 +1,0 @@
-<span style="font-family:Verdana;background-color:green"><?php echo $model->{$name};?></span>

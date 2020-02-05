@@ -1,4 +1,6 @@
 [*/LAYOUT/FOOTER/FOOTER]
-    [_FOOTER_TYPE]static[#]
+    [_FOOTER_STATIC][_*][#]
     [_FOOTER_COLOR]light[#]
+    [_FOOTER_CONTENT](TODO) llamada al modulo del footer static[#]
+    [_FOOTER_SCROLLTOP][_*][#]
 [#]

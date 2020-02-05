@@ -11,9 +11,8 @@ class PHPVariable extends BaseType
 {
     function serialize($name,$type,$serializer,$model=null)
     {
-        if($type->hasValue()) {
-            return [$name => "'" . mysql_escape_string(serialize($type->getValue())) . "'"];
-        }
+        if($type->hasValue())
+            return [$name=>"'".mysqli_escape_string($serializer->getConnection()->getConnection(), serialize($type->getValue()))."'"];
         else
             return [$name=>"NULL"];
     }

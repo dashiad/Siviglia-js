@@ -1,4 +1,4 @@
-[*:containers/TITLED_SUBCONTAINER]
+[*:HTML/CONTAINER/SUBCONTAINER]
     [_:CLASS]formGroup[#]
     [_:TITLE]
         [_TITLE]
@@ -11,7 +11,7 @@
         [#]
     [#]
 
-     [_:CONTENTS]
+     [_:CONTENT]
         
         [_FIELDS]
             <table class="formGroupInputContainer" cellpadding="0" cellspacing="0">      

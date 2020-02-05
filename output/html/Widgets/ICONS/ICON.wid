@@ -1,1 +1,0 @@
-<?php \output\html\helpers\Icon::getIcon($icon, $family); ?>

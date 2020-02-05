@@ -1,2 +1,0 @@
-<?php $val=$form->{$name}; ?>
-[*:/INPUTS/File({"name":"$name","value":"$val"})][#]

@@ -1,1 +1,0 @@
-<span style="font-family:Verdana;"><a href="javascript:alert('Abriendo ventana para el PO:<?php echo $model->{$name};?>');">aa<?php echo $model->{$name};?></a></span>

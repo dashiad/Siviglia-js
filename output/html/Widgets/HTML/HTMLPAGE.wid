@@ -3,13 +3,14 @@
     $site=\Registry::getService("site");
     $name=$page->getPageName();
     $siteName=$site->getName();
+    $layout_structure = 'horizontal';
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $site->getDefaultIso();?>">
 <head>
     [_TITLE]<title>[_*]</title>[#]
     [_META]
-        [*:/TAGS/META][_:NAME][_NAME][_*][#][#][_:VALUE][_VALUE][_*][#][#][#]
+        [*:/HTML/METADATA/META][_:NAME][_NAME][_*][#][#][_:VALUE][_VALUE][_*][#][#][#]
     [#]
     [_ICON][_*][#]
     [_STARTUP_SCRIPTS][_*][#]
@@ -17,14 +18,19 @@
         [_PHASE]Headers[#]
     [#]
     [_INLINE_PRESCRIPT][_*][#]
-    [_SCRIPT][*:/TAGS/SCRIPT][_*][#][#]
+    [_SCRIPT][*:/HTML/METADATA/SCRIPT][_*][#][#]
     [_INLINESCRIPT][_*][#]
     [_INLINECSS][_*][#]
-    [_CSS][*:/TAGS/CSS][_*][#][#]
+    [_CSS][*:/HTML/METADATA/CSS][_*][#][#]
     [_EXTRA][_*][#]
 
 </head>
+
+
 <body class="<?php echo $bodyClasses;?>" [_EXTRA_BODY_PROPERTIES][_*][#]>
+
+
+<!-- <body [_LAYOUT_STRUCTURE][_HORIZONTAL][_*][#][#]> -->
 <div style="display:none">
     [@DEPENDENCY]
         [_PHASE]WIDGETSTART[#]

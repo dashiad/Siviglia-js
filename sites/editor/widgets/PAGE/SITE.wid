@@ -4,10 +4,9 @@
     [_:TITLE][_TITLE][_*][#][#]
 
     [_:CONTENT]    
-        [*::LAYOUTS/LAYOUT_VERTICAL_2COL_WHITE({"useSidebar":"$sidebar"})]
+        [*::LAYOUT/PAGE/LAYOUT_HORIZONTAL]
             [_::CONTENT]
                 [_CONTENT][_*][#]
-
             [#]
         [#]
     [#]   

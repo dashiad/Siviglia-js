@@ -1,4 +1,4 @@
-[*ELEMENT/BUTTON/BUTTON]
+[*ELEMENT/BUTTON/BUTTON({"form":"&$form"})]
     [_COLOR]primary[#]
     [_SOMBRA][_*][#]
     [_ICON]

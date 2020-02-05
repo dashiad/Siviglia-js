@@ -46,7 +46,9 @@
       {
           if($v=="NOW")
               $this->setAsNow();
-          $this->value=$v;
+          else 
+            $this->value=$v;
+          $this->valueSet=true;
       }
 
       function setAsNow()

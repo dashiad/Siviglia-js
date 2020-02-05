@@ -1,5 +1,0 @@
-<button type="button" class="btn [_COLOR]btn-[_*][#] 
-[_BORDE_COLOR] btn-outline-[_*][#] [_REDONDEADO] round[#] [_SOMBRA] shadow[#]">
-    [_ICON][_*][#]
-    [_LABEL][_*][#]    
-</button>

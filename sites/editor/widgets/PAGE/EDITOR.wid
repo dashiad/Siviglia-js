@@ -1,21 +1,33 @@
-<?php $bodyClasses="vertical-layout vertical-menu-modern semi-dark-layout 2-columns  navbar-sticky footer-static";?>
-<?php
-$s=\Registry::getService("site");
-$statics=$s->getStaticsSite()->getCanonicalUrl();
-?>
-[*:SIVIGLIA/INIT][#]
 [*:HTML/HTMLPAGE({"bodyClasses":"$bodyClasses"})]
     [_:EXTRA_PAGE_PROPERTIES]data-open="click" data-menu="vertical-menu-modern" data-col="2-columns" data-layout="semi-dark-layout"[#]
-    [_:TITLE][_TITLE][_*][#][#]
-    [_:STARTUP_SCRIPTS]
-    <script src="<?php echo $statics;?>/node_modules/jquery/dist/jquery.js"></script>
+    [_:LAYOUT_STRUCTURE]
+        [_HORIZONTAL]class="horizontal-layout horizontal-menu navbar-sticky 2-columns footer-static  menu-expanded pace-done" data-open="hover" data-menu="horizontal-menu" data-col="2-columns"[#]
+        [_VERTICAL]class="vertical-layout vertical-menu-modern semi-dark-layout 2-columns navbar-sticky footer-static  menu-expanded pace-done" data-open="click" data-menu="vertical-menu-modern" data-col="2-columns" data-layout="semi-dark-layout" cz-shortcut-listen="true"[#]
     [#]
-    [_:CONTENT]
-        [*::LAYOUTS/LAYOUT_VERTICAL_2COL({"useSidebar":"$sidebar"})]
+    
+    
+    [_:TITLE][_TITLE][_*][#][#]
+
+    [_:CONTENT]    
+        [*::LAYOUT/PAGE/LAYOUT_HORIZONTAL]
             [_::CONTENT]
                 [_CONTENT][_*][#]
-
             [#]
         [#]
-    [#]
+    [#]   
 [#]
+
+<!--
+    Ahora, desde los Index.php, o Site.php o Page.php, llamo a los layouts directamente,
+    de esta forma, separo que cada pagina podria tener un layout diferente.
+
+    TODO:
+
+    [*::LAYOUT/LAYOUT]
+        [_::CONTENT]
+            [_CONTENT][_*][#]
+        [#]
+    [#]
+
+    No resuelve bien el contenido de dentro, de las cards, etc...
+-->

@@ -1,0 +1,27 @@
+<div class="card">    
+    <div class="card-header">
+        [_TITLE]<h4 class="card-title">[_*]</h4>[#]        
+        <div class="heading-elements">
+            <ul class="list-inline mb-0">                                
+                [_QUITAR]<li><a data-action="close">[*:ELEMENT/MEDIA/ICON({"icon":"quitar"})][#]</a></li>[#]
+                [_RECARGAR]<li><a data-action="reload">[*:ELEMENT/MEDIA/ICON({"icon":"recargar"})][#]</a></li>[#]
+                <li><a data-action="expand">[*:ELEMENT/MEDIA/ICON({"icon":"expandir"})][#]</a></li>
+                <li><a data-action="collapse">[*:ELEMENT/MEDIA/ICON({"icon":"collapse"})][#]</a></li>
+              </li>                
+              </li>
+            </ul>
+        </div>
+        [_IMAGEN_URL]<img src="[_*]" class="card-img-top" alt="[_IMAGEN_ALT][_*][#]">[#]            
+    </div>
+    <div class="card-content collapse show" aria-expanded="true">
+        <div class="card-body">
+            [_CONTENT]<p class="card-text text-justify">[_*]</p>[#]
+            [_BOTON_URL]<a href="[_*]" class="btn btn-primary">[_BOTON_TEXTO][_*][#]</a>[#]
+        </div>
+    </div>
+    [_FOOTER]
+    <div class="card-footer">
+        <span class="text-muted">[_*]</span>
+    </div>
+    [#]
+</div>

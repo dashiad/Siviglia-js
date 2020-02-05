@@ -1,0 +1,13 @@
+    <nav class="header-navbar navbar-expand-lg navbar navbar-with-menu navbar-fixed navbar-light navbar-brand-center">
+    <div class="navbar-wrapper">
+            <div class="navbar-container content">
+                <div class="navbar-collapse" id="navbar-mobile">
+                    <div class="mr-auto float-left bookmark-wrapper d-flex align-items-center">                        
+                        [*:LAYOUT/NAVIGATION/TOOLBAR/TOOLBAR_EXTRA_MENU][#]
+                    </div>
+                    [*:LAYOUT/NAVIGATION/TOOLBAR/TOOLBAR_USER_MENU][#]                    
+                </div>
+            </div>
+        </div>
+    </div>        
+    </nav>
