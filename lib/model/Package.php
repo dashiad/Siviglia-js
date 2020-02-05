@@ -60,6 +60,7 @@ class Package
     function getModelDescriptor($objectName)
     {
         return new \lib\model\ModelDescriptor($objectName,null,$this);
+
     }
 
     function includeFile($className)

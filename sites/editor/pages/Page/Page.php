@@ -1,56 +1,54 @@
 [*PAGE/EDITOR]
     [_TITLE]PAGE SECCION - v.1.0 beta Smartclip[#]
-
     [_CONTENT]
+        <script src="http://statics.adtopy.com/Siviglia2.js"></script>
+        <script src="http://statics.adtopy.com/test2.js"></script>
 
-        [*:COMPONENTS/CARD]
-            [_:TITLE]Componente VENTANA_MODAL[#]
-            [_:COLLAPSE][_*][#]
-            [_:CONTENT]
-                [*::TAGS/P]Ejemplo de componente modal con tag p para poner parrafos antes del modal[#]
-                [*::COMPONENTS/MODAL/VENTANA_MODAL]
-                    [_::NOMBRE_BOTON_MODAL]Lanzar ventana-modal[#]
-                    [_::TITULO_MODAL]Ejemplo titulo modal[#]
-                    [_::COLOR_TITULO]white[#]
-                    [_::COLOR_CABECERA]success[#]
-                    [_::TAMANO]xl[#]
-                    [_::CENTRADO][_*][#]
-                    [_::CONTENIDO_MODAL]
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,                                                
-                    [#]
-                [#]
+        <template id="my-element">
+            <div>
+            <div style="background-color:gray;color:white">
 
-            [#]
-        [#]
+                <slot name="title">
 
-        [*:COMPONENTS/CARD]
-            [_:TITLE]Componente MODAL[#]
-            [_:COLLAPSE][_*][#]
-            [_:CONTENT]                
-                [*::COMPONENTS/MODAL/MODAL]
-                    [_::NOMBRE_BOTON_MODAL]Lanzar modal[#]
-                    [_::TAMANO]full[#]
-                    [_::CONTENIDO_MODAL]
-                        [*:::model/web/objects/Job/html/views/FullList2][#]
-                    [#]
-                [#]
-            [#]
-        [#]        
-        
-        [*:COMPONENTS/CARD]
-            [_:TITLE]Titulo de la tabla FullList2[#]
-            [_:CONTENT][*::model/web/objects/Page/html/forms/EditAction][#][#]
-            [_:FOOTER]Pie de pagina de la tabla fulllist2[#]
-            [_:COLLAPSE][_*][#]
-            [_:EXPANDIR][_*][#]
-        [#]
 
-        [*:COMPONENTS/COLLAPSE]
-            [_:ICONO]bell[#]
-            [_:TITLE]titulo collapse[#]
-            [_:ICONO]bell[#]
-            [_:CONTENT]Contenido del collapsible lorem ipsum[#]
-        [#]
-        
-    [#]   
+                </slot>
+
+            </div>
+
+            <div style="background-color:yellow;color:black">
+                <slot name="contents">
+
+                </slot>
+            </div>
+            </div>
+        </template>
+
+
+
+        <template id="my-element2">
+            <div style="width:200px;height:200px;margin:0px auto">
+                <h1><slot name="title"></slot></h1>
+            </div>
+        </template>
+
+
+        <my-element img>
+            <img src=""
+            <span slot="title" >
+                Este es el titulo
+            </span>
+            <span slot="contents">
+                <my-element2>
+                    <span slot="title">Contenido!</span>
+                </my-element2>
+            </span>
+            <span slot="contents">
+                <my-element2>
+                    <span slot="title">Contenido  dos!</span>
+                </my-element2>
+            </span>
+        </my-element>
+
+
+    [#]
 [#]

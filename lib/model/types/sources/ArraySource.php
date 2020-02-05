@@ -17,7 +17,7 @@ namespace lib\model\types\sources;
 class ArraySource extends BaseSource
 {
     var $source;
-    function __construct($parent,$definition)
+    function __construct($parent,$definition,$useValidatingData)
     {
         parent::__construct($parent,$definition);
         if(isset($this->definition["DATA"]))

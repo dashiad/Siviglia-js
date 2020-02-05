@@ -21,6 +21,7 @@ class HTMLRequest extends \Request implements \ArrayAccess
     function __construct()
     {
         $this->site=isset($_GET["site"])?$_GET["site"]:"default";
+
         if(!empty($_SERVER["HTTPS"]))
             $this->isSSL=true;
 
@@ -29,31 +30,10 @@ class HTMLRequest extends \Request implements \ArrayAccess
         else
         {
             $subpath=$_GET["subpath"];
-            if($subpath[0]!="/")
+            if($subpath[0]!=="/")
                 $subpath="/".$subpath;
 
-            if(strpos($subpath,"/scripts/dojo/")===0)
-            {
-                $subpath=trim(str_replace("//","/",$subpath),"/");
-                $parts=explode("/",$subpath);
-                switch($parts[5])
-                {
-                    case "actions":
-                    {
-                        $nParts=count($parts)-1;
-                        $lastPart=$parts[$nParts];
-                        $p2=explode(".",$lastPart);
-                        if($p2[1]=='js')
 
-                            include(\lib\Paths::getDojoActionJs($parts[2],$parts[3],$p2[0]));
-                        else
-                        {
-                            include(\lib\Paths::getDojoActionTemplate($parts[2],$parts[3],$p2[0]));
-                        }
-                    }break;
-                }
-                exit();
-            }
         }
 
         $this->requestedPath=$subpath;
@@ -280,7 +260,7 @@ class HTMLRequest extends \Request implements \ArrayAccess
     {
         return $this->urlCandidate["NAME"];
     }
-
+    // Obtiene un link a la pagina actual, sobreescribiendo algunos parametros.
     function getLink($overridenParams,$ignoreParams)
     {
         $params=array_merge($this->parameters,$overridenParams);
@@ -347,19 +327,13 @@ class HTMLRequest extends \Request implements \ArrayAccess
     {
         return "HTML";
     }
-    function initializePage()
+    function solve()
     {
-
         global $Container;
         //session_start();
         global $currentSite;
         $currentSite=\model\web\Site::getCurrentWebsite();
         $Container->addService("site",$currentSite);
-
-    }
-    function solve()
-    {
-       $this->initializePage();
         Startup::commonSetup();
 
         register_shutdown_function('___cleanup');
@@ -395,18 +369,15 @@ class HTMLRequest extends \Request implements \ArrayAccess
         }
         else
         {
-            $objName=$model->__getFullObjectName();
             $outputDatasource = 'View';
             $def = $curForm->getDefinition();
             if($def['OUTPUT_DATASOURCE']) {
                 $outputDatasource = $def['OUTPUT_DATASOURCE'];
             }
             $ds=\lib\datasource\DataSourceFactory::getDataSource($model->__getFullObjectName(), $outputDatasource);
-            //$ds=\lib\datasource\DataSourceFactory::getDataSource($model->__getFullObjectName(), "View");
             $ds->setParameters($model);
             $ds->fetchAll();
             $iterator=$ds->getIterator();
-
             $result=array(
                 "result"=>1,
                 "error"=>0,

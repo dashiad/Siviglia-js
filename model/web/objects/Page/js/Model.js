@@ -13,3 +13,10 @@ Siviglia.Utils.buildClass(
                     }
             }
     });
+
+var page=Adtopy.model.web.Page.Model();
+var page=new Adtopy.model.web.Page.forms.Add();
+var page=new Adtopy.model.web.Page.views.list();
+page.getDomNode();
+
+Model.getForm("/model/web/Page","Add").then(function(instance){});

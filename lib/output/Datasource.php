@@ -35,7 +35,16 @@ abstract class Datasource
         if(!$this->params)
             $this->params=array();
         try {
-            $ds->loadFromArray($this->params);
+            $htmlSerializer=new \lib\storage\HTML\HTMLSerializer();
+            $dsParams=$ds->getParametersInstance();
+            $fields=$dsParams->__getFields();
+            foreach($fields as $key=>$value)
+            {
+                if(isset($this->params[$key]))
+                    $htmlSerializer->unserializeType($key, $dsParams->{"*" . $key}, $this->params, $dsParams);
+            }
+            $ds->setParameters($dsParams);
+
         }catch(\lib\model\BaseTypedException $e)
         {
             throw $e;

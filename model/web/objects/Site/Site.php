@@ -170,7 +170,7 @@ class Site extends \lib\model\BaseModel
     }
     static function getSitePath()
     {
-        return PROJECTPATH.Paths::getRelativeSitePath();
+        return PROJECTPATH."/sites";
     }
     static function getSiteNamespace()
     {

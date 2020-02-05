@@ -1,0 +1,33 @@
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_CONTENTS]
+        [_SCRIPT][_FILE]/packages/jqwidgets/jqx-all.js[#][#]
+        [_SCRIPT][_FILE]/packages/jqwidgets/globalization/globalize.js[#][#]
+        [_CSS][_FILE]/packages/jqwidgets/styles/jqx.base.css[#][#]
+        [_CSS][_FILE]/packages/jqwidgets/styles/jqx.flat.css[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Siviglia.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/SivigliaTypes.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Model.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/ModelInstance.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/SivigliaStore.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Form.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/jQuery/forms/inputs/BaseInput.js[#][#]
+        [_SCRIPT]
+            [_CODE]
+                <script>
+                    var Siviglia=Siviglia || {};
+                    Siviglia.config={
+                        baseUrl:'##SITE_WEB_ROOT##/',
+                        staticsUrl:'##STATICS_WEB_ROOT##/',
+                        jsFramework:'jquery',
+                        locale:'es-ES',
+                        mapper:'BackofficeMapper',
+                        datasourcePrefix:'datasource/'
+                        //jsFramework:'dojo'
+                    };
+                    Siviglia.Model.initialize(Siviglia.config);
+                </script>
+            [#]
+        [#]
+    [#]
+[#]

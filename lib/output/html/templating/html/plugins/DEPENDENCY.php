@@ -529,7 +529,6 @@ class DEPENDENCY extends Plugin {
         if(isset($spec["MODEL"]))
         {
             $obj=$spec["MODEL"][0];
-            include_once(PROJECTPATH."/lib/reflection/model/ObjectDefinition.php");
             $obj=\lib\model\ModelService::getModelDescriptor($obj);
             if(isset($this->params["WIDGET_PATH"]))
                 $path=$this->params["WIDGET_PATH"];
@@ -598,14 +597,17 @@ class DEPENDENCY extends Plugin {
         $code=null;
         $info=null;
         $file=null;
+        $macros=isset($this->params["MACROS"])?$this->params["MACROS"]:array();
+        $mkeys=array_keys($macros);
+        $mvalues=array_values($macros);
+
         if(isset($spec["CODE"]))
         {
             $info=$this->__getFileHash($type);
             $code=$this->__getUntaggedContents($spec["CODE"][0],$type=="CSS"?"style":"script");
+            $code=str_replace($mkeys,$mvalues,$code);
         }
-        $macros=isset($this->params["MACROS"])?$this->params["MACROS"]:array();
-        $mkeys=array_keys($macros);
-        $mvalues=array_values($macros);
+
         // Si hay un file, se supone que tambien hay una url.
         if(isset($spec["FILE"]))
         {

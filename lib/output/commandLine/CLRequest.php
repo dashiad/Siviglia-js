@@ -28,29 +28,6 @@ class CLRequest extends \lib\output\html\HTMLRequest
             $subpath=$params["subpath"];
             if($subpath[0]!="/")
                 $subpath="/".$subpath;
-
-            if(strpos($subpath,"/scripts/dojo/")===0)
-            {
-                $subpath=trim(str_replace("//","/",$subpath),"/");
-                $parts=explode("/",$subpath);
-                switch($parts[5])
-                {
-                    case "actions":
-                    {
-                        $nParts=count($parts)-1;
-                        $lastPart=$parts[$nParts];
-                        $p2=explode(".",$lastPart);
-                        if($p2[1]=='js')
-
-                            include(\lib\Paths::getDojoActionJs($parts[2],$parts[3],$p2[0]));
-                        else
-                        {
-                            include(\lib\Paths::getDojoActionTemplate($parts[2],$parts[3],$p2[0]));
-                        }
-                    }break;
-                }
-                exit();
-            }
         }
 
         $this->requestedPath=$subpath;

@@ -39,4 +39,8 @@ class Response
 
         return function(){};
     }
+    static function generateError()
+    {
+        die("REQUEST ERROR!!");
+    }
 }

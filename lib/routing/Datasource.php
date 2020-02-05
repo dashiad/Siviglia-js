@@ -8,7 +8,12 @@ class Datasource
         {
             case \Request::OUTPUT_JSON:
             {
-                return new \lib\output\json\JsonDataSource($definition,$params,$request);
+                $jds= new \lib\output\json\JsonDataSource($definition,$params,$request);
+
+
+
+                return $jds;
+
             }break;
 
         }

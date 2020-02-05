@@ -53,11 +53,54 @@ class Router
 
     function routeHTML($request)
     {
-        $site = \model\web\Site::getCurrentWebsite();
-        if($request->getRequestedPath()=="/action")
+        $response=new \lib\Response();
+        \Registry::$registry["response"]=$response;
+
+        $subpath=$request->getRequestedPath();
+
+        /*   BEGIN  */
+        if($subpath[0]!="/")
+            $subpath="/".$subpath;
+        $trimmed=trim(str_replace("//","/",$subpath),"/");
+        $parts=explode("/",$trimmed);
+
+        switch($parts[0])
         {
-            return $this->routeAction($request);
+            case "action":{
+
+                $response->setBuilder(function() use ($request){
+                    return $request->resolveActions();
+                });
+                return;
+
+            }break;
+            case "datasource":{
+                $regex="#datasource/(.*)/([^/?]+)#";
+                if(preg_match($regex,$subpath,$matches))
+                {
+                    $value["MODEL"]=$matches[1];
+                    $value["NAME"]=$matches[2];
+                    $r=\lib\routing\Datasource::getInstance($value,$request->getParameters(),$this->request);
+                    $r->resolve();
+                }
+                return;
+            }break;
+            case "js":{
+                if(!isset($parts[1]))
+                    die();
+                $handler='\lib\output\html\renderers\js\\'.ucfirst(strtolower($parts[1]));
+                if(!class_exists($handler))
+                    die();
+                $instance=new $handler();
+                $response->setBuilder(function() use ($instance,$subpath,$parts){
+                    return $instance->resolve($subpath,$parts);
+                });
+                return;
+            }break;
         }
+
+        $site = \model\web\Site::getCurrentWebsite();
+
         $cachePath=$site->getRouteCachePath();
         if (!is_file($cachePath)) {
             \lib\routing\RouteBuilder::rebuildSiteUrls($site);
@@ -69,30 +112,6 @@ class Router
         $this->resolve($request->getRequestedPath(),$request);
     }
 
-    function routeAction($request)
-    {
-        switch($request->getOutputType())
-        {
-            case 'json':
-            {
-                $response=new \lib\output\json\JsonResponse();
-                \Registry::$registry["response"]=$response;
-                $action=new \lib\output\json\JsonAction($request);
-                $response=new \lib\output\json\JsonResponse();
-                $response->setBuilder(function() use ($action){
-                    return $action->resolve();
-                });
-            }break;
-            default:
-            {
-                $response=new \lib\Response();
-                \Registry::$registry["response"]=$response;
-                $response->setBuilder(function() use ($request){
-                    return $request->resolveActions();
-                });
-            }break;
-        }
-    }
 
     /*
      * Genera una url dando el nombre de la url, y una lista de parametros.
@@ -159,7 +178,7 @@ class Router
         } else
             $fullPath = $path;
 
-        $matches = array();
+
         // Si el path no es "/", quitamos la "/" inicial
 
         $fullPath = urldecode($fullPath);
@@ -170,7 +189,6 @@ class Router
         {
             if($res = preg_match($this->regexp[$k], $fullPath, $matches1, PREG_OFFSET_CAPTURE))
             {
-                $regexp = $this->regexp[$k];
                 $nMatches=count($matches1);
                 if($nMatches > $maxMatch)
                 {
@@ -183,13 +201,11 @@ class Router
         if (!$curMatch) {
             throw new RouterException(RouterException::ERR_PAGE_NOT_FOUND, array("route" => $fullPath));
         }
-        $matches = array();
         $urlParams = array();
         foreach ($curMatch as $key => $value) {
             if (($key[0] == "P" && $value[1] == -1) || ($key[0] != 'X' && $key[0] != 'P'))
                 continue;
             $parts = explode("_", $key);
-            $prf = substr($parts[0], 1);
             unset($parts[0]);
             $cVal = implode("_", $parts);
             if ($key[0] == 'P')
@@ -267,7 +283,7 @@ class Router
                 $r->resolve();
                 break;
             case "DATASOURCE":
-                $value["MODEL"]="model/".$params["modelPath"];
+                $value["MODEL"]=$params["modelPath"];
                 $value["NAME"]=$params["dsName"];
                 unset($params["modelPath"]);
                 unset($params["dsName"]);

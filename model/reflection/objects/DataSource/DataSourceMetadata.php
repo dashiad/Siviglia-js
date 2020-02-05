@@ -7,8 +7,8 @@
  */
 
 namespace model\reflection\DataSource;
-include_once(PROJECTPATH."/model/reflection/objects/base/BaseMetadata.php");
-use \model\reflection\base\BaseMetadata;
+include_once(PROJECTPATH."/model/reflection/objects/Meta/BaseMetadata.php");
+use \model\reflection\Meta\BaseMetadata;
 
 class DataSourceMetadata extends BaseMetadata {
     function __construct($objName,$dsName)
@@ -49,5 +49,9 @@ class DataSourceMetadata extends BaseMetadata {
                 $this->definition["DATASOURCES"][$key]=$newDef->definition;
             }
         }
+    }
+    function getMeta()
+    {
+        return $this->definition;
     }
 }

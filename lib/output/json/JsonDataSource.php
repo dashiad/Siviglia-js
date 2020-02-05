@@ -8,7 +8,7 @@
 
 namespace lib\output\json;
 
-include_once(PROJECTPATH."/model/reflection/objects/Datasource/DataSourceMetaData.php");
+include_once(PROJECTPATH."/model/reflection/objects/Datasource/DataSourceMetadata.php");
 class JsonDataSource extends \lib\output\Datasource
 {
     function resolve()
@@ -19,8 +19,11 @@ class JsonDataSource extends \lib\output\Datasource
         $result["count"]=$ds->count();
         $result["result"]=1;
         $result["error"]=0;
-        $metaDataObj=new \model\reflection\Datasource\DataSourceMetadata($this->definition["MODEL"],$this->definition["NAME"]);
-        $result["definition"]=$metaDataObj->definition;
+        // TODO : Hacer que efectivamente se use la clase DataSourceMetaData
+        // Para ello, hay que hacer que funcionen la metadata de los tipos, que ahora
+        // mismo solo devuleven el array de definicion, pero no filtran una definicion para hacerla "publica"
+        //$metaDataObj=new \model\reflection\Datasource\DataSourceMetadata($this->definition["MODEL"],$this->definition["NAME"]);
+        $result["definition"]=$ds->getDefinition();
 
         if($this->getRole()=="view") {
             $data=$it->getFullRow();

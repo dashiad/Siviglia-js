@@ -31,6 +31,12 @@ class HtmlRenderer
                          "Global"=>$rootPath."/".$site->getName()."/bundles",
                          "Page"=>$rootPath."/".$site->getName()."/bundles"
                 ),
+                 "MACROS"=>array(
+                     "##SITE_DOCUMENT_ROOT##"=>$site->getDocumentRoot(),
+                     "##SITE_WEB_ROOT##"=>$site->getCanonicalUrl(),
+                     "##STATICS_DOCUMENT_ROOT##"=>$site->getStaticsSite()->getDocumentRoot(),
+                     "##STATICS_WEB_ROOT##"=>$site->getStaticsSite()->getCanonicalUrl()
+                 ),
                 "DOCUMENT_ROOT"=>$rootPath,
                 "WEB_ROOT"=>$webPath,
                  "PROJECT_ROOT"=>PROJECTPATH

@@ -110,7 +110,7 @@ abstract class StorageDataSource extends TableDataSource
     }
     function getParametersInstance()
     {
-        return new \lib\model\BaseTypedObject($this->originalDefinition["PARAMS"]);
+        return new \lib\model\BaseTypedObject(["FIELDS"=>$this->originalDefinition["PARAMS"]]);
     }
     function addConditions($conds)
     {
