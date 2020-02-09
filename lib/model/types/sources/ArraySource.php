@@ -17,7 +17,7 @@ namespace lib\model\types\sources;
 class ArraySource extends BaseSource
 {
     var $source;
-    function __construct($parent,$definition,$useValidatingData)
+    function __construct($parent,$definition,$useValidatingData=false)
     {
         parent::__construct($parent,$definition);
         if(isset($this->definition["DATA"]))
@@ -31,6 +31,18 @@ class ArraySource extends BaseSource
     }
     function getData()
     {
+        if(isset($this->definition["PATH"])) {
+
+            $parsedPath=\lib\php\ParametrizableString::getParametrizedString($this->definition["PATH"],$this->parent);
+            if($parsedPath[0]=="/")
+                $parsedPath=substr($parsedPath,1);
+            $parts=explode("/",$parsedPath);
+            $pointer=& $this->definition["DATA"];
+            for($k=0;$k<count($parts);$k++)
+                $pointer=& $pointer[$parsedPath[$k]];
+            return $pointer;
+        }
+
         return $this->source;
     }
 }

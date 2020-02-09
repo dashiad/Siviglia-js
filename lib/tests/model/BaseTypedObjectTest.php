@@ -761,7 +761,7 @@ class BaseTypedObjectTest extends TestCase
         $obj=$this->getDefinition6();
         $obj->one="str_one";
         $obj->arr=["c1","c2"];
-        $obj->{"*dict"}->c1="f1";
+        //$obj->{"*dict"}->c1="f1";
         $obj->{"*dict"}->c2=["first","second"];
         $data=$obj->normalizeToAssociativeArray();
         $this->assertEquals("second",$data["dict"]["c2"][1]);
@@ -877,5 +877,10 @@ class BaseTypedObjectTest extends TestCase
         $obj2->three="lala";
         $this->assertEquals(true,$obj2->__enteringCalled);
     }
+    // TESTS A REALIZAR:
+    // 1: CONTAINER CON CAMPOS REQUERIDOS: DEBE INICIALIZARSE EL CONTAINER CON TODOS LOS CAMPOS REQUERIDOS
+    // ANTES DE ACCEDER A CUALQUIER CAMPO CON EL OPERADOR ->
+    // 2: CONTAINER CON CAMPOS REQUERIDOS: LANZAR EXCEPCION SI UN CAMPO REQUERIDO SE PONE A null.
+    // 3: CAMPO AUTONUMERICO : NO DEBE PERMITIR EN NINGUN CASO QUE SE LE ESTABLEZCA UN VALOR A null
 
 }

@@ -56,6 +56,64 @@ class ArraySourceTest extends TestCase
                 ]
             ]);
     }
+
+    function getTypedObject1()
+    {
+        return new \lib\model\BaseTypedObject(
+          [
+              "FIELDS"=>[
+                  "f1"=>["TYPE"=>"String",
+                         "SOURCE"=>[
+                             "TYPE"=>"Array",
+                             "LABEL"=>"Label",
+                             "VALUE"=>"Id",
+                             "DATA"=>[
+                                 ["Label"=>"a","Id"=>"a"],
+                                 ["Label"=>"d","Id"=>"b"]
+                             ]
+                         ]
+                      ],
+                  "f2"=>["TYPE"=>"String",
+                      "SOURCE"=>[
+                          "TYPE"=>"Array",
+                          "LABEL"=>"Label",
+                          "VALUE"=>"Id",
+                          "DATA"=>[
+                              ["Label"=>"b","Id"=>"b"],
+                              ["Label"=>"c","Id"=>"c"]
+                          ]
+                      ]
+                  ],
+                  "f3"=>[
+                      "TYPE"=>"Integer",
+                      "SOURCE"=>[
+                          "TYPE"=>"Array",
+                          "LABEL"=>"[%Label%] [%SubLabel%]",
+                          "VALUE"=>"Id",
+                          "DATA"=>[
+                              "a"=>[
+                                  "b"=>[
+                                  ["Id"=>1,"Label"=>"Primero","SubLabel"=>"1º"]
+                                  ],
+                                  "c"=>[
+                                  ["Id"=>2,"Label"=>"Segundo","SubLabel"=>"2º"]]
+                              ],
+                              "d"=>
+                                  [
+                                      "c"=>[
+                                      ["Id"=>3,"Label"=>"Tercero","SubLabel"=>"3º"],
+                                      ["Id"=>4,"Label"=>"Cuarto","SubLabel"=>"4º"]
+                                          ]
+                                  ]
+                          ],
+                          "PATH"=>"/[%../f1%]/[%../f2%]"
+
+                      ]
+                  ]
+              ]
+          ]
+        );
+    }
     function getSource4($parent)
     {
         return new \lib\model\types\sources\ArraySource($parent,
@@ -105,5 +163,15 @@ class ArraySourceTest extends TestCase
         $data=$s3->getData();
         $l=$s3->getLabel($data[0]);
         $this->assertEquals("Primero 1º",$l);
+    }
+    function testPath()
+    {
+        $ins=$this->getTypedObject1();
+        $ins->f1="a";
+        $ins->f2="b";
+        $src=$ins->{"*f3"}->getSource();
+        $d=$src->getData();
+        $h=11;
+
     }
 }

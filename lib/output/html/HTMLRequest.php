@@ -120,10 +120,11 @@ class HTMLRequest extends \Request implements \ArrayAccess
         }
          **/
 
-        require_once(LIBPATH.'/php/phpbrowscap/Browscap.php');
-        $bc = new \phpbrowscap\Browscap(LIBPATH.'/php/phpbrowscap/cache');
-        $bc->localFile = LIBPATH.'/php/phpbrowscap/lite_php_browscap.ini';
-        $browser = $bc->getBrowser();
+     //   require_once(LIBPATH.'/php/phpbrowscap/Browscap.php');
+     //   $bc = new \phpbrowscap\Browscap(LIBPATH.'/php/phpbrowscap/cache');
+     //   $bc->localFile = LIBPATH.'/php/phpbrowscap/lite_php_browscap.ini';
+     //   $browser = $bc->getBrowser();
+        $browser=null;
 
         $this->client=array(
             "request" => $_SERVER["QUERY_STRING"],

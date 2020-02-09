@@ -79,6 +79,8 @@ class Router
                 if(preg_match($regex,$subpath,$matches))
                 {
                     $value["MODEL"]=$matches[1];
+                    if($value["MODEL"][0]!="/")
+                        $value["MODEL"]="/".$value["MODEL"];
                     $value["NAME"]=$matches[2];
                     $r=\lib\routing\Datasource::getInstance($value,$request->getParameters(),$this->request);
                     $r->resolve();
