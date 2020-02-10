@@ -5,5 +5,16 @@ use model\web\Jobs\BaseWorker;
 
 class DfpReport extends BaseWorker
 {
-    protected $name = 'dfp_report';
+    protected static $defaultName = 'dfp_report';
+
+    protected function init()
+    {
+        //
+    }
+    
+    protected function runItem($item)
+    {
+        return $item;
+    }
+
 }

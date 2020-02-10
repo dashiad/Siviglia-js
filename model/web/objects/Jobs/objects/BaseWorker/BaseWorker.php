@@ -2,6 +2,7 @@
 namespace model\web\Jobs;
 
 use lib\model\BaseException;
+use model\web\Jobs\App\Jobs\Workers\Worker;
 
 class BaseWorkerException extends BaseException
 {
@@ -9,26 +10,29 @@ class BaseWorkerException extends BaseException
     const TXT_TEST = "Error";
 }
 
-class BaseWorker 
+abstract class BaseWorker extends Worker
 {
+    protected static $defaultName = 'generic_worker';
     protected $name;
     protected $definition;
     
-    public function __construct()
+    public function __construct($args)
     {
-        $this->definition = $this->loadDefinition();
+        $this->definition = self::loadDefinition();
+        //$this->name = "";
+        parent::__construct($args);
     }
         
-    protected function loadDefinition()
+    public static function loadDefinition()
     {
-        $reflector = new \ReflectionClass(get_class($this));
+        $reflector = new \ReflectionClass(static::class);
         if ($reflector->isSubclassOf("model\web\Jobs\BaseWorker")) {
             $className = $reflector->getName()."\\Definition";
             $definition = new $className;
         } else {
             $definition = new BaseWorkerDefinition;
         }
-        $definition->name = $this->name;
+        $definition->name = static::$defaultName;
         return $definition;
     }
     
@@ -36,7 +40,7 @@ class BaseWorker
     {
         return $this->definition;
     }
-    
+        
     public function getJobDescriptor()
     {
         return json_encode([]);
