@@ -2,7 +2,9 @@
 require(__DIR__.'/bootstrap.php');
 
 use model\web\Jobs\App\Jobs\JobManager;
-use model\web\Jobs\App\Queue;
+use model\web\Jobs\App\Jobs\Queue;
+use model\web\Jobs\BaseWorkerDefinition;
+use model\ads\Reports\DfpReport;
 
 /*$queue = Jobs\Queue::create('test');
 $args = array (
@@ -302,4 +304,44 @@ function testCreateParallelJob()
 //testCreateTrigger();
 //testCreateMySqlJob();
 //testCreateEmployeeReport();
-testCreateParallelJob();
+//testCreateParallelJob();
+
+//$test = new lib\tests\model\BaseTypedObjectTest;
+//$def = $test->getDefinition6();
+//$test->testAsAssociative();
+//$def->one = "a";
+//$def->{"*dict"}->c1="b";
+//$def->{"*dict"}->c2=["a", "b"];
+//print_r(json_encode($def->normalizeToAssociativeArray()));
+
+/*$packages=\model\reflection\ReflectorFactory::getPackageNames();
+
+$workers = [];
+foreach($packages as $package) {      
+    try {
+        $pkg = new \model\reflection\Package($package, "model");
+        $workers[$package] = $pkg->getWorkers();
+    } catch (\Throwable $e) {
+        continue;
+    }
+}*7
+
+/**
+ * 
+ * @var model\ads\Reporter\workers\DfpReport $report
+ */
+//$report = new $workers['ads'][0];
+$report = new model\ads\Reporter\workers\DfpReport;
+$definition = $report->getDefinition();
+$definition->max_running_children=100;
+$definition->max_retries=1;
+//$definition->{"*task"}->type="task_type";
+$definition->{"*task"}->name="task_name";
+$definition->{"*task"}->{"*args"}->task=get_class($report);
+$definition->{"*task"}->{"*args"}->type="List";
+$definition->{"*task"}->{"*args"}->{"*params"}->max_chunk_size=1;
+$definition->{"*task"}->{"*args"}->{"*params"}->items=[1,2,3];
+//var_dump($definition->type);
+//$definition->task->name='data_mixer';
+//print_r($definition->getFields());
+print_r(json_encode($definition->normalizeToAssociativeArray()));

@@ -30,7 +30,7 @@ function mainAutoloader($name)
             include_once(WEBROOT.str_replace('\\',\DIRECTORY_SEPARATOR,$name).".php");
         }break;
         case "sites":
-            case "output":
+        case "output":
         {
             include_once(PROJECTPATH.implode("/",$parts).".php");
         }break;

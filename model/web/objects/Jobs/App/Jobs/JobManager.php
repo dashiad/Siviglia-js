@@ -65,11 +65,6 @@ class JobManager implements StatusInterface
         }
     }
     
-    /**
-     * 
-     * @param unknown $trigger
-     * @param unknown $jobDescription
-     */
     protected function addTrigger($trigger, $jobDescription)
     {
         $id = $jobDescription['job_id'] ?? uniqid($jobDescription['name']."_");
@@ -78,11 +73,6 @@ class JobManager implements StatusInterface
         $this->triggers[$trigger][$id]['launched_for'] = [];
     }
     
-    /**
-     * 
-     * @param unknown $trigger
-     * @param unknown $id
-     */
     protected function removeTrigger($trigger, $id)
     {
         if(isset($this->triggers[$trigger][$id])) {
@@ -90,10 +80,6 @@ class JobManager implements StatusInterface
         }
     }
     
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function create($request)
     {
         if  (isset($request['data']['on'])) {
@@ -105,10 +91,6 @@ class JobManager implements StatusInterface
         }
     }
     
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function start($request)
     {
         if ($this->existsJob($request['to'])) {
@@ -120,10 +102,6 @@ class JobManager implements StatusInterface
         }
     }
 
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function children_failed($request)
     {
         if ($this->existsJob($request['to'])) {
@@ -133,10 +111,6 @@ class JobManager implements StatusInterface
         }
     }
     
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function children_finish($request)
     {
         if ($this->existsJob($request['to'])) {
@@ -147,10 +121,6 @@ class JobManager implements StatusInterface
         }
     }
     
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function job_finish($request)
     {
         if ($this->existsJob($request['from'])) {
@@ -165,10 +135,6 @@ class JobManager implements StatusInterface
         }
     }
      
-    /**
-     * 
-     * @param unknown $trigger
-     */
     protected function trigger($trigger, $request)
     {
         if (array_key_exists($trigger, $this->triggers)) {          
@@ -192,8 +158,9 @@ class JobManager implements StatusInterface
      * 
      * @param Array $hook
      * @param String $creator
-     * @return \Jobs\Runnables\Job
+     * @return \model\web\Jobs\App\Jobs\Runnables\Job
      */
+    /**
     protected function launchTrigger(Array &$hook, String $creator)
     {
         if (!array_key_exists($creator, $hook['launched_for'])) {
@@ -205,12 +172,8 @@ class JobManager implements StatusInterface
             $job = $hook['launched_for'][$creator];
         }
         return $job;
-    }
+    }*/
     
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function status($request)
     {
         $jobs_status = [];

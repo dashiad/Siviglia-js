@@ -47,7 +47,8 @@ class Dispatcher
         $msg = new $className($data);
         if ($msg->action=='dispatch') {
             $task = new Task($msg->data);
-            $workerClass = JOBS_NAMESPACE.'Workers\\'.$task->type.'Worker';
+            //$workerClass = JOBS_NAMESPACE.'Workers\\'.$task->type.'Worker';
+            $workerClass = $task->type;
             $process = new \swoole_process(function ($process) use ($workerClass, $task) {
                 $process->exec(PHP_BINARY, [self::WORKER, $workerClass, json_encode($task->toarray())]);
             });

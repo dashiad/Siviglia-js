@@ -42,7 +42,7 @@ class RabbitQueueManager extends AbstractQueueManager
     /**
      * 
      * {@inheritDoc}
-     * @see \Jobs\QueueManagers\AbstractQueueManager::disconnect()
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::disconnect()
      */
     public function disconnect()
     {
@@ -52,7 +52,7 @@ class RabbitQueueManager extends AbstractQueueManager
     /**
      * 
      * {@inheritDoc}
-     * @see \Jobs\QueueManagers\AbstractQueueManager::subscribe()
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::subscribe()
      */
     public function subscribe($subscriptions=[], Int $channel, String $queue, String $routingKey='')
     {
@@ -67,7 +67,7 @@ class RabbitQueueManager extends AbstractQueueManager
     /**
      * 
      * {@inheritDoc}
-     * @see \Jobs\QueueManagers\AbstractQueueManager::publish()
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::publish()
      */
     public function publish(BaseMessage $msg, Int $channel, String $queue='', String $key='')
     {
@@ -80,11 +80,11 @@ class RabbitQueueManager extends AbstractQueueManager
         }
     }
     
-    /**
-     * 
-     * {@inheritDoc}
-     * @see \Jobs\QueueManagers\AbstractQueueManager::listen()
-     */
+  /**
+   * 
+   * {@inheritDoc}
+   * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::listen()
+   */
     public function listen($listener, Int $channel)
     {
         
@@ -142,7 +142,7 @@ class RabbitQueueManager extends AbstractQueueManager
     /**
      * 
      * {@inheritDoc}
-     * @see \Jobs\QueueManagers\AbstractQueueManager::stopListening()
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::stopListening()
      */
     public function stopListening($listener, Int $channel)
     {
