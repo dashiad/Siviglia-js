@@ -31,10 +31,12 @@ class Definition extends BaseWorkerDefinition
                     'DEFAULT' => 'List',
                 ],
                 'params' => [
-                    'EXTENDS' => 'Container',
-                    'TYPE'   => 'Container',
-                    'FIELDS' => [
+                    'LABEL'   => 'Parámetros',
+                    'EXTENDS' => 'Container', // ???
+                    'TYPE'    => 'Container',
+                    'FIELDS'  => [
                         'items' => [
+                            'LABEL'   => 'Elementos',
                             'TYPE'    => 'Array',
                             'DEFAULT' => [],
                             "ELEMENTS" => [
@@ -42,6 +44,7 @@ class Definition extends BaseWorkerDefinition
                             ]
                         ],
                         'max_chunk_size' => [
+                            'LABEL'   => 'Tamaño máximo del bloque',
                             'TYPE'    => 'Integer',
                             'MIN'     => 1,
                             'MAX'     => 65535,
