@@ -8,8 +8,19 @@
         [_CSS]
             [_CODE]
             <style>
-                .fieldError {display:none}
-                .errored {display:block !important}
+                .error-item {display:none}
+                .error-message {
+                    display:block !important; 
+                    color: #FF5B5C;                
+                }
+
+                input.form-control.input-error, input.form-control.input-error-1, input.form-control.input-error-2, input.form-control.input-error-100, input.form-control.input-error-101, input.form-control.input-error-102 {                
+                    border-color: #FF5B5C;
+                    -webkit-box-shadow: 0 3 10px 0 #FF5B5C;
+                    -moz-box-shadow: 0 3 10px 0 #FF5B5C;
+                    box-shadow: 0 3 10px 0 #FF5B5C;
+                }                
+
             </style>
             [#]
         [#]
@@ -28,30 +39,32 @@
         <label class="inputLabel<?php echo $extra;?> <?php echo $sc;?>">[_LABEL][_*][#]</label>
     </div>
 
-    <div class="col-md-10 form-group error">
+    <div class="col-md-10">
+    <div class="form-group">
         <div class="controls">
-            <div class="position-relative has-icon-left">
+            <div class="position-relative has-icon-left input-error">
                 [_INPUT]
                     [_*]
                 [#]
                 [_ICON]
                 <div class="form-control-position">                    
-                    
-                        [_*]
-                    
+                    [_*]                    
                 </div>
                 [#]
             </div>
         </div>
-        [_ERRORS]
-        <div class="help-block">
-            <ul role="alert" class="error">
-                <li class="error-help">[_ERROR][_*][#]</li>
+        <div class="help-block error-<?php echo $name;?>">
+        [_ERRORS]        
+        <ul role="alert" class="error-message">
+            [_ERROR]            
+                <li class="error-item error-help-<?php echo $code;?>">[_*]</li>            
+            [#]
             </ul>
-        </div>
+            
         [#]
+        </div>
 
-
+    </div>
     </div>
 
 

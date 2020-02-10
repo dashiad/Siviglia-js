@@ -64,6 +64,7 @@ class Router
         $trimmed=trim(str_replace("//","/",$subpath),"/");
         $parts=explode("/",$trimmed);
 
+        
         switch($parts[0])
         {
             case "action":{

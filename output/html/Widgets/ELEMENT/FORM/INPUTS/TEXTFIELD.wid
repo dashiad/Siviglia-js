@@ -1,6 +1,6 @@
 <input type="hidden" name="INPUTS[<?php echo $name;?>]" value="TextField">
-<input class="form-control" required type="text" name="FIELDS[<?php echo $prefix;?>][<?php echo $name;?>]" data-sivprefix="<?php echo $prefix;?>"
-       data-sivname="<?php echo $name;?>" placeholder="Placeholder de textfield <?php echo $value;?>">
+<input class="form-control" type="text" name="FIELDS[<?php echo $prefix;?>][<?php echo $name;?>]" data-sivprefix="<?php echo $prefix;?>"
+       data-sivname="<?php echo $name;?>" placeholder="Placeholder de <?php echo $name; ?>" >
 <script>
     var q=document.currentScript.previousElementSibling;
     __s__form.curForm.addInput(q);

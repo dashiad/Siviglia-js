@@ -8,7 +8,11 @@ try {
     //Startup::initializeHTTPPage();
     $request = Request::getInstance();
     $router  = Registry::getService("router");
-    $router->routeAction($request);
+    $response=new \lib\Response();
+        \Registry::$registry["response"]=$response;
+    $response->setBuilder(function() use ($request){
+      return $request->resolveActions();
+  });
     Registry::$registry["response"]->generate();
 } catch (Exception $e) {
     header('Content-type: text/html');

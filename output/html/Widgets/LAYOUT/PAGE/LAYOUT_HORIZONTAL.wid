@@ -28,7 +28,10 @@
         [#]
         [_CSS]
             [_FILE]editor/css/themes/semi-dark-layout.css[#]
-        [#]       
+        [#]
+        [_CSS]
+            [_FILE]editor/css/form/form-validation.css[#]
+        [#]         
     [#]
 [#]
   

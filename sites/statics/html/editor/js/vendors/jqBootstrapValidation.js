@@ -576,6 +576,7 @@
                                 $controlGroup.removeClass("issue error validate");
                                 if (value.length > 0) {
                                     $controlGroup.addClass("validate");
+                                    //$controlGroup.addClass("issue");
                                 }
                                 $helpBlock.html($helpBlock.data("original-contents"));
                             }

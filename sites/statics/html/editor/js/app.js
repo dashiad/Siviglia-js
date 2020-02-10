@@ -90,15 +90,16 @@
     })
 
     // Tooltip Initialization
-    $('[data-toggle="tooltip"]').tooltip({
+    /* $('[data-toggle="tooltip"]').tooltip({
       container: "body"
-    })
+    })*/
 
     // Tooltip For Horizontal Layout - Bookmark Icons
     /* tooltip-horizontal-bookmark - Add Custom Class */
-    $(".tooltip-horizontal-bookmark").tooltip({
+    /* $(".tooltip-horizontal-bookmark").tooltip({
       customClass: "tooltip-horizontal-bookmark"
     })
+    */
 
     // Top Navbars - Hide on Scroll
     if ($(".navbar-hide-on-scroll").length > 0) {

@@ -46,7 +46,7 @@
 
                     }
                     this.popContainer=function(){this.containers.pop();}
-
+                    
                     this.addInput=function(instance){
                         this.inputs[instance.name]={input:instance};
 
@@ -54,7 +54,7 @@
                                 m.inputs[instance.name].container=container;
 
                         instance.addEventListener("change",function(){
-                            $(container).find(".help-block").removeClass("help-block");
+                            $(container).find("error-message").removeClass("error-message");
                             if(m.inputs[instance.name].extraClass)
                                 $(container).find(m.inputs[instance.name].extraClass).removeClass(m.inputs[instance.name].extraClass);
                                 __s__base.callEndPoint({
@@ -69,8 +69,17 @@
                                 }}).then(function(r){
                                     if(r.error!==0)
                                     {
-                                        $(container).find(".help-block"+r.errorCode).addClass("help-block error"+r.errorCode);
+                                        var fieldName=r.meta.field;
+                                        var node=$(document.body).find(".error-"+fieldName+" .error-help-"+r.errorCode)
+                                        node.addClass("error-message");
                                         m.inputs[instance.name].extraClass="error"+r.errorCode;
+                                        
+                                        /* var inputError = $(document.body).find(".form-control")
+                                        inputError.addClass("input-error-" + r.errorCode) */
+                                
+                                    }else{
+                                        var inputError = $(document.body).find(".form-control")
+                                        inputError.removeClass("input-error-" + r.errorCode)
                                     }
                                 });
                         });
@@ -118,7 +127,7 @@
             $hash=$form->createHash($curSiteName,$curUrl,$hk,\Registry::$registry["session"]);
 
         ?>
-        <form class="form form-[_LAYOUT][_*][#] <?php echo $layout_form; ?>" method="POST" enctype="multipart/form-data" action="/action" id="<?php echo $hash;?>" noValidate>
+        <form class="form form-horizontal" method="POST" enctype="multipart/form-data" action="/action" id="<?php echo $hash;?>" noValidate>
             <div class="form-body">
             <script>
                 __s__form.curForm=new __s__form.form(document.currentScript.previousElementSibling,'<?php echo $hash;?>','<?php echo $object;?>','<?php echo $name;?>',"<?php echo json_encode($keys);?>");
