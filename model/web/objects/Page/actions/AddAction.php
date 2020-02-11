@@ -10,7 +10,7 @@ namespace model\web\Page\actions;
 class AddAction extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'\model\Page',
+               'MODEL'=>'\model\web\Page',
                'ROLE'=>'Add',
                'PERMISSIONS'=>array(
                      array(
@@ -50,11 +50,11 @@ class AddAction extends \lib\action\Action
                            'FIELD'=>'date_modified',
                            'MODEL'=>'\model\web\Page'
                            ),
-                     'id_type'=>array(
+                   /*  'id_type'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'id_type',
                            'MODEL'=>'\model\web\Page'
-                           ),
+                           ),*/
                      'isPrivate'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'isPrivate',
@@ -98,7 +98,7 @@ class AddAction extends \lib\action\Action
 	{
 
 			parent::__construct(AddAction::$definition);
-	
+
 	}
 
 
@@ -126,9 +126,9 @@ class AddAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -152,9 +152,9 @@ class AddAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -182,9 +182,9 @@ class AddAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

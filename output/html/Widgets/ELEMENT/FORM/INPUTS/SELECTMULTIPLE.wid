@@ -1,25 +1,25 @@
 <?php
  echo "<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"SelectMultiple\">";
 ?>
-<select name="FIELDS[<?php echo $name?>][]"  autocomplete="off" multiple="multiple">
+<select name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $name;?>][]"  autocomplete="off" multiple="multiple">
     <?php
-         $nCols=count($valueFields);        
+         $nCols=count($valueFields);
          $nLabels=count($labelFields);
-         $nLocal=count($relationFields);        
+         $nLocal=count($relationFields);
     ?>
 [_DATASOURCE]
     [*:/ELEMENT/FORM/INPUTS/DATASOURCEDINPUT]
         [_:ITERATOR({"name":"$name","ds":"$ds","inputIterator":"&$selectIterator"})]
-            <?php                 
+            <?php
 
              $cad='selected="selected"';
              $curVal=array();
              // Se obtiene el valor que tiene este option (campos clave de la tabla remota)
 
              for($k=0;$k<$nCols;$k++)
-                 $curVal[]=$selectIterator->{$valueFields[$k]};  
+                 $curVal[]=$selectIterator->{$valueFields[$k]};
              echo "NLOCAL::".$nLocal."<br>";
-             var_dump($relationFields);                   
+             var_dump($relationFields);
              $curVal=implode(",",$curVal);
              //Se si los campos de la tabla local no estan a null (por lo tanto, no estan seleccionados)
              for($k=0;$k<$nLocal;$k++)

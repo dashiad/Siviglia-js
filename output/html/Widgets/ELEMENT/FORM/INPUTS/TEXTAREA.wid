@@ -1,5 +1,7 @@
 <fieldset class="form-group">
-    <textarea class="form-control char-textarea active" id="basicTextarea <?php echo $value;?>" rows="3" placeholder="Textarea placeholder..." data-sivname="<?php echo $name;?>" data-sivprefix="<?php echo $prefix;?>"></textarea>
+    <textarea class="form-control char-textarea active" id="basicTextarea" name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $name;?>]"  rows="3" placeholder="Textarea placeholder..." data-sivname="<?php echo $name;?>" data-sivprefix="<?php echo $prefix;?>">
+        <?php echo $value;?>
+    </textarea>
 </fieldset>
 
 <script>

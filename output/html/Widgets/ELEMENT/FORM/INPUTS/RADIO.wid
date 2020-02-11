@@ -1,4 +1,4 @@
-<?php 
+<?php
  echo "<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"Radio\">";
 ?>
 [_DATASOURCE]
@@ -13,7 +13,7 @@
                  $cad="checked";
              else
                  $cad="";
-             echo '<input type="radio" name="FIELDS['.$name.']" value="'.$curVal.'"  '.$cad.'>';?>{%/@name/Label%}
+             echo '<input type="radio" name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>['.$name.']" value="'.$curVal.'"  '.$cad.'>';?>{%/@name/Label%}
         [#]
     [#]
 [#]

@@ -214,14 +214,14 @@ class Page extends \lib\model\BaseModel
     }
     function save($serializer=null)
     {
-        $this->id_site[0]->removePage($this);
+     /*   $this->id_site[0]->removePage($this);
         $this->id_site[0]->removeUrl($this->path,$this);
         if($this->__isNew())
             $this->{"*date_add"}->setAsNow();
-        $this->{"*date_modified"}->setAsNow();
+        $this->{"*date_modified"}->setAsNow();*/
         parent::save($serializer);
-        $this->id_site[0]->addPage($this);
-        $this->id_site[0]->addUrl($this->path,$this);
+        /*$this->id_site[0]->addPage($this);
+        $this->id_site[0]->addUrl($this->path,$this);*/
     }
 
     function saveConfig($config)

@@ -1,18 +1,18 @@
 <?php
  echo "<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"Select\">";
  $fDef=$form->__getInputParams($name);
- 
+
  $valueField=isset($fDef["VALUE"])?$fDef["VALUE"]:null;
  $labelField=isset($fDef["LABEL"])?$fDef["LABEL"]:null;
- $mKey=is_array($valueField); 
+ $mKey=is_array($valueField);
  if($mKey)
-     $nKeys=count($valueField); 
+     $nKeys=count($valueField);
  $mLabels=is_array($labelField)?$labelField:array($labelField);
  if($mLabels)
      $nLabels=count($labelField);
- 
+
 ?>
-<select name="FIELDS[<?php echo $name?>]"  autocomplete="off">
+<select name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $name?>]"  autocomplete="off">
     <?php
          if(isset($fDef["PRE_OPTIONS"]))
          {
@@ -29,18 +29,18 @@
             <?php if(!$mKey)
             {
                 $curVal=$selectIterator->{$valueField};
-                
+
             }
             else
-            {                      
+            {
                  $curVal="";
                  for($k=0;$k<$nKeys;$k++)
-                     $curVal.=($k>0?',':"").$selectIterator->{$valueField[$k]};                      
+                     $curVal.=($k>0?',':"").$selectIterator->{$valueField[$k]};
             }
             $label=array();
             foreach($labelField as $labelValue)
                 $label[]=$selectIterator->{$labelValue};
-            
+
             ?>
              <?php echo '<option value="'.$curVal.'" '.($value==$curVal?'selected="selected"':"").'>'?><?php echo implode(" ",$label).'</option>';?>
         [#]

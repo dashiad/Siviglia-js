@@ -28,7 +28,7 @@
           if($value==null)
               return;
 
-          if($value=='')
+          if($value[$name]=='')
           {
 
              return $type->clear();
@@ -36,7 +36,7 @@
 
           // Unserialize a date coming from the client.
           // Obviously, basic syntax checking is done here.
-          $parts=explode(" ",$value);
+          $parts=explode(" ",$value[$name]);
           @list($result["year"],$result["month"],$result["day"])=explode("-",$parts[0]);
           if($parts[1])
               @list($result["hour"],$result["minutes"],$result["seconds"])=explode(":",$parts[1]);
@@ -45,7 +45,7 @@
 
 
           if(!checkdate($result["month"],$result["day"],$result["year"]))
-              throw new BaseTypeException(BaseTypeException::ERR_INVALID);
+              throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_INVALID);
 
           switch($type->definition["TIMEZONE"])
           {
@@ -66,8 +66,8 @@
           case "CLIENT":
           default:
               {
-                  $type->validate($value);
-                  $type->setValue($value);
+                  $type->validate($value[$name]);
+                  $type->setValue($value[$name]);
               }
           }
 

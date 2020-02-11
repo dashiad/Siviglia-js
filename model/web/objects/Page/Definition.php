@@ -173,7 +173,7 @@ class Definition extends \lib\model\BaseModelDefinition
                             'SHORTLABEL'=>'Datasource',
                             'MAXLENGTH'=>128
                         ),
-                        'requiredPermission'=>array(
+                        /*'requiredPermission'=>array(
                             'TYPE'=>'ENUM',
                             'DEFAULT'=>'PUBLIC',
                             'LABEL'=>'Required permission',
@@ -190,7 +190,7 @@ class Definition extends \lib\model\BaseModelDefinition
                             'REQUIRED'=>false,
                             'DEFAULT'=>false,
                             'LABEL'=>'Only owner'
-                        )
+                        )*/
                      ),
                'PERMISSIONS'=>array(),
 

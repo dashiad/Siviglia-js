@@ -1,12 +1,6 @@
 <?php
 namespace model\ads\AdManager;
 include_once(LIBPATH . "/data/DataTransform.php");
-/**
- * Created by PhpStorm.
- * User: Usuario
- * Date: 02/09/2016
- * Time: 13:30
- */
 
 
 class Definition extends \lib\model\BaseModelDefinition
