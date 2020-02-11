@@ -31,7 +31,8 @@ abstract class TypeSerializer
         $this->definition=$definition;
         if(isset($this->definition["columnMap"]))
             $this->columnMap=$this->definition["columnMap"];
-        $this->name=$definition["NAME"];
+        
+        $this->name=isset($definition["NAME"])?$definition["NAME"]:$definition["TYPE"];
         if(isset($definition[$serType]))
             $this->innerDefinition=$definition[$serType];
     }

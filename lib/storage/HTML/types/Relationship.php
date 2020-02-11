@@ -3,7 +3,7 @@
 
 class Relationship extends BaseType
    {
-      function serialize($type,$serializer)
+      function serialize($name,$type,$serializer,$model=null)
       {
           $remoteType=$type->getRelationshipType();
           return \lib\model\types\TypeFactory::serializeType($remoteType,"HTML");

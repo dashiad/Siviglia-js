@@ -1,0 +1,9 @@
+<?php  //$required=in_array($name, $currentModel->__getRequiredFields()); ?>
+
+<input type="hidden" name="INPUTS[<?php echo $name;?>]" value="<?php echo $valorcampo; ?>">
+<input class="form-control pickadate-months-year picker__input" type="text" name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $name;?>]" data-sivprefix="<?php echo $prefix;?>"
+       data-sivname="<?php echo $name;?>" placeholder="Placeholder de <?php echo $name; ?>" readonly="" <?php echo $required; ?> >
+<script>
+    var q=document.currentScript.previousElementSibling;
+    __s__form.curForm.addInput(q);
+</script>

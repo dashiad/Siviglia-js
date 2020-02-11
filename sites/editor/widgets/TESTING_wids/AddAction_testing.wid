@@ -89,7 +89,7 @@
                     [*::ELEMENT/MEDIA/ICON({"icon":"calendario"})][#]
                 [#]
 				[_INPUT]
-					[*:/ELEMENT/TYPES/INPUTS/_STRING({"model":"$currentModel","name":"date_modified","form":"$form"})][#]
+					[*:/ELEMENT/TYPES/INPUTS/DATETIME({"model":"$currentModel","name":"date_modified","form":"$form"})][#]
 			    [#]
 				[_ERRORS]
 					[_ERROR({"type":"INVALID","code":"2"})]\model\Page_AddAction_date_modified_INVALID[#]

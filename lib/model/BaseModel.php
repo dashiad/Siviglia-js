@@ -164,7 +164,7 @@ class BaseModel extends BaseTypedObject
 
     function __getFilter($serializerType)
     {
-        return $this->__filters[$serializerType];
+        return isset($this->__filters[$serializerType])?$this->__filters[$serializerType]:null;
     }
 
     function __getTableName()
@@ -351,7 +351,7 @@ class BaseModel extends BaseTypedObject
         parent::save();
         if($isNew)
         {
-            \lib\model\ModelCache::store($this);
+         //   \lib\model\ModelCache::store($this);
         }
         $this->__saving=false;
     }

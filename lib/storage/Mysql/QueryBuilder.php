@@ -167,8 +167,10 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 if ($curField->getType()->hasOwnValue()) {
                     //Tenemos que buscar si existe esa parte y substituirla
                     $val = $curField->getType()->getValue();
-
-                    $inEnable = in_array($val, (array)$curCondition["ENABLE_IF"]);
+                    if(isset($curCondition["ENABLED"]))
+                        $inEnable = in_array($val, (array)$curCondition["ENABLE_IF"]);
+                        else
+                        $inEnable=false;
                     $hasDisable = isset($curCondition["DISABLE_IF"]);
                     $hasEnable = isset($curCondition["ENABLE_IF"]);
                     if ($hasDisable && $this->checkDisableValue($val, (array)$curCondition["DISABLE_IF"]))
@@ -240,8 +242,11 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 
                 $val = $curField->getValue();
 
+                if(isset($curCondition["IN_ENABLE"]))
+                    $inEnable = in_array($val, (array)$curCondition["ENABLE_IF"]);
+                else
+                    $inEnable=false;
 
-                $inEnable = in_array($val, (array)$curCondition["ENABLE_IF"]);
 
                 $hasDisable = isset($curCondition["DISABLE_IF"]);
 

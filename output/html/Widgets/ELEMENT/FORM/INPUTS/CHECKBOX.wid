@@ -6,7 +6,7 @@
       $val=$curModel->{$name};
       $code.="<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"Checkbox\">";
       $code.="<label for=\"color-checkbox\"> $curModel </label>";
-      $code.="<input type=\"checkbox\" name=\"FIELDS".($prefix!=""?"[".$prefix."]":"")."[".$name."]\">";
+      $code.="<input type=\"checkbox\" name=\"FIELDS".($prefix!=""?"[".$prefix."]":"")."[".$name."]\" ";
       if($value===true)
           $code.=" checked";
       echo $code.">";

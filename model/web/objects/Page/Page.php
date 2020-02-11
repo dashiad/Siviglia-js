@@ -37,6 +37,7 @@ class Page extends \lib\model\BaseModel
 
     function __construct($serializer = null, $definition = null)
     {
+        
         $this->__objName = \lib\model\ModelService::getModelDescriptor('\model\web\Page');
         if (!$definition)
             $this->__def=Page::loadDefinition($this);
@@ -267,6 +268,7 @@ EOT;
         $basePath=$this->id_site[0]->getPagePath($this->path);
         $classPath=$basePath."/".$this->getPageClassName().".php";
         file_put_contents($classPath,$classFile);
+        $this->id_site[0]->getEmptyPageTemplate();
         $pageWidget=<<<EOT
 [*:PAGE]
     [_:CONTENT][_*][#]

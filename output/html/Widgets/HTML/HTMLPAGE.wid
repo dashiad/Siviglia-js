@@ -24,6 +24,8 @@
     [_CSS][*:/HTML/METADATA/CSS][_*][#][#]
     [_EXTRA][_*][#]
 
+    <!-- select2 library for jQuery replacement for select boxes -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 </head>
 
 
@@ -53,8 +55,11 @@
     <script src="http://statics.adtopy.com/editor/js/vendors/jqBootstrapValidation.js"></script>
     <script src="http://statics.adtopy.com/editor/js/vendors/components.min.js"></script>
     <script src="http://statics.adtopy.com/editor/js/form/form-validation.js"></script>
-
-
+    <script src="http://statics.adtopy.com/editor/js/vendors/pickers/picker.js"></script>
+    <script src="http://statics.adtopy.com/editor/js/vendors/pickers/picker.date.js"></script>
+    <script src="http://statics.adtopy.com/editor/js/vendors/pickers/pick-a-datetime.js"></script>
+    <script src="http://statics.adtopy.com/editor/js/vendors/pickers/daterangepicker.js"></script>
+    
     [@DEPENDENCY]
         [_BUNDLE]Page[#]
 

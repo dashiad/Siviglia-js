@@ -1,5 +1,5 @@
 <?php
-    $val=$form->{$name}; 
-    
+    $val=$form->{$name};
+    $valorcampo= $currentModel->{$name};       
 ?>
-[*:/ELEMENT/FORM/INPUTS/TEXTFIELD({"name":"$name","value":"$val"})][#]
+[*:/ELEMENT/FORM/INPUTS/DATETIME({"name":"$name","value":"$val","valorcampo":"$valorcampo"})][#]

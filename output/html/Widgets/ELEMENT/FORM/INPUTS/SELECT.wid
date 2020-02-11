@@ -1,3 +1,20 @@
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_CODE]
+                jQuery(document).ready(function($){
+                    $(document).ready(function() {
+                        $('.smartclip-select2').select2();
+                    });
+                });
+            [#]
+        [#]        
+    [#]
+[#]
+
+
+
 <?php
  echo "<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"Select\">";
  $fDef=$form->__getInputParams($name);
@@ -12,7 +29,8 @@
      $nLabels=count($labelField);
 
 ?>
-<select name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $name?>]"  autocomplete="off">
+
+<select class="form-control smartclip-select2" name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $name?>]"  autocomplete="off" id="basicSelect">
     <?php
          if(isset($fDef["PRE_OPTIONS"]))
          {
