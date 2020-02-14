@@ -17,7 +17,7 @@ abstract class Worker implements StatusInterface
     protected $queue;
     protected $args;
     protected $standalone = false;
-    protected $result = '';
+    protected $result = [];
     protected $lastCompletedItem = null;
     protected $items = [];
     protected $totalParts;
@@ -75,7 +75,7 @@ abstract class Worker implements StatusInterface
     {
         if (empty($this->args['items'])) $this->args['items'] = [];
         foreach ($this->args['items'] as $index=>$item) {
-            $this->result .= $this->runItem($item);
+            $this->result[] = $this->runItem($item);
             $this->lastCompletedItem = $index;
             $this->persist();
         }
@@ -87,14 +87,14 @@ abstract class Worker implements StatusInterface
     public function run()
     {
         $this->status=self::RUNNING;
-            $this->result = '';
+            $this->result = [];
             $this->persist();
             ob_start();
             try {
                 $this->_run();
                 $this->status=self::FINISHED;
             } catch (\Exception $e) {
-                $this->result .= $e->getMessage();
+                $this->result[] = $e->getMessage();
                 $this->status=self::FAILED;
                 $this->alive=0;
             } finally {

@@ -6,6 +6,7 @@ use model\web\Jobs\App\Jobs\Workers\Worker;
 
 class BaseWorkerException extends BaseException
 {
+    // TODO: definir y lanzar errores 
     const ERR_TEST = 1;
     const TXT_TEST = "Error";
 }
@@ -19,7 +20,6 @@ abstract class BaseWorker extends Worker
     public function __construct($args)
     {
         $this->definition = self::loadDefinition();
-        //$this->name = "";
         parent::__construct($args);
     }
         

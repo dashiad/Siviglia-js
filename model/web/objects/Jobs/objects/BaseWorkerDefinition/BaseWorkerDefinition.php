@@ -8,8 +8,8 @@ use PharIo\Manifest\Type;
 class BaseWorkerDefinitionException extends BaseException 
 {
     // TODO: declarar posibles errores
-    const ERR_TEST=1;
-    const TXT_TEST="Error in field [%field%]";
+    const ERR_TEST = 1;
+    const TXT_TEST = "Error in field [%field%]";
 }
 
 class BaseWorkerDefinition extends BaseTypedObject

@@ -223,6 +223,8 @@ class JobManager implements StatusInterface
             'action' => "start",
         ]);
         $queue->publish($msg, $queue->getDefaultChannel(), 'control', $definition['job_id']);
+        
+        return $definition['job_id'];
     }
     
 }
