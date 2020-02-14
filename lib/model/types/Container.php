@@ -101,6 +101,7 @@ class Container extends BaseContainer
         foreach($curDef as $key=>$value)
         {
             $field=$this->__fields[$key];
+            if($field===null) continue;
             if(!$field->hasValue())
             {
                 if($value["KEEP_KEY_ON_EMPTY"])

@@ -2,7 +2,7 @@
 /* Copiar este fichero a /var/www/config, para que este en el path de inclusion de php, que esta definido en el nginx.conf */
 ini_set('display_errors','On');
 ini_set('html_errors','On');
-define("PROJECTPATH", dirname(__DIR__, 6));
+define("PROJECTPATH", dirname(__DIR__, 6).\DIRECTORY_SEPARATOR);
 define("LIBPATH",PROJECTPATH."/lib");
 $curServer=isset($_SERVER["HTTP_HOST"])?$_SERVER["HTTP_HOST"]:"NoHost";
 define("_WEBPATH_","http://".$curServer);

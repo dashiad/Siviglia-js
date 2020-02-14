@@ -103,6 +103,33 @@ class Package
         }
         return $objects;
     }
+    public function getWorkers(?String $path=null, ?String $prefix=null) : ?Array
+    {
+        $prefix  = $prefix ?? "model\\$this->baseNamespace\\";
+        $path    = $path   ?? $this->getFullPath();
+        $path   .= "/objects/";
+        $workers = [];
+        
+        if(!is_dir($path))
+            return null;
+        
+        $dir = new \DirectoryIterator($path);
+        foreach ($dir as $fileinfo) {
+            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
+                $namespace = $prefix.$fileinfo->getFilename().'\\workers\\';
+                $curPath = $path.$fileinfo->getFilename().'/objects/workers/objects/';
+                if (is_dir($curPath)) {
+                    $curDir = new \DirectoryIterator($curPath);
+                    foreach ($curDir as $curFile) {
+                        if (!$curFile->isDot() && $curFile->isDir()) {
+                            $workers[] = $namespace.$curFile->getFilename();
+                        }
+                    }
+                }
+            }
+        }
+        return $workers;
+    }
 
 
 }
