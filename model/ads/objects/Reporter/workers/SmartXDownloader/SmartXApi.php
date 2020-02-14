@@ -125,10 +125,12 @@ class SmartXApi {
     protected static function loadAuthToken()
     {
         try {
-            $fileData = file_get_contents(self::TOKEN_FILE);
-            $tokenInfo = json_decode($fileData);
-            self::$token = $tokenInfo->token ?? null;
-            self::$token_expiration = $tokenInfo->token_expiration ?? null;
+            if (file_exists(self::TOKEN_FILE)) {
+                $fileData = file_get_contents(self::TOKEN_FILE);
+                $tokenInfo = json_decode($fileData);
+                self::$token = $tokenInfo->token ?? null;
+                self::$token_expiration = $tokenInfo->token_expiration ?? null;
+            }
         } catch (\Exception $e) {
             //
         }
@@ -138,7 +140,7 @@ class SmartXApi {
     {
         self::$token = null;
         self::$token_expiration = null;
-        $file = fopen(self::TOKEN_FILE, "w");
+        $file = fopen(self::TOKEN_FILE, "w+");
         ftruncate($file, 0);
         fclose($file);
     }
