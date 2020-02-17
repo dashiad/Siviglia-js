@@ -178,9 +178,16 @@ class SmartXApi {
             $currentTime = strtotime("+".self::REFRESH_PRELOAD." minutes");
             $expirationTime = date(self::$token_expiration);
             if ($currentTime>$expirationTime) {
-                $request = new ApiRequest(self::AUTH_URL, "GET", self::$params);
-                $request->addBearerToken(self::$token);
-                self::getAuthTokenInfo($request);
+                try {
+                    $request = new ApiRequest(self::AUTH_URL, "GET", self::$params);
+                    $request->addBearerToken(self::$token);
+                    self::getAuthTokenInfo($request);
+                } catch (\Exception $e) { // sin no puede renovar el token se pide uno nuevo
+                    self::$token = null;
+                    self::$token_expiration = null;
+                    self::saveAuthToken();
+                    self::getAuthToken();
+                } 
             }
         }
     }

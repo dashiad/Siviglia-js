@@ -206,55 +206,53 @@ function testLocateWorkers()
     print_r($workers);
 }
 
-function testCreateJob()
+function testCreateApiJob()
 {
-    //$className = model\ads\Reporter\workers\DfpReport::class;
     $className = model\ads\Reporter\workers\SmartXDownloader::class;
     $definition = $className::loadDefinition();
     $definition->max_running_children = 100;
     $definition->max_retries = 1;
-    $definition->{"*task"}->type = "task";
-    $definition->{"*task"}->name = "task_name";
-    $definition->{"*task"}->{"*args"}->task = $className;
-    $definition->{"*task"}->{"*args"}->type="List";
-    $definition->{"*task"}->{"*args"}->{"*params"}->max_chunk_size = 2;
-    $definition->{"*task"}->{"*args"}->{"*params"}->items = [
-        [
-            "call" => "line_item/178983",
-            "params" => [],
-        ], 
-        [
-            "call" => "market_place",
-            "params" => [],
-        ], 
-        [
-            "call" => "device_model",
-            "params" => [],
-        ], 
-        [
-            "call" => "line_item",
+    $definition->task = [
+        "type" => "task",
+        "name" => "task_name",
+        "args" => [
+            "task" => $className,
+            "type" => "List",
             "params" => [
-                "marketplace_id" => 18,
-                "changed_within" => 24*60*60,
-                "filter" => "end_date gt ".date("c"),
+                "max_chunk_size" => 2,
+                "items" => [
+                    [
+                        "call" => "line_item/178983",
+                        "params" => [],
+                    ], 
+                    [
+                        "call" => "market_place",
+                        "params" => [],
+                    ], 
+                    [
+                        "call" => "device_model",
+                        "params" => [],
+                    ], 
+                    [
+                        "call" => "line_item",
+                        "params" => [
+                            "marketplace_id" => 18,
+                            "changed_within" => 24*60*60, // modificados en el último día
+                            "filter" => "end_date gt ".date("c"), // que no hayan terminado
+                        ],
+                    ],  
+                    [
+                        "call" => "campaign",
+                        "params" => [
+                            "marketplace_id" => 18,
+                            "changed_within" => 24*60*60, // modificados en el último día
+                            "filter" => "end_date gt ".date("c"), // que no hayan terminado
+                        ],
+                    ],
+                ],
             ],
-        ],  
-        [
-            "call" => "campaign",
-            "params" => [
-                "marketplace_id" => 18,
-                "changed_within" => 24*60*60,
-                "filter" => "end_date gt ".date("c"),
-            ],
-        ],
+        ]
     ];
-    
-    // usar sintaxis:
-    /*->{"*task"}=[
-     "type"=>"task",
-     "name"=>
-     ]*/
-
     return JobManager::createJob($definition->normalizeToAssociativeArray());
 }
 
@@ -267,7 +265,7 @@ function testCreateJob()
 //testCreateEmployeeReport();
 //testCreateParallelJob();
 //testLocateWorkers();
-testCreateJob();
+testCreateApiJob();
 
 
 
