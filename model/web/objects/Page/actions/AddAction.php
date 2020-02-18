@@ -50,11 +50,11 @@ class AddAction extends \lib\action\Action
                            'FIELD'=>'date_modified',
                            'MODEL'=>'\model\web\Page'
                            ),
-                   /*  'id_type'=>array(
+                     'id_type'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'id_type',
                            'MODEL'=>'\model\web\Page'
-                           ),*/
+                           ),
                      'isPrivate'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'isPrivate',

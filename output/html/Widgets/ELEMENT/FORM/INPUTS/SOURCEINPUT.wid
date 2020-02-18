@@ -1,0 +1,3 @@
+[*:SOURCEDINPUT({"type":"$type","it":"&$it","&$source"})]
+    <input type="radio" name="" value="<?php echo $source->getValue($it);?>"><php echo $source->getLabel($it);?>
+[#]
