@@ -4,7 +4,7 @@
   
 <input type="hidden" name="INPUTS<?php echo ($prefix?"[".$prefix."]":"")."[".$name."]";?>" value="Radio">
 [*/ELEMENT/FORM/INPUTS/SOURCEINPUT({"source":"$source","it":"&$it"})]
-    <input type="radio" name="<?php echo $info['name'].$source->getValue($it); ?>" value="<?php echo $source->getValue($it); ?>">
+    <input type="radio" name="<?php echo $info['name']; ?>" value="<?php echo $source->getValue($it); ?>">
     <label for="radio<?php echo $info['name'].$source->getValue($it); ?>"><?php echo $source->getLabel($it); ?></label>
 [#]
 <script>
