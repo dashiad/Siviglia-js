@@ -1,23 +1,12 @@
-<input type="hidden" name="INPUTS<?php echo ($prefix?"[".$prefix."]":"")."[".$name."]";?>" value="Radio">
 <?php
-$fDef=$form->__getInputParams($name);
-$type=$form->{"*".$name};
-$source=$type->getSource();
-if($type->hasValue())
-    $val=$type->getValue();
-$data=$source->getData();
-?>
-    <?php
-    for($k=0;$k<count($data);$k++)
-    {
-        $v=$source->getValue($data[$k]);
-        $cad=($value==$curVal)?"checked":"";
-        echo '<div>';
-        echo '<input type="radio" name="FIELDS'.($prefix?"[".$prefix."]":"")."[".$name.']" value="'.$val.'"  '.$cad.'>';
-        echo $source->getLabel($data[$k]);
-        echo '</div>';
-    }
-    ?>
+  $source=$info["source"];
+?>  
+  
+<input type="hidden" name="INPUTS<?php echo ($prefix?"[".$prefix."]":"")."[".$name."]";?>" value="Radio">
+[*/ELEMENT/FORM/INPUTS/SOURCEINPUT({"source":"$source","it":"&$it"})]
+    <input type="radio" name="<?php echo $info['name'].$source->getValue($it); ?>" value="<?php echo $source->getValue($it); ?>">
+    <label for="radio<?php echo $info['name'].$source->getValue($it); ?>"><?php echo $source->getLabel($it); ?></label>
+[#]
 <script>
     var q=document.currentScript.previousElementSibling;
     __s__form.curForm.addInput(q);
