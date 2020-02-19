@@ -133,6 +133,11 @@ class RabbitQueueManager extends AbstractQueueManager
         }
     }
 
+    /**
+     * 
+     * {@inheritDoc}
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::deleteChannel()
+     */
     public function deleteChannel(Int $index)
     {
         $this->channels[$index]->close();
@@ -149,6 +154,11 @@ class RabbitQueueManager extends AbstractQueueManager
         $this->connection->channel($channel)->basic_cancel($listener->getId(), false);
     }
     
+    /**
+     * 
+     * {@inheritDoc}
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::extractMessage()
+     */
     public function extractMessage($msg, $associative=false) : Array
     {
         return json_decode($msg->body, $associative);

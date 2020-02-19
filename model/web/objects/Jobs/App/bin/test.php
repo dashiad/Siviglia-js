@@ -2,6 +2,8 @@
 require(__DIR__.'/bootstrap.php');
 
 use model\web\Jobs\App\Jobs\JobManager;
+use model\web\Jobs\App\Jobs\Messages\SimpleMessage;
+use model\web\Jobs\App\Jobs\Queue;
 
 function testCreateJobsTable()
 {
@@ -40,7 +42,7 @@ function testCreateSimpleJob()
             ),
         ),
     );
-    JobManager::createJob($args);
+    return JobManager::createJob($args);
 }
 
 function testCreateMySqlJob()
@@ -237,7 +239,7 @@ function testCreateApiJob()
                         "call" => "line_item",
                         "params" => [
                             "marketplace_id" => 18,
-                            "changed_within" => 24*60*60, // modificados en el último día
+                            "changed_within" => 7*24*60*60, // modificados en el último día
                             "filter" => "end_date gt ".date("c"), // que no hayan terminado
                         ],
                     ],  
@@ -245,27 +247,49 @@ function testCreateApiJob()
                         "call" => "campaign",
                         "params" => [
                             "marketplace_id" => 18,
-                            "changed_within" => 24*60*60, // modificados en el último día
+                            "changed_within" => 7*24*60*60, // modificados en el último día
                             "filter" => "end_date gt ".date("c"), // que no hayan terminado
                         ],
-                    ],
+		    ],
                 ],
             ],
         ]
     ];
-    return JobManager::createJob($definition->normalizeToAssociativeArray());
+    $job = $definition->normalizeToAssociativeArray();
+    $job['task']['args']['standalone'] = true;
+    //print_r($job);
+    return JobManager::createJob($job);
+}
+
+function testStopJob($id)
+{
+    $msg = new SimpleMessage([
+        'from'   => 'test',
+        'to'     => $id,
+        'action' => 'kill',
+    ]);
+    $queue = Queue::connect('test');
+    $queue->publish($msg, $queue->getDefaultChannel(), 'control');
 }
 
 //testCreateJobsTable();
 //testCreateWorkersTable();
-//testCreateSimpleJob();
-//testCreateDirectoryJob();
-//testCreateTrigger();
-//testCreateMySqlJob();
-//testCreateEmployeeReport();
-//testCreateParallelJob();
 //testLocateWorkers();
-testCreateApiJob();
-
-
+//$id = testCreateSimpleJob();
+//$id = testCreateDirectoryJob();
+//$id = testCreateTrigger();
+//$id = testCreateMySqlJob();
+//$id = testCreateEmployeeReport();
+//$id = testCreateParallelJob();
+$jobs = [];
+$n = 1;
+for ($i=0;$i<$n;$i++) {
+    $id = testCreateApiJob();
+    $jobs[$i] = $id;
+}
+readline("press enter");
+for ($i=0;$i<$n;$i++) {
+    $id = $jobs[$i];
+    testStopJob($id);
+}
 
