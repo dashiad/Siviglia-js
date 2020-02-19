@@ -13,6 +13,7 @@ class JobManager implements StatusInterface
     const ACTIONS = [
         'create',
         'start',
+        'kill',
         'children_finish',
         'children_failed',
         'job_finish',
@@ -29,7 +30,6 @@ class JobManager implements StatusInterface
         $this->channel = $this->queue->getDefaultChannel();
         $this->queue->createQueue($this->id, $this->channel, false);
         $this->queue->subscribe('control', $this->channel, $this->id);
-        //$this->queue->subscribe('main', $this->channel, $this->id);
         $this->jobs = [];
     }
     
@@ -65,6 +65,11 @@ class JobManager implements StatusInterface
         }
     }
     
+    /**
+     * 
+     * @param String $trigger
+     * @param Array $jobDescription
+     */
     protected function addTrigger($trigger, $jobDescription)
     {
         $id = $jobDescription['job_id'] ?? uniqid($jobDescription['name']."_");
@@ -99,6 +104,16 @@ class JobManager implements StatusInterface
                 $job ->start();
                 if (DEBUG) echo "Started ".$job->getId().PHP_EOL;
             }
+        }
+    }
+    
+    protected function kill($request)
+    {
+        if ($this->existsJob($request['to'])) {
+            $id = $request['to'];
+            // envía a los dispatcher orden de matar los worker asociados al job
+            $this->jobs[$id]->kill();
+            if (DEBUG) echo CLI::colorStr("Stopping $id", "yellow").PHP_EOL;
         }
     }
 
@@ -153,27 +168,7 @@ class JobManager implements StatusInterface
             }
         }
     }
-    
-    /**
-     * 
-     * @param Array $hook
-     * @param String $creator
-     * @return \model\web\Jobs\App\Jobs\Runnables\Job
-     */
-    /**
-    protected function launchTrigger(Array &$hook, String $creator)
-    {
-        if (!array_key_exists($creator, $hook['launched_for'])) {
-            $job = new Job($this->queue, $hook['description']);
-            $job->addEmptyChildren(count($this->jobs[$creator]->getChildren()));
-            $this->jobs[$job->getId()] = $job;
-            $hook['launched_for'][$creator] = $job;
-        } else {
-            $job = $hook['launched_for'][$creator];
-        }
-        return $job;
-    }*/
-    
+           
     protected function status($request)
     {
         $jobs_status = [];
@@ -193,6 +188,8 @@ class JobManager implements StatusInterface
     }
     
     /**
+     * 
+     * Checks whether the job exists
      * 
      * @param String $id
      * @return boolean
