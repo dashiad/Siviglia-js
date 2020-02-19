@@ -132,7 +132,7 @@ class SmartXApi {
                 self::$token_expiration = $tokenInfo->token_expiration ?? null;
             }
         } catch (\Exception $e) {
-            //
+            self::clearAuthToken();
         }
     }
     
