@@ -68,7 +68,7 @@ function testCreateMySqlJob()
                 ),
         ),
     );
-    JobManager::createJob($args);
+    return JobManager::createJob($args);
 }
 
 function testCreateEmployeeReport() 
@@ -89,7 +89,7 @@ function testCreateEmployeeReport()
             ),
         ),
     );
-    JobManager::createJob($args);
+    return JobManager::createJob($args);
 }
 
 function testCreateTrigger()
@@ -116,7 +116,7 @@ function testCreateTrigger()
             ],
         ],
     ];    
-    JobManager::createJob($args);    
+    return JobManager::createJob($args);    
 }
 
 function testCreateDirectoryJob()
@@ -141,7 +141,7 @@ function testCreateDirectoryJob()
             ]
         ]
     ];
-    JobManager::createJob($args);
+    return JobManager::createJob($args);
 }
 
 function testCreateParallelJob()
@@ -189,7 +189,7 @@ function testCreateParallelJob()
             ]
         ]
     ];
-    JobManager::createJob($args);
+    return JobManager::createJob($args);
 }
 
 function testLocateWorkers()
@@ -280,9 +280,11 @@ function testStopJob($id)
 //$id = testCreateTrigger();
 //$id = testCreateMySqlJob();
 //$id = testCreateEmployeeReport();
+//readline("press enter");
+//testStopJob($id);
 //$id = testCreateParallelJob();
 $jobs = [];
-$n = 1;
+$n = 10;
 for ($i=0;$i<$n;$i++) {
     $id = testCreateApiJob();
     $jobs[$i] = $id;

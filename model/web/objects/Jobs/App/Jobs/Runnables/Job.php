@@ -21,7 +21,6 @@ class Job extends AbstractRunnable
  
     protected $tasks = [];
     
-    //protected $modelName = 'model\\web\\Jobs\\Jobs';
     protected $modelName = 'model\\web\\Jobs';
     protected $fields = [
         'job_id'     => 'id',
@@ -154,7 +153,7 @@ class Job extends AbstractRunnable
                         ],
                     ];
                     $msg = new SimpleMessage($args);
-                    $this->queue->publish($msg, $this->channel, 'dispatch');
+                    $this->queue->publish($msg, $this->channel, 'dispatch', 'broadcast');
                 }
                 if ($this->children[$index]['status']!=self::FINISHED)
                     $this->children[$index]['status']==self::FAILED;
@@ -185,7 +184,6 @@ class Job extends AbstractRunnable
                             'params'    => $this->args,
                         ]);
                         $this->queue->publish($msg, $this->channel, 'control');
-                        //$this->children[$index]['data']->start();
                         break;
                     case 'task':
                         $this->dispatch($this->children[$index]);

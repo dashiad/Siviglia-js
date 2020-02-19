@@ -57,10 +57,10 @@ class RabbitQueueManager extends AbstractQueueManager
     public function subscribe($subscriptions=[], Int $channel, String $queue, String $routingKey='')
     {
         foreach ((array)$subscriptions as $subscription) {
-            if(!in_array($subscription, $this->subscriptions)) {
+            //if(!in_array($subscription, $this->subscriptions)) {
                 $this->connection->channel($channel)->queue_bind($queue, $subscription, $routingKey);
                 $this->subscriptions[] = $subscription;
-            }
+            //}
         }
     }
     
@@ -85,7 +85,7 @@ class RabbitQueueManager extends AbstractQueueManager
    * {@inheritDoc}
    * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::listen()
    */
-    public function listen($listener, Int $channel)
+    public function listen($listener, Int $channel, $id=null)
     {
         
         /**
@@ -103,7 +103,8 @@ class RabbitQueueManager extends AbstractQueueManager
          */
         
         $channel = $this->connection->channel($channel);
-        $channel->basic_consume($listener->getId(), $listener->getId(), false, true, false, false, [$listener, 'handle']);
+        $id = $id ?? $listener->getId();
+        $channel->basic_consume($id, $listener->getId(), false, true, false, false, [$listener, 'handle']);
         while ($channel->is_consuming()) {
             try {
                 $channel->wait();
