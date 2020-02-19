@@ -36,7 +36,8 @@ class Definition extends \lib\model\BaseModelDefinition
                            'REGEXP'=>'/^[^w]+$/',
                            'DESCRIPTIVE'=>'true',
                            'SHORTLABEL'=>'tag',
-                           'ISLABEL'=>true
+                           'ISLABEL'=>true,
+                           'REQUIRED'=>true
                            ),
                      'id_site'=>array(
                            'DEFAULT'=>'NULL',
@@ -139,19 +140,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'DESCRIPTIVE'=>true,
                            'ISLABEL'=>'true'
                            ),
-                        'role'=>array(
-                            'LABEL'=>'Role',
-                            'SHORTLABEL'=>'Role',
-                            'DESCRIPTIVE'=>true,
-                            'TYPE'=>'Enum',
-                            'VALUES'=>array(
-                                \model\web\Page::PAGE_ROLE_VIEW,
-                                \model\web\Page::PAGE_ROLE_LIST,
-                                \model\web\Page::PAGE_ROLE_EDIT,
-                                \model\web\Page::PAGE_ROLE_CREATE,
-                                \model\web\Page::PAGE_ROLE_GENERIC
-                            )
-                        ),
+                        
                         'model'=>array(
                             'TYPE'=>'String',
                             'REQUIRED'=>false,

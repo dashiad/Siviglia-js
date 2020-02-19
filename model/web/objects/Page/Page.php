@@ -215,14 +215,16 @@ class Page extends \lib\model\BaseModel
     }
     function save($serializer=null)
     {
-     /*   $this->id_site[0]->removePage($this);
-        $this->id_site[0]->removeUrl($this->path,$this);
+             
         if($this->__isNew())
+        {
             $this->{"*date_add"}->setAsNow();
-        $this->{"*date_modified"}->setAsNow();*/
+            $this->generatePageFiles();
+        }
+        $this->{"*date_modified"}->setAsNow();
         parent::save($serializer);
-        /*$this->id_site[0]->addPage($this);
-        $this->id_site[0]->addUrl($this->path,$this);*/
+
+        
     }
 
     function saveConfig($config)
@@ -245,14 +247,14 @@ EOT;
 
     function generatePageFiles()
     {
-        $path=$this->id_site[0]->getPagePath();
+        $path=$this->id_site[0]->getPagePath($this->path); // path deberia estar en: sites\editor\templates\pages\NuevoPath
         if(!is_dir($path))
         {
             mkdir($path, 0777, true);
         }
         // Se pre-genera una clase php para este layout.
-        $namespace=$this->id_site[0]->getPageClass();
-        $className=$this->getPageClassName();
+        $namespace=$this->id_site[0]->getPageClass($this->path);
+        $className=$this->id_site[0]->getPage($this->path);
         $classFile=<<<EOT
 <?php
 namespace $namespace;
@@ -268,12 +270,8 @@ EOT;
         $basePath=$this->id_site[0]->getPagePath($this->path);
         $classPath=$basePath."/".$this->getPageClassName().".php";
         file_put_contents($classPath,$classFile);
-        $this->id_site[0]->getEmptyPageTemplate();
-        $pageWidget=<<<EOT
-[*:PAGE]
-    [_:CONTENT][_*][#]
-[#]
-EOT;
+        $pageWidget=$this->id_site[0]->getEmptyPageTemplate($this->{"*id_type"});
+        
         $curWidPath=$this->getLayoutPath($this->getPageName().".wid");
         file_put_contents($curWidPath,$pageWidget);
         $privateWid=$this->getPageName();
@@ -284,10 +282,10 @@ EOT;
 EOT;
         $mainWidgetPath=$basePath."/".$this->getPageName().".php";
         file_put_contents($mainWidgetPath,$pageWidget);
-        $repo=\lib\php\Git::open(CUSTOMPATH."/..");
+      /*  $repo=\lib\php\Git::open(CUSTOMPATH."/..");
         $repo->run(" add ".$classPath);
         $repo->run(" add ".$curWidPath);
-        $repo->run(" add ".$mainWidgetPath);
+        $repo->run(" add ".$mainWidgetPath);*/
     }
 
 

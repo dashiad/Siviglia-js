@@ -51,10 +51,12 @@
     <script src="http://statics.adtopy.com/editor/js/app-menu.js"></script>
     <script src="http://statics.adtopy.com/editor/js/vertical-menu-dark.js"></script>
     <script src="http://statics.adtopy.com/editor/js/vendors/vendors2.min.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/vendors/prism.min.js"></script>
+    <!-- <script src="http://statics.adtopy.com/editor/js/vendors/prism.min.js"></script> -->
+    <!-- disabled form-validation, because we use: metadata server-validation
     <script src="http://statics.adtopy.com/editor/js/vendors/jqBootstrapValidation.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/vendors/components.min.js"></script>
     <script src="http://statics.adtopy.com/editor/js/form/form-validation.js"></script>
+     -->
+    <script src="http://statics.adtopy.com/editor/js/vendors/components.min.js"></script>    
     <script src="http://statics.adtopy.com/editor/js/vendors/pickers/picker.js"></script>
     <script src="http://statics.adtopy.com/editor/js/vendors/pickers/picker.date.js"></script>
     <script src="http://statics.adtopy.com/editor/js/vendors/pickers/pick-a-datetime.js"></script>

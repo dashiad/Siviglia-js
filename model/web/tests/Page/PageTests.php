@@ -23,7 +23,7 @@ class PageTests extends TestCase
     {
         $s=\Registry::getService("model");
         $instance=$s->getModel("/model/web/Page");
-        $instance->name=""
+        $instance->name="Ejemplo";
         $instance->"";
         $instance->save();
 
@@ -32,7 +32,10 @@ class PageTests extends TestCase
     {
         $s=\Registry::getService("model");
         $instance=$s->getModel("/model/web/Page",["id_page"=>2]);
-        
+        $instance->name=""
+        $instance->"";
+        $instance->save();
+
     }
 }
 

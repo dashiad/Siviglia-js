@@ -16,7 +16,7 @@
         [_FIELDS]
                 
             [*/ELEMENT/FORM/INPUTCONTAINER/HORIZONTAL_ICONS({"name":"tag","form":"&$form"})]
-				[_LABEL]tag[#]
+				[_LABEL][#]
 				[_HELP]**Insert Field Help**[#]
                 [_ICON]
                     [*::ELEMENT/MEDIA/ICON({"icon":"texto"})][#]
@@ -189,6 +189,8 @@
 				[#]
 			[#]
 
+		
+		
         [#]
     [#]
     [_BUTTONS]	

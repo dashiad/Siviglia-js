@@ -1,19 +1,24 @@
+<input type="hidden" name="INPUTS<?php echo ($prefix?"[".$prefix."]":"")."[".$name."]";?>" value="Radio">
 <?php
- echo "<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"Radio\">";
+$fDef=$form->__getInputParams($name);
+$type=$form->{"*".$name};
+$source=$type->getSource();
+if($type->hasValue())
+    $val=$type->getValue();
+$data=$source->getData();
 ?>
-[_DATASOURCE]
-    [*:/ELEMENT/FORM/INPUTS/DATASOURCEDINPUT]
-        [_:ITERATOR({"name":"$name","ds":"$ds"})]
-            <?php
-             //currentFormModel
-             global $globalPath;
-             global $globalContext;
-             $curVal=$globalPath->getPath("/@name/Value",$globalContext);
-             if($value==$curVal)
-                 $cad="checked";
-             else
-                 $cad="";
-             echo '<input type="radio" name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>['.$name.']" value="'.$curVal.'"  '.$cad.'>';?>{%/@name/Label%}
-        [#]
-    [#]
-[#]
+    <?php
+    for($k=0;$k<count($data);$k++)
+    {
+        $v=$source->getValue($data[$k]);
+        $cad=($value==$curVal)?"checked":"";
+        echo '<div>';
+        echo '<input type="radio" name="FIELDS'.($prefix?"[".$prefix."]":"")."[".$name.']" value="'.$val.'"  '.$cad.'>';
+        echo $source->getLabel($data[$k]);
+        echo '</div>';
+    }
+    ?>
+<script>
+    var q=document.currentScript.previousElementSibling;
+    __s__form.curForm.addInput(q);
+</script>
