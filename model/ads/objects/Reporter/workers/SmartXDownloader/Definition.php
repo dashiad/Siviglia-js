@@ -63,14 +63,27 @@ class Definition extends BaseWorkerDefinition
                                                 "changed_within" => [
                                                     'TYPE'    => 'Integer',
                                                     'MIN'     => 0,
+                                                    'LABEL'   => 'Segundos desde actualización',
                                                     'DEFAULT' => null, 
                                                 ],
                                                 "marketplace_id" => [
                                                     'TYPE'    => 'Integer',
+                                                    'LABEL'   => 'Marketplace ID',
                                                     'DEFAULT' => null,
                                                 ],
                                                 "filter" => [
                                                     'TYPE'    => 'String',
+                                                    'LABEL'   => 'Filtros manuales',
+                                                    'DEFAULT' => null,
+                                                ],
+                                                "name" => [
+                                                    'TYPE'    => 'String',
+                                                    'LABEL'   => 'Nombre',
+                                                    'DEFAULT' => null,
+                                                ],
+                                                "sort_by" => [
+                                                    'TYPE' => 'String',
+                                                    'LABEL'   => 'Ordenar por',
                                                     'DEFAULT' => null,
                                                 ],
                                             ],

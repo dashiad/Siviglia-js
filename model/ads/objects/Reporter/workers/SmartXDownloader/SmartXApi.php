@@ -132,7 +132,7 @@ class SmartXApi {
                 self::$token_expiration = $tokenInfo->token_expiration ?? null;
             }
         } catch (\Exception $e) {
-            //
+            self::clearAuthToken();
         }
     }
     
@@ -183,9 +183,7 @@ class SmartXApi {
                     $request->addBearerToken(self::$token);
                     self::getAuthTokenInfo($request);
                 } catch (\Exception $e) { // sin no puede renovar el token se pide uno nuevo
-                    self::$token = null;
-                    self::$token_expiration = null;
-                    self::saveAuthToken();
+                    self::clearAuthToken();
                     self::getAuthToken();
                 } 
             }
