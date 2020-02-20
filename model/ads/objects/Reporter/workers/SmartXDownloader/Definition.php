@@ -32,7 +32,7 @@ class Definition extends BaseWorkerDefinition
                     'MINLENGTH' => 2,
                     'MAXLENGTH' => 64,
                     'LABEL'     => 'Tarea',
-                    'DEFAULT'   => 'SmartXDownloader',
+                    'DEFAULT'   => 'model\\ads\\Reporter\\workers\\SmartXDownloader',
                 ],
                 'type' => [
                     'TYPE'    => 'String',
