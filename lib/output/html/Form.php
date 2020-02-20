@@ -332,11 +332,10 @@ class Form extends \lib\model\BaseTypedObject
        return null;
     }
 
-    function __getInputParams($name)
+    function __getInputParams($name,$path=null)
     {
         if(isset($this->formDefinition["INPUTS"]) && isset($this->formDefinition["INPUTS"][$name]))
             return $this->formDefinition["INPUTS"][$name]["PARAMS"];
     }
-
 }
 ?>

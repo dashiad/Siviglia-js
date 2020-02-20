@@ -16,7 +16,7 @@
         [_FIELDS]
                 
             [*/ELEMENT/FORM/INPUTCONTAINER/HORIZONTAL_ICONS({"name":"tag","form":"&$form"})]
-				[_LABEL][#]
+				[_LABEL]tag[#]
 				[_HELP]**Insert Field Help**[#]
                 [_ICON]
                     [*::ELEMENT/MEDIA/ICON({"icon":"texto"})][#]
@@ -38,7 +38,7 @@
 				[_LABEL]id_site[#]
 				[_HELP]**Insert Field Help**[#]
 				[_INPUT]
-					[*:/ELEMENT/TYPES/INPUTS/RELATION_1xN({"model":"$currentModel","name":"id_site","form":"$form"})][#]
+					[*:/ELEMENT/TYPES/INPUTS/RELATION_1xN_2020({"model":"$currentModel","name":"id_site","form":"$form"})][#]
 				[#]
 				[_ERRORS]
 					[_ERROR({"type":"INVALID","code":"2"})]\model\Page_AddAction_id_site_INVALID[#]

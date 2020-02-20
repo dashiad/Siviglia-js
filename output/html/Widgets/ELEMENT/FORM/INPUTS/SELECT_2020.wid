@@ -1,0 +1,67 @@
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_CODE]
+                jQuery(document).ready(function($){
+                    $(document).ready(function() {
+                        $('.smartclip-select2').select2();
+                    });
+                });
+            [#]
+        [#]        
+    [#]
+[#]
+
+
+
+<?php
+ echo "<input type=\"hidden\" name=\"INPUTS[".$info['name']."]\" value=\"Select\">";
+ $fDef=$form->__getInputParams($info['name']);
+
+ $valueField=isset($fDef["VALUE"])?$fDef["VALUE"]:null;
+ $labelField=isset($fDef["LABEL"])?$fDef["LABEL"]:null;
+ $mKey=is_array($valueField);
+ if($mKey)
+     $nKeys=count($valueField);
+ $mLabels=is_array($labelField)?$labelField:array($labelField);
+ if($mLabels)
+     $nLabels=count($labelField);
+
+?>
+
+<select class="form-control smartclip-select2" name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $$info['name']; ?>]"  autocomplete="off" id="basicSelect">
+    <?php
+         if(isset($fDef["PRE_OPTIONS"]))
+         {
+             foreach($fDef["PRE_OPTIONS"] as $keyO=>$valueO)
+                 echo '<option value="'.$keyO.'" '.($keyO==$value?'selected="selected"':"").'>'.$valueO.'</option>';
+         }
+    ?>
+[_OPTION]
+    <?php echo '<option value="'.$optionValue.'" '.($optionValue==$value?'selected="selected"':"").'>'?>[_LABEL][_*][#]<?php echo '</option>';?>
+[#]
+[_DATASOURCE]
+    [*:/ELEMENT/FORM/INPUTS/DATASOURCEDINPUT]
+        [_:ITERATOR({"name":"$name","ds":"$ds","inputIterator":"&$selectIterator"})]
+            <?php if(!$mKey)
+            {
+                $curVal=$selectIterator->{$valueField};
+
+            }
+            else
+            {
+                 $curVal="";
+                 for($k=0;$k<$nKeys;$k++)
+                     $curVal.=($k>0?',':"").$selectIterator->{$valueField[$k]};
+            }
+            $label=array();
+            foreach($labelField as $labelValue)
+                $label[]=$selectIterator->{$labelValue};
+
+            ?>
+             <?php echo '<option value="'.$curVal.'" '.($value==$curVal?'selected="selected"':"").'>'?><?php echo implode(" ",$label).'</option>';?>
+        [#]
+    [#]
+[#]
+</select>

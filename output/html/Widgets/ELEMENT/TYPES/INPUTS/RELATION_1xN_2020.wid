@@ -1,13 +1,19 @@
 <?php
+if($type==null)
+    $type=$form->__getField($name)->getType();
+    
+$info=$type->summarize();
+
+?>
+
+
+<?php
     $curModel=$form;
     $remField=$curModel->__getField($name);
     $localDefinition=$remField->getDefinition();
 
     if(!$ds)
     {        
-
-        // un campo relation siempre tiene una fuente. xq su valor vienen de otro sitio
-
         if(!is_a($remField,'lib\model\Relation1x1'))
         {
 
@@ -48,6 +54,4 @@
     $valueField=$params["VALUE"]; 
     ?>
     
-    [*:/ELEMENT/FORM/INPUTS/SELECT({"name":"$name","value":"$val","form":"$form"})]
-        [_:DATASOURCE({"ds":"$ds"})][#]
-    [#]    
+    [*:/ELEMENT/FORM/INPUTS/RADIO({"info":"$info"})][#]    
