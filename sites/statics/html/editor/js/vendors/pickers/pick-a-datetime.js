@@ -84,11 +84,21 @@
   // Basic time
   $('.pickatime').pickatime();
 
+  $('.pickatime-smartclip').pickatime({
+    timePicker: true,    
+    timePicker24Hour: true,
+    timePickerIncrement: 15,
+    timePickerSeconds: true,
+    format: 'HH:i a',
+    formatLabel: 'HH:i a',
+    formatSubmit: 'HH:i:i'     
+  });
+
   // Format options
   $('.pickatime-format').pickatime({
       // Escape any “rule” characters with an exclamation mark (!).
-      format: 'T!ime selected: h:i a',
-      formatLabel: 'HH:i a',
+      format: 'T!ime selected: h:i:ss a',
+      formatLabel: 'HH:i:ss a',
       formatSubmit: 'HH:i',
       hiddenPrefix: 'prefix__',
       hiddenSuffix: '__suffix'

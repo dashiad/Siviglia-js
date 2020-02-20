@@ -5,7 +5,7 @@
 
         [*:BEHAVIOR/CARD]
             [_:TITLE]Llamando a AddAction_testing.wid (dentro de site/nombre_site/widgets)[#]
-            [_:CONTENT][*::/TESTING_wids/AddAction_testing][#][#]            
+            [_:CONTENT][*::/TESTING_wids/TiposTesting_2020][#][#]
         [#]
         
         [*:BEHAVIOR/CARD]

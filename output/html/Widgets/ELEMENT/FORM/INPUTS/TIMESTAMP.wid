@@ -1,0 +1,6 @@
+<input type="hidden" name="INPUTS[<?php echo $info['name']; ?>]" value="<?php echo $info['value']; ?>">
+<input class="form-control pickatime-smartclip picker__input" type="text" data-sivprefix="<?php echo $prefix;?>" data-sivname="<?php echo $info['name']; ?>" placeholder="Selecciona hora" readonly="" <?php echo $info['required']?'required':"" ?> >
+<script>
+    var q=document.currentScript.previousElementSibling;
+    __s__form.curForm.addInput(q);
+</script>
