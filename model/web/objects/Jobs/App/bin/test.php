@@ -4,6 +4,7 @@ require(__DIR__.'/bootstrap.php');
 use model\web\Jobs\App\Jobs\JobManager;
 use model\web\Jobs\App\Jobs\Messages\SimpleMessage;
 use model\web\Jobs\App\Jobs\Queue;
+use model\web\Jobs\App\Jobs\Workers\TestWorker;
 
 function testCreateJobsTable()
 {
@@ -21,27 +22,27 @@ function testCreateWorkersTable()
 
 function testCreateSimpleJob()
 {
-    $args = array (
+    $args = [
         'type' => 'job',
         'name' => 'simplest_job',
         'max_retries' => 1,
         'task' =>
-        array (
+        [
             'type' => 'task',
             'name' => 'data_mixer',
             'args' =>
-            array (
+            [
                 'task' => 'model\\web\\Jobs\\App\\Jobs\\Workers\\TestWorker',
                 'type' => 'DateRange',
                 'params' =>
-                array (
+                [
                     'start_date' => '2019-11-01 00:00:00',
                     'end_date' => '2019-11-30 23:59:59',
                     'max_chunk_size' => 10,
-                ),
-            ),
-        ),
-    );
+                ],
+            ],
+        ],
+    ];
     return JobManager::createJob($args);
 }
 
@@ -73,22 +74,20 @@ function testCreateMySqlJob()
 
 function testCreateEmployeeReport() 
 {
-    $args = array (
+    $args = [
         'type' => 'job',
         'name' => 'employee_report',
-        'task' =>
-        array (
+        'task' => [
             'type' => 'task',
             'name' => 'employee_sql_query',
             'max_running_children' => 2,
-            'args' =>
-            array (
+            'args' => [
                 'task' => 'model\\web\\Jobs\\App\\Jobs\\Workers\\EmployeeListWorker',
                 'type' => 'None',
                 'params' => array()
-            ),
-        ),
-    );
+            ],
+        ],
+    ];
     return JobManager::createJob($args);
 }
 
@@ -219,6 +218,7 @@ function testCreateApiJob()
         "name" => "task_name",
         "args" => [
             "task" => $className,
+            "name" => "smartx_downloader",
             "type" => "List",
             "params" => [
                 "max_chunk_size" => 2,
@@ -272,6 +272,41 @@ function testStopJob($id)
     $queue->publish($msg, $queue->getDefaultChannel(), 'control');
 }
 
+function testListJobsDS()
+{
+    $ds = $ds=\getDataSource('\\model\\web\\Jobs', "FullList");
+    $ds->status=3;
+    $ds->created_at = "2020-01-01 00:00:00";
+    //$ds->created_at = date(DATE_ATOM);
+    $jobs = $ds->fetchAll()->getFullData();
+    foreach ($jobs as $job) {
+        echo $job['job_id']." ---> ".$job['status'].PHP_EOL;
+    }
+}
+
+function testListWorkersDS()
+{
+    $ds = $ds=\getDataSource('\\model\\web\\Jobs', "FullList");
+    //$ds->status=3;
+    $ds->created_at = "2020-01-01 00:00:00";
+    //$ds->created_at = date(DATE_ATOM);
+    $jobs = $ds->fetchAll()->getFullData();
+    $lastJob = array_pop($jobs);
+    
+    echo $lastJob['job_id']." ---> ".$lastJob['status'].PHP_EOL.PHP_EOL;
+    
+    $ds = $ds=\getDataSource('\\model\\web\\Jobs\\Worker', "FullList");
+    $ds->job_id = $lastJob['job_id'];
+    //$ds->alive = 1;
+    //$ds->status = 4;
+    $workers = $ds->fetchAll();
+    $workers = $workers->getFullData();
+    foreach ($workers as $worker) {
+        echo $worker['worker_id']." ---> ".$worker['status'].PHP_EOL;
+        echo $worker['result'].PHP_EOL.PHP_EOL;
+    }
+}
+
 //testCreateJobsTable();
 //testCreateWorkersTable();
 //testLocateWorkers();
@@ -280,18 +315,8 @@ function testStopJob($id)
 //$id = testCreateTrigger();
 //$id = testCreateMySqlJob();
 //$id = testCreateEmployeeReport();
-//readline("press enter");
-//testStopJob($id);
 //$id = testCreateParallelJob();
-$jobs = [];
-$n = 10;
-for ($i=0;$i<$n;$i++) {
-    $id = testCreateApiJob();
-    $jobs[$i] = $id;
-}
-readline("press enter");
-for ($i=0;$i<$n;$i++) {
-    $id = $jobs[$i];
-    testStopJob($id);
-}
-
+//$id = testCreateApiJob();
+//testStopJob($id);
+//testListJobsDS();
+testListWorkersDS();

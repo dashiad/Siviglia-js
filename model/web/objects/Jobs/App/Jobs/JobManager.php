@@ -23,9 +23,9 @@ class JobManager implements StatusInterface
     /**
      * Constructor for JobManager
      **/
-    public function __construct()
+    public function __construct($id=null)
     {
-        $this->id = Config::get('main', 'app');
+        $this->id = $id ?? Config::get('main', 'app');
         $this->queue = Queue::connect($this->id);
         $this->channel = $this->queue->getDefaultChannel();
         $this->queue->createQueue($this->id, $this->channel, false);

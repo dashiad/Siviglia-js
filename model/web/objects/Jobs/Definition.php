@@ -28,7 +28,6 @@ class Definition extends BaseModelDefinition
                            'MAX' => 9999999999,
                            'LABEL' => 'ID',
                            'SHORTLABEL' => 'ID',
-                           'DESCRIPTIVE' => 'true',
                            'ISLABEL' => true
                            ],
                      'job_id' => [
@@ -64,11 +63,11 @@ class Definition extends BaseModelDefinition
                          'SHORTLABEL' => 'Estado',
                          'METADATA'=>[
                              "display"=>[
-                                Job::WAITING=>["ICON"=>"xxx"],
-                                Job::PENDING=>["ICON"=>"xxx"],
-                                Job::RUNNING=>["ICON"=>"xxx"],
-                                Job::FINISHED=>["ICON"=>"xxx"],
-                                Job::FAILED=>["ICON"=>"xxx"]
+                                Job::WAITING  => ["ICON"=>"xxx"],
+                                Job::PENDING  => ["ICON"=>"xxx"],
+                                Job::RUNNING  => ["ICON"=>"xxx"],
+                                Job::FINISHED => ["ICON"=>"xxx"],
+                                Job::FAILED   => ["ICON"=>"xxx"]
                              ],                            
                              
                          ]

@@ -13,6 +13,7 @@ class Dispatcher
     protected $processes = [];
     protected $sharedQueue;
     protected $dispatcherProcess;
+    protected $control;
     
     protected $table;
     

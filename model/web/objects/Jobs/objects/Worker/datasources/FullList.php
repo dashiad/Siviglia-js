@@ -1,75 +1,102 @@
 <?php
-namespace model\web\Jobs\datasources;
+namespace model\web\Jobs\Worker\datasources;
 
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Jobs/datasources/FullList.php
+ FILENAME:/var/www/adtopy/model/web/objects/Jobs/objects/Worker/datasources/FullList.php
  CLASS:FullList
  *
  *
  **/
 
-class FullList 
+class FullList
 {
     static $definition = [
         'ROLE' => 'list',
         'DATAFORMAT' => 'Table',
         'PARAMS' => [
-            'id_job' => [
-                'MODEL' => '\model\web\Jobs',
-                'FIELD' => 'id_job',
-                'TRIGGER_VAR' => 'id_job'
+            'id_worker' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'id_worker',
+                'TRIGGER_VAR' => 'id_worker'
             ],
             'job_id' => [
-                'MODEL' => '\model\web\Jobs',
+                'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'job_id',
                 'TRIGGER_VAR' => 'job_id'
             ],
-            'parent' => [
-                'MODEL' => '\model\web\Jobs',
-                'FIELD' => 'parent',
-                'TRIGGER_VAR' => 'parent'
+            'index' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'index',
+                'TRIGGER_VAR' => 'index'
+            ],
+            'worker_id' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'worker_id',
+                'TRIGGER_VAR' => 'worker_id'
             ],
             'name' => [
-                'MODEL' => '\model\web\Jobs',
+                'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'name',
                 'TRIGGER_VAR' => 'name'
             ],
             'status' => [
-                'MODEL' => '\model\web\Jobs',
+                'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'status',
                 'TRIGGER_VAR' => 'status'
             ],
-            'created_at' => [
-                'MODEL' => '\model\web\Jobs',
-                'FIELD' => 'created_at',
-                'TRIGGER_VAR' => 'created_at',
+            'number_of_parts' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'number_of_parts',
+                'TRIGGER_VAR' => 'number_of_parts'
+            ],
+            'alive' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'alive',
+                'TRIGGER_VAR' => 'alive'
+            ],
+            'result' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'result',
+                'TRIGGER_VAR' => 'result'
             ],
         ],
         'IS_ADMIN' => 0,
         'FIELDS' => [
-            'id_job' => [
-                'MODEL' => '\model\web\Jobs',
-                'FIELD' => 'id_job'
+            'id_worker' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'id_worker'
             ],
             'job_id' => [
-                'MODEL' => '\model\web\Jobs',
+                'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'job_id'
             ],
-            'parent' => [
-                'MODEL' => '\model\web\Jobs',
-                'FIELD' => 'parent'
+            'index' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'index'
+            ],
+            'worker_id' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'worker_id'
             ],
             'name' => [
-                'MODEL' => '\model\web\Jobs',
+                'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'name'
             ],
             'status' => [
-                'MODEL' => '\model\web\Jobs',
+                'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'status'
             ],
-            'created_at' => [
-                'MODEL' => '\model\web\Jobs',
-                'FIELD' => 'created_at'
+            'number_of_parts' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'number_of_parts'
+            ],
+            'alive' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'alive'
+            ],
+            'result' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'result'
             ],
         ],
         'PERMISSIONS' => ['PUBLIC'],
@@ -77,13 +104,21 @@ class FullList
             'STORAGE' => [
                 'MYSQL' => [
                     'DEFINITION' => [
-                        'TABLE' => 'Job',
+                        'TABLE' => 'Worker',
                         'BASE' => [
-                            'id_job',
-                            'parent',
+                            'id_worker',
+                            'worker_id',
                             'name',
                             'status',
                             'job_id',
+                            '`index`',
+                            'number_of_parts',
+                            'items',
+                            'last_completed_item_index',
+                            'descriptor',
+                            'result',
+                            'created_at',
+                            'updated_at',
                         ],
                         'CONDITIONS' => [
                             [
@@ -98,13 +133,13 @@ class FullList
                             ],
                             [
                                 'FILTER' => [
-                                    'F' => 'parent',
+                                    'F' => 'worker_id',
                                     'OP' => '=',
-                                    'V' => '[%parent%]'
+                                    'V' => '[%worker_id%]'
                                 ],
-                                'TRIGGER_VAR' => 'parent',
+                                'TRIGGER_VAR' => 'worker_id',
                                 'DISABLE_IF' => '0',
-                                'FILTERREF' => 'parent'
+                                'FILTERREF' => 'worker_id'
                             ],
                             [
                                 'FILTER' => [
@@ -125,6 +160,16 @@ class FullList
                                 'TRIGGER_VAR' => 'status',
                                 'DISABLE_IF' => '0',
                                 'FILTERREF' => 'status'
+                            ],
+                            [
+                                'FILTER' => [
+                                    'F' => 'alive',
+                                    'OP' => '=',
+                                    'V' => '[%alive%]'
+                                ],
+                                'TRIGGER_VAR' => 'alive',
+                                'DISABLE_IF' => '0',
+                                'FILTERREF' => 'alive'
                             ],
                             [
                                 'FILTER' => [

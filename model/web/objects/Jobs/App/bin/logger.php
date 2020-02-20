@@ -15,7 +15,6 @@ class Log {
         $this->file = fopen(self::FILENAME, "a");
         $this->queue = Queue::connect('logger');
         $this->queue->createQueue('logger', $this->queue->getDefaultChannel());
-        $this->queue->subscribe('main', $this->queue->getDefaultChannel(), 'logger');
         $this->queue->subscribe('control', $this->queue->getDefaultChannel(), 'logger');
         $this->queue->subscribe('dispatch', $this->queue->getDefaultChannel(), 'logger');
         $this->queue->listen($this, $this->queue->getDefaultChannel(), 'logger');
