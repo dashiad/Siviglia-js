@@ -90,20 +90,21 @@ abstract class Worker implements StatusInterface
     public function run()
     {
         $this->status=self::RUNNING;
-            $this->result = [];
-            $this->persist();
-            ob_start();
-            try {
-                $this->_run();
-                $this->status=self::FINISHED;
-            } catch (\Exception $e) {
-                $this->result[] = $e->getMessage();
-                $this->status=self::FAILED;
-                $this->alive=0;
-            } finally {
-                $result = ob_get_clean();
-                $this->finish($result);
-            }
+        $this->result = [];
+        $this->persist();
+        ob_start();
+        try {
+            $this->_run();
+            $this->status=self::FINISHED;
+        } catch (\Exception $e) {
+            $this->result[] = $e->getMessage();
+            $this->status=self::FAILED;
+            $this->alive=0;
+        } finally {
+            $result = ob_get_clean();
+            $this->finish($result);
+        }
+        exit();
     }
     
     public function getParent() : ?String

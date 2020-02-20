@@ -46,6 +46,7 @@ class Dispatcher
         $this->queue->publish($msg, $this->queue->getDefaultChannel(), $this->control);
         
         $this->createProcessTable();
+        pcntl_signal(SIGCHLD, SIG_IGN); // hacer con Process::signal para capturar la señal
         
         $this->init();
            

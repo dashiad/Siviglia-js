@@ -266,10 +266,10 @@ function testCreateApiJob()
     $definition = $className::loadDefinition();
     $definition->max_running_children = 100;
     $definition->max_retries = 1;
-    $definition->task = API_TASK;
     $job = $definition->normalizeToAssociativeArray();
+    $job['task'] = API_TASK;
     $job['task']['args']['task'] = $className;
-    $job['task']['args']['standalone'] = true;
+    //$job['task']['args']['standalone'] = true;
     return JobManager::createJob($job);
 }
 
@@ -345,18 +345,20 @@ function testAction($args = SIMPLE_JOB)
 //testCreateWorkersTable();
 //testLocateWorkers();
 $jobs = [];
-//$jobs[] = testCreateSimpleJob();
-//$jobs[] = testCreateDirectoryJob();
-//$jobs[] = testCreateTrigger();
-//$jobs[] = testCreateMySqlJob();
-//$jobs[] = testCreateEmployeeReport();
+for ($i=0;$i<10;$i++) {
+$jobs[] = testCreateSimpleJob();
+$jobs[] = testCreateDirectoryJob();
+//testCreateTrigger();
+$jobs[] = testCreateMySqlJob();
+$jobs[] = testCreateEmployeeReport();
 //$jobs[] = testCreateParallelJob();
-$jobs[] = testCreateApiJob();
+//$jobs[] = testCreateApiJob();
 //testListJobsDS();
 //testListWorkersDS();
 //$jobs[] = testAction()->job_id;
-sleep(1);
-testStopJob($jobs[rand(0, count($jobs)-1)]);
+//sleep(1);
+//testStopJob($jobs[rand(0, count($jobs)-1)]);
+}
 sleep(1);
 foreach($jobs as $job) {
     echo $job.PHP_EOL;

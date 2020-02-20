@@ -168,6 +168,26 @@ class JobManager implements StatusInterface
             }
         }
     }
+    
+    /**
+     *
+     * @param Array $hook
+     * @param String $creator
+     * @return \model\web\Jobs\App\Jobs\Runnables\Job
+     */
+    
+     protected function launchTrigger(Array &$hook, String $creator)
+     {
+     if (!array_key_exists($creator, $hook['launched_for'])) {
+     $job = new Job($this->queue, $hook['description']);
+     $job->addEmptyChildren(count($this->jobs[$creator]->getChildren()));
+     $this->jobs[$job->getId()] = $job;
+     $hook['launched_for'][$creator] = $job;
+     } else {
+     $job = $hook['launched_for'][$creator];
+     }
+     return $job;
+     }
            
     protected function status($request)
     {
