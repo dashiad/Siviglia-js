@@ -1,8 +1,6 @@
 <?php
-    $fdef=$form->__getField($name);
-    $type=$fdef->getType();
+if($type==null)
+    $type=$form->__getField($name)->getType();    
+$info=$type->summarize();
 ?>
-
-[*:/ELEMENT/FORM/INPUTS/RADIO({"name":"$name","type":"$type"})]
-[#]
-
+[*:/ELEMENT/FORM/INPUTS/RADIO({"info":"$info"})][#]

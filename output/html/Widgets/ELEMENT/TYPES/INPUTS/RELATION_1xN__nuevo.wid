@@ -54,4 +54,4 @@ $info=$type->summarize();
     $valueField=$params["VALUE"]; 
     ?>
     
-    [*:/ELEMENT/FORM/INPUTS/CHECKBOX({"info":"$info"})][#]    
+    [*:/ELEMENT/FORM/INPUTS/SELECT_2020({"info":"$info"})][#]    

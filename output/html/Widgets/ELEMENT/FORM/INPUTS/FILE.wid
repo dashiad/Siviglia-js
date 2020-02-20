@@ -1,5 +1,9 @@
-<?php
- echo "<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"File\">";
-?>
-<input type="file" name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $name;?>]">
-
+<input type="hidden" name="INPUTS[<?php echo $info['name']; ?>]" value="File">
+<div class="custom-file">
+    <input class="custom-file-input" type="file" data-sivprefix="<?php echo $prefix;?>" id="file_<?php echo $info['name']; ?>" data-sivname="<?php echo $info['name'];?>" <?php echo $info['required']?'required':"" ?> >
+    <label class="custom-file-label" for="file_<?php echo $info['name']; ?>">Selecciona un fichero... <?php echo $info['name']; ?></label>
+</div>
+<script>
+    var q=document.currentScript.previousElementSibling;
+    __s__form.curForm.addInput(q);
+</script>

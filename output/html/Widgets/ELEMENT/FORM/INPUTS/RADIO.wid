@@ -4,8 +4,10 @@
   
 <input type="hidden" name="INPUTS<?php echo ($prefix?"[".$prefix."]":"")."[".$name."]";?>" value="Radio">
 [*/ELEMENT/FORM/INPUTS/SOURCEINPUT({"source":"$source","it":"&$it"})]
-    <input type="radio" name="<?php echo $info['name']; ?>" value="<?php echo $source->getValue($it); ?>">
-    <label for="radio<?php echo $info['name'].$source->getValue($it); ?>"><?php echo $source->getLabel($it); ?></label>
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="<?php echo $info['name']; ?>" value="<?php echo $source->getValue($it); ?>" id="radio_<?php echo $info['name'].$source->getValue($it); ?>">
+    <label class="form-check-label" for="radio_<?php echo $info['name'].$source->getValue($it); ?>"><?php echo $source->getLabel($it); ?></label>
+</div>
 [#]
 <script>
     var q=document.currentScript.previousElementSibling;
