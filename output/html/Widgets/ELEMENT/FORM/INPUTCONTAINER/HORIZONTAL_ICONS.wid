@@ -3,6 +3,9 @@
     [_CONTENTS]
         [_SCRIPT]
             [_CODE]
+                $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();   
+                });
             [#]
         [#]
         [_CSS]
@@ -36,21 +39,21 @@
 
     <div class="col-md-2">
         <?php $extra=isset($extraClass)?$extraClass:""; $sc=isset($styleClass)?$styleClass:"";?>
-        <label class="inputLabel<?php echo $extra;?> <?php echo $sc;?>">[_LABEL][_*][#]</label>
+        <label class="inputLabel<?php echo $extra;?> <?php echo $sc;?>">
+            [_LABEL][_*][#]
+            [_HELP]
+                <i class="bx bx-info-circle" data-toggle="tooltip" data-placement="<?php echo (empty($position))? 'bottom' : $position ?>" title="[_*]"></i>
+            [#]        
+        </label>
     </div>
 
     <div class="col-md-10">
     <div class="form-group">
         <div class="controls">
-            <div class="position-relative has-icon-left input-error">
-                [_INPUT]
-                    [_*]
-                [#]
-                [_ICON]
-                <div class="form-control-position">                    
-                    [_*]                    
-                </div>
-                [#]
+            <div class="position-relative has-icon-left input-error">                                            
+                [_INPUT][_*][#]
+                [_ICON]<div class="form-control-position">[_*]</div>[#]
+                [_DESCRIPTION_INPUT]<small class="text-muted">[_*]</small>[#]
             </div>
         </div>
         <div class="help-block error-<?php echo $name;?>">
@@ -74,3 +77,12 @@
     var cForm=__s__form.S_FormRegistry["<?php echo $form->getHash();?>"];
     cForm.popContainer();
 </script>
+
+
+<?php
+
+// (!empty($position))? $position : 'bottom'
+
+// (empty($position))? 'bottom' : $position
+
+?>

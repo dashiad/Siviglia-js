@@ -10275,6 +10275,8 @@ a.text-dark:hover, a.text-dark:focus {
 
 .text-muted {
   color: #828D99 !important;
+  font-style: italic;
+  font-size: 75%;
 }
 
 .text-black-50 {
