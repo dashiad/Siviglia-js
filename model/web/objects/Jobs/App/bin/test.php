@@ -5,6 +5,7 @@ use model\web\Jobs\App\Jobs\JobManager;
 use model\web\Jobs\App\Jobs\Messages\SimpleMessage;
 use model\web\Jobs\App\Jobs\Queue;
 use model\web\Jobs\App\Jobs\Workers\TestWorker;
+use model\web\Jobs\App\Jobs\Runnables\Job;
 
 
 const SIMPLE_JOB = [
@@ -287,9 +288,14 @@ function testStopJob($id)
 function testListJobsDS()
 {
     $ds = $ds=\getDataSource('\\model\\web\\Jobs', "FullList");
-    $ds->status=3;
-    $ds->created_at = "2020-01-01 00:00:00";
-    //$ds->created_at = date(DATE_ATOM);
+    $ds->status = [
+        Job::RUNNING,
+        Job::FINISHED,
+        Job::FAILED,
+    ];
+    $ds->created_after = "2020-02-21 00:00:00";
+    $ds->created_before = "2020-02-22 00:00:00";
+    
     $jobs = $ds->fetchAll()->getFullData();
     foreach ($jobs as $job) {
         echo $job['job_id']." ---> ".$job['status'].PHP_EOL;
@@ -301,15 +307,13 @@ function testListWorkersDS($jobId=null)
     
     if (is_null($jobId)) {
         $ds=\getDataSource('\\model\\web\\Jobs', "FullList");
-        $ds->created_at = "2020-01-01 00:00:00";
+        $ds->created_after = "2020-02-20 12:00:00";
         $jobs = $ds->fetchAll()->getFullData();
         $jobId = array_pop($jobs)['job_id'];
     }
     
     $ds=\getDataSource('\\model\\web\\Jobs\\Worker', "FullList");
     $ds->job_id = $jobId;
-    //$ds->alive = 1;
-    //$ds->status = 4;
     $workers = $ds->fetchAll();
     $workers = $workers->getFullData();
     foreach ($workers as $worker) {
@@ -327,6 +331,7 @@ function testAction($args = SIMPLE_JOB)
     $actionResult=new \lib\action\ActionResult();
     $instance=$act->getParametersInstance();
     
+    //$instance->job_id = "THIS_IS_A_FORCED_JOB_ID";
     $instance->name = "test";
     $instance->descriptor = json_encode($args);
     
@@ -338,31 +343,32 @@ function testAction($args = SIMPLE_JOB)
             print_r($error);
         }
         return false;
-    }   
+    }
 }
 
 //testCreateJobsTable();
 //testCreateWorkersTable();
 //testLocateWorkers();
-$jobs = [];
+//testCreateTrigger();
+/*$jobs = [];
 for ($i=0;$i<10;$i++) {
 $jobs[] = testCreateSimpleJob();
 $jobs[] = testCreateDirectoryJob();
-//testCreateTrigger();
 $jobs[] = testCreateMySqlJob();
-$jobs[] = testCreateEmployeeReport();
+$jobs[] = testCreateEmployeeReport();*/
 //$jobs[] = testCreateParallelJob();
-//$jobs[] = testCreateApiJob();
+$jobs[] = testCreateApiJob();
 //testListJobsDS();
 //testListWorkersDS();
 //$jobs[] = testAction()->job_id;
 //sleep(1);
 //testStopJob($jobs[rand(0, count($jobs)-1)]);
-}
+/*}
 sleep(1);
 foreach($jobs as $job) {
     echo $job.PHP_EOL;
     testListWorkersDS($job);
-}
-
-
+}*/
+/*for($i=0;$i<10;$i++)
+	testAction(EMPLOYEE_JOB);*/
+testListJobsDS();

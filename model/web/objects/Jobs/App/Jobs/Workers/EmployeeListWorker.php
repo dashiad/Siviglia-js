@@ -24,10 +24,11 @@ class EmployeeListWorker extends Worker
         
         $db = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
         $result = $db->query($sql);
-        $resultText = '';
-        foreach ($result as $row) {
-            $resultText .= $row['last_name'].", ".$row['first_name']."->".$row['title'].PHP_EOL;
-        }
+	$resultText = '';
+	if ($result)
+            foreach ($result as $row) {
+                $resultText .= $row['last_name'].", ".$row['first_name']."->".$row['title'].PHP_EOL;
+            }
         $db = null;
         return $resultText;
     }

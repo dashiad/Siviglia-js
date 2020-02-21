@@ -1,6 +1,8 @@
 <?php
 namespace model\web\Jobs\datasources;
 
+use model\web\Jobs\App\Jobs\Runnables\Job;
+
 /**
  FILENAME:/var/www/adtopy/model/web/objects/Jobs/datasources/FullList.php
  CLASS:FullList
@@ -35,14 +37,28 @@ class FullList
                 'TRIGGER_VAR' => 'name'
             ],
             'status' => [
-                'MODEL' => '\model\web\Jobs',
-                'FIELD' => 'status',
-                'TRIGGER_VAR' => 'status'
+                'TYPE' => 'Array',
+                    'ELEMENTS' => [
+                        'TYPE' => 'Enum',
+                        'VALUES'     => [
+                            Job::WAITING,
+                            Job::PENDING,
+                            Job::RUNNING,
+                            Job::FINISHED,
+                            Job::FAILED,
+                        ],
+                    ],
+                'TRIGGER_VAR' => 'status',
             ],
-            'created_at' => [
+            'created_before' => [
                 'MODEL' => '\model\web\Jobs',
                 'FIELD' => 'created_at',
-                'TRIGGER_VAR' => 'created_at',
+                'TRIGGER_VAR' => 'created_before',
+            ],
+            'created_after' => [
+                'MODEL' => '\model\web\Jobs',
+                'FIELD' => 'created_at',
+                'TRIGGER_VAR' => 'created_after',
             ],
         ],
         'IS_ADMIN' => 0,
@@ -71,6 +87,10 @@ class FullList
                 'MODEL' => '\model\web\Jobs',
                 'FIELD' => 'created_at'
             ],
+            'updated_at' => [
+                'MODEL' => '\model\web\Jobs',
+                'FIELD' => 'updated_at'
+            ],
         ],
         'PERMISSIONS' => ['PUBLIC'],
         'SOURCE' => [
@@ -80,10 +100,12 @@ class FullList
                         'TABLE' => 'Job',
                         'BASE' => [
                             'id_job',
+                            'job_id',
                             'parent',
                             'name',
                             'status',
-                            'job_id',
+                            'created_at',
+                            'updated_at',
                         ],
                         'CONDITIONS' => [
                             [
@@ -123,8 +145,8 @@ class FullList
                                     'V' => '[%status%]'
                                 ],
                                 'TRIGGER_VAR' => 'status',
-                                'DISABLE_IF' => '0',
-                                'FILTERREF' => 'status'
+                                'DISABLE_IF' => [],
+                                'FILTERREF' => 'status',
                             ],
                             [
                                 'FILTER' => [
@@ -139,10 +161,20 @@ class FullList
                             [
                                 'FILTER' => [
                                     'F' => 'created_at',
-                                    'OP' => '>',
-                                    'V' => '[%created_at%]'
+                                    'OP' => '<',
+                                    'V' => '[%created_before%]'
                                 ],
-                                'TRIGGER_VAR' => 'created_at',
+                                'TRIGGER_VAR' => 'created_before',
+                                'DISABLE_IF' => '0',
+                                'FILTERREF' => 'created_at'
+                            ],
+                            [
+                                'FILTER' => [
+                                    'F' => 'created_at',
+                                    'OP' => '>',
+                                    'V' => '[%created_after%]'
+                                ],
+                                'TRIGGER_VAR' => 'created_after',
                                 'DISABLE_IF' => '0',
                                 'FILTERREF' => 'created_at'
                             ],

@@ -91,10 +91,13 @@ class AddAction extends \lib\action\Action
     function onSaved($model) 
     {
         $jobId = JobManager::createJob(json_decode($model->descriptor, true));
-        $model = new \model\web\Jobs;
-        $model->job_id = $jobId;
-        $model->loadFromFields();
-        $this->setModel($model);
+        $realModel = new \model\web\Jobs;
+        $realModel->job_id = $jobId;
+        $realModel->name = $model->name;
+        $realModel->descriptor = $model->descriptor;
+        $realModel->parent = $model->parent;
+        //$realModel->loadFromFields(); // no sabemos si está en bd
+        $this->setModel($realModel);
     }
     
     

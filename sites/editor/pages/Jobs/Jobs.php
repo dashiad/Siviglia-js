@@ -1,17 +1,13 @@
-[*PAGE/HTMLPAGE]
-    [_TITLE]Tareas[#]
+[*PAGE/SITE]
+    [_TITLE]EDITOR SECCION - v.1.0 beta Smartclip[#]
+
     [_CONTENT]
-        [*:LAYOUTS/LAYOUT_3]
-            [_:LEFTSIDEBAR]
-                [*::/model/web/objects/Site/html/views/SitesMenu][#]
-            [#]
-            [_:CONTENT]
-                [*::/model/web/objects/Jobs/html/forms/EditAction][#]
-            [#]
-            [_:RIGHTSIDEBAR]
 
-            [#]
+        [*:BEHAVIOR/CARD]
+            [_:TITLE]Detalle del trabajo[#]
+            [_:CONTENT][*::WorkerFullList][#][#]
         [#]
-    [#]
-[#]
 
+        
+    [#]   
+[#]
