@@ -26,6 +26,15 @@
 
     <!-- select2 library for jQuery replacement for select boxes -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+    <!-- script general que carga jquery 3 y demás dependencias de codigo js para la plantilla.
+    Importante que esté antes de las siguientes librerías para que puedan funcionar bien: datatables, etc... -->
+    <script src="http://statics.adtopy.com/editor/js/vendors/vendors2.min.js"></script>    
+
+    <!-- datatables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css"/>
+ 
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
 </head>
 
 
@@ -50,7 +59,7 @@
     <script src="http://statics.adtopy.com/editor/js/app2.js"></script>
     <script src="http://statics.adtopy.com/editor/js/app-menu.js"></script>
     <script src="http://statics.adtopy.com/editor/js/vertical-menu-dark.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/vendors/vendors2.min.js"></script>
+    
     <!-- <script src="http://statics.adtopy.com/editor/js/vendors/prism.min.js"></script> -->
     <!-- disabled form-validation, because we use: metadata server-validation
     <script src="http://statics.adtopy.com/editor/js/vendors/jqBootstrapValidation.js"></script>
@@ -62,6 +71,7 @@
     <script src="http://statics.adtopy.com/editor/js/vendors/pickers/picker.time.js"></script>
     <script src="http://statics.adtopy.com/editor/js/vendors/pickers/pick-a-datetime.js"></script>
     <script src="http://statics.adtopy.com/editor/js/vendors/pickers/daterangepicker.js"></script>
+    <script src="http://statics.adtopy.com/editor/js/vendors/datatable-jobs.js"></script>
     
     [@DEPENDENCY]
         [_BUNDLE]Page[#]
@@ -82,7 +92,7 @@
             [_SCRIPT]
                 [_PHASE]BODYEND[#]
                 [_FILE]editor/js/vendors/prism.min.js[#]
-            [#]
+            [#]      
         [#]
     [#]
 </body>
