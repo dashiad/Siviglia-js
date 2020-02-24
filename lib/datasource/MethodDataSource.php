@@ -18,7 +18,7 @@ class MethodDataSource extends \lib\datasource\ArrayDataSource
         $this->serializer=$serializer;
     }
 
-    function setParameters($obj)
+   /* function setParameters($obj)
     {
         $remFields=$obj->__getFields();
         if(!$remFields)
@@ -30,7 +30,7 @@ class MethodDataSource extends \lib\datasource\ArrayDataSource
                 $this->parameters[$tKey] = $tValue->getValue();
             }
         }
-    }
+    }*/
 
     function getPagingParameters()
     {

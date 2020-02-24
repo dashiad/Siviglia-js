@@ -10,6 +10,7 @@ class ActionException extends \lib\model\BaseException
 class Action extends \lib\model\BaseTypedObject
 {
     protected $destModel = null;
+    protected $actionResult=null;
 
     function __construct($definition)
     {
@@ -41,6 +42,7 @@ class Action extends \lib\model\BaseTypedObject
 
     function process($fields, & $actionResult, $user)
     {
+        $this->actionResult=$actionResult;
 
 	    $def=$this->getDefinition();
 	    $keys=null;
@@ -121,9 +123,9 @@ class Action extends \lib\model\BaseTypedObject
                     }break;
                     default:
                     {
-
                         $val=$this->__transferFields($def["MODEL"]);
                         $this->destModel->loadFromArray($val, false, false, $actionResult);
+                        $actionResult->setModel($this->destModel);
                         if($actionResult->isOk())
                             $this->onSaved($this->destModel);
                     }
@@ -132,8 +134,9 @@ class Action extends \lib\model\BaseTypedObject
 	    }
         if (!$actionResult->isOk())
             return $this->onError($keys, $fields, $actionResult, $user);
-        else
-            $actionResult->setModel($this->destModel);
+        else {
+            $this->onSuccess($actionResult->getModel(),null);
+        }
 
     }
 

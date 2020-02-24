@@ -4,7 +4,7 @@
 [*/PAGE/PAGE]
     [_TITLE]Mi titulo[#]
     [_CONTENT]
-        <div sivView="Reflection.Widgets.DefinitionForm"></div>
+        <div data-sivView="Reflection.Widgets.DefinitionForm"></div>
     [#]
 [#]
 [@DEPENDENCY]

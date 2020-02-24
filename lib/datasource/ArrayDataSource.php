@@ -6,28 +6,14 @@
   {
         protected $objName;
         protected $dsName;
-        protected $originalDefinition=null;
+
         protected $value;
         protected $nItems;
         protected $dataSet;
         protected $iterator;
         protected $columnNames;
         protected $metaData;
-        function __construct($objName,$dsName,$definition)
-        {
-            $this->objName = $objName;
-            $this->dsName = $dsName;
-            $this->originalDefinition=$definition;
-            parent::__construct($definition);
 
-            /*
-            $this->columnNames=$columnNames;
-            $this->value=$values;
-            $this->nItems=count($values);
-            $this->metaData=$metaData;
-            */
-
-        }
         function getOriginalDefinition()
         {
             return $this->originalDefinition;
@@ -40,11 +26,11 @@
                 $this->iterator= new ArrayDataSet($this,$this->value,$this->columnNames,$this->nItems);
             }
             return $this->iterator;
-                
+
         }
         function count()
         {
-           return $this->nItems;     
+           return $this->nItems;
         }
         function countColumns()
         {
@@ -76,14 +62,14 @@
                ArrayDataSource::__construct($results,$columnNames,$metaData);
 
            }
-          
-       }       
+
+       }
   }
-  
-  
+
+
   class ArrayDataSet extends TableDataSet
   {
-   
+
       var $parentDs;
       var $data;
       var $currentIndex=0;
@@ -98,7 +84,7 @@
           $this->rowSet=new ArrayTableRowDataSet($this);
       }
 
-    
+
       function setIndex($index)
       {
           $this->currentIndex=$index;
@@ -129,7 +115,7 @@
 
       function offsetExists($index)
       {
-         
+
         return $index < $this->count;
       }
 
@@ -150,7 +136,7 @@
           $this->currentIndex=0;
           return $this->getField($varName);
       }
-    
+
 }
 
   class ArrayTableRowDataSet {
