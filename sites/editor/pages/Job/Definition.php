@@ -21,7 +21,7 @@ class Definition extends \model\web\Page\PageDefinition
             ),
             'FIELDS'=>array(
                 'job_id'=>[
-                    "MODEL"=>"/model/web/Jobs",
+                    "MODEL"=>"/model/web/Jobs/Worker",
                     "FIELD"=>"job_id"
                 ]
             )

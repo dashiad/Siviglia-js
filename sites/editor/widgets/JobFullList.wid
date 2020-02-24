@@ -15,8 +15,8 @@ $params=$currentPage->getPageParams();
 ?>
 [*:JOB_LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_:HEADER]
-                    [_:TITLE]Titulo de la lista[#]
-                    [_:DESCRIPTION]Descripcion de la lista. Lorem ipsum....[#]
+                    [_:TITLE]Listado de trabajos[#]
+                    [_:DESCRIPTION]Tabla que muestra por fila los resultados de cada trabajo para la tarea ComScore.[#]
 					[_:ICONO]statics[#]
                 [#]
                 [_:LISTING]

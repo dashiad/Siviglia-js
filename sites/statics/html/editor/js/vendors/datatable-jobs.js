@@ -8,6 +8,22 @@
 // DataTable configurado
 $(document).ready(function() {    
     $('#dataTableJobs').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'copy',
+                text: 'Copiar',
+                exportOptions: {
+                    modifier: {
+                        page: 'current'
+                    }
+                }
+            }, 'csv', 'excel', 'pdf',
+            {
+                extend: 'print',
+                text: 'Imprimir',                
+            }
+        ],
     //para cambiar el lenguaje a español
         "language": {
                 "lengthMenu": "Mostrar _MENU_ registros",

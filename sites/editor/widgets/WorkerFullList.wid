@@ -1,12 +1,33 @@
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_PHASE]BODYEND[#]
+            [_FILE]editor/js/vendors/datatable-jobs.js[#]
+        [#]
+    [#]
+[#]
+
 <?php
 $serializer=\Registry::getService("storage")->getSerializerByName('web');
 $currentPage=Registry::$registry["currentPage"];
 $params=$currentPage->getPageParams();
+
+
+$datasource=\lib\datasource\DataSourceFactory::getDataSource("/model/web/Jobs/Worker","FullList");
+$datasource->job_id="employee_report_5e4fc73ce420f";
+$it=$datasource->fetchAll();
+$n=$it->count();
+for($k=0;$k<count($n);$k++)
+  echo $it->job_id;
+
+
 ?>
-[*:JOB_LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs/Worker","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+
+[*:WORKER_LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs/Worker","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_:HEADER]
-                    [_:TITLE]Titulo de la lista[#]
-                    [_:DESCRIPTION]Descripcion de la lista. Lorem ipsum....[#]
+                    [_:TITLE]Tabla del Worker[#]
+                    [_:DESCRIPTION]Detalles de los workers asociados al job.[#]
 					[_:ICONO]statics[#]
                 [#]
                 [_:LISTING]
@@ -18,14 +39,13 @@ $params=$currentPage->getPageParams();
 						[_:COLUMN][_:LABEL]Actualizado[#][#]
                     [#]
                     [_:ROWS]
-						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/AutoIncrement({"name":"id_job","model":"$iterator"})][#][#][#]
-						[_:ROW][_:VALUE][*::/ELEMENT/TEXT/LINK][_::LINK_URL]/Jobs/<?php echo $iterator->job_id;?>/view[#][_::LINK_TEXT]<?php echo $iterator->job_id;?>[#][#][#][#]
-						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer_Job_Status({"name":"status","model":"$iterator"})][#][#][#]
-						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"created_at","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"worker_id","model":"$iterator"})][#][#][#]
+                        [_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"job_id","model":"$iterator"})][#][#][#]
+                        [_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer_Job_Status({"name":"status","model":"$iterator"})][#][#][#]
+                        [_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"created_at","model":"$iterator"})][#][#][#]
 						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"updated_at","model":"$iterator"})][#][#][#]
                     [#]
                     [_:LISTINGFOOTER]
                     [#]
                 [#]
            [#]
-           

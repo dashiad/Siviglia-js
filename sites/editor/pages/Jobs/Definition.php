@@ -20,9 +20,9 @@ class Definition extends \model\web\Page\PageDefinition
             'SOURCES'=>array(
             ),
             'FIELDS'=>array(
-                'id_job'=>[
+                'job_id'=>[
                     "MODEL"=>"/model/web/Job",
-                    "FIELD"=>"id_job"
+                    "FIELD"=>"job_id"
                 ]
             )
         );

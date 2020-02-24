@@ -17,7 +17,7 @@ class JobPage extends  \model\web\Page
 
     }
     function getFormModel($model,$form)
-    {
+    {        
         $s=\Registry::getService("model");
         //$ins=$s->loadModel('\model\web\Job',["id_job"=>$this->id_job]);
         $ins=$s->loadModel('\model\web\Jobs\Worker',["job_id"=>$this->job_id]);
