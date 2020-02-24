@@ -8,10 +8,10 @@
 
 namespace sites\editor\pages\Jobs;
 
-include_once(PROJECTPATH."/model/web/objects/Job/JobDefinition.php");
-class Definition extends \model\web\Job\JobDefinition
+include_once(PROJECTPATH."/model/web/objects/Page/PageDefinition.php");
+class Definition extends \model\web\Page\PageDefinition
 {
-    function getJobDefinition()
+    function getPageDefinition()
     {
         return array(
             'CACHING'=>array('TYPE'=>'NO-CACHE'),

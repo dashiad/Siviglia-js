@@ -8,10 +8,10 @@
 
 namespace sites\editor\pages\Job;
 
-include_once(PROJECTPATH."/model/web/objects/Job/JobDefinition.php");
-class Definition extends \model\web\Job\JobDefinition
+include_once(PROJECTPATH."/model/web/objects/Page/PageDefinition.php");
+class Definition extends \model\web\Page\PageDefinition
 {
-    function getJobDefinition()
+    function getPageDefinition()
     {
         return array(
             'CACHING'=>array('TYPE'=>'NO-CACHE'),
@@ -20,9 +20,9 @@ class Definition extends \model\web\Job\JobDefinition
             'SOURCES'=>array(
             ),
             'FIELDS'=>array(
-                'id_job'=>[
-                    "MODEL"=>"/model/web/Job",
-                    "FIELD"=>"id_job"
+                'job_id'=>[
+                    "MODEL"=>"/model/web/Jobs",
+                    "FIELD"=>"job_id"
                 ]
             )
         );

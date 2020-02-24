@@ -10,7 +10,7 @@ namespace sites\editor\pages\Jobs;
 
 include_once(PROJECTPATH."/model/web/objects/Jobs/objects/Worker/Definition.php");
 
-class JobsPage extends \model\web\Jobs\Worker\Definition
+class JobsPage extends  \model\web\Page
 {
     function initializePage($params)
     {
