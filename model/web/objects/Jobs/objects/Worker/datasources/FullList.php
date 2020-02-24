@@ -94,9 +94,29 @@ class FullList
                 'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'alive'
             ],
+            'items' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'items'
+            ],
+            'last_completed_item_index' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'last_completed_item_index'
+            ],
+            'descriptor' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'descriptor'
+            ],
             'result' => [
                 'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'result'
+            ],
+            'created_at' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'created_at'
+            ],
+            'updated_at' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'updated_at'
             ],
         ],
         'PERMISSIONS' => ['PUBLIC'],
