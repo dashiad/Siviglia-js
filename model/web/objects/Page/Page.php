@@ -111,6 +111,7 @@ class Page extends \lib\model\BaseModel
 
     static function getPageInstance($data,$request,$params)
     {
+        
         $site=\getModel('\model\web\Site',array("id_site"=>$data->id_site));
         //$path=$site->getPagePath($data->path);
         $parts=explode("/",$data->path);

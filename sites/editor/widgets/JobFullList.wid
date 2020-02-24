@@ -1,3 +1,13 @@
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_PHASE]BODYEND[#]
+            [_FILE]editor/js/vendors/datatable-jobs.js[#]
+        [#]
+    [#]
+[#]
+
 <?php
 $serializer=\Registry::getService("storage")->getSerializerByName('web');
 $currentPage=Registry::$registry["currentPage"];
