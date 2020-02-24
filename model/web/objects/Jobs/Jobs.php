@@ -3,7 +3,7 @@ namespace model\web;
 
 use \lib\model\{BaseModel, BaseException};
 
-class JobsException extends BaseException
+class JobException extends BaseException
 {
     const ERR_JOB_NOT_FOUND       = 1;
     const ERR_LOGIN_REQUIRED      = 2;

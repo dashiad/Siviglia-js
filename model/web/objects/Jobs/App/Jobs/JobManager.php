@@ -13,6 +13,7 @@ class JobManager implements StatusInterface
     const ACTIONS = [
         'create',
         'start',
+        'kill',
         'children_finish',
         'children_failed',
         'job_finish',
@@ -22,14 +23,13 @@ class JobManager implements StatusInterface
     /**
      * Constructor for JobManager
      **/
-    public function __construct()
+    public function __construct($id=null)
     {
-        $this->id = Config::get('main', 'app');
+        $this->id = $id ?? Config::get('main', 'app');
         $this->queue = Queue::connect($this->id);
         $this->channel = $this->queue->getDefaultChannel();
         $this->queue->createQueue($this->id, $this->channel, false);
         $this->queue->subscribe('control', $this->channel, $this->id);
-        //$this->queue->subscribe('main', $this->channel, $this->id);
         $this->jobs = [];
     }
     
@@ -67,8 +67,8 @@ class JobManager implements StatusInterface
     
     /**
      * 
-     * @param unknown $trigger
-     * @param unknown $jobDescription
+     * @param String $trigger
+     * @param Array $jobDescription
      */
     protected function addTrigger($trigger, $jobDescription)
     {
@@ -78,11 +78,6 @@ class JobManager implements StatusInterface
         $this->triggers[$trigger][$id]['launched_for'] = [];
     }
     
-    /**
-     * 
-     * @param unknown $trigger
-     * @param unknown $id
-     */
     protected function removeTrigger($trigger, $id)
     {
         if(isset($this->triggers[$trigger][$id])) {
@@ -90,10 +85,6 @@ class JobManager implements StatusInterface
         }
     }
     
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function create($request)
     {
         if  (isset($request['data']['on'])) {
@@ -105,10 +96,6 @@ class JobManager implements StatusInterface
         }
     }
     
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function start($request)
     {
         if ($this->existsJob($request['to'])) {
@@ -119,11 +106,17 @@ class JobManager implements StatusInterface
             }
         }
     }
+    
+    protected function kill($request)
+    {
+        if ($this->existsJob($request['to'])) {
+            $id = $request['to'];
+            // envía a los dispatcher orden de matar los worker asociados al job
+            $this->jobs[$id]->kill();
+            if (DEBUG) echo CLI::colorStr("Stopping $id", "yellow").PHP_EOL;
+        }
+    }
 
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function children_failed($request)
     {
         if ($this->existsJob($request['to'])) {
@@ -133,10 +126,6 @@ class JobManager implements StatusInterface
         }
     }
     
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function children_finish($request)
     {
         if ($this->existsJob($request['to'])) {
@@ -147,10 +136,6 @@ class JobManager implements StatusInterface
         }
     }
     
-    /**
-     * 
-     * @param unknown $request
-     */
     protected function job_finish($request)
     {
         if ($this->existsJob($request['from'])) {
@@ -165,10 +150,6 @@ class JobManager implements StatusInterface
         }
     }
      
-    /**
-     * 
-     * @param unknown $trigger
-     */
     protected function trigger($trigger, $request)
     {
         if (array_key_exists($trigger, $this->triggers)) {          
@@ -189,28 +170,25 @@ class JobManager implements StatusInterface
     }
     
     /**
-     * 
+     *
      * @param Array $hook
      * @param String $creator
-     * @return \Jobs\Runnables\Job
+     * @return \model\web\Jobs\App\Jobs\Runnables\Job
      */
-    protected function launchTrigger(Array &$hook, String $creator)
-    {
-        if (!array_key_exists($creator, $hook['launched_for'])) {
-            $job = new Job($this->queue, $hook['description']);
-            $job->addEmptyChildren(count($this->jobs[$creator]->getChildren()));
-            $this->jobs[$job->getId()] = $job;
-            $hook['launched_for'][$creator] = $job;
-        } else {
-            $job = $hook['launched_for'][$creator];
-        }
-        return $job;
-    }
     
-    /**
-     * 
-     * @param unknown $request
-     */
+     protected function launchTrigger(Array &$hook, String $creator)
+     {
+     if (!array_key_exists($creator, $hook['launched_for'])) {
+     $job = new Job($this->queue, $hook['description']);
+     $job->addEmptyChildren(count($this->jobs[$creator]->getChildren()));
+     $this->jobs[$job->getId()] = $job;
+     $hook['launched_for'][$creator] = $job;
+     } else {
+     $job = $hook['launched_for'][$creator];
+     }
+     return $job;
+     }
+           
     protected function status($request)
     {
         $jobs_status = [];
@@ -230,6 +208,8 @@ class JobManager implements StatusInterface
     }
     
     /**
+     * 
+     * Checks whether the job exists
      * 
      * @param String $id
      * @return boolean
@@ -260,6 +240,8 @@ class JobManager implements StatusInterface
             'action' => "start",
         ]);
         $queue->publish($msg, $queue->getDefaultChannel(), 'control', $definition['job_id']);
+        
+        return $definition['job_id'];
     }
     
 }

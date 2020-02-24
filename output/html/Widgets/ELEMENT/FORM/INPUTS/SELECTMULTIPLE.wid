@@ -1,7 +1,23 @@
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_CODE]
+                jQuery(document).ready(function($){
+                    $(document).ready(function() {
+                        $('.smartclip-select2-multiple').select2();
+                    });
+                });
+            [#]
+        [#]        
+    [#]
+[#]
+
+
 <?php
  echo "<input type=\"hidden\" name=\"INPUTS[".$name."]\" value=\"SelectMultiple\">";
 ?>
-<select name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $name;?>][]"  autocomplete="off" multiple="multiple">
+<select class="form-control smartclip-select2-multiple" multiple="multiple" name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $name;?>][]"  autocomplete="off" multiple="multiple">
     <?php
          $nCols=count($valueFields);
          $nLabels=count($labelFields);

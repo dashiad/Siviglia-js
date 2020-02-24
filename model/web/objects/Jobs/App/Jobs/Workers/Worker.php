@@ -6,6 +6,8 @@ use model\web\Jobs\App\Jobs\Config;
 use model\web\Jobs\App\Jobs\Interfaces\StatusInterface;
 use model\web\Jobs\App\Jobs\Messages\SimpleMessage;
 use model\web\Jobs\App\Jobs\Persistable;
+use Swoole\Process;
+
 
 abstract class Worker implements StatusInterface
 {
@@ -17,7 +19,7 @@ abstract class Worker implements StatusInterface
     protected $queue;
     protected $args;
     protected $standalone = false;
-    protected $result = '';
+    protected $result = [];
     protected $lastCompletedItem = null;
     protected $items = [];
     protected $totalParts;
@@ -49,14 +51,15 @@ abstract class Worker implements StatusInterface
         $this->index      = $this->args['index'];
         $this->items      = $this->args['items'];
         $this->totalParts = $this->args['number_of_parts'];
-        $this->standalone = $this->args['standalone'];
+	    $this->standalone = $this->args['standalone'];
         if (!$this->standalone) {
             $this->queue = Queue::connect($this->id);
         }
+        pcntl_async_signals(true);
+        pcntl_signal(SIGTERM, [$this, "__term_handler"]);
         $this->init();
         $this->persist();
     }
-    
     
     public function __destruct()
     {
@@ -75,7 +78,7 @@ abstract class Worker implements StatusInterface
     {
         if (empty($this->args['items'])) $this->args['items'] = [];
         foreach ($this->args['items'] as $index=>$item) {
-            $this->result .= $this->runItem($item);
+            $this->result[] = $this->runItem($item);
             $this->lastCompletedItem = $index;
             $this->persist();
         }
@@ -87,20 +90,21 @@ abstract class Worker implements StatusInterface
     public function run()
     {
         $this->status=self::RUNNING;
-            $this->result = '';
-            $this->persist();
-            ob_start();
-            try {
-                $this->_run();
-                $this->status=self::FINISHED;
-            } catch (\Exception $e) {
-                $this->result .= $e->getMessage();
-                $this->status=self::FAILED;
-                $this->alive=0;
-            } finally {
-                $result = ob_get_clean();
-                $this->finish($result);
-            }
+        $this->result = [];
+        $this->persist();
+        ob_start();
+        try {
+            $this->_run();
+            $this->status=self::FINISHED;
+        } catch (\Exception $e) {
+            $this->result[] = $e->getMessage();
+            $this->status=self::FAILED;
+            $this->alive=0;
+        } finally {
+            $result = ob_get_clean();
+            $this->finish($result);
+        }
+        exit();
     }
     
     public function getParent() : ?String
@@ -130,6 +134,7 @@ abstract class Worker implements StatusInterface
     public function finish(String $result)
     {
         $action = ($this->status==self::FINISHED) ? 'children_finish' : 'children_failed';
+        $this->result[] = $result;
         $args = [
             'from'   => $this->id,
             'to'     => $this->args['parent'],
@@ -138,7 +143,7 @@ abstract class Worker implements StatusInterface
                 'type'   => 'task',
                 'status' => $this->status,
                 'index'  => $this->args['index'],
-                'result' => $this->result.$result,
+                'result' => $this->result,
             ],
         ];
         if (!$this->standalone) {
@@ -148,5 +153,14 @@ abstract class Worker implements StatusInterface
             echo json_encode($args).PHP_EOL;
         }
         $this->persist();
-    }    
+    }
+    
+    public function __term_handler($signal)
+    {
+        $this->status = self::FAILED;
+        $this->alive = 0;
+        $this->finish('Worker received SIGTERM');
+        exit(128+$signal);
+    }
+    
 }

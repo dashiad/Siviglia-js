@@ -11,6 +11,8 @@ class Job extends AbstractRunnable
 
     use Persistable;
     
+    const CHILDREN_KILL_TTL      = 5;   // seconds to try to kill each children
+    
     protected $prefix = 'job_';
     protected $actions = [
         'dispatch'   => 'dispatch',
@@ -19,7 +21,6 @@ class Job extends AbstractRunnable
  
     protected $tasks = [];
     
-    //protected $modelName = 'model\\web\\Jobs\\Jobs';
     protected $modelName = 'model\\web\\Jobs';
     protected $fields = [
         'job_id'     => 'id',
@@ -30,6 +31,7 @@ class Job extends AbstractRunnable
     ];
     protected $maxRetries = 0; // default: no retries
     protected $waitingForChildren = false;
+    protected $killed = false;
     
     protected function initialize()
     {   
@@ -132,8 +134,41 @@ class Job extends AbstractRunnable
         $this->persist();
     }
     
+    public function kill()
+    {
+        if ($this->status==self::RUNNING) {
+            $lock = new \swoole_lock(SWOOLE_MUTEX);
+            $lock->lock();
+            foreach(array_keys($this->children) as $index) {
+                if ($this->children[$index]['status']==self::RUNNING) {
+                    $args = [
+                        'sender_id' => $this->id,
+                        'from'      => $this->id,
+                        'to'        => 'dispatcher',
+                        'action'    => 'worker_kill',
+                        'params'    => [
+                            'index' => $index,
+                            'ttl'   => strtotime("+".self::CHILDREN_KILL_TTL." seconds"),
+                            'try'   => 1,
+                        ],
+                    ];
+                    $msg = new SimpleMessage($args);
+                    $this->queue->publish($msg, $this->channel, 'dispatch', 'broadcast');
+                }
+                if ($this->children[$index]['status']!=self::FINISHED)
+                    $this->children[$index]['status']==self::FAILED;
+            }
+            $this->killed = true;
+            $this->status = self::FAILED;
+            $this->sendStatus('job_failed', 'control');
+            $this->persist();
+            $lock->unlock();
+        }
+    }
+    
     protected function startChildren()
     {
+        if ($this->killed) return;
         $lock = new \swoole_lock(SWOOLE_MUTEX);
         $lock->lock();
         foreach(array_keys($this->children) as $index) {
@@ -149,7 +184,6 @@ class Job extends AbstractRunnable
                             'params'    => $this->args,
                         ]);
                         $this->queue->publish($msg, $this->channel, 'control');
-                        //$this->children[$index]['data']->start();
                         break;
                     case 'task':
                         $this->dispatch($this->children[$index]);
@@ -250,7 +284,6 @@ class Job extends AbstractRunnable
         // si parent es null, lo envío a la cola externa
         if (!is_null($this->parent)) {
             $this->sendStatus('children_finish', 'control', $data->index);
-            //$this->sendStatus('children_finish', 'main', $data->index);
         } else {
             $this->sendStatus('children_finish', 'control', $data->index);
         }
@@ -267,13 +300,11 @@ class Job extends AbstractRunnable
     
     public function job_finish($msg)
     {
-        //$this->sendStatus('job_finish', 'main');
         $this->sendStatus('job_finish', 'control');
     }
     
     public function job_failed($msg)
     {
-        //$this->sendStatus('job_failed', 'main');
         $this->sendStatus('job_failed', 'control');
     }
     
@@ -305,7 +336,7 @@ class Job extends AbstractRunnable
         ];
         foreach ($this->children as $index=>$child) {
             if ($index!=="") {
-                if ($child['status']==self::FAILED && $child['try']<$this->maxRetries) {
+                if ($child['status']==self::FAILED && $child['try']<$this->maxRetries && !$this->killed) {
                     $statusCount[self::RUNNING]++; // al worker le quedan reintentos, por lo que el job está en ejecución 
                 } else {
                     $statusCount[$child['status']]++;

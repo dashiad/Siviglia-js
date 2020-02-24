@@ -2,112 +2,199 @@
 require(__DIR__.'/bootstrap.php');
 
 use model\web\Jobs\App\Jobs\JobManager;
-use model\web\Jobs\App\Queue;
+use model\web\Jobs\App\Jobs\Messages\SimpleMessage;
+use model\web\Jobs\App\Jobs\Queue;
+use model\web\Jobs\App\Jobs\Workers\TestWorker;
+use model\web\Jobs\App\Jobs\Runnables\Job;
 
-/*$queue = Jobs\Queue::create('test');
-$args = array (
+
+const SIMPLE_JOB = [
     'type' => 'job',
     'name' => 'simplest_job',
+    'max_retries' => 1,
     'task' =>
-    array (
+    [
         'type' => 'task',
         'name' => 'data_mixer',
         'args' =>
-        array (
-            'task' => 'Test',
+        [
+            'task' => 'model\\web\\Jobs\\App\\Jobs\\Workers\\TestWorker',
             'type' => 'DateRange',
             'params' =>
-            array (
+            [
+                'start_date' => '2019-11-01 00:00:00',
+                'end_date' => '2019-11-30 23:59:59',
+                'max_chunk_size' => 10,
+            ],
+        ],
+    ],
+];
+
+const MYSQL_JOB = [
+    'type' => 'job',
+    'name' => 'daily_report',
+    'task' => [
+        'type' => 'task',
+        'name' => 'data_mixer',
+        'max_running_children' => 2,
+        'args' => [
+            'task' => 'model\\web\\Jobs\\App\\Jobs\\Workers\\MySqlWorker',
+            'type' => 'DateRange',
+            'params' => [
                 'start_date' => '2019-11-01 00:00:00',
                 'end_date' => '2019-11-30 23:59:59',
                 'max_chunk_size' => 30,
-            ),
-        ),
-    ),
-);
-$job = new Jobs\Runnables\Job($queue, $args);
-$job->start();
-//Jobs\Persist::save($job);
-//$job->persist();
- */
+            ],
+        ],
+    ],
+];
 
-/*
- * 
- * 
- * 
- 
-  function testCreateJobsTable()
-    {
-        $model = new Job;
-        $res = \Registry::getService("storage")->getSerializerByName('web');
-        $res->createStorage($model, ["test"=>"test"], 'Job');
-    }
-    
-    function testCreateWorkersTable()
-    {
-        $model = new Worker;
-        $res = \Registry::getService("storage")->getSerializerByName('web');
-        $res->createStorage($model, ["test"=>"test"], 'Worker');
-    }
-    
-    function testCreateJobs()
-    {
-        $job = new Job;
-        $job->job_id = uniqid('test_job_');
-        $job->name = 'test_job';
-        $job->object = '<objeto_serializado>';
-        $job->save();
-        
-        for ($i=0;$i<2;$i++) {
-            $child = new Job();
-            $child->job_id = uniqid('child_job_');
-            $child->parent = $job->job_id;
-            $child->name = 'child_job';
-            $child->object = '<objeto_serializado>';
-            $child->save();
-            for($j=0;$j<4;$j++) {
-                $worker = new Worker();
-                $worker->name = "TestWorker";
-                $worker->job_id = $child->job_id;
-                $worker->worker_id = uniqid($worker->job_id.'.'.$worker->name.'_');
-                $worker->index = $j;
-                $worker->number_of_parts=4;
-                $worker->status = 1;
-                $worker->items = json_encode([1,2,3,4]);
-                $worker->object = '<objeto_serializado>';
-                $worker->save();
-            }
-        }
-    }
- 
-  function testFindJobs()
-    {
-        $job = new Job;
-        $job->id_job = 3;
-        $job->loadFromFields();
-        $this->assertEquals("waiting", \model\web\Job::getStatus($job->status));
-    }
-    
-    function testListJobs()
-    {
-        $job = new Job;
-        $job->id_job=3;
-        $job->loadFromFields();
-        $job->workers->getRelationValues();
-        $this->assertEquals(4, $job->workers->count());
-    }
-    function testInvokeDatasource()
-    {
-        $ds=\lib\datasource\DataSourceFactory::getDataSource("\model\web\Job", "FullList");
-        $ds->status=Job::WAITING;
-        $it = $ds->fetchAll();
-        $data = $it->getFullData();
-        foreach($data as $job) {
-            echo $job->job_id;
-        }
-        this->assertEquals(3, $it->count());
-    }
-    */
+const EMPLOYEE_JOB = [
+    'type' => 'job',
+    'name' => 'employee_report',
+    'task' => [
+        'type' => 'task',
+        'name' => 'employee_sql_query',
+        'max_running_children' => 2,
+        'args' => [
+            'task' => 'model\\web\\Jobs\\App\\Jobs\\Workers\\EmployeeListWorker',
+            'type' => 'None',
+            'params' => []
+        ],
+    ],
+];
+
+const DIRECTORY_JOB = [
+    "type" =>  "job",
+    "name" =>  "directory_report",
+    "task" =>  [
+        "type" =>  "task",
+        "name" =>  "directory_listing",
+        "args" =>  [
+            "task" =>  "model\\web\\Jobs\\App\\Jobs\\Workers\\DirectoryListWorker",
+            "type" =>  "List",
+            "params" =>  [
+                "items" =>  [
+                    "/var",
+                    "/home",
+                    "/bin"
+                ],
+                "max_chunk_size" =>  1,
+            ]
+        ]
+    ]
+];
+
+const PARALLEL_JOB = [
+    "type" =>  "job",
+    "name" =>  "monthly_report",
+    "jobs" =>  [
+        [
+            "type" =>  "job",
+            "name" =>  "db_export",
+            "task" =>  [
+                "type" =>  "task",
+                "name" =>  "sql_exporter",
+                "args" =>  [
+                    "task" =>  "model\\web\\Jobs\\App\\Jobs\\Workers\\TestWorker",
+                    "type" =>  "DateRange",
+                    "params" =>  [
+                        "start_date" =>  "2019-11-01 00:00:00",
+                        "end_date" =>  "2019-11-30 23:59:59",
+                        "max_chunk_size" =>  30
+                    ]
+                ]
+            ]
+        ],
+        [
+            "type" =>  "job",
+            "name" =>  "file_export",
+            "task" =>  [
+                "type" =>  "task",
+                "name" =>  "file_exporter",
+                "args" =>  [
+                    "task" =>  "model\\web\\Jobs\\App\\Jobs\\Workers\\DirectoryListWorker",
+                    "type" =>  "List",
+                    "params" =>  [
+                        "items" =>  [
+                            "/var",
+                            "/home",
+                            "/bin"
+                        ],
+                        "max_chunk_size" =>  3
+                    ]
+                ]
+            ]
+        ]
+    ]
+];
+
+const API_TASK = [
+    "type" => "task",
+    "name" => "task_name",
+    "args" => [
+        "task" => null,
+        "name" => "smartx_downloader",
+        "type" => "List",
+        "params" => [
+            "max_chunk_size" => 2,
+            "items" => [
+                [
+                    "call" => "line_item/178983",
+                    "params" => [],
+                ],
+                [
+                    "call" => "market_place",
+                    "params" => [],
+                ],
+                [
+                    "call" => "device_model",
+                    "params" => [],
+                ],
+                [
+                    "call" => "line_item",
+                    "params" => [
+                        "marketplace_id" => 18,
+                        "changed_within" => 1*24*60*60, // modificados en el último día
+                        "filter" => "end_date gt 2020-02-19 00:00:00", // que no hayan terminado
+                    ],
+                ],
+                [
+                    "call" => "campaign",
+                    "params" => [
+                        "marketplace_id" => 18,
+                        "changed_within" => 1*24*60*60, // modificados en el último día
+                        "filter" => "end_date gt  2020-02-19 00:00:00", // que no hayan terminado
+                    ],
+                ],
+            ],
+        ],
+    ]
+];
+
+const TRIGGER = [
+    "type" =>  "trigger",
+    "name" =>  "alerts_on_daily_report",
+    "on" =>  "daily_report",
+    "run_on_partials" =>  true,
+    "job" =>  [
+        "type" =>  "job",
+        "name" =>  "daily_alert",
+        "max_retries" =>  2,
+        "partials" =>  [
+            "type" =>  "model\\web\\Jobs\\App\\Jobs\\Workers\\TestWorker",
+            "name" =>  "email_alert",
+            "args" =>  [
+                "task" =>  "Test",
+                "type" =>  "List",
+                "params" =>  [
+                    "items" => [],
+                ],
+            ],
+        ],
+    ],
+];    
+
 function testCreateJobsTable()
 {
     $model = new \model\web\Jobs;
@@ -124,182 +211,164 @@ function testCreateWorkersTable()
 
 function testCreateSimpleJob()
 {
-    $args = array (
-        'type' => 'job',
-        'name' => 'simplest_job',
-        'max_retries' => 1,
-        'task' =>
-        array (
-            'type' => 'task',
-            'name' => 'data_mixer',
-            'args' =>
-            array (
-                'task' => 'Test',
-                'type' => 'DateRange',
-                'params' =>
-                array (
-                    'start_date' => '2019-11-01 00:00:00',
-                    'end_date' => '2019-11-30 23:59:59',
-                    'max_chunk_size' => 10,
-                ),
-            ),
-        ),
-    );
-    JobManager::createJob($args);
+    $args = SIMPLE_JOB;
+    return JobManager::createJob($args);
 }
 
 function testCreateMySqlJob()
 {
-    $args = array (
-        'type' => 'job',
-        'name' => 'daily_report',
-        'task' =>
-        array (
-            'type' => 'task',
-            'name' => 'data_mixer',
-            'max_running_children' => 2,
-            'args' =>
-                array (
-                    'task' => 'MySql',
-                    'type' => 'DateRange',
-                    'params' =>
-                    array (
-                        'start_date' => '2019-11-01 00:00:00',
-                        'end_date' => '2019-11-30 23:59:59',
-                        'max_chunk_size' => 30,
-                    ),
-                ),
-        ),
-    );
-    JobManager::createJob($args);
+    $args = MYSQL_JOB;
+    return JobManager::createJob($args);
 }
 
 function testCreateEmployeeReport() 
 {
-    $args = array (
-        'type' => 'job',
-        'name' => 'employee_report',
-        'task' =>
-        array (
-            'type' => 'task',
-            'name' => 'employee_sql_query',
-            'max_running_children' => 2,
-            'args' =>
-            array (
-                'task' => 'EmployeeList',
-                'type' => 'None',
-                'params' => array()
-            ),
-        ),
-    );
-    JobManager::createJob($args);
+    $args = EMPLOYEE_JOB;
+    return JobManager::createJob($args);
 }
 
 function testCreateTrigger()
 {
-    $args = [
-        "type" =>  "trigger",
-        "name" =>  "alerts_on_daily_report",
-        "on" =>  "daily_report",
-        "run_on_partials" =>  true,
-        "job" =>  [
-            "type" =>  "job",
-            "name" =>  "daily_alert",
-            "max_retries" =>  2,
-            "partials" =>  [
-                "type" =>  "Test",
-                "name" =>  "email_alert",
-                "args" =>  [
-                    "task" =>  "Test",
-                    "type" =>  "List",
-                    "params" =>  [
-                        "items" => [],
-                    ],
-                ],
-            ],
-        ],
-    ];    
-    JobManager::createJob($args);    
+    $args = TRIGGER;
+    return JobManager::createJob($args);    
 }
 
 function testCreateDirectoryJob()
 {
-    $args = [
-        "type" =>  "job",
-        "name" =>  "directory_report",
-        "task" =>  [
-            "type" =>  "task",
-            "name" =>  "directory_listing",
-            "args" =>  [
-                "task" =>  "DirectoryList",
-                "type" =>  "List",
-                "params" =>  [
-                    "items" =>  [
-                        "/var",
-                        "/home",
-                        "/bin"
-                    ],
-                "max_chunk_size" =>  1,
-                ]
-            ]
-        ]
-    ];
-    JobManager::createJob($args);
+    $args = DIRECTORY_JOB;
+    return JobManager::createJob($args);
 }
 
 function testCreateParallelJob()
 {
-    $args = [
-        "type" =>  "job",
-        "name" =>  "monthly_report",
-        "jobs" =>  [
-            [
-                "type" =>  "job",
-                "name" =>  "db_export",
-                "task" =>  [
-                    "type" =>  "task",
-                    "name" =>  "sql_exporter",
-                    "args" =>  [
-                        "task" =>  "Test",
-                        "type" =>  "DateRange",
-                        "params" =>  [
-                            "start_date" =>  "2019-11-01 00:00:00",
-                            "end_date" =>  "2019-11-30 23:59:59",
-                            "max_chunk_size" =>  30
-                        ]
-                    ]
-                ]
-            ],
-            [
-                "type" =>  "job",
-                "name" =>  "file_export",
-                "task" =>  [
-                    "type" =>  "task",
-                    "name" =>  "file_exporter",
-                    "args" =>  [
-                        "task" =>  "DirectoryList",
-                        "type" =>  "List",
-                        "params" =>  [
-                            "items" =>  [
-                                "/var",
-                                "/home",
-                                "/bin"
-                            ],
-                            "max_chunk_size" =>  3
-                        ]
-                    ]
-                ]
-            ]
-        ]
+    $args = PARALLEL_JOB;
+    return JobManager::createJob($args);
+}
+
+function testLocateWorkers()
+{
+    $packages = \model\reflection\ReflectorFactory::getPackageNames();
+    
+    $workers = [];
+    foreach($packages as $package) {
+        try {
+            $pkg = new \model\reflection\Package($package, "model");
+            $workers[$package] = $pkg->getWorkers();
+        } catch (\Throwable $e) {
+            continue;
+        }
+    }
+    print_r($workers);
+}
+
+function testCreateApiJob()
+{
+    $className = model\ads\Reporter\workers\SmartXDownloader::class;
+    $definition = $className::loadDefinition();
+    $definition->max_running_children = 100;
+    $definition->max_retries = 1;
+    $job = $definition->normalizeToAssociativeArray();
+    $job['task'] = API_TASK;
+    $job['task']['args']['task'] = $className;
+    //$job['task']['args']['standalone'] = true;
+    return JobManager::createJob($job);
+}
+
+function testStopJob($id)
+{
+    $msg = new SimpleMessage([
+        'from'   => 'test',
+        'to'     => $id,
+        'action' => 'kill',
+    ]);
+    $queue = Queue::connect('test');
+    $queue->publish($msg, $queue->getDefaultChannel(), 'control');
+}
+
+function testListJobsDS()
+{
+    $ds = $ds=\getDataSource('\\model\\web\\Jobs', "FullList");
+    $ds->status = [
+        Job::RUNNING,
+        Job::FINISHED,
+        Job::FAILED,
     ];
-    JobManager::createJob($args);
+    $ds->created_after = "2020-02-21 00:00:00";
+    $ds->created_before = "2020-02-22 00:00:00";
+    
+    $jobs = $ds->fetchAll()->getFullData();
+    foreach ($jobs as $job) {
+        echo $job['job_id']." ---> ".$job['status'].PHP_EOL;
+    }
+}
+
+function testListWorkersDS($jobId=null)
+{
+    
+    if (is_null($jobId)) {
+        $ds=\getDataSource('\\model\\web\\Jobs', "FullList");
+        $ds->created_after = "2020-02-20 12:00:00";
+        $jobs = $ds->fetchAll()->getFullData();
+        $jobId = array_pop($jobs)['job_id'];
+    }
+    
+    $ds=\getDataSource('\\model\\web\\Jobs\\Worker', "FullList");
+    $ds->job_id = $jobId;
+    $workers = $ds->fetchAll();
+    $workers = $workers->getFullData();
+    foreach ($workers as $worker) {
+        echo $worker['worker_id']." ---> ".$worker['status'].PHP_EOL;
+        echo $worker['result'].PHP_EOL.PHP_EOL;
+    }
+}
+
+function testAction($args = SIMPLE_JOB)
+{
+    //global $globalUser;
+    $globalUser = "web";
+    
+    $act=\lib\action\Action::getAction('\model\web\Jobs','AddAction');    
+    $actionResult=new \lib\action\ActionResult();
+    $instance=$act->getParametersInstance();
+    
+    //$instance->job_id = "THIS_IS_A_FORCED_JOB_ID";
+    $instance->name = "test";
+    $instance->descriptor = json_encode($args);
+    
+    $act->process($instance, $actionResult, $globalUser);
+    if ($actionResult->isOk()) {
+        return $actionResult->getModel();
+    } else {
+        foreach ($actionResult->getFieldErrors() as $error) {
+            print_r($error);
+        }
+        return false;
+    }
 }
 
 //testCreateJobsTable();
 //testCreateWorkersTable();
-//testCreateSimpleJob();
-//testCreateDirectoryJob();
+//testLocateWorkers();
 //testCreateTrigger();
-//testCreateMySqlJob();
-//testCreateEmployeeReport();
-testCreateParallelJob();
+/*$jobs = [];
+for ($i=0;$i<10;$i++) {
+$jobs[] = testCreateSimpleJob();
+$jobs[] = testCreateDirectoryJob();
+$jobs[] = testCreateMySqlJob();
+$jobs[] = testCreateEmployeeReport();*/
+//$jobs[] = testCreateParallelJob();
+$jobs[] = testCreateApiJob();
+//testListJobsDS();
+//testListWorkersDS();
+//$jobs[] = testAction()->job_id;
+//sleep(1);
+//testStopJob($jobs[rand(0, count($jobs)-1)]);
+/*}
+sleep(1);
+foreach($jobs as $job) {
+    echo $job.PHP_EOL;
+    testListWorkersDS($job);
+}*/
+/*for($i=0;$i<10;$i++)
+	testAction(EMPLOYEE_JOB);*/
+testListJobsDS();

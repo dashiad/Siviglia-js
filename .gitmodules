@@ -1,0 +1,3 @@
+[submodule "sites/statics/html/packages/Siviglia"]
+	path = sites/statics/html/packages/Siviglia
+	url = https://github.com/dashiad/Siviglia-js.git

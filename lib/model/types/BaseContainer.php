@@ -16,7 +16,7 @@ abstract class BaseContainer extends BaseType
 {
 
     var $tempContext;
-    function getPath($path)
+    function getPath($path=[])
     {
         try {
             $current='';

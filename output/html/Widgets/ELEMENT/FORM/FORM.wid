@@ -9,15 +9,20 @@
         [_SCRIPT]
             [_CODE]
             <script>
+                // Deshabilito el buton de enviar (submit) desde la carga principal y solo cuando esté validado y relleno todos los campos, se pone a false
+                document.addEventListener("DOMContentLoaded", function(event) {
+                    document.getElementById('submit').disabled = "true";
+                });
+
                 var __s__form={
                     validationUrl:"/validate.php",
                     curForm:null};
-                __s__form.S_FormRegistry=[];
-                __s__form.getFormById=function(id)
+                    __s__form.S_FormRegistry=[];
+                    __s__form.getFormById=function(id)
                 {
                     return __s__form.S_FormRegistry[id];
                 }
-                __s__form.form = function (node,id,model,name,keys){
+                    __s__form.form = function (node,id,model,name,keys){
                     __s__form.S_FormRegistry[id]=this;
                     this.node=node;
                     this.id=id;
@@ -46,46 +51,85 @@
 
                     }
                     this.popContainer=function(){this.containers.pop();}
+
+
+                    
                     
                     this.addInput=function(instance){
-                        this.inputs[instance.name]={input:instance};
+                            this.inputs[instance.name]={input:instance};
 
                         (function(container){
-                                m.inputs[instance.name].container=container;
+                            m.inputs[instance.name].container=container;
 
-                        instance.addEventListener("change",function(){
-                            $(container).find("error-message").removeClass("error-message");
-                            if(m.inputs[instance.name].extraClass)
-                                $(container).find(m.inputs[instance.name].extraClass).removeClass(m.inputs[instance.name].extraClass);
-                                __s__base.callEndPoint({
-                                endPoint:'validation',
-                                params: {
-                                    type: "form",
-                                    name: m.name,
-                                    model: m.model,
-                                    field: instance.dataset.sivname,
-                                    prefix: instance.dataset.sivprefix,
-                                    value:instance.value
-                                }}).then(function(r){
-                                    if(r.error!==0)
-                                    {
-                                        var fieldName=r.meta.field;
-                                        var node=$(document.body).find(".error-"+fieldName+" .error-help-"+r.errorCode)
-                                        node.addClass("error-message");
-                                        m.inputs[instance.name].extraClass="error"+r.errorCode;
-                                        
-                                        /* var inputError = $(document.body).find(".form-control")
-                                        inputError.addClass("input-error-" + r.errorCode) */
+                            
+                            instance.addEventListener("change",function(){
                                 
-                                    }else{
-                                        var inputError = $(document.body).find(".form-control")
-                                        inputError.removeClass("input-error-" + r.errorCode)
-                                    }
-                                });
-                        });
+                                if(m.inputs[instance.name].extraClass)
+                                    $(container).find(m.inputs[instance.name].extraClass).removeClass(m.inputs[instance.name].extraClass);
+                                    __s__base.callEndPoint({
+
+                                    endPoint:'validation',
+                                    params: {
+                                        type: "form",
+                                        name: m.name,
+                                        model: m.model,
+                                        field: instance.dataset.sivname,
+                                        prefix: instance.dataset.sivprefix,
+                                        value: instance.value
+                                    }}).then(function(r){
+                                        var node = $(document.body).find(".error-"+r.meta.field+" .error-help-"+r.errorCode)
+                                        var input_focus = m.inputs[instance.name];
+                                        var input_value = input_focus.input.value;
+                                        
+
+                                        /*
+                                        
+                                        modelo -> getfield (del campo)
+					                    getfield del definition
+
+					                    si tengo el modelo, tengo el campo. Y si tengo el campo, tengo el valor. Por lo que en currentModel tengo todo
+
+                                        guardarme en un array, todos los nombres de los inputs, e ir guardando los valores asociativos a cada campo,
+                                        que si se ha rellenado y validado, ponerlo como ok.
+
+                                        Comprobar este array, y cuando estén todos rellenos y validados, poner el button submit a disabled="false"
+                                        
+                                        */
+
+                                        if (input_value == ""){
+                                            input_value = null;
+                                            var existe_class_error_message = document.querySelector('div.help-block.error-'+r.meta.field+'> ul > li.error-item.error-message');                                
+                                            if (existe_class_error_message)                                            
+                                                existe_class_error_message.classList.remove("error-message");
+                                            input_focus.input.className = "form-control";
+                                        }
+
+                                        // Error with metadata
+                                        if((r.error!==0) && (input_value != null))
+                                        {       
+                                            var existe_class_error_message = document.querySelector('div.help-block.error-'+r.meta.field+'> ul > li.error-item.error-message');                                
+                                            if (existe_class_error_message)                                            
+                                                existe_class_error_message.classList.remove("error-message");                                                                                            
+                                            node.addClass("error-message");
+                                            input_focus.extraClass="error"+r.errorCode;
+                                            input_focus.input.className += " is-invalid";
+                                        }
+
+                                        //no errors with metadata
+                                        if (r.error == 0)  
+                                        {                                            
+                                            input_focus.input.className = "form-control is-valid";
+                                            document.querySelector('div.help-block.error-'+r.meta.field+'> ul > li.error-item.error-message').classList.remove("error-message");
+                                        }                 
+
+                                    });
+                            });
                         })(this.containers[this.containers.length-1])
                     };
                 }
+
+
+
             </script>
             [#]
         [#]

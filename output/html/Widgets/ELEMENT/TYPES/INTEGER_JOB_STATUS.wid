@@ -1,0 +1,30 @@
+<?php 
+// imprime los valores de los jobs de sus tipos
+
+switch ($model->{$name}) {
+    case '0':
+        //echo 'creado';
+        echo '<i class="bx bx-info-circle"></i>';
+        break;
+    case '1':   
+        //echo 'en espera';
+        echo '<i class="bx bx-time"></i>';
+        break;
+    case '2':
+        //echo 'en ejecucion';
+        echo '<i class="bx bx-run"></i>';
+        break;
+    case '3':
+        //echo 'ok';
+        echo '<i class="bx bx-check"></i>';
+        break;
+    case '4':
+        // echo 'error';
+        echo '<i class="bx bx-error-alt"></i>';
+        break;
+    default:
+        # code...
+        break;
+}
+
+?>

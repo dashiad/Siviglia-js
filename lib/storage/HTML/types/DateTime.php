@@ -38,7 +38,7 @@
           // Obviously, basic syntax checking is done here.
           $parts=explode(" ",$value[$name]);
           @list($result["year"],$result["month"],$result["day"])=explode("-",$parts[0]);
-          if($parts[1])
+          if(isset($parts[1]))
               @list($result["hour"],$result["minutes"],$result["seconds"])=explode(":",$parts[1]);
           else
               @list($result["hour"],$result["minutes"],$result["seconds"])=array(0,0,0);
@@ -47,7 +47,8 @@
           if(!checkdate($result["month"],$result["day"],$result["year"]))
               throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_INVALID);
 
-          switch($type->definition["TIMEZONE"])
+          $timeZone=isset($type->definition["TIMEZONE"])?$type->definition["TIMEZONE"]:"CLIENT";
+          switch($timeZone)
           {
           case "SERVER":
               {

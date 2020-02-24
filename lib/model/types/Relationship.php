@@ -80,7 +80,7 @@ class Relationship extends BaseType {
       }
       function _equals($v)
       {
-          return $this->value==$v->value;
+          return $this->value==$v;
       }
     function getMetaClassName()
     {

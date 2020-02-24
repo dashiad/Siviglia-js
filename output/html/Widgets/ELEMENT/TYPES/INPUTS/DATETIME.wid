@@ -1,5 +1,6 @@
 <?php
-    $val=$form->{$name}; 
-    
+if($type==null)
+    $type=$form->__getField($name)->getType();    
+$info=$type->summarize();
 ?>
-[*:/ELEMENT/FORM/INPUTS/TEXTFIELD({"name":"$name","value":"$val"})][#]
+[*:/ELEMENT/FORM/INPUTS/DATETIME({"info":"$info"})][#]

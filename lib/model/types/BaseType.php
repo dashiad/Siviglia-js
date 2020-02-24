@@ -11,6 +11,7 @@
       var $flags=0;
       var $parent;
       var $setOnEmpty;
+      var $fieldPath;
       const TYPE_SET_ON_SAVE=0x1;
       const TYPE_SET_ON_ACCESS=0x2;
       const TYPE_IS_FILE=0x4;
@@ -44,6 +45,27 @@
       {
           $this->parent=$parent;
           $this->fieldName=$fieldName;
+      }
+      function getPath()
+      {
+          if(!isset($this->fieldPath))
+          {
+            $parts=[$this->fieldName];
+            $cur=$this->parent;
+            $n=0;
+            while(!is_a($cur,'\lib\model\ModelField') && $cur)
+            {
+                $n++;
+                if($n>20)
+                die("<h1>".$n."</h1>");
+                  
+                  $parts[]=$cur->getFieldName();
+                  $cur=$cur->getParent();
+            }
+            $this->fieldPath="/".implode("/",array_reverse($parts));
+
+        }
+        return $this->fieldPath;          
       }
       function getFieldName()
       {
@@ -271,5 +293,31 @@
         }
         return null;
       }
+
+      function summarize()
+      {
+          $req=io($this->definition,"REQUIRED",null);
+          if($req==null)
+            $req=false;
+          else
+          {
+              if($req!=true && $req!="true")
+                  $req=false;
+                 
+          }          
+          return [
+            "name"=>$this->fieldName,
+            "def"=>$this->definition,
+            "required"=>$req,
+            "path"=>$this->getPath(),
+            "hasDefault"=>$this->hasDefaultValue(),
+            "default"=>$this->getDefaultValue(),
+            "source"=>$this->getSource(),
+            "hasSource"=>$this->hasSource(),
+            "value"=>$this->getValue(),
+            "hasValue"=>$this->valueSet
+          ];
+      }
+        
       abstract function getMetaClassName();
   }

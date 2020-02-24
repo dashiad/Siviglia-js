@@ -6,6 +6,8 @@
     if(!$ds)
     {        
 
+        // un campo relation siempre tiene una fuente. xq su valor vienen de otro sitio
+
         if(!is_a($remField,'lib\model\Relation1x1'))
         {
 

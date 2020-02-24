@@ -89,7 +89,7 @@
           if(io($this->definition,"STRICTLYPAST",false) && $curTimestamp < $timestamp)
               throw new DateTimeTypeException(DateTimeTypeException::ERR_STRICTLY_PAST,["val"=>$value],$this);
           if(io($this->definition,"STRICTLYFUTURE",false) && $curTimestamp > $timestamp)
-              throw new DateTimeException(DateTimeTypeException::ERR_STRICTLY_FUTURE,["val"=>$value],$this);
+              throw new DateTimeTypeException(DateTimeTypeException::ERR_STRICTLY_FUTURE,["val"=>$value],$this);
 
           BaseType::postValidate($value);
 
@@ -118,12 +118,12 @@
               return $v;
 
           return [
-              "year"=>$v["year"],
-              "month"=>$v["month"],
-              "day"=>$v["day"],
-              "hour"=>$v["hour"]===false?0:$v["hour"],
-              "minutes"=>$v["hour"]===false?0:$v["minutes"],
-              "seconds"=>$v["hour"]===false?0:$v["seconds"],
+              "year"    =>  $v["year"],
+              "month"   =>  $v["month"],
+              "day"     =>  $v["day"],
+              "hour"    =>  isset($v["hour"])?$v["hour"]:0,
+              "minutes" =>  isset($v["minutes"])?$v["minutes"]:0,
+              "seconds" =>  isset($v["seconds"])?$v["seconds"]:0,
           ];
 
       }

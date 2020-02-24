@@ -34,5 +34,6 @@ class Package extends \lib\model\Package
         } else {
             return false;
         }
+        //return in_array($classParts[0], $this->apps);
     }
 }

@@ -27,7 +27,9 @@ class Site extends \lib\model\BaseModel
     function getRelativeRoot(){
         return "/sites/".$this->namespace;
     }
-    function getRoot(){return PROJECTPATH.$this->getRelativeRoot();}
+    function getRoot(){
+        return PROJECTPATH.$this->getRelativeRoot();
+    }
     function getCachePath($isWork=false)
     {
         $path=$this->getRoot()."/cache".($isWork?"/work":"");
@@ -76,6 +78,10 @@ class Site extends \lib\model\BaseModel
     {
         $norm=$this->normalizePagePath($pagePath,"/");
         return $this->getRoot()."/pages/".$norm["norm"];
+
+        //"C:\xampp\htdocs\adtopy\sites\editor\html/../../..//sites/adtopy/pages/Path33"
+        //path deberia estar en: sites\editor\templates\pages\NuevoPath
+
     }
     function getPageClass($pagePath){
         $norm=$this->normalizePagePath($pagePath,'\\');
@@ -90,7 +96,7 @@ class Site extends \lib\model\BaseModel
 
     function getSectionResourcesPath($pageName)
     {
-        return Site::getSiteDocumentRoot($this->name).$this->getRelativeSectionResourcesPath($pageName);
+        return $this->getDocumentRoot().$this->getRelativeSectionResourcesPath($pageName);
     }
 
     static function getClass($name){return '\sites\\'.ucfirst($name);}
@@ -270,20 +276,21 @@ class Site extends \lib\model\BaseModel
         );
     }
 
-    function addPage($page,$definition)
+    function addPageRouteDefinition($page,$definition)
     {
         $this->manageUrls("definition",$page,function($def,$tag) use ($definition) { $def[$tag]=$definition;return $def; });
     }
-    function removePage($page)
+
+    function removePageRouteDefinition($page)
     {
         $this->manageUrls("definition",$page,function($def,$tag) { unset($def[$tag]);return $def; });
     }
 
-    function addUrl($url,$page)
+    function addPageRouteUrl($url,$page)
     {
         $this->manageUrls("urls",$page,function($def,$tag) use ($url) { unset($def[$url]);return $def; });
     }
-    function removeUrl($url,$page)
+    function removePageRouteUrl($url,$page)
     {
         $this->manageUrls("urls",$page,function($def,$tag) use ($url) { unset($def[$url]);return $def; });
     }
@@ -349,6 +356,21 @@ EOT;
         $builder=$this->getRouteBuilder();
         $cachePath=$this->getRouteCachePath();
         $builder->regenerateCache($cachePath);
+    }
+    function getEmptyPageTemplate($role)
+    {
+        $baseDir=$this->getSitePath()."/templates/pages";
+        $filename=null;
+        $val=$role->getValue();
+        switch($role->getValue())
+        {
+            case 1:{$filename="View";}break;
+            case 2:{$filename="Create";}break;
+            case 3:{$filename="Edit";}break;
+            case 4:{$filename="List";}break;
+            default:{$filename="Generic";}break;
+        }
+        return file_get_contents($baseDir."/".$filename.".wid");
     }
 
 }

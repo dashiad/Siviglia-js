@@ -126,7 +126,7 @@ class HTMLRequest extends \Request implements \ArrayAccess
      //   $browser = $bc->getBrowser();
         $browser=null;
 
-        $this->client=array(
+        /* $this->client=array(
             "request" => $_SERVER["QUERY_STRING"],
             "referer" => io($_SERVER,"HTTP_REFERER",""),
             "browser" => $browser?$browser->Browser:'',
@@ -137,6 +137,7 @@ class HTMLRequest extends \Request implements \ArrayAccess
             "isTablet" => $browser->isTablet,
             "ip" => \lib\model\types\IP::getCurrentIp()
         );
+        */
 
         return $this->client;
     }
@@ -372,7 +373,8 @@ class HTMLRequest extends \Request implements \ArrayAccess
         {
             $outputDatasource = 'View';
             $def = $curForm->getDefinition();
-            if($def['OUTPUT_DATASOURCE']) {
+
+            if(isset($def['OUTPUT_DATASOURCE'])) {
                 $outputDatasource = $def['OUTPUT_DATASOURCE'];
             }
             $ds=\lib\datasource\DataSourceFactory::getDataSource($model->__getFullObjectName(), $outputDatasource);

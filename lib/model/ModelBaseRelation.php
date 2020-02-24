@@ -455,6 +455,7 @@ class RelationFields
     var $waitingRemoteSave=false;
     var $is_set=false;
     var $rawVal=null;
+    var $relationValues=null;
     function __construct(& $relObject,$definition)
     {
         $this->relObject=$relObject;

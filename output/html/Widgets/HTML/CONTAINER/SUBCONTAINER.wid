@@ -11,5 +11,5 @@
 [#]
 
 <div class="card-body [_CLASS][_*][#]">
-       [_CONTENT]<div class="row">[_*]</div>[#]
+       [_CONTENT]<div class="row align-items-center">[_*]</div>[#]
 </div>

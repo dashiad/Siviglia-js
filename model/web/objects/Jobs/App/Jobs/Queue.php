@@ -19,7 +19,7 @@ class Queue
     public static function create(String $id, Bool $autodelete=true) : AbstractQueueManager
     {
         $conn = self::connect($id);
-        //$channelId = $conn->createChannel($id);
+        $conn->createQueue($id, $conn->getDefaultChannel());
         return $conn;
     }
 }

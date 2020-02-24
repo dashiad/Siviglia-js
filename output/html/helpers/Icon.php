@@ -128,10 +128,15 @@ class Icon
                 break;
             }
             case "path":
-                {
-                    echo '<i class="bx bx-folder"></i>';
-                    break;
-                }            
+            {
+                echo '<i class="bx bx-folder"></i>';
+                break;
+            }
+            case "info":
+            {
+                echo '<i class="bx bx-info-circle"></i>';
+                break;
+            }                                
             break;
         }
     }

@@ -42,7 +42,7 @@ class RabbitQueueManager extends AbstractQueueManager
     /**
      * 
      * {@inheritDoc}
-     * @see \Jobs\QueueManagers\AbstractQueueManager::disconnect()
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::disconnect()
      */
     public function disconnect()
     {
@@ -52,22 +52,22 @@ class RabbitQueueManager extends AbstractQueueManager
     /**
      * 
      * {@inheritDoc}
-     * @see \Jobs\QueueManagers\AbstractQueueManager::subscribe()
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::subscribe()
      */
     public function subscribe($subscriptions=[], Int $channel, String $queue, String $routingKey='')
     {
         foreach ((array)$subscriptions as $subscription) {
-            if(!in_array($subscription, $this->subscriptions)) {
+            //if(!in_array($subscription, $this->subscriptions)) {
                 $this->connection->channel($channel)->queue_bind($queue, $subscription, $routingKey);
                 $this->subscriptions[] = $subscription;
-            }
+            //}
         }
     }
     
     /**
      * 
      * {@inheritDoc}
-     * @see \Jobs\QueueManagers\AbstractQueueManager::publish()
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::publish()
      */
     public function publish(BaseMessage $msg, Int $channel, String $queue='', String $key='')
     {
@@ -80,12 +80,12 @@ class RabbitQueueManager extends AbstractQueueManager
         }
     }
     
-    /**
-     * 
-     * {@inheritDoc}
-     * @see \Jobs\QueueManagers\AbstractQueueManager::listen()
-     */
-    public function listen($listener, Int $channel)
+  /**
+   * 
+   * {@inheritDoc}
+   * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::listen()
+   */
+    public function listen($listener, Int $channel, $id=null)
     {
         
         /**
@@ -103,7 +103,8 @@ class RabbitQueueManager extends AbstractQueueManager
          */
         
         $channel = $this->connection->channel($channel);
-        $channel->basic_consume($listener->getId(), $listener->getId(), false, true, false, false, [$listener, 'handle']);
+        $id = $id ?? $listener->getId();
+        $channel->basic_consume($id, $listener->getId(), false, true, false, false, [$listener, 'handle']);
         while ($channel->is_consuming()) {
             try {
                 $channel->wait();
@@ -133,6 +134,11 @@ class RabbitQueueManager extends AbstractQueueManager
         }
     }
 
+    /**
+     * 
+     * {@inheritDoc}
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::deleteChannel()
+     */
     public function deleteChannel(Int $index)
     {
         $this->channels[$index]->close();
@@ -142,13 +148,18 @@ class RabbitQueueManager extends AbstractQueueManager
     /**
      * 
      * {@inheritDoc}
-     * @see \Jobs\QueueManagers\AbstractQueueManager::stopListening()
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::stopListening()
      */
     public function stopListening($listener, Int $channel)
     {
         $this->connection->channel($channel)->basic_cancel($listener->getId(), false);
     }
     
+    /**
+     * 
+     * {@inheritDoc}
+     * @see \model\web\Jobs\App\Jobs\QueueManagers\AbstractQueueManager::extractMessage()
+     */
     public function extractMessage($msg, $associative=false) : Array
     {
         return json_decode($msg->body, $associative);

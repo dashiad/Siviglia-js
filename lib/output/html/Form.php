@@ -169,7 +169,8 @@ class Form extends \lib\model\BaseTypedObject
             else
                 $curInput=$formData["INPUTS"][$key];
             // Se obtiene el controlador.
-            $inputController=\lib\templating\html\inputs\InputFactory::getInputController($key,$curInput,$value,$this->formDefinition["INPUTS"][$key]);
+            $inputController=\lib\templating\html\inputs\InputFactory::getInputController($key,$curInput,$value,
+                isset($this->formDefinition["INPUTS"][$key])?$this->formDefinition["INPUTS"][$key]:[]);
             try
             {
                 // Puede ser que formValues["FIELDS"][$field] no este "set",y, aun asi, el campo tenga un valor.
@@ -331,11 +332,10 @@ class Form extends \lib\model\BaseTypedObject
        return null;
     }
 
-    function __getInputParams($name)
+    function __getInputParams($name,$path=null)
     {
         if(isset($this->formDefinition["INPUTS"]) && isset($this->formDefinition["INPUTS"][$name]))
             return $this->formDefinition["INPUTS"][$name]["PARAMS"];
     }
-
 }
 ?>

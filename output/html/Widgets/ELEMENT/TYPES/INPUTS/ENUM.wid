@@ -1,13 +1,6 @@
 <?php
-    $fdef=$form->__getField($name);
-    $type=$fdef->getType();
-    $labels=$type->getLabels();
-    $val=$form->{$name}; 
-    include_once(PROJECTPATH.'/lib/datasource/ArrayDataSource.php');
-    $ds=new \lib\datasource\VectorDataSource($labels,\lib\datasource\VectorDataSource::KEYS_AS_COLUMNVALUES,array("Value","Label"));
+if($type==null)
+    $type=$form->__getField($name)->getType();    
+$info=$type->summarize();
 ?>
-
-[*:/ELEMENT/FORM/INPUTS/RADIO({"name":"$name","value":"$val"})]
-    [_:DATASOURCE({"ds":"$ds"})][#]
-[#]
-
+[*:/ELEMENT/FORM/INPUTS/RADIO({"info":"$info"})][#]
