@@ -10,7 +10,7 @@
         context:'Reflection.Widgets',
         classes:{
             DefinitionEditor:{
-                inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                 methods:{
                     preInitialize:function(params){
 
@@ -90,7 +90,7 @@ Siviglia.Utils.buildClass(
             {
 
                 /*SiteSelector: {
-                    inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                    inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                     methods: {
                         preInitialize: function (params) {
 
@@ -142,7 +142,7 @@ Siviglia.Utils.buildClass(
                 },*/
 
                 DefinitionForm:{
-                    inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                    inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                     methods:
                         {
                             preInitialize:function(params)
@@ -737,9 +737,9 @@ Siviglia.Utils.buildClass(
                 <div class="container">
                     <div class="row justify-content-md-center">
                         <div class="col-md-6 col-sm-6">Cargar:</div>
-                        <div sivView="Components.SelectorOrNew" sivParams='{"options":"/*definitionList","label":"name","value":"name"}'></div>
+                        <div data-sivView="Components.SelectorOrNew" data-sivParams='{"options":"/*definitionList","label":"name","value":"name"}'></div>
                         <div class="col-md-6 col-sm-6 text-right">
-                            <button class="btn btn-primary" value="Save" style="font-size:12px;margin-top:6px" sivEvent="click" sivCallback="save">Guardar</button>
+                            <button class="btn btn-primary" value="Save" style="font-size:12px;margin-top:6px" data-sivEvent="click" data-sivCallback="save">Guardar</button>
                         </div>
                     </div>
                 </div>
@@ -749,7 +749,7 @@ Siviglia.Utils.buildClass(
 
 
                     <div style="clear:both"></div>
-                <div sivId="autoUINode"></div>
+                <div data-sivId="autoUINode"></div>
             [#]
         [#]
 

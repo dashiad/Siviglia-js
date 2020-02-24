@@ -74,7 +74,6 @@ class ActionTest extends TestCase
         $this->assertEquals(1,$it->count());
         $id=$it[0]->id;
         $this->assertEquals(5,$id);
-
     }
     function testSimpleEditAction()
     {

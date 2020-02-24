@@ -7,6 +7,7 @@ namespace model\web\Site\actions;
 *
 **/
 
+
 class AddAction extends \lib\action\Action
 {
 	 static  $definition=array(
@@ -63,7 +64,7 @@ class AddAction extends \lib\action\Action
 	{
 
 			parent::__construct(AddAction::$definition);
-	
+
 	}
 
 
@@ -91,9 +92,9 @@ class AddAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -117,9 +118,9 @@ class AddAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -147,9 +148,9 @@ class AddAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

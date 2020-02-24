@@ -1,3 +1,13 @@
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_PHASE]BODYEND[#]
+            [_FILE]editor/js/vendors/datatable-jobs.js[#]
+        [#]
+    [#]
+[#]
+
 <?php
 $serializer=\Registry::getService("storage")->getSerializerByName('web');
 $currentPage=Registry::$registry["currentPage"];
@@ -5,8 +15,8 @@ $params=$currentPage->getPageParams();
 ?>
 [*:JOB_LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_:HEADER]
-                    [_:TITLE]Titulo de la lista[#]
-                    [_:DESCRIPTION]Descripcion de la lista. Lorem ipsum....[#]
+                    [_:TITLE]Listado de trabajos[#]
+                    [_:DESCRIPTION]Tabla que muestra por fila los resultados de cada trabajo para la tarea ComScore.[#]
 					[_:ICONO]statics[#]
                 [#]
                 [_:LISTING]

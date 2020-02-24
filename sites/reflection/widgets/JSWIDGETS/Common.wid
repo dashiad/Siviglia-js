@@ -8,7 +8,7 @@
                     context: 'Components',
                     classes: {
                         Tabbar: {
-                            inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                             methods: {
                                 constants:
                                     {
@@ -56,7 +56,7 @@
                             }
                         },
                         SelectorOrNew:{
-                            inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                             methods: {
                                 preInitialize: function (params) {
 
@@ -136,13 +136,13 @@
     [#]
 [#]
 <div sivWidget="Components.Tabbar" widgetParams="tabSource,tabLabel,type" widgetCode="Components.Tabbar" role="tabpanel">
-    <ul class="nav nav-tabs bar_tabs" role="tablist" sivLoop="/*tabSource" contextIndex="current">
+    <ul class="nav nav-tabs bar_tabs" role="tablist" data-sivLoop="/*tabSource" data-contextIndex="current">
         <li role="presentation">
-            <a role="tab" data-toggle="tab" sivCall="getTabLabel" sivParams='{"current":"/@current","index":"/@current-index"}' sivEvent="click" sivCallback="setCurrentTab"></a>
+            <a role="tab" data-toggle="tab" sivCall="getTabLabel" data-sivParams='{"current":"/@current","index":"/@current-index"}' data-sivEvent="click" data-sivCallback="setCurrentTab"></a>
         </li>
     </ul>
-    <div class="tab-content" sivLoop="/*tabSource" contextIndex="current">
-        <div class="tab-pane fade" role="tabpanel" sivCall="getTabContent" sivParams='{"current":"/@current"}'>
+    <div class="tab-content" data-sivLoop="/*tabSource" data-contextIndex="current">
+        <div class="tab-pane fade" role="tabpanel" sivCall="getTabContent" data-sivParams='{"current":"/@current"}'>
 
         </div>
     </div>
@@ -176,15 +176,15 @@
 
 <div sivWidget="Components.SelectorOrNew" widgetParams="url,options,label,value" widgetCode="Components.SelectorOrNew">
         <div>
-            <div sivId="combo" style="float:left">
+            <div data-sivId="combo" style="float:left">
             </div>
             <div style="float:left;margin-left:30px">
                 <div class="form-group">
                     <div style="display:table-cell">
-                        <input type="text" class="form-control" style="height:27px" sivId="newItem">
+                        <input type="text" class="form-control" style="height:27px" data-sivId="newItem">
                     </div>
                     <div style="display:table-cell;padding-left:5px">
-                        <button class="btn btn-primary" style="font-size:12px" sivEvent="click" sivCallback="onNew">Nuevo</button>
+                        <button class="btn btn-primary" style="font-size:12px" data-sivEvent="click" data-sivCallback="onNew">Nuevo</button>
                     </div>
                 </div>
             </div>

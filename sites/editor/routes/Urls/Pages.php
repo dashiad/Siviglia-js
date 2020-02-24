@@ -14,6 +14,8 @@ class Pages
     static $definition = array(
         "/" => "index",
         "/Page/{id_page}/edit"=>"page",
+        "/Jobs/{job_id}"=>"viewJob",
+        "/Jobs/{job_id}/view"=>"viewJob",
         "/error"=>"error",
         "/Site/{namespace}"=>"site"
     );

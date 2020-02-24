@@ -222,4 +222,5 @@
           $type=$this->getSubtypeInstance($path[0]);
           return $type->getTypeFromPath($path);
       }
+
   }

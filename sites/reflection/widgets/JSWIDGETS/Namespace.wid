@@ -10,7 +10,7 @@
                     context: 'Reflection.Widgets',
                     classes: {
                         Namespace: {
-                            inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                             methods: {
                                 preInitialize:function(params)
                                 {
@@ -57,7 +57,7 @@
                             }
                         },
                         ObjectList:{
-                            inherits:"Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            inherits:"Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                             methods:{
                                 preInitialize:function(params)
                                 {
@@ -76,7 +76,7 @@
                             }
                         },
                         ObjectTree:{
-                            inherits:"Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            inherits:"Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                             methods:{
                                 preInitialize:function(params)
                                 {
@@ -94,7 +94,7 @@
                             }
                         },
                         NamespaceObject:{
-                            inherits:"Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            inherits:"Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                             methods:{
                                 preInitialize:function(params)
                                 {
@@ -142,7 +142,7 @@
                             }
                         },
                         DefinitionContainer:{
-                            inherits:"Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            inherits:"Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                             methods: {
                                 preInitialize: function (params) {
                                     this.controller = params.controller;
@@ -233,7 +233,7 @@
                                             }
                                     },
                                 BaseModelWidget:{
-                                    inherits:"Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                                    inherits:"Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                                     methods: {
                                         preInitialize: function (params) {
                                             this.controller = params.controller;
@@ -364,13 +364,13 @@
 <div sivWidget="Reflection.Widgets.Namespace" widgetParams="factoryClass" widgetCode="Reflection.Widgets.Namespace">
     <div class="row">
         <div class="col-md-2 col-sm-2 well">
-            <div sivId="modelTree" sivView="Reflection.Widgets.ObjectList" sivParams='{"objects":"/*objects","controller":"/*self"}'></div>
+            <div data-sivId="modelTree" data-sivView="Reflection.Widgets.ObjectList" data-sivParams='{"objects":"/*objects","controller":"/*self"}'></div>
         </div>
         <div class="col-md-10 col-sm-10">
-            <div sivView="Components.Box">
-                <div viewNode="TITLE"><span sivValue="/*currentObject/name"></span></div>
+            <div data-sivView="Components.Box">
+                <div viewNode="TITLE"><span data-sivValue="/*currentObject/name"></span></div>
                 <div viewNode="CONTENT">
-                    <div sivId="objectContainer"></div>
+                    <div data-sivId="objectContainer"></div>
                 </div>
             </div>
         </div>
@@ -380,13 +380,13 @@
 
 
 <div sivWidget="Reflection.Widgets.ObjectList" widgetParams="objects,controller" widgetCode="Reflection.Widgets.ObjectList">
-    <div sivView="Reflection.Widgets.ObjectTree" sivParams='{"objects":"/*objects","controller":"/*self"}'></div>
+    <div data-sivView="Reflection.Widgets.ObjectTree" data-sivParams='{"objects":"/*objects","controller":"/*self"}'></div>
 </div>
 
 <div sivWidget="Reflection.Widgets.ObjectTree" widgetParams="objects,controller" widgetCode="Reflection.Widgets.ObjectTree">
-    <ul sivLoop="/*objects" contextIndex="current">
-        <li><a href="#" sivEvent="click" sivCallback="onClicked" sivParams='{"object":"/@current"}' sivValue="/@current/name"></a>
-            <div sivView="Reflection.Widgets.ObjectTree" sivParams='{"objects":"/@current/objects","controller":"/*controller"}'></div>
+    <ul data-sivLoop="/*objects" data-contextIndex="current">
+        <li><a href="#" data-sivEvent="click" data-sivCallback="onClicked" data-sivParams='{"object":"/@current"}' data-sivValue="/@current/name"></a>
+            <div data-sivView="Reflection.Widgets.ObjectTree" data-sivParams='{"objects":"/@current/objects","controller":"/*controller"}'></div>
         </li>
     </ul>
 </div>
@@ -397,30 +397,30 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"definition"}'><span class="fa fa-gear"></span>Definicion<span class="sr-only">(current)</span></a></li>
-                    <li class="active"><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"actions"}'><span class="fa fa-bolt"></span>Acciones<span class="sr-only">(current)</span></a></li>
-                    <li class="active"><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"datasources"}'><span class="fa fa-database"></span>DataSources<span class="sr-only">(current)</span></a></li>
+                    <li class="active"><a href="#" data-sivEvent="click" data-sivCallback="showUI" data-sivParams='{"option":"definition"}'><span class="fa fa-gear"></span>Definicion<span class="sr-only">(current)</span></a></li>
+                    <li class="active"><a href="#" data-sivEvent="click" data-sivCallback="showUI" data-sivParams='{"option":"actions"}'><span class="fa fa-bolt"></span>Acciones<span class="sr-only">(current)</span></a></li>
+                    <li class="active"><a href="#" data-sivEvent="click" data-sivCallback="showUI" data-sivParams='{"option":"datasources"}'><span class="fa fa-database"></span>DataSources<span class="sr-only">(current)</span></a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">HTML<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"forms"}'><span class="fa fa-tasks"></span>Forms</a></li>
-                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"views"}'><span class="fa fa-th-large"></span>Views</a></li>
-                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"widgets"}'><span class="fa fa-puzzle-piece"></span>Widgets</a></li>
+                            <li><a href="#" data-sivEvent="click" data-sivCallback="showUI" data-sivParams='{"option":"forms"}'><span class="fa fa-tasks"></span>Forms</a></li>
+                            <li><a href="#" data-sivEvent="click" data-sivCallback="showUI" data-sivParams='{"option":"views"}'><span class="fa fa-th-large"></span>Views</a></li>
+                            <li><a href="#" data-sivEvent="click" data-sivCallback="showUI" data-sivParams='{"option":"widgets"}'><span class="fa fa-puzzle-piece"></span>Widgets</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Javascript<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"jsforms"}'><span class="fa fa-tasks"></span>Forms</a></li>
-                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"jsviews"}'><span class="fa fa-th-large"></span>Views</a></li>
-                            <li><a href="#" sivEvent="click" sivCallback="showUI" sivParams='{"option":"jswidgets"}'><span class="fa fa-puzzle-piece"></span>Widgets</a></li>
+                            <li><a href="#" data-sivEvent="click" data-sivCallback="showUI" data-sivParams='{"option":"jsforms"}'><span class="fa fa-tasks"></span>Forms</a></li>
+                            <li><a href="#" data-sivEvent="click" data-sivCallback="showUI" data-sivParams='{"option":"jsviews"}'><span class="fa fa-th-large"></span>Views</a></li>
+                            <li><a href="#" data-sivEvent="click" data-sivCallback="showUI" data-sivParams='{"option":"jswidgets"}'><span class="fa fa-puzzle-piece"></span>Widgets</a></li>
                         </ul>
                     </li>
                 </ul>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
-    <div sivId="objectContainer"></div>
+    <div data-sivId="objectContainer"></div>
 </div>
 <!--
 
@@ -430,15 +430,15 @@
 <div sivWidget="Reflection.Widgets.DefinitionContainer" widgetParams="controller,model,type" widgetCode="Reflection.Widgets.DefinitionContainer">
     <div class="container">
         <div class="row">
-    <div sivId="listContainer" class="col col-md-2 col-sm-2">
-        <ul class="nav nav-tabs tabs-left" sivLoop="/*list" contextIndex="current">
+    <div data-sivId="listContainer" class="col col-md-2 col-sm-2">
+        <ul class="nav nav-tabs tabs-left" data-sivLoop="/*list" data-contextIndex="current">
             <li>
-                <a href="#" data-toggle="tab" sivValue="/@current-index" sivEvent="click" sivCallback="showForm" sivParams='{"current":"/@current-index"}'></a>
+                <a href="#" data-toggle="tab" data-sivValue="/@current-index" data-sivEvent="click" data-sivCallback="showForm" data-sivParams='{"current":"/@current-index"}'></a>
             </li>
         </ul>
     </div>
 
-    <div sivId="viewContainer" class="col col-md-10 col-sm-10">
+    <div data-sivId="viewContainer" class="col col-md-10 col-sm-10">
 
     </div>
         </div>
@@ -447,63 +447,63 @@
 
 <div sivWidget="Reflection.Widgets.Namespace.Definition" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.Definition">
     <h3>Definition</h3>
-    <div sivId="autoUINode">
+    <div data-sivId="autoUINode">
 
     </div>
 </div>
 
 <div sivWidget="Reflection.Widgets.Namespace.Actions" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.Actions">
-    <h3>Action <span sivValue="/*name"></span></h3>
-    <div sivId="autoUINode">
+    <h3>Action <span data-sivValue="/*name"></span></h3>
+    <div data-sivId="autoUINode">
 
     </div>
 </div>
 
 <div sivWidget="Reflection.Widgets.Namespace.Datasources" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.Datasources">
-    <h3>Datasource <span sivValue="/*name"></span></h3>
-    <div sivId="autoUINode">
+    <h3>Datasource <span data-sivValue="/*name"></span></h3>
+    <div data-sivId="autoUINode">
 
     </div>
 </div>
 
 <div sivWidget="Reflection.Widgets.Namespace.HtmlForms" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.HtmlForms">
-    <h3>Form <span sivValue="/*name"></span></h3>
-    <div sivId="autoUINode">
+    <h3>Form <span data-sivValue="/*name"></span></h3>
+    <div data-sivId="autoUINode">
 
     </div>
 </div>
 
 <div sivWidget="Reflection.Widgets.Namespace.HtmlViews" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.HtmlViews">
-    <h3>View <span sivValue="/*name"></span></h3>
-    <div sivId="autoUINode">
+    <h3>View <span data-sivValue="/*name"></span></h3>
+    <div data-sivId="autoUINode">
 
     </div>
 </div>
 
 <div sivWidget="Reflection.Widgets.Namespace.HtmlWidgets" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.HtmlWidgets">
-    <h3>Widget <span sivValue="/*name"></span></h3>
-    <div sivId="autoUINode">
+    <h3>Widget <span data-sivValue="/*name"></span></h3>
+    <div data-sivId="autoUINode">
 
     </div>
 </div>
 
 <div sivWidget="Reflection.Widgets.Namespace.JsForms" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.JsForms">
-    <h3>Form Js <span sivValue="/*name"></span></h3>
-    <div sivId="autoUINode">
+    <h3>Form Js <span data-sivValue="/*name"></span></h3>
+    <div data-sivId="autoUINode">
 
     </div>
 </div>
 
 <div sivWidget="Reflection.Widgets.Namespace.JsViews" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.JsViews">
-    <h3>View Js <span sivValue="/*name"></span></h3>
-    <div sivId="autoUINode">
+    <h3>View Js <span data-sivValue="/*name"></span></h3>
+    <div data-sivId="autoUINode">
 
     </div>
 </div>
 
 <div sivWidget="Reflection.Widgets.Namespace.JsWidgets" widgetParams='controller,model' widgetCode="Reflection.Widgets.Namespace.JsWidgets">
-    <h3>Widget Js <span sivValue="/*name"></span></h3>
-    <div sivId="autoUINode">
+    <h3>Widget Js <span data-sivValue="/*name"></span></h3>
+    <div data-sivId="autoUINode">
 
     </div>
 </div>

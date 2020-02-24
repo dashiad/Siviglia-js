@@ -8,7 +8,7 @@
                     context: 'Reflection.Widgets',
                     classes: {
                         FOLDERS: {
-                            inherits: "Siviglia.UI.Widget,Siviglia.Dom.EventManager",
+                            inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                             methods: {
                                 preInitialize:function(params)
                                 {
@@ -48,11 +48,11 @@
     [#]
 [#]
 <div sivWidget="Reflection.Widgets.FOLDER" widgetParams="factoryClass" widgetCode="Reflection.Widgets.FOLDERS">
-    <span class="miclase" sivValue="/*value"></span>
-    <span sivEvent="click" sivCallback="doAlert">Click me</span>
-    <div sivLoop="/*list" contextIndex="current">
-        <div sivView="" sivParams=""
-        <span sivEvent="click" sivCallback="alert2" sivParams='{"item":"/@current"}'><span sivValue="/@current/a"></span></span>
+    <span class="miclase" data-sivValue="/*value"></span>
+    <span data-sivEvent="click" data-sivCallback="doAlert">Click me</span>
+    <div data-sivLoop="/*list" data-contextIndex="current">
+        <div data-sivView="" data-sivParams=""
+        <span data-sivEvent="click" data-sivCallback="alert2" data-sivParams='{"item":"/@current"}'><span data-sivValue="/@current/a"></span></span>
 
     </div>
 </div>

@@ -51,7 +51,7 @@ class ModelList
         \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $list){
             $pkg->iterateOnModels(function($model) use ($pkg,& $list){
                 $list[]=["package"=>$pkg->getName(),
-                    "smallName"=>$model->getClassName(),
+                    "smallName"=>str_replace('\\','/',$model->getClassName()),
                     "fullName"=>$model->getClassName(),
                     "modelPath"=>$model->modelDescriptor->getBaseDir()
                     ];

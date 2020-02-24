@@ -4,7 +4,7 @@
     [_CONTENT]
 
 		[*:BEHAVIOR/CARD]
-            [_:TITLE]Listado de trabajos[#]
+            [_:TITLE]Reporte ComScore[#]
             [_:CONTENT][*::JobFullList][#][#]
         [#]
 
