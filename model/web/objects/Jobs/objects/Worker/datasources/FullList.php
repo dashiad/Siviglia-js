@@ -34,6 +34,11 @@ class FullList
                 'FIELD' => 'worker_id',
                 'TRIGGER_VAR' => 'worker_id'
             ],
+            'worker_type' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'worker_type',
+                'TRIGGER_VAR' => 'worker_type'
+            ],
             'name' => [
                 'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'name',

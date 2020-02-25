@@ -136,7 +136,7 @@ abstract class Worker implements StatusInterface
     public function finish(String $result)
     {
         $action = ($this->status==self::FINISHED) ? 'children_finish' : 'children_failed';
-        $this->result[] = $result;
+        //$this->result[] = $result;
         $args = [
             'from'   => $this->id,
             'to'     => $this->args['parent'],
@@ -161,6 +161,7 @@ abstract class Worker implements StatusInterface
     {
         $this->status = self::FAILED;
         $this->alive = 0;
+        $this->result[] = 'Worker received SIGTERM';
         $this->finish('Worker received SIGTERM');
         exit(128+$signal);
     }

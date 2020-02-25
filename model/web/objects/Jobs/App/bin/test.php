@@ -207,9 +207,9 @@ const COMSCORE_TASK = [
         "params" => [
             "timeout" => "60",
             "region" => "spain",
-            "start_date" => "2020-02-06 00:00:00",
-            "end_date" => "2020-02-06 23:59:59",
-            "max_chunk_size" => 2,
+            "start_date" => "2020-02-12",
+            "end_date" => "2020-02-15",
+            "max_chunk_size" => 1,
             "campaigns" => ["DIR_29664"],
         ],
     ]
