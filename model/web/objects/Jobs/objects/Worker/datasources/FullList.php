@@ -134,6 +134,8 @@ class FullList
                 'MYSQL' => [
                     'DEFINITION' => [
                         'TABLE' => 'Worker',
+                        //'DEFAULT_ORDER'=>'index',
+                        //'DEFAULT_ORDER_DIRECTION'=>'ASC',
                         'BASE' => [
                             'id_worker',
                             'worker_id',

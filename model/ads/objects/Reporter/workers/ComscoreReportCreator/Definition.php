@@ -46,6 +46,12 @@ class Definition extends BaseWorkerDefinition
                             'TYPE' => 'String',
                             'DEFAULT' => 'spain',
                         ],
+                        'type' => [
+                            'TYPE' => 'String',
+                        ],
+                        'view_by_type' => [
+                            'TYPE' => 'String',
+                        ],
                         'start_date' => [
                             'TYPE' => 'Date',
                         ],

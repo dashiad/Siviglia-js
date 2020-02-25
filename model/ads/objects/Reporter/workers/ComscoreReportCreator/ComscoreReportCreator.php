@@ -15,27 +15,34 @@ class ComscoreReportCreator extends BaseWorker
     }
     
     protected function runItem($item)
-    {
-        $type = 'Demographic';
-        $ViewByType = 'Total';
+    { 
+        $type = $this->args['params']['params']['type'];
+        $ViewByType = $this->args['params']['params']['view_by_type'];
+        $region = $this->args['params']['params']['region'];
+        $timeout = $this->args['params']['params']['timeout'];
+        $campaignIds = $this->args['params']['params']['campaigns'];
         
+        if ($this->args['params']['type']=="None") {
+            $startDate =  $this->args['params']['params']['start_date'];
+            $endDate = $this->args['params']['params']['end_date'];
+        } else {
+            $startDate =  $item;
+            $endDate   = $item;
+        }
+     
         $url = "jobs/reporting/{$type}";
         
-        $region = $this->args['params']['params']['region'];
-        $startDate =  $this->args['params']['params']['start_date'];
-        $endDate = $this->args['params']['params']['end_date'];
-        $timeout = $this->args['params']['params']['timeout'];
-        
         $params = [
-            'campaignIds' => $this->args['params']['params']['campaigns'],
-            'ViewByType' => $ViewByType, // $this->args['viewByType'],
+            'campaignIds' => $campaignIds ,
+            'ViewByType' => $ViewByType,
             'startDate' => date('m-d-Y', strtotime($startDate)),
             'endDate' => date('m-d-Y', strtotime($endDate))
         ];
         
         try {
             $result = $this->api->createReportingJob($url, $params, $region);
-            $id = $result['data']['id'];
+            $data = json_decode($result['data'], true);
+            $id = $data['data']['id'];
         } catch (ApiRequestException $e) {
             if ($e->getCode()==409) { 
                 // existe ya un report idéntico, recogemos su id

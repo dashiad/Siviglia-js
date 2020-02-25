@@ -201,18 +201,21 @@ const COMSCORE_TASK = [
     "type" => "task",
     "name" => "comscore_report_generator",
     "args" => [
-        "task" => null,
-        "name" => "comscore_report_generator",
-        "type" => "DateRange",
+        "task"   => null,
+        "name"   => "comscore_report_generator",
+        //"type"   => "DateRange", // procesa cada fecha en el rango por separado
+        "type" => "None",  // procesa el rango de fechas como una única consulta
         "params" => [
-            "timeout" => "60",
-            "region" => "spain",
-            "start_date" => "2020-02-12",
-            "end_date" => "2020-02-15",
+            "timeout"        => "180",
+            "region"         => "spain", // "spain" o "latam" (posible Enum) 
+            "type"           => "Demographic",
+            "view_by_type"   => "Total",
+            "start_date"     => "2020-01-01",
+            "end_date"       => "2020-02-25",
             "max_chunk_size" => 1,
-            "campaigns" => ["DIR_29664"],
+            "campaigns"      => ["DIR_29664"],
         ],
-    ]
+    ],
 ];
 
 function testCreateJobsTable()
@@ -290,7 +293,18 @@ function testCreateApiJob()
     $job = $definition->normalizeToAssociativeArray();
     $job['task'] = API_TASK;
     $job['task']['args']['task'] = $className;
-    //$job['task']['args']['standalone'] = true;
+    return JobManager::createJob($job);
+}
+
+function testCreateComscoreJob()
+{
+    $className = \model\ads\Reporter\workers\ComscoreReportCreator::class;
+    $definition = $className::loadDefinition();
+    $definition->max_running_children = 100;
+    $definition->max_retries = 1;
+    $job = $definition->normalizeToAssociativeArray();
+    $job['task'] = COMSCORE_TASK;
+    $job['task']['args']['task'] = $className;
     return JobManager::createJob($job);
 }
 
@@ -380,35 +394,16 @@ function testAction($args = SIMPLE_JOB)
 //$jobs[] = testCreateEmployeeReport();
 //$jobs[] = testCreateParallelJob();
 //$jobs[] = testCreateApiJob();
+$jobs[] = testCreateComscoreJob();
 //testListJobsDS();
 //testListWorkersDS();
 //$jobs[] = testAction()->job_id;
-//sleep(1);
 //testStopJob($jobs[rand(0, count($jobs)-1)]);
-/*sleep(1);
-foreach($jobs as $job) {
+/*foreach($jobs as $job) {
     echo $job.PHP_EOL;
     testListWorkersDS($job);
-}*/
-/*for($i=0;$i<10;$i++)
+}
+for($i=0;$i<3;$i++)
 	testAction(EMPLOYEE_JOB);*/
 //testListJobsDS();
 //testListWorkersDS();
-
-$className = \model\ads\Reporter\workers\ComscoreReportCreator::class;
-$definition = $className::loadDefinition();
-$definition->max_running_children = 100;
-$definition->max_retries = 1;
-$job = $definition->normalizeToAssociativeArray();
-$job['task'] = COMSCORE_TASK;
-$job['task']['args']['task'] = $className;
-$id = JobManager::createJob($job);
-echo $id;
-
-
-/*
-$api = new ComscoreApi();
-//$result = $api->getReportingJobResult("10363894");
-$result = $api->deleteReportingJob("18259431");
-print_r($result['data']);
-*/
