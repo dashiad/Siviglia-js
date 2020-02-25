@@ -6,6 +6,8 @@ use model\web\Jobs\App\Jobs\Messages\SimpleMessage;
 use model\web\Jobs\App\Jobs\Queue;
 use model\web\Jobs\App\Jobs\Workers\TestWorker;
 use model\web\Jobs\App\Jobs\Runnables\Job;
+use model\ads\Reporter\workers\SmartXDownloader;
+use model\ads\Reporter\workers\ComscoreReportCreator\ComscoreApi;
 
 
 const SIMPLE_JOB = [
@@ -195,6 +197,24 @@ const TRIGGER = [
     ],
 ];    
 
+const COMSCORE_TASK = [
+    "type" => "task",
+    "name" => "comscore_report_generator",
+    "args" => [
+        "task" => null,
+        "name" => "comscore_report_generator",
+        "type" => "DateRange",
+        "params" => [
+            "timeout" => "60",
+            "region" => "spain",
+            "start_date" => "2020-02-06 00:00:00",
+            "end_date" => "2020-02-06 23:59:59",
+            "max_chunk_size" => 2,
+            "campaigns" => ["DIR_29664"],
+        ],
+    ]
+];
+
 function testCreateJobsTable()
 {
     $model = new \model\web\Jobs;
@@ -287,18 +307,19 @@ function testStopJob($id)
 
 function testListJobsDS()
 {
-    $ds = $ds=\getDataSource('\\model\\web\\Jobs', "FullList");
+    $ds = \getDataSource('\\model\\web\\Jobs', "FullList");
     $ds->status = [
         Job::RUNNING,
         Job::FINISHED,
         Job::FAILED,
     ];
-    $ds->created_after = "2020-02-21 00:00:00";
+    $ds->created_after = "2020-01-21 00:00:00";
     $ds->created_before = "2020-02-22 00:00:00";
     
-    $jobs = $ds->fetchAll()->getFullData();
-    foreach ($jobs as $job) {
-        echo $job['job_id']." ---> ".$job['status'].PHP_EOL;
+    $jobs = $ds->fetchAll();
+    for ($i=0;$i<$jobs->count();$i++) {
+        $job = $jobs[$i];
+        echo $job->job_id." ---> ".$job->status.PHP_EOL;
     }
 }
 
@@ -315,10 +336,13 @@ function testListWorkersDS($jobId=null)
     $ds=\getDataSource('\\model\\web\\Jobs\\Worker', "FullList");
     $ds->job_id = $jobId;
     $workers = $ds->fetchAll();
-    $workers = $workers->getFullData();
-    foreach ($workers as $worker) {
-        echo $worker['worker_id']." ---> ".$worker['status'].PHP_EOL;
-        echo $worker['result'].PHP_EOL.PHP_EOL;
+    //$workers = $workers->getFullData();
+    for ($i=0;$i<$workers->count();$i++) {
+        $worker = $workers[$i];
+        echo $worker->worker_id." ---> ".$worker->status.PHP_EOL;
+        echo $worker->result.PHP_EOL.PHP_EOL;
+        //echo get_class($worker->);
+        //var_dump($worker->getResults());
     }
 }
 
@@ -350,25 +374,41 @@ function testAction($args = SIMPLE_JOB)
 //testCreateWorkersTable();
 //testLocateWorkers();
 //testCreateTrigger();
-/*$jobs = [];
-for ($i=0;$i<10;$i++) {
-$jobs[] = testCreateSimpleJob();
-$jobs[] = testCreateDirectoryJob();
-$jobs[] = testCreateMySqlJob();
-$jobs[] = testCreateEmployeeReport();*/
+//$jobs[] = testCreateSimpleJob();
+//$jobs[] = testCreateDirectoryJob();
+//$jobs[] = testCreateMySqlJob();
+//$jobs[] = testCreateEmployeeReport();
 //$jobs[] = testCreateParallelJob();
-$jobs[] = testCreateApiJob();
+//$jobs[] = testCreateApiJob();
 //testListJobsDS();
 //testListWorkersDS();
 //$jobs[] = testAction()->job_id;
 //sleep(1);
 //testStopJob($jobs[rand(0, count($jobs)-1)]);
-/*}
-sleep(1);
+/*sleep(1);
 foreach($jobs as $job) {
     echo $job.PHP_EOL;
     testListWorkersDS($job);
 }*/
 /*for($i=0;$i<10;$i++)
 	testAction(EMPLOYEE_JOB);*/
-testListJobsDS();
+//testListJobsDS();
+//testListWorkersDS();
+
+$className = \model\ads\Reporter\workers\ComscoreReportCreator::class;
+$definition = $className::loadDefinition();
+$definition->max_running_children = 100;
+$definition->max_retries = 1;
+$job = $definition->normalizeToAssociativeArray();
+$job['task'] = COMSCORE_TASK;
+$job['task']['args']['task'] = $className;
+$id = JobManager::createJob($job);
+echo $id;
+
+
+/*
+$api = new ComscoreApi();
+//$result = $api->getReportingJobResult("10363894");
+$result = $api->deleteReportingJob("18259431");
+print_r($result['data']);
+*/

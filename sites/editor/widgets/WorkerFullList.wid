@@ -14,14 +14,6 @@ $currentPage=Registry::$registry["currentPage"];
 $params=$currentPage->getPageParams();
 
 
-$datasource=\lib\datasource\DataSourceFactory::getDataSource("/model/web/Jobs/Worker","FullList");
-$datasource->job_id="employee_report_5e4fc73ce420f";
-$it=$datasource->fetchAll();
-$n=$it->count();
-for($k=0;$k<count($n);$k++)
-  echo $it->job_id;
-
-
 ?>
 
 [*:WORKER_LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs/Worker","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
@@ -39,7 +31,20 @@ for($k=0;$k<count($n);$k++)
 						[_:COLUMN][_:LABEL]Actualizado[#][#]
                     [#]
                     [_:ROWS]
-						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"worker_id","model":"$iterator"})][#][#][#]
+						[_:ROW]
+                            [_:VALUE]                    
+                                [*::/BEHAVIOR/MODAL/VENTANA_MODAL]
+                                    [_::NOMBRE_BOTON_MODAL]<?php echo $iterator->worker_id; ?>[#]
+                                    [_::TITULO_MODAL]titulo worker[_*][#]
+                                    [_::CENTRADO][_*][#]
+                                    [_::COLOR_CABECERA]dark[#]
+                                    [_::COLOR_TITULO]white[#]
+                                    [_::CONTENIDO_MODAL({"name":"worker_id","model":"$iterator"})]
+                                    <?php var_dump($iterator->getResults()); ?>
+                                    [#]
+                                [#]
+                            [#]
+                        [#]
                         [_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"job_id","model":"$iterator"})][#][#][#]
                         [_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer_Job_Status({"name":"status","model":"$iterator"})][#][#][#]
                         [_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"created_at","model":"$iterator"})][#][#][#]

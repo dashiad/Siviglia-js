@@ -30,6 +30,7 @@ abstract class Worker implements StatusInterface
     protected $modelName = 'model\\web\\Jobs\\Worker';
     protected $fields = [
         'worker_id' => 'id',
+        'worker_type' => 'worker_type',
         'job_id'    => 'parent',
         'name'      => 'name',
         'status'    => 'status',
@@ -44,14 +45,15 @@ abstract class Worker implements StatusInterface
         
     public function __construct($args)
     {
-        $this->args       = array_merge(Config::get('runnable', 'worker'), $args);
-        $this->id         = $this->createId();
-        $this->parent     = $this->getParent();
-        $this->name       = $this->getName();
-        $this->index      = $this->args['index'];
-        $this->items      = $this->args['items'];
-        $this->totalParts = $this->args['number_of_parts'];
-	    $this->standalone = $this->args['standalone'];
+        $this->args        = array_merge(Config::get('runnable', 'worker'), $args);
+        $this->id          = $this->createId();
+        $this->parent      = $this->getParent();
+        $this->name        = $this->getName();
+        $this->index       = $this->args['index'];
+        $this->items       = $this->args['items'];
+        $this->worker_type = $this->args['type'];
+        $this->totalParts  = $this->args['number_of_parts'];
+	    $this->standalone  = $this->args['standalone'];
         if (!$this->standalone) {
             $this->queue = Queue::connect($this->id);
         }

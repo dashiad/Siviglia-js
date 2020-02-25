@@ -2,7 +2,17 @@
 namespace model\ads\Reporter\workers\SmartXDownloader;
 
 class ApiRequestException extends \Exception {
+    protected $result = "";
     
+    public function setResult($value)
+    {
+        $this->result = $value;
+    }
+    
+    public function getResult()
+    {
+        return $this->result;
+    }
 }
 
 class ApiRequest {
@@ -20,6 +30,7 @@ class ApiRequest {
     protected $headers = [];
     protected $options = [];
     protected $params;
+    public $jsonBody = false;  
     
     protected $response = [
         'code' => null,
@@ -114,14 +125,15 @@ class ApiRequest {
     {
         switch ($this->method) {
             case 'GET':
-                //case 'PUT':     // TODO: descomentar, comentado para pruebas en producción
-                //case 'DELETE':
+            case 'PUT':     // TODO: descomentar, comentado para pruebas en producción
+            case 'DELETE':
                 $params = (count($this->params)) ? '?'.http_build_query($this->params) : '';
                 $this->setUrl($this->getUrl().$params);
                 break;
             case 'POST':
                 $this->setOption(CURLOPT_POST, true);
-                $this->setOption(CURLOPT_POSTFIELDS, http_build_query($this->params));
+                $query = ($this->jsonBody) ? json_encode($this->params) : http_build_query($this->params);
+                $this->setOption(CURLOPT_POSTFIELDS, $query);
                 break;
         }
         $this->setOption(CURLOPT_RETURNTRANSFER, 1);
@@ -149,7 +161,9 @@ class ApiRequest {
                 case 0: // error de conexión de curl
                 case 4: // http forbidden
                 case 5: // http server error
-                    throw new ApiRequestException($code.": ".$err, $code);
+                    $e = new ApiRequestException($code.": ".$err, $code);
+                    $e->setResult($response);
+                    throw $e;
                     break;
             }
         } finally {
