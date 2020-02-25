@@ -8,24 +8,8 @@
 // DataTable configurado
 $(document).ready(function() {    
     $('#dataTableJobs').DataTable({
-        pageLength: 15,        
-        dom: 'Bfrtip',
-        buttons: [
-            {
-                extend: 'copy',
-                text: 'Copiar',
-                exportOptions: {
-                    modifier: {
-                        page: 'current'
-                    }
-                }
-            }, 'csv', 'excel', 'pdf',
-            {
-                extend: 'print',
-                text: 'Imprimir',                
-            }
-        ],
-    //para cambiar el lenguaje a español
+        pageLength: 15,
+        order: [[ 2, "asc" ]],
         "language": {
                 "lengthMenu": "Mostrar _MENU_ registros",
                 "zeroRecords": "No se encontraron resultados",
@@ -40,6 +24,6 @@ $(document).ready(function() {
                     "sPrevious": "Anterior"
 			     },
 			     "sProcessing":"Procesando...",
-            }
+            },        
     });     
 });

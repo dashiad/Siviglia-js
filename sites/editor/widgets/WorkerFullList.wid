@@ -3,7 +3,7 @@
     [_CONTENTS]
         [_SCRIPT]
             [_PHASE]BODYEND[#]
-            [_FILE]editor/js/vendors/datatable-jobs.js[#]
+            [_FILE]editor/js/vendors/datatable-workers.js[#]
         [#]
     [#]
 [#]
@@ -12,8 +12,6 @@
 $serializer=\Registry::getService("storage")->getSerializerByName('web');
 $currentPage=Registry::$registry["currentPage"];
 $params=$currentPage->getPageParams();
-
-
 ?>
 
 [*:WORKER_LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs/Worker","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
@@ -26,26 +24,39 @@ $params=$currentPage->getPageParams();
                     [_:COLUMNHEADERS]
 						[_:COLUMN][_:LABEL]ID[#][#]
 						[_:COLUMN][_:LABEL]Trabajo[#][#]
+                        [_:COLUMN][_:LABEL]Índice[#][#]
 						[_:COLUMN][_:LABEL]Estado[#][#]
 						[_:COLUMN][_:LABEL]Creado[#][#]
 						[_:COLUMN][_:LABEL]Actualizado[#][#]
                     [#]
                     [_:ROWS]
-						[_:ROW]
+                        [_:ROW]
                             [_:VALUE]                    
                                 [*::/BEHAVIOR/MODAL/VENTANA_MODAL]
-                                    [_::NOMBRE_BOTON_MODAL]<?php echo $iterator->worker_id; ?>[#]
-                                    [_::TITULO_MODAL]titulo worker[_*][#]
+                                    [_::NOMBRE_BOTON_MODAL]<?php echo $iterator->id_worker; ?>[#]
+                                    [_::TITULO_MODAL]Worker <?php echo $iterator->id_worker; ?>[_*][#]
                                     [_::CENTRADO][_*][#]
                                     [_::COLOR_CABECERA]dark[#]
                                     [_::COLOR_TITULO]white[#]
                                     [_::CONTENIDO_MODAL({"name":"worker_id","model":"$iterator"})]
-                                    <?php var_dump($iterator->getResults()); ?>
+                                        <?php  
+                                            if ($iterator->status==3 || $iterator->status==4){
+                                                $result=[];
+                                                $json = json_decode($iterator->items,true);                                                
+                                                foreach($json as $fila)
+                                                {
+                                                    echo "Nombre de call: <strong>".$fila['call']."</strong>"; echo "<br>";
+                                                    echo "Params: <strong>".$fila['params']."</strong> <br />";
+                                                }
+                                            }
+                                        ?>
                                     [#]
                                 [#]
                             [#]
                         [#]
+					
                         [_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"job_id","model":"$iterator"})][#][#][#]
+                        [_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer({"name":"index","model":"$iterator"})][#][#][#]
                         [_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer_Job_Status({"name":"status","model":"$iterator"})][#][#][#]
                         [_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"created_at","model":"$iterator"})][#][#][#]
 						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"updated_at","model":"$iterator"})][#][#][#]
