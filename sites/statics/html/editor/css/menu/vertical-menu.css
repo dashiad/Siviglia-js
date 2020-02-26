@@ -320,3 +320,11 @@ body.vertical-layout.vertical-menu-modern.menu-collapsed .footer {
 .navbar-smartclip {
   background-color: #FDAC41;
 }
+
+.navbar-smartclip a {
+  color:black;
+}
+
+.navbar-smartclip a:hover {
+  color: white;
+}

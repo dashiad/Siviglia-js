@@ -4,4 +4,4 @@ LIMIT 0, 1000
 
 -- Date: 2020-02-25 13:22
 */
-INSERT INTO `websites` (`id_site`,`host`,`canonical_url`,`hasSSL`,`namespace`,`websiteName`) VALUES (5,'backend','http://backend.adtopy.com',0,'backend','Backend');
+INSERT INTO `websites` (`id_site`,`host`,`canonical_url`,`hasSSL`,`namespace`,`websiteName`) VALUES (null,'backend','http://backend.adtopy.com',0,'backend','Backend');

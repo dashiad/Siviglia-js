@@ -1,0 +1,61 @@
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_PHASE]Headers[#]
+    [_CONTENTS]        
+        [_CSS]
+            [_FILE]backend/css/style.css[#]
+        [#]
+        [_CSS]
+            [_FILE]backend/css/bootstrap/bootstrap.css[#]
+        [#]
+        [_CSS]
+            [_FILE]backend/css/bootstrap/bootstrap-extended.css[#]
+        [#]
+        [_CSS]
+            [_FILE]backend/css/bootstrap/colors.css[#]
+        [#]
+        [_CSS]
+            [_FILE]backend/css/bootstrap/components.css[#]
+        [#]
+        [_CSS]
+            [_FILE]backend/css/bootstrap/vendors.min.css[#]
+        [#]
+        [_CSS]
+            [_FILE]backend/fonts/boxicons/css/boxicons.css[#]
+        [#]                 
+        [_CSS]
+            [_FILE]backend/css/menu/vertical-menu.css[#]
+        [#]
+        [_CSS]
+            [_FILE]backend/css/themes/semi-dark-layout.css[#]
+        [#]
+        [_CSS]
+            [_FILE]backend/css/form/form-validation.css[#]
+        [#]
+        [_CSS]
+            [_FILE]backend/css/vendors/pickers/pickadate.css[#]
+        [#]
+        [_CSS]
+            [_URL]https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css[#]
+        [#]
+    [#]
+[#]
+  
+    <!-- MENU NAVIGATION -->
+    [*:LAYOUT/NAVIGATION/MAIN_MENU_HORIZONTAL_BACKEND][#]
+    
+    <!-- CONTENT -->
+    <div class="app-content content-horizontal">
+        <!-- BREADCRUMBS -->
+        [*:LAYOUT/NAVIGATION/BREADCRUMBS_BACKEND][#]    
+        
+        <div class="content-wrapper">
+            <div class="content-body">
+                [_CONTENT][_*][#]
+            </div>                
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    [*:LAYOUT/FOOTER/FOOTER_STATIC][#]

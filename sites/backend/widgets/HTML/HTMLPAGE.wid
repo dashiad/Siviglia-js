@@ -1,0 +1,70 @@
+<?php
+    $page=\Registry::getService("page");
+    $site=\Registry::getService("site");
+    $name=$page->getPageName();
+    $siteName=$site->getName();
+    $layout_structure = 'horizontal';
+?>
+<!DOCTYPE html>
+<html lang="<?php echo $site->getDefaultIso();?>">
+<head>
+    [_TITLE]<title>[_*]</title>[#]
+    [_META]
+        [*:/HTML/METADATA/META][_:NAME][_NAME][_*][#][#][_:VALUE][_VALUE][_*][#][#][#]
+    [#]
+    [_ICON][_*][#]
+    [_STARTUP_SCRIPTS][_*][#]
+    [@DEPENDENCY]
+        [_PHASE]Headers[#]
+    [#]
+    [_INLINE_PRESCRIPT][_*][#]
+    [_SCRIPT][*:/HTML/METADATA/SCRIPT][_*][#][#]
+    [_INLINESCRIPT][_*][#]
+    [_INLINECSS][_*][#]
+    [_CSS][*:/HTML/METADATA/CSS][_*][#][#]
+    [_EXTRA][_*][#]
+
+    <!-- select2 library for jQuery replacement for select boxes -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+    <!-- script general que carga jquery 3 y demás dependencias de codigo js para la plantilla.
+    Importante que esté antes de las siguientes librerías para que puedan funcionar bien: datatables, etc... -->
+    <script src="http://statics.adtopy.com/backend/js/vendors/vendors2.min.js"></script>    
+
+    <!-- datatables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.20/b-1.6.1/b-html5-1.6.1/b-print-1.6.1/datatables.min.css"/>
+ 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.20/b-1.6.1/b-html5-1.6.1/b-print-1.6.1/datatables.min.js"></script>
+</head>
+
+
+<body class="<?php echo $bodyClasses;?>" [_EXTRA_BODY_PROPERTIES][_*][#]>
+
+
+<!-- <body [_LAYOUT_STRUCTURE][_HORIZONTAL][_*][#][#]> -->
+<div style="display:none">
+    [@DEPENDENCY]
+        [_PHASE]WIDGETSTART[#]
+    [#]
+</div>
+
+    [@DEPENDENCY]
+        [_PHASE]BODYSTART[#]
+    [#]
+
+    [_CONTENT][_*][#]
+
+    <script src="http://statics.adtopy.com/backend/js/app2.js"></script>
+    <script src="http://statics.adtopy.com/backend/js/app-menu.js"></script>
+    <script src="http://statics.adtopy.com/backend/js/vertical-menu-dark.js"></script>    
+    <script src="http://statics.adtopy.com/backend/js/vendors/components.min.js"></script>    
+    <script src="http://statics.adtopy.com/backend/js/vendors/pickers/picker.js"></script>
+    <script src="http://statics.adtopy.com/backend/js/vendors/pickers/picker.date.js"></script>
+    <script src="http://statics.adtopy.com/backend/js/vendors/pickers/picker.time.js"></script>
+    <script src="http://statics.adtopy.com/backend/js/vendors/pickers/pick-a-datetime.js"></script>
+    <script src="http://statics.adtopy.com/backend/js/vendors/pickers/daterangepicker.js"></script>
+    <script src="http://statics.adtopy.com/backend/js/vendors/datatable-jobs.js"></script>    
+</body>
+</html>

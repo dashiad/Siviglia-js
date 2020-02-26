@@ -10,6 +10,7 @@ $params=Registry::$registry["params"];
         [_:TITLE]Smartclip[#]
         [_:LINK]http://editor.adtopy.com/[#]
         [_:TARGET]_self[#]
+        [_:SUP_TITLE](editor)[#]
     [#]    
     [_:LISTING]
         [_:ROWS]
@@ -19,8 +20,6 @@ $params=Registry::$registry["params"];
                 [#]
             [#]
         [#]
-    [#]
-    [_:LISTINGFOOTER]
     [#]
 [#]
 </div>

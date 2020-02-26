@@ -1,11 +1,10 @@
 <?php
 $page=Registry::$registry["PAGE"];
-//var_dump($page);
 $idJob=$page->job_id;
 ?>
 
-[*PAGE/SITE]
-    [_TITLE]EDITOR SECCION - v.1.0 beta Smartclip[#]
+[*PAGE/JOB]
+    [_TITLE]Jobs: Backend - SmartClip v.1.0 beta[#]
 
     [_CONTENT]    
         [*:BEHAVIOR/CARD]
