@@ -1011,6 +1011,7 @@ class CLayoutManager
     var $layoutParser;
     var $layoutLoader;
     var $testing=false;
+    var $layoutDefinition;
     static $defaultWidgetPath;
 
     function __construct($basePath,$targetProtocol,$widgetPath=null,$pluginParams=array(),$lang="es",$testing=false)
@@ -1027,6 +1028,7 @@ class CLayoutManager
         $this->basePath=$basePath;
         $this->preCompilers=null;
         $this->testing=$testing;
+        $this->layoutDefinition=null;
 
     }
     static function setDefaultWidgetPath($path)
@@ -1095,9 +1097,14 @@ class CLayoutManager
     {
         return $this->currentLayout;
     }
+    function getLayoutDefinition()
+    {
+        return $this->layoutDefinition;
+    }
     function renderLayout($layoutDefinition,$layoutParser,$include=false)
     {
         $this->layoutParser=$layoutParser;
+        $this->layoutDefinition=$layoutDefinition;
         $fileName=isset($layoutDefinition["TEMPLATE"])?$layoutDefinition["TEMPLATE"]:$layoutDefinition["LAYOUT"];
         $this->currentLayout=$fileName;
         $targetDir=$layoutDefinition["TARGET"];
@@ -1111,16 +1118,27 @@ class CLayoutManager
         $pathInfo=pathinfo($fileName);
         $base=$pathInfo["basename"];
 
+        $this->templateParams=$layoutDefinition["PARAMS"];
+        $paramString="";
+        foreach($this->templateParams as $key=>$value)
+            $paramString.=($key.$value);
+        $hash="";
+        if($paramString!="")
+            $hash="_".md5($paramString);
+
+
+
         // El siguiente codigo  supone que la extension (ej, .wid) solo aparece al final del nombre de fichero.
         if(isset($layoutDefinition["CACHE_SUFFIX"]))
 	    {
             $suffix=$layoutDefinition["CACHE_SUFFIX"];
             $base=str_replace(".".$pathInfo["extension"],
-                        $suffix[0]=="."?$suffix:".".$suffix,
+                        $suffix[0]=="."?$hash.$suffix:$hash.".".$suffix,
                         $base
                         );
 	    }
-
+        else
+            $base=$base.$hash;
 
         $compiledFile=$compiledDir."/".$base;
         //include_once($compiledFile);
@@ -1153,7 +1171,7 @@ class CLayoutManager
                 // Cuando se obtiene el lock, se comprueba si realmente tenemos que reconstruir.
                 $mustRebuild = $this->checkCacheFile($fileName, $compiledFile, $depsFile);
             }
-            if(true || $mustRebuild)
+            if($mustRebuild)
             {
 
                 $contents=file_get_contents($fileName);
@@ -1167,6 +1185,11 @@ class CLayoutManager
                 // En caso de que los preprocesadores hayan cambiado el fichero, se guarda
                 if($parsed!=$contents)
                     file_put_contents($fileName,$parsed);
+
+                if(isset($layoutDefinition["PARAMS"]))
+                    $parsed= \lib\php\ParametrizableString::getParametrizedString($parsed,$layoutDefinition["PARAMS"]);
+
+
                 $contents=$parsed;
                 $oldMemoryLimit=ini_get('memory_limit');
                 ini_set('memory_limit', '512M');

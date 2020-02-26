@@ -43,6 +43,7 @@ class HtmlRenderer
              )));
          $definition=array("LAYOUT"=>$page->getLayoutPath($isWork),
                           "CACHE_SUFFIX"=>"php",
+                          "PARAMS"=>$page->getTemplateParams(),
                           "TARGET"=>$page->getCachePath().$language."/");
          $oManager->renderLayout($definition,$oLParser,true);
     }

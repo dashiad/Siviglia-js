@@ -81,6 +81,7 @@ abstract class BaseQueryBuilder
     }
     abstract function getDynamicParamValue($paramValue,$paramType);
     abstract function getSerializerType();
+    abstract function build();
 
     function setStartingRow($row)
     {

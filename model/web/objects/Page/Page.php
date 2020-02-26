@@ -22,6 +22,7 @@ class Page extends \lib\model\BaseModel
 {
     private $__pageConfig;
     private $__pageDef;
+    private $templateParams;
     const PAGE_ROLE_VIEW="View";
     const PAGE_ROLE_CREATE="Create";
     const PAGE_ROLE_EDIT="Edit";
@@ -37,7 +38,7 @@ class Page extends \lib\model\BaseModel
 
     function __construct($serializer = null, $definition = null)
     {
-        
+
         $this->__objName = \lib\model\ModelService::getModelDescriptor('\model\web\Page');
         if (!$definition)
             $this->__def=Page::loadDefinition($this);
@@ -54,6 +55,7 @@ class Page extends \lib\model\BaseModel
             if(!isset($this->__objectDef["DEFAULT_WRITE_SERIALIZER"]))
                 $this->__writeSerializer=$this->__serializer;
         }
+        $this->templateParams=[];
     }
     function getTableName()
     {
@@ -111,7 +113,7 @@ class Page extends \lib\model\BaseModel
 
     static function getPageInstance($data,$request,$params)
     {
-        
+
         $site=\getModel('\model\web\Site',array("id_site"=>$data->id_site));
         //$path=$site->getPagePath($data->path);
         $parts=explode("/",$data->path);
@@ -216,7 +218,7 @@ class Page extends \lib\model\BaseModel
     }
     function save($serializer=null)
     {
-             
+
         if($this->__isNew())
         {
             $this->{"*date_add"}->setAsNow();
@@ -225,8 +227,17 @@ class Page extends \lib\model\BaseModel
         $this->{"*date_modified"}->setAsNow();
         parent::save($serializer);
 
-        
+
     }
+    function setTemplateParams($params)
+    {
+        $this->templateParams=$params;
+    }
+    function getTemplateParams()
+    {
+        return $this->templateParams;
+    }
+
 
     function saveConfig($config)
     {
@@ -272,7 +283,7 @@ EOT;
         $classPath=$basePath."/".$this->getPageClassName().".php";
         file_put_contents($classPath,$classFile);
         $pageWidget=$this->id_site[0]->getEmptyPageTemplate($this->{"*id_type"});
-        
+
         $curWidPath=$this->getLayoutPath($this->getPageName().".wid");
         file_put_contents($curWidPath,$pageWidget);
         $privateWid=$this->getPageName();

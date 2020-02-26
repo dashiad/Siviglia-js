@@ -12,6 +12,11 @@ class IndexPage extends \model\web\Page
 {
     function initializePage($params)
     {
+
+        if(time()%2)
+            $this->setTemplateParams(["MiWidget"=>"/TESTING_wids/WID1"]);
+        else
+            $this->setTemplateParams(["MiWidget"=>"/TESTING_wids/WID2"]);
         // TODO: Implement initializePage() method.
     }
 }

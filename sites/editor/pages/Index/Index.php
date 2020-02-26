@@ -7,7 +7,7 @@
             [_:TITLE]Reporte ComScore[#]
             [_:CONTENT][*::JobFullList][#][#]
         [#]
-
+        [*:[%MiWidget%]][#]
 
     [#]
 [#]
