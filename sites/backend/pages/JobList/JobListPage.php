@@ -6,11 +6,11 @@
  * Time: 0:22
  */
 
-namespace sites\backend\pages\Jobs;
+namespace sites\backend\pages\JobList;
 
 include_once(PROJECTPATH."/model/web/objects/Jobs/objects/Worker/Definition.php");
 
-class JobsPage extends  \model\web\Page
+class JobListPage extends  \model\web\Page
 {
     function initializePage($params)
     {

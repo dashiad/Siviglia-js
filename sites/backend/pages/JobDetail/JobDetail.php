@@ -13,5 +13,8 @@ $idJob=$page->job_id;
                 [*::WorkerFullList][#]
             [#]
         [#]
+        [*:[%JobWidget%]][#]
+        
+        
     [#]
 [#]
