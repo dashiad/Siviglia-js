@@ -16,10 +16,19 @@ class DateRangeSplitter implements SplitterInterface
         $period = (isset($params['granularity'])) ? $params['granularity'] : 'DAY';
         $interval = (isset($params['interval'])) ? $params['interval'] : 1;
         
+        $startDate = explode(" ", $params['start_date']);
+        $endDate = explode(" ", $params['end_date']);
+
+        $startDateStr = $startDate[0]." ";
+        $endDateStr = $endDate[0]." ";
+        
+        $startDateStr .= $startDate[1] ?? "00:00:00";
+        $endDateStr .= $endDate[1] ?? "23:59:59";
+        
         $period = new \DatePeriod(
-            new \DateTime($params['start_date']),
+            new \DateTime($startDateStr),
             new \DateInterval($this->getInterval($period, $interval)),
-            new \DateTime($params['end_date'])
+            new \DateTime($endDateStr)
             );
         foreach($period as $date) {
             $datesArray[] = $date->format('Y-m-d H:i:s');

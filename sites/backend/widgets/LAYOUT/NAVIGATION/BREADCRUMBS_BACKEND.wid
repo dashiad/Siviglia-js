@@ -1,0 +1,23 @@
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$currentPage=Registry::$registry["currentPage"];
+$params=Registry::$registry["params"];
+?>
+
+<div class="content-header row">
+    <div class="content-header-left col-12 mb-2 mt-1">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb p-0 mb-0">
+                        <li class="breadcrumb-item"><a href="http://backend.adtopy.com/" title="Backend HOME (SmartClip)"><i class="bx bx-home"></i></a></li>
+
+                        <li class="breadcrumb-item">
+                            <a id="item-tab" href="#">Jobs</a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>

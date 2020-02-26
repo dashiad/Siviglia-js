@@ -36,4 +36,23 @@ class Worker extends BaseModel
     {
         return self::STATUS[$status] ?? null;
     }
+
+    public function getWidgetPath() : ?String
+    {
+        return dirname(__FILE__)."/WORKER.wid";
+    }
+    
+    public function getResults() : ?Array
+    {
+        if ($this->status==self::FINISHED || $this->status==self::FAILED) {
+            $result = [];
+            for($i=0;$i<count($this->items);$i++) {
+                $result[$this->items[$i]] = $this->result[$i] ?? null; 
+            }
+        } else {
+            $result = null;
+        }
+        return $result;
+    }
+    
 }

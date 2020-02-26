@@ -4,8 +4,7 @@
                 [_TITLE]<div class="sidebar-brand-icon">
                     <i class="icon-smartclip"></i>
                 </div>
-                <div class="sidebar-brand-text">[_*] <sup>(beta)</sup></div>
-                [#]
+                <div class="sidebar-brand-text">[_*][#] [_SUP_TITLE]<sup> [_*]</sup>[#]</div>                
         </a>
     [#]
 <hr class="sidebar-divider my-0">

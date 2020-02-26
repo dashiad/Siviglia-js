@@ -34,6 +34,11 @@ class FullList
                 'FIELD' => 'worker_id',
                 'TRIGGER_VAR' => 'worker_id'
             ],
+            'worker_type' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'worker_type',
+                'TRIGGER_VAR' => 'worker_type'
+            ],
             'name' => [
                 'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'name',
@@ -78,6 +83,10 @@ class FullList
                 'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'worker_id'
             ],
+            'worker_type' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'worker_type'
+            ],
             'name' => [
                 'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'name'
@@ -94,9 +103,29 @@ class FullList
                 'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'alive'
             ],
+            'items' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'items'
+            ],
+            'last_completed_item_index' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'last_completed_item_index'
+            ],
+            'descriptor' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'descriptor'
+            ],
             'result' => [
                 'MODEL' => '\model\web\Jobs\Worker',
                 'FIELD' => 'result'
+            ],
+            'created_at' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'created_at'
+            ],
+            'updated_at' => [
+                'MODEL' => '\model\web\Jobs\Worker',
+                'FIELD' => 'updated_at'
             ],
         ],
         'PERMISSIONS' => ['PUBLIC'],
@@ -105,9 +134,12 @@ class FullList
                 'MYSQL' => [
                     'DEFINITION' => [
                         'TABLE' => 'Worker',
+                        //'DEFAULT_ORDER'=>'index',
+                        //'DEFAULT_ORDER_DIRECTION'=>'ASC',
                         'BASE' => [
                             'id_worker',
                             'worker_id',
+                            'worker_type',
                             'name',
                             'status',
                             'job_id',
@@ -140,6 +172,16 @@ class FullList
                                 'TRIGGER_VAR' => 'worker_id',
                                 'DISABLE_IF' => '0',
                                 'FILTERREF' => 'worker_id'
+                            ],
+                            [
+                            'FILTER' => [
+                                    'F' => 'worker_type',
+                                    'OP' => '=',
+                                    'V' => '[%worker_type%]'
+                                ],
+                                'TRIGGER_VAR' => 'worker_type',
+                                'DISABLE_IF' => '0',
+                                'FILTERREF' => 'worker_type'
                             ],
                             [
                                 'FILTER' => [

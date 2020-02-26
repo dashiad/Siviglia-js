@@ -8,6 +8,7 @@
 // DataTable configurado
 $(document).ready(function() {    
     $('#dataTableJobs').DataTable({
+        pageLength: 10,        
         dom: 'Bfrtip',
         buttons: [
             {

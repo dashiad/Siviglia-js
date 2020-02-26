@@ -1,0 +1,24 @@
+<!-- NOTA: NO FUNCIONA esta dependencia para añadir ficheros al final del body -->
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_PHASE]BODYEND[#]
+    [_CONTENTS]
+        [_SCRIPT]            
+            [_FILE]backend/js/vendors/datatable-jobs.js[#]
+        [#]
+    [#]
+[#]
+
+<?php $bodyClasses="vertical-layout vertical-menu-modern 2-columns  navbar-sticky footer-static";?>
+[*:HTML/HTMLPAGE({"bodyClasses":"$bodyClasses"})]
+    [_:EXTRA_PAGE_PROPERTIES]data-open="click" data-menu="vertical-menu-modern" data-col="2-columns" data-layout="semi-dark-layout"[#]
+    [_:TITLE][_TITLE][_*][#][#]
+
+    [_:CONTENT]    
+        [*::LAYOUT/LAYOUT_HORIZONTAL_BACKEND]
+            [_::CONTENT]
+                [_CONTENT][_*][#]
+            [#]
+        [#]
+    [#]   
+[#]

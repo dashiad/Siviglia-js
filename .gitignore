@@ -16,3 +16,12 @@ cache/*
 .project
 .settings/*
 sites/editor/html/localConfig.php
+sites/statics/html/backend/bundles/*
+sites/backend/cache/es/*.*
+sites/backend/cache/routes/*
+sites/backend/cache/es/deps_Index.php
+sites/backend/cache/es/deps_Job.php
+sites/backend/cache/es/Error.php
+sites/backend/cache/es/Error.php.lockfile
+sites/backend/cache/es/Index.php
+sites/backend/cache/es/Job.php

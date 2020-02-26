@@ -40,6 +40,15 @@ class Definition extends BaseModelDefinition
                 'SHORTLABEL' => 'tag',
                 'ISLABEL' => true,
             ],
+            'worker_type' => [
+                'TYPE' => 'String',
+                'LABEL' => 'Tipo de tarea',
+                'MINLENGTH' => 8,
+                'MAXLENGTH' => 256,
+                'DESCRIPTIVE' => 'false',
+                'SHORTLABEL' => 'tag',
+                'ISLABEL' => true,
+            ],
             'job_id' => [
                 'DEFAULT' => 'NULL',
                 'FIELDS' => ['job_id' => 'job_id'],
@@ -106,6 +115,7 @@ class Definition extends BaseModelDefinition
             ],
             'result' => [
                 'TYPE'    => 'Text',
+                //'TYPE' => 'PHPVariable',
                 'DEFAULT' => null,
                 'LABEL'   => 'Result',
             ],
