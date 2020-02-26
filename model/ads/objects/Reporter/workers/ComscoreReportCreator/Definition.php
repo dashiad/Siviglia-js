@@ -35,8 +35,11 @@ class Definition extends BaseWorkerDefinition
                     'DEFAULT'   => 'model\\ads\\Reporter\\workers\\ComscoreReportCreator',
                 ],
                 'type' => [
-                    'TYPE'    => 'String',
-                    'DEFAULT' => 'DateRange',
+                    'TYPE'    => 'Enum',
+                    'DEFAULT' => 'None',
+                    'LABEL'   => 'Procesar como',
+                    // TODO: ver si se pueden poner etiquetas a los valores o usar translations
+                    'VALUES'  => ['None', 'DateRange'], 
                 ],
                 'params' => [
                     'LABEL'   => 'Parámetros',

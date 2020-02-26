@@ -4,9 +4,19 @@ namespace model\ads\Reporter\workers;
 use model\web\Jobs\BaseWorker;
 use model\ads\Reporter\workers\ComscoreReportCreator\ComscoreApi;
 use model\ads\Reporter\workers\SmartXDownloader\ApiRequestException;
+use lib\model\BaseTypedObject;
 
 class ComscoreReportCreator extends BaseWorker
 {
+    
+    const RESULT_DEFINITION = [
+        'FIELDS' => [
+            'start_date' => ['LABEL' => 'Fecha desde', 'TYPE' => 'Date'],
+            'end_date'   => ['LABEL' => 'Fecha hasta', 'TYPE' => 'Date'],
+            'file'       => ['LABEL' => 'Fichero', 'TYPE' => 'String'],
+        ],
+    ];
+    
     protected static $defaultName = 'comscore_worker';
     
     protected function init()
@@ -16,28 +26,10 @@ class ComscoreReportCreator extends BaseWorker
     
     protected function runItem($item)
     { 
-        $type = $this->args['params']['params']['type'];
-        $ViewByType = $this->args['params']['params']['view_by_type'];
-        $region = $this->args['params']['params']['region'];
-        $timeout = $this->args['params']['params']['timeout'];
-        $campaignIds = $this->args['params']['params']['campaigns'];
         
-        if ($this->args['params']['type']=="None") {
-            $startDate =  $this->args['params']['params']['start_date'];
-            $endDate = $this->args['params']['params']['end_date'];
-        } else {
-            $startDate =  $item;
-            $endDate   = $item;
-        }
-     
-        $url = "jobs/reporting/{$type}";
-        
-        $params = [
-            'campaignIds' => $campaignIds ,
-            'ViewByType' => $ViewByType,
-            'startDate' => date('m-d-Y', strtotime($startDate)),
-            'endDate' => date('m-d-Y', strtotime($endDate))
-        ];
+        $url = $this->getUrl();
+        $params = $this->getParams($item);
+        $region = $this->getRegion();
         
         try {
             $result = $this->api->createReportingJob($url, $params, $region);
@@ -53,7 +45,7 @@ class ComscoreReportCreator extends BaseWorker
             }
         }
         
-        $waitForResultUntil = strtotime("+$timeout seconds");
+        $waitForResultUntil = strtotime("+{$this->getTimeout()} seconds");
         $completed = false;
         while(time()<$waitForResultUntil) {
             $result = $this->api->getReportingJob($id, $region);
@@ -66,11 +58,74 @@ class ComscoreReportCreator extends BaseWorker
         }
 
         if (!$completed)
-            throw new \Exception("Remote job $id didn't finish in $timeout seconds.");
+            throw new \Exception("Remote job $id didn't finish in {$this->getTimeout()} seconds.");
         
         $result = $this->api->getReportingJobResult($id, $region);
-        return $this->saveCsv($result['data']);
-       
+        $resultFile = $this->saveCsv($result['data']);
+        $resultData = $this->getResult($item, $resultFile);
+        
+        return $resultData->file;
+    }
+    
+    protected function getStartdate($item)
+    {
+        if ($this->args['params']['type']=="None")
+            return  $this->args['params']['params']['start_date'];
+        else
+            return $item;
+    }
+
+    protected function getEnddate($item)
+    {
+        if ($this->args['params']['type']=="None")
+            return  $this->args['params']['params']['end_date'];
+        else
+            return $item;
+    }
+    
+    
+    protected function getResult($item, $filename)
+    {
+        $resultData = [
+            'start_date' => $this->getStartdate($item),
+            'end_date' => $this->getEnddate($item),
+            'file' => $filename,
+        ];
+        $obj = new BaseTypedObject(self::RESULT_DEFINITION);
+        $obj->loadFromArray($resultData);
+        return $obj;
+    }
+    
+    protected function getUrl()
+    {
+        $type = $this->args['params']['params']['type'];
+        return "jobs/reporting/{$type}";
+    }
+    
+    protected function getRegion()
+    {
+        return $this->args['params']['params']['region'];
+    }
+    
+    protected function getTimeout()
+    {
+        return $this->args['params']['params']['timeout'];
+    }
+    
+    protected function getParams($item) {
+        
+        $ViewByType = $this->args['params']['params']['view_by_type'];
+        $campaignIds = $this->args['params']['params']['campaigns'];
+        $startDate = $this->getStartdate($item);
+        $endDate = $this->getEnddate($item);
+        
+        $params = [
+            'campaignIds' => $campaignIds ,
+            'ViewByType' => $ViewByType,
+            'startDate' => date('m-d-Y', strtotime($startDate)),
+            'endDate' => date('m-d-Y', strtotime($endDate))
+        ];
+        return $params;
     }
     
     protected function saveCsv(String $data) : ?String 

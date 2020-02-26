@@ -203,8 +203,8 @@ const COMSCORE_TASK = [
     "args" => [
         "task"   => null,
         "name"   => "comscore_report_generator",
-        //"type"   => "DateRange", // procesa cada fecha en el rango por separado
-        "type" => "None",  // procesa el rango de fechas como una única consulta
+        //"type"   => "DateRange", // procesa el rango de fechas día por día
+        "type" => "None",  // procesa el rango de fechas como un agregado
         "params" => [
             "timeout"        => "180",
             "region"         => "spain", // "spain" o "latam" (posible Enum) 
@@ -212,7 +212,7 @@ const COMSCORE_TASK = [
             "view_by_type"   => "Total",
             "start_date"     => "2020-01-01",
             "end_date"       => "2020-02-25",
-            "max_chunk_size" => 1,
+            "max_chunk_size" => 10,
             "campaigns"      => ["DIR_29664"],
         ],
     ],
@@ -350,13 +350,10 @@ function testListWorkersDS($jobId=null)
     $ds=\getDataSource('\\model\\web\\Jobs\\Worker', "FullList");
     $ds->job_id = $jobId;
     $workers = $ds->fetchAll();
-    //$workers = $workers->getFullData();
     for ($i=0;$i<$workers->count();$i++) {
         $worker = $workers[$i];
         echo $worker->worker_id." ---> ".$worker->status.PHP_EOL;
         echo $worker->result.PHP_EOL.PHP_EOL;
-        //echo get_class($worker->);
-        //var_dump($worker->getResults());
     }
 }
 

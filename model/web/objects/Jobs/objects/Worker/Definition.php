@@ -115,6 +115,7 @@ class Definition extends BaseModelDefinition
             ],
             'result' => [
                 'TYPE'    => 'Text',
+                //'TYPE' => 'PHPVariable',
                 'DEFAULT' => null,
                 'LABEL'   => 'Result',
             ],
