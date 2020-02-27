@@ -36,7 +36,7 @@ class Package extends \lib\model\Package
     {
         if (is_null($widgetName)) $widgetName = "JOB_DEFAULT";
         $classPath = $this->getWorkersPath($className);
-        $classParts = explode('/', $classPath);
+        $classParts = explode('/', str_replace("\\", "/", $classPath));
         array_pop($classParts);
         array_push($classParts, "widgets");
         array_push($classParts, $widgetName);
@@ -44,7 +44,7 @@ class Package extends \lib\model\Package
         if (!is_file("{$path}.wid")) {
             $path = "/model/web/objects/Jobs/objects/Worker/widgets/JOB_BASE";
         } else {
-            $path = str_replace(PROJECTPATH, "", $path);
+            $path = str_replace(str_replace("\\", "/", PROJECTPATH), "", $path);
         }
         
         return $path;
