@@ -1,6 +1,6 @@
 <div class="card">    
     <div class="card-header">
-        [_TITLE]<h4 class="card-title">[_*]</h4>[#]        
+        [_TITLE]<h2 class="card-title">[_*]</h2>[#]
         <a class="heading-elements-toggle">
             <i class="bx bx-dots-vertical font-medium-3"></i>
         </a>

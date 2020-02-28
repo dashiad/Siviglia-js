@@ -1122,6 +1122,17 @@ body.fixed-footer .main-menu.menu-fixed {
   border-right-width: 3px !important;
 }
 
+.border-left-block-3 {
+  border-left-width: 3px !important;
+  padding-left: 1rem !important;
+}
+
+.border-right-block-3 {
+  border-right-width: 3px !important;
+  padding-left: 1rem !important;
+}
+
+
 /* No Border Radius */
 .no-border-top-radius {
   border-top-left-radius: 0 !important;

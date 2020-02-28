@@ -1,0 +1,42 @@
+<div class="card shadow mb-4">
+   <div class="card-header py-3">
+        <h5 class="m-0 font-weight-bold text-primary">        
+        [_HEADER]
+            <i class="icon-[_ICONO][_*][#]"></i>
+            [_TITLE][_*][#]
+        [#]
+        </h5>
+        <div class="row">
+            <div class="col-sm-12">
+                [_HEADER]
+                    [_DESCRIPTION][_*][#]
+                [#]
+            </div>
+        </div>
+   </div>
+   <div class="card-body">
+        <div class="table-responsive">
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered dataTable" id="dataTableJobs" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                    <thead>
+                    [_LISTING]
+                        [_COLUMNHEADERS]
+                        <tr role="row">
+                            [_COLUMN][_LABEL]<th  style="border-bottom:1px solid #AAAAAA;">[_*]</th>[#][#]
+                        </tr>
+                        [#]
+                    </thead>
+                    <tbody>
+                        
+                    [#]
+                    </tbody>
+                    
+                </table>
+            </div>                    
+        </div>
+
+
+        </div>
+    </div><!-- ./card-body -->
+</div><!-- ./card shadow mb-4 -->    

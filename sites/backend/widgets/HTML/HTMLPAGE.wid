@@ -41,9 +41,6 @@
 
 
 <body class="<?php echo $bodyClasses;?>" [_EXTRA_BODY_PROPERTIES][_*][#]>
-
-
-<!-- <body [_LAYOUT_STRUCTURE][_HORIZONTAL][_*][#][#]> -->
 <div style="display:none">
     [@DEPENDENCY]
         [_PHASE]WIDGETSTART[#]

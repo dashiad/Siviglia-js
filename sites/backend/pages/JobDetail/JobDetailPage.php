@@ -25,7 +25,7 @@ class JobDetailPage extends  \model\web\Page
         //$resultJobWidget = $package->getWorkersWidgetPath($ins->worker_type, "JOB_ESPECIAL"); // plantilla por nombre
         //$resultJobWidget = $package->getWorkersWidgetPath($ins->worker_type, "PLANTILLA_FAKE"); //plantilla base (no existe la plantilla en worker) 
         
-        $this->setTemplateParams(["JobWidget" => $resultJobWidget]);
+        $this->setTemplateParams(["JobDetailWidget" => $resultJobWidget]);
     }
     
     function getFormModel($model,$form)

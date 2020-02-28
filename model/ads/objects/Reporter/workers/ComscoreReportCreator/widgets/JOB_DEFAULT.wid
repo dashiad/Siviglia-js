@@ -1,1 +1,21 @@
-HOLA MUNDO WORKER DEFAULT DE COMSCORE
+wid dinámico: 'JobDetailWidget' default
+
+
+[*:JOB_DEFAULT_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+    [_:HEADER]
+        [_:TITLE]Job Results[#]
+            [_:DESCRIPTION]Detalles asociados a los resultados de Job.[#]
+    [#]
+    [_:LISTING]
+        [_:COLUMNHEADERS]
+            [_:COLUMN][_:LABEL]Fecha inicio[#][#]
+            [_:COLUMN][_:LABEL]Fecha fin[#][#]
+            [_:COLUMN][_:LABEL]Salida[#][#]
+        [#]
+        [_:ROWS]
+            [_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"created_at","model":"$iterator"})][#][#][#]
+            [_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"updated_at","model":"$iterator"})][#][#][#]            
+            [_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"id_worker","model":"$iterator"})][#][#][#]
+        [#]
+    [#]
+[#]

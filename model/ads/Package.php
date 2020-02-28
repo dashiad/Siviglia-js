@@ -32,21 +32,15 @@ class Package extends \lib\model\Package
         return $this->fullPath."/objects/".$className.".php";
     }
     
-    public function getWorkersWidgetPath($className, $widgetName=null) : string
+    public function getWorkersWidgetPath($className, $widgetName="JOB_DEFAULT") : string
     {
-        if (is_null($widgetName)) $widgetName = "JOB_DEFAULT";
         $classPath = $this->getWorkersPath($className);
         $classParts = explode('/', str_replace("\\", "/", $classPath));
         array_pop($classParts);
         array_push($classParts, "widgets");
         array_push($classParts, $widgetName);
         $path = implode("/", $classParts);
-        if (!is_file("{$path}.wid")) {
-            $path = "/model/web/objects/Jobs/objects/Worker/widgets/JOB_BASE";
-        } else {
-            $path = str_replace(str_replace("\\", "/", PROJECTPATH), "", $path);
-        }
-        
+        $path = str_replace(str_replace("\\", "/", PROJECTPATH), "", $path);
         return $path;
     }
     

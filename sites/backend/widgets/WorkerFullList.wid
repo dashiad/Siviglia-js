@@ -17,8 +17,7 @@ $params=$currentPage->getPageParams();
 [*:WORKER_LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs/Worker","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
                 [_:HEADER]
                     [_:TITLE]Tabla del Worker[#]
-                    [_:DESCRIPTION]Detalles de los workers asociados al job.[#]
-					[_:ICONO]statics[#]
+                    [_:DESCRIPTION]Detalles de los workers asociados al job  [*::ELEMENT/TEXT/STRONG]<?php echo $params->job_id;?>[#][#]                                
                 [#]
                 [_:LISTING]
                     [_:COLUMNHEADERS]
@@ -30,31 +29,7 @@ $params=$currentPage->getPageParams();
 						[_:COLUMN][_:LABEL]Actualizado[#][#]
                     [#]
                     [_:ROWS]
-                        [_:ROW]
-                            [_:VALUE]                    
-                                [*::/BEHAVIOR/MODAL/VENTANA_MODAL]
-                                    [_::NOMBRE_BOTON_MODAL]<?php echo $iterator->id_worker; ?>[#]
-                                    [_::TITULO_MODAL]Worker <?php echo $iterator->id_worker; ?>[_*][#]
-                                    [_::CENTRADO][_*][#]
-                                    [_::COLOR_CABECERA]dark[#]
-                                    [_::COLOR_TITULO]white[#]
-                                    [_::CONTENIDO_MODAL({"name":"worker_id","model":"$iterator"})]
-                                        <?php  
-                                            if ($iterator->status==3 || $iterator->status==4){
-                                                $result=[];
-                                                $json = json_decode($iterator->items,true);                                                
-                                                foreach($json as $fila)
-                                                {
-                                                    echo "Nombre de call: <strong>".$fila['call']."</strong>"; echo "<br>";
-                                                    echo "Params: <strong>".$fila['params']."</strong> <br />";
-                                                }
-                                            }
-                                        ?>
-                                    [#]
-                                [#]
-                            [#]
-                        [#]
-					
+                        [_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"id_worker","model":"$iterator"})][#][#][#]	
                         [_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"job_id","model":"$iterator"})][#][#][#]
                         [_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer({"name":"index","model":"$iterator"})][#][#][#]
                         [_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer_Job_Status({"name":"status","model":"$iterator"})][#][#][#]
