@@ -83,6 +83,10 @@ class FullList
                 'MODEL' => '\model\web\Jobs',
                 'FIELD' => 'status'
             ],
+            'results' => [
+                'MODEL' => '\model\web\Jobs',
+                'FIELD' => 'results'
+            ],
             'created_at' => [
                 'MODEL' => '\model\web\Jobs',
                 'FIELD' => 'created_at'
@@ -92,6 +96,14 @@ class FullList
                 'FIELD' => 'updated_at'
             ],
         ],
+        /*'INCLUDE' => [
+            'workers' => [
+                'MODEL'      => '\model\web\Jobs\Worker',
+                'DATASOURCE' => 'FullList',
+                'JOINTYPE'   => 'LEFT',
+                'JOIN'       => ['job_id' => 'job_id'],
+            ],
+        ],*/
         'PERMISSIONS' => ['PUBLIC'],
         'SOURCE' => [
             'STORAGE' => [
@@ -104,6 +116,7 @@ class FullList
                             'parent',
                             'name',
                             'status',
+                            'results',
                             'created_at',
                             'updated_at',
                         ],

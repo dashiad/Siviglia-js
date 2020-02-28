@@ -1,1 +1,27 @@
-HOLA MUNDO WORKER DEFAULT DE COMSCORE
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$currentPage=Registry::$registry["currentPage"];
+$params=$currentPage->getPageParams();
+
+$job = new model\web\Jobs();
+$job->job_id = $params->job_id;
+$job->loadFromFields();
+$data = json_decode($job->results, true); // TODO: consultar JM cómo hacer que PHPVariable me devuelva el array y no el texto
+//$headers = array_keys($data[0]);
+$headers = ["Fecha inicio", "Estado", "Salida"];
+?>
+
+<table class="">
+	<th>
+    [*/ELEMENT/TYPES/_ARRAY({"data":"$headers","it":"&$iterator"})]
+           <td><?php echo $iterator; ?></td>
+    [#]
+    </th>
+    [*/ELEMENT/TYPES/_ARRAY({"data":"$data","it":"&$iterator"})]
+        <tr>
+           <td>[*/ELEMENT/TYPES/_String({"model":"$iterator","name":"item"})][#]</td>
+           <td>[*/ELEMENT/TYPES/_String({"model":"$iterator","name":"status"})][#]</td>
+           <td>[*/ELEMENT/TYPES/_String({"model":"$iterator","name":"result"})][#]</td>
+        </tr>
+    [#]
+</table>
