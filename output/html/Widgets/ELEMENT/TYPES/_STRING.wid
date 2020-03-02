@@ -1,1 +1,6 @@
-<span><?php echo $model->{$name};?></span>
+<span><?php
+    if (is_array($model)) 
+		echo $model[$name];
+	else
+		echo $model->{$name};
+?></span>

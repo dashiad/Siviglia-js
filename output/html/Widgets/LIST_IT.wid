@@ -9,7 +9,7 @@
         [_COLUMNHEADERS]
            <tr>
             [_COLUMN]<th style="border-bottom:1px solid #AAAAAA;">[_LABEL][*:TEXT_1][_*][#]</th>[#][#]
-            </tr>
+            </tr> 
          [#]
         
             
@@ -17,7 +17,7 @@
             <?php
                for($k=0;$k<$iterator->count();$k++)
                {
-                   $subModel=$iterator[$k];                   
+                   $subModel=& $iterator[$k];                   
             ?>
             <tr>
             [_ROW]                      

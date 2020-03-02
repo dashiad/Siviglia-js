@@ -32,18 +32,6 @@ class Package extends \lib\model\Package
         return $this->fullPath."/objects/".$className.".php";
     }
     
-    public function getWorkersWidgetPath($className, $widgetName="JOB_DEFAULT") : string
-    {
-        $classPath = $this->getWorkersPath($className);
-        $classParts = explode('/', str_replace("\\", "/", $classPath));
-        array_pop($classParts);
-        array_push($classParts, "widgets");
-        array_push($classParts, $widgetName);
-        $path = implode("/", $classParts);
-        $path = str_replace(str_replace("\\", "/", PROJECTPATH), "", $path);
-        return $path;
-    }
-    
     protected function isWorker($className) : bool
     {
         $classParts = explode("\\", ltrim($className, ltrim($this->baseNamespace, "\\")));

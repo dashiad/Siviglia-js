@@ -5,6 +5,7 @@ use model\web\Jobs\App\Jobs\Messages\SimpleMessage;
 use model\web\Jobs\App\Jobs\Split;
 use model\web\Jobs\App\Jobs\Persistable;
 use model\web\Jobs\App\Jobs\CLI;
+use model\web\Jobs\Worker;
 
 class Job extends AbstractRunnable
 {
@@ -20,6 +21,7 @@ class Job extends AbstractRunnable
     ];
  
     protected $tasks = [];
+    protected $results = [];
     
     protected $modelName = 'model\\web\\Jobs';
     protected $fields = [
@@ -27,7 +29,8 @@ class Job extends AbstractRunnable
         'name'       => 'name',
         'status'     => 'status',
         'parent'     => 'parent',
-        'descriptor' => 'args', 
+        'descriptor' => 'args',
+        'results'    => 'results',
     ];
     protected $maxRetries = 0; // default: no retries
     protected $waitingForChildren = false;
@@ -296,6 +299,28 @@ class Job extends AbstractRunnable
         }
         $this->persist();
         return true;
+    }
+    
+    protected function beforePersist()
+    {
+        $this->updateResults();
+    }
+    
+    protected function updateResults()
+    {
+        $this->results = [];
+        $key = 0;
+        foreach ($this->children as $child) {
+            foreach ($child['data']['items'] as $index=>$item) {
+                $this->results[$key] = [
+                    'item'      => $item,
+                    'status'    => $child['status'],
+                    'worker_id' => $child['id'], 
+                    'result'    => $child['result'][$index],
+                ];
+                $key++;
+            }
+        }
     }
     
     public function job_finish($msg)

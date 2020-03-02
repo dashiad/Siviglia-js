@@ -1,21 +1,37 @@
-wid dinámico: 'JobDetailWidget' default
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$currentPage=Registry::$registry["currentPage"];
+$params=$currentPage->getPageParams();
 
+$job = new model\web\Jobs();
+$job->job_id = $params->job_id;
+$job->loadFromFields();
+$data = json_decode($job->results, true); // TODO: consultar JM cómo hacer que PHPVariable me devuelva el array y no el texto
+//$headers = array_keys($data[0]);
+$headers = ["Fecha inicio", "Estado", "Salida"];
+?>
 
-[*:JOB_DEFAULT_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
-    [_:HEADER]
-        [_:TITLE]Job Results[#]
-            [_:DESCRIPTION]Detalles asociados a los resultados de Job.[#]
-    [#]
-    [_:LISTING]
-        [_:COLUMNHEADERS]
-            [_:COLUMN][_:LABEL]Fecha inicio[#][#]
-            [_:COLUMN][_:LABEL]Fecha fin[#][#]
-            [_:COLUMN][_:LABEL]Salida[#][#]
-        [#]
-        [_:ROWS]
-            [_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"created_at","model":"$iterator"})][#][#][#]
-            [_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"updated_at","model":"$iterator"})][#][#][#]            
-            [_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"id_worker","model":"$iterator"})][#][#][#]
-        [#]
-    [#]
-[#]
+<div class="card-body">        
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-bordered dataTable" id="dataTableJobs" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                <thead>
+                    <tr role="row">
+                    [*/ELEMENT/TYPES/_ARRAY({"data":"$headers","it":"&$iterator"})]
+                        <th style="border-bottom:1px solid #AAAAAA;"><?php echo $iterator; ?></th>
+                    [#]
+                    </tr>
+                </thead>
+                <tbody>
+                [*/ELEMENT/TYPES/_ARRAY({"data":"$data","it":"&$iterator"})]
+                    <tr>
+                    <td>[*/ELEMENT/TYPES/_String({"model":"$iterator","name":"item"})][#]</td>
+                    <td>[*/ELEMENT/TYPES/_String({"model":"$iterator","name":"status"})][#]</td>
+                    <td>[*/ELEMENT/TYPES/_String({"model":"$iterator","name":"result"})][#]</td>
+                    </tr>
+                [#]
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
