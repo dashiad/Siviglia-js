@@ -1,0 +1,54 @@
+<div class="card shadow mb-4">
+   <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">        
+        [_HEADER]
+            [_ICONO][_*][#]
+            [_TITLE][_*][#]
+        [#]
+        </h6>
+        <div class="row">
+            <div class="col-sm-12">
+                [_HEADER]
+                    [_DESCRIPTION][_*][#]
+                [#]
+            </div>
+        </div>
+   </div>
+   <div class="card-body">
+        <div class="table-responsive">
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                    <thead>                    
+                        [_COLUMNHEADERS]
+                        <tr role="row">
+                            [_COLUMN][_LABEL]<th  style="border-bottom:1px solid #AAAAAA;">[_*]</th>[#][#]
+                        </tr>
+                        [#]
+                    </thead>                
+                    <tbody>                
+                        [_ROWS]
+                            <?php
+                                for($k=0;$k<count($iterator);$k++) {
+                                    $data=& $iterator[$k];
+                            ?>
+                            <tr>
+                            [_ROW]                      
+                                <td style="border-bottom:1px solid #AAAAAA">
+                                    [_VALUE][_*][#]
+                                </td>
+                            [#]  
+                            <?php } ?>
+                            [#]
+
+                    </tbody>                    
+                </table>
+                <div class="row">
+                    <div class="col-sm-12"><div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">Mostrando 1 de xx entradas</div></div>
+                </div>                
+            </div>                    
+        </div>
+
+        </div>
+    </div><!-- ./card-body -->
+</div><!-- ./card shadow mb-4 -->    
