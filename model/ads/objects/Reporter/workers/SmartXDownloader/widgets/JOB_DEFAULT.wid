@@ -1,0 +1,63 @@
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_PHASE]BODYEND[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_FILE]backend/js/vendors/json-viewer/config-json-viewer.js[#]
+        [#]
+    [#]
+[#]
+
+
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$currentPage=Registry::$registry["currentPage"];
+$params=$currentPage->getPageParams();
+
+$job = new model\web\Jobs();
+$job->job_id = $params->job_id;
+$job->loadFromFields();
+$data = json_decode($job->results, true); // TODO: consultar JM cómo hacer que PHPVariable me devuelva el array y no el texto
+//var_dump($data);
+//$headers = array_keys($data[0]);
+// [*::/ELEMENT/TYPES/_String({"model":"$iterator","name":"params"})][#]
+$headers = ["Llamada", "Parámetros", "Estado", "ID Worker", "Salida"];
+?>
+<div class="card-body">        
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-bordered dataTable" id="dataTableJobs" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                <thead>
+                    <tr role="row">
+                    [*:/ELEMENT/TYPES/_ARRAY({"data":"$headers","it":"&$iterator"})]
+                        <th style="border-bottom:1px solid #AAAAAA;"><?php echo $iterator; ?></th>
+                    [#]
+                    </tr>
+                </thead>
+                <tbody>
+                [*:/ELEMENT/TYPES/_ARRAY({"data":"$data","it":"&$iterator"})]
+                <?php $iterator = (object) $iterator; // type casting: conversion de array a un objeto ?>
+                    <tr>
+                        <td>[*::/ELEMENT/TYPES/_String({"model":"$iterator","name":"item"})][#]</td>
+                        <td><div id="json"><button type="button" class="btn btn-outline-primary block load-json">cargar json</button></div></td>
+                        <td>[*::/ELEMENT/TYPES/Integer_Job_Status({"model":"$iterator","name":"status"})][#]</td>
+                        <td>[*::/ELEMENT/TYPES/_String({"model":"$iterator","name":"worker_id"})][#]</td>                        
+                        <td>                        
+                        [*::/BEHAVIOR/MODAL/VENTANA_MODAL]
+                                    [_::NOMBRE_BOTON_MODAL]Ver salida[#]
+                                    [_::TITULO_MODAL]Salida del job <?php $job->job_id; ?>[_*][#]
+                                    [_::CENTRADO][_*][#]
+                                    [_::COLOR_CABECERA]dark[#]
+                                    [_::COLOR_TITULO]white[#]
+                                    [_::CONTENIDO_MODAL]
+                                        [*:::/ELEMENT/TYPES/_String({"model":"$iterator","name":"result"})][#]
+                                    [#]
+                        [#]
+                        </td>
+                    </tr>
+                [#]
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

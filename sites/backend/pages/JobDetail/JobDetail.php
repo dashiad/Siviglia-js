@@ -11,16 +11,11 @@ $idJob=$page->job_id;
             [_:TITLE]Detalle del trabajo: <?php echo $idJob; ?>[#]
             [_:CONTENT]
                 [*::DATOS_RESUMEN_JOB({"datos_job":"$page"})][#]
-
-                
+ 
                 [*:[%JobDetailWidget%]][#]
-
 
                 [*::WorkerFullList][#]
             [#]
-        [#]
-        
-        
-        
+        [#]            
     [#]
 [#]

@@ -8,6 +8,9 @@
 // DataTable configurado
 $(document).ready(function() {    
     $('#dataTableJobs').DataTable({
+        "columnDefs": [
+            {"className": "dt-center", "targets": "_all"}
+        ],
         pageLength: 10,
         order: [[ 2, "asc" ]],
         "language": {
