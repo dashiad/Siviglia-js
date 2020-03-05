@@ -40,8 +40,7 @@
 
     <!-- json viewer -->    
     <script type="text/javascript" src="http://statics.adtopy.com/backend/js/vendors/json-viewer/json-viewer.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/backend/css/vendors/json-viewer/json-viewer.css"/>
-    <script type="text/javascript" src="http://statics.adtopy.com/backend/js/vendors/json-viewer/config-json-viewer.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/backend/css/vendors/json-viewer/json-viewer.css"/>    
 </head>
 
 
@@ -67,6 +66,7 @@
     <script src="http://statics.adtopy.com/backend/js/vendors/pickers/picker.time.js"></script>
     <script src="http://statics.adtopy.com/backend/js/vendors/pickers/pick-a-datetime.js"></script>
     <script src="http://statics.adtopy.com/backend/js/vendors/pickers/daterangepicker.js"></script>
-    <script src="http://statics.adtopy.com/backend/js/vendors/datatable-jobs.js"></script>    
+    <script src="http://statics.adtopy.com/backend/js/vendors/datatable-jobs.js"></script>
+    <script type="text/javascript" src="http://statics.adtopy.com/backend/js/vendors/json-viewer/config-json-viewer.js"></script>
 </body>
 </html>

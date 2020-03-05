@@ -1,0 +1,15 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb p-0 mb-0">
+        <li class="breadcrumb-item"><a href="http://backend.adtopy.com/" title="Backend HOME (SmartClip)"><i class="bx bx-home"></i></a></li>
+
+    [_LISTING]
+        [_ROWS]
+            [_ROW]
+                <li class="breadcrumb-item">
+                    [_VALUE][_*][#]
+                </li>
+            [#]
+        [#]
+    [#]
+    </ol>
+</nav>

@@ -1,14 +1,3 @@
-[@DEPENDENCY]
-    [_BUNDLE]Page[#]
-    [_PHASE]BODYEND[#]
-    [_CONTENTS]
-        [_SCRIPT]
-            [_FILE]backend/js/vendors/json-viewer/config-json-viewer.js[#]
-        [#]
-    [#]
-[#]
-
-
 <?php
 $serializer=\Registry::getService("storage")->getSerializerByName('web');
 $currentPage=Registry::$registry["currentPage"];
@@ -18,11 +7,9 @@ $job = new model\web\Jobs();
 $job->job_id = $params->job_id;
 $job->loadFromFields();
 $data = json_decode($job->results, true); // TODO: consultar JM cómo hacer que PHPVariable me devuelva el array y no el texto
-//var_dump($data);
-//$headers = array_keys($data[0]);
-// [*::/ELEMENT/TYPES/_String({"model":"$iterator","name":"params"})][#]
-$headers = ["Llamada", "Parámetros", "Estado", "ID Worker", "Salida"];
+$headers = ["Llamada", "Parámetros", "Estado", "ID Worker", "Salida"]; 
 ?>
+
 <div class="card-body">        
     <div class="row">
         <div class="col-sm-12">
@@ -36,22 +23,27 @@ $headers = ["Llamada", "Parámetros", "Estado", "ID Worker", "Salida"];
                 </thead>
                 <tbody>
                 [*:/ELEMENT/TYPES/_ARRAY({"data":"$data","it":"&$iterator"})]
-                <?php $iterator = (object) $iterator; // type casting: conversion de array a un objeto ?>
+                    <?php 
+                        $iterator = (object) $iterator; // type casting: conversion de array a un objeto 
+                        $json = json_encode($iterator->item['params']);
+                    ?>
                     <tr>
-                        <td>[*::/ELEMENT/TYPES/_String({"model":"$iterator","name":"item"})][#]</td>
-                        <td><div id="json"><button type="button" class="btn btn-outline-primary block load-json">cargar json</button></div></td>
+                        <td><?php echo $iterator->item['call']; ?></td>
+                        <td>[*::/BEHAVIOR/SHOW_JSON({"json":"$json"})][#]</td>
                         <td>[*::/ELEMENT/TYPES/Integer_Job_Status({"model":"$iterator","name":"status"})][#]</td>
-                        <td>[*::/ELEMENT/TYPES/_String({"model":"$iterator","name":"worker_id"})][#]</td>                        
+                        <td><?php if (empty($iterator->item['worker_id'])) echo "N/A"; else echo $iterator->item['worker_id']; ?></td>
                         <td>                        
-                        [*::/BEHAVIOR/MODAL/VENTANA_MODAL]
-                                    [_::NOMBRE_BOTON_MODAL]Ver salida[#]
-                                    [_::TITULO_MODAL]Salida del job <?php $job->job_id; ?>[_*][#]
-                                    [_::CENTRADO][_*][#]
-                                    [_::COLOR_CABECERA]dark[#]
-                                    [_::COLOR_TITULO]white[#]
-                                    [_::CONTENIDO_MODAL]
-                                        [*:::/ELEMENT/TYPES/_String({"model":"$iterator","name":"result"})][#]
-                                    [#]
+                        [*::/BEHAVIOR/MODAL/VENTANA_MODAL]                        
+                            [_::NOMBRE_BOTON_MODAL]Ver salida[#]
+                            [_::TAMANO]lg[#]
+                            [_::TITULO_MODAL]Salida del id_worker <?php $iterator->worker_id; ?>[_*][#]
+                            [_::CENTRADO][_*][#]
+                            [_::COLOR_CABECERA]dark[#]
+                            [_::COLOR_TITULO]white[#]
+                            [_::CONTENIDO_MODAL]
+                                <?php $salida_job = $iterator->result; ?>
+                                [*:::BEHAVIOR/MODAL/CONTENT_RESULT_JOB({"salida_job":"$salida_job"})][#]
+                            [#]
                         [#]
                         </td>
                     </tr>

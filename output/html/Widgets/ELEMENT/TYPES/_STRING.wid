@@ -2,7 +2,7 @@
 //var_dump($model);
 ?>
 
-<span><?php
+<?php
     if (is_array($model)) 
 		echo $model[$name];		
 	else{
@@ -11,4 +11,4 @@
 		else		
 			echo $model->{$name};		
 	}		
-?></span>
+?>

@@ -1,22 +1,33 @@
 <?php
 $serializer=\Registry::getService("storage")->getSerializerByName('web');
 $currentPage=Registry::$registry["currentPage"];
-$params=Registry::$registry["params"];
+$params=$currentPage->getPageParams();
 ?>
 
 <div class="content-header row">
     <div class="content-header-left col-12 mb-2 mt-1">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb p-0 mb-0">
-                        <li class="breadcrumb-item"><a href="http://backend.adtopy.com/" title="Backend HOME (SmartClip)"><i class="bx bx-home"></i></a></li>
-
-                        <li class="breadcrumb-item">
-                            <a id="item-tab" href="#">Jobs</a>
-                        </li>
-                    </ol>
-                </nav>
+                [*:LAYOUT/NAVIGATION/BREADCRUMBS/LIST_DS_BREADCRUMBS({"currentPage":"$currentPage","object":"/model/web/Jobs","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})] 
+                    [_:LISTING]
+                        [_:ROWS]
+                            [_:ROW]
+                                [_:VALUE]
+                                    [*::LAYOUT/NAVIGATION/BREADCRUMBS/LINK_BREADCRUMBS]
+                                        [_::URL]<?php echo $_SERVER['REQUEST_URI']; ?>[#]
+                                        [_::TEXT]<?php        
+                                        if (!empty($_REQUEST['subpath'])){
+                                            $job_name = explode('/', $_REQUEST['subpath']);
+                                            echo $job_name[0]." &raquo; ". $job_name[1];
+                                        }
+                                        //phpinfo(INFO_VARIABLES);
+                                        ?>[#]
+                                    [#]
+                                [#]
+                            [#]
+                        [#]
+                    [#]                    
+                [#]
             </div>
         </div>
     </div>
