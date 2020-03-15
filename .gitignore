@@ -25,3 +25,6 @@ sites/backend/cache/es/Error.php
 sites/backend/cache/es/Error.php.lockfile
 sites/backend/cache/es/Index.php
 sites/backend/cache/es/Job.php
+sites/backend/html/localConfig.php
+sites/statics/html/backend/bundles/*
+sites/statics/html/backend/bundles/bundle_Global.srl

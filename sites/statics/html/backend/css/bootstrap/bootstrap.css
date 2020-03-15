@@ -10089,6 +10089,7 @@ button.bg-dark:focus {
 
 .text-justify {
   text-align: justify !important;
+  font-size: 1.05rem;
 }
 
 .text-wrap {

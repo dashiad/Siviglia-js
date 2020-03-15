@@ -13,8 +13,8 @@ class Pages
 {
     static $definition = array(
         "/" => "index",
-        "/Jobs/{job_id}"=>"viewJob",
-        "/Jobs/{job_id}/view"=>"viewJob",
+        "/JobDetail/{job_id}"=>"viewJob",
+        "/JobDetail/{job_id}/view"=>"viewJob",
         "/error"=>"error",
     );
 }

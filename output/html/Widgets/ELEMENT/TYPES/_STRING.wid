@@ -1,1 +1,14 @@
-<span><?php echo $model->{$name};?></span>
+<?php
+//var_dump($model);
+?>
+
+<?php
+    if (is_array($model)) 
+		echo $model[$name];		
+	else{
+		if (is_null($model->{$name}))
+			echo "N/A";
+		else		
+			echo $model->{$name};		
+	}		
+?>

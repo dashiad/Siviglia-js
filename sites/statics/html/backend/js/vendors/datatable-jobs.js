@@ -8,6 +8,9 @@
 // DataTable configurado
 $(document).ready(function() {    
     $('#dataTableJobs').DataTable({
+        "columnDefs": [ // https://datatables.net/reference/option/columnDefs
+            {"className": "dt-center", "targets": [0,2,3,4]}
+        ],
         pageLength: 10,        
         dom: 'Bfrtip',
         buttons: [

@@ -1,0 +1,55 @@
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$currentPage=Registry::$registry["currentPage"];
+$params=$currentPage->getPageParams();
+
+$job = new model\web\Jobs();
+$job->job_id = $params->job_id;
+$job->loadFromFields();
+$data = json_decode($job->results, true); // TODO: consultar JM cómo hacer que PHPVariable me devuelva el array y no el texto
+$headers = ["Llamada", "Parámetros", "Estado", "ID Worker", "Salida"]; 
+?>
+
+<div class="card-body">        
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-bordered dataTable" id="dataTableJobs" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                <thead>
+                    <tr role="row">
+                    [*:/ELEMENT/TYPES/_ARRAY({"data":"$headers","it":"&$iterator"})]
+                        <th style="border-bottom:1px solid #AAAAAA;"><?php echo $iterator; ?></th>
+                    [#]
+                    </tr>
+                </thead>
+                <tbody>
+                [*:/ELEMENT/TYPES/_ARRAY({"data":"$data","it":"&$iterator"})]
+                    <?php 
+                        $iterator = (object) $iterator; // type casting: conversion de array a un objeto 
+                        $json = json_encode($iterator->item['params']);
+                    ?>
+                    <tr>
+                        <td><?php echo $iterator->item['call']; ?></td>
+                        <td>[*::/BEHAVIOR/SHOW_JSON({"json":"$json"})][#]</td>
+                        <td>[*::/ELEMENT/TYPES/Integer_Job_Status({"model":"$iterator","name":"status"})][#]</td>
+                        <td><?php if (empty($iterator->item['worker_id'])) echo "N/A"; else echo $iterator->item['worker_id']; ?></td>
+                        <td>                        
+                        [*::/BEHAVIOR/MODAL/VENTANA_MODAL]                        
+                            [_::NOMBRE_BOTON_MODAL]Ver salida[#]
+                            [_::TAMANO]lg[#]
+                            [_::TITULO_MODAL]Salida del id_worker <?php $iterator->worker_id; ?>[_*][#]
+                            [_::CENTRADO][_*][#]
+                            [_::COLOR_CABECERA]dark[#]
+                            [_::COLOR_TITULO]white[#]
+                            [_::CONTENIDO_MODAL]
+                                <?php $salida_job = $iterator->result; ?>
+                                [*:::BEHAVIOR/MODAL/CONTENT_RESULT_JOB({"salida_job":"$salida_job"})][#]
+                            [#]
+                        [#]
+                        </td>
+                    </tr>
+                [#]
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

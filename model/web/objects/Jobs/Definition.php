@@ -86,6 +86,10 @@ class Definition extends BaseModelDefinition
                          'LABEL'   => 'Descriptor',
                          'DEFAULT' => null,
                      ],
+                   'results' => [
+                       'TYPE'     => 'PHPVariable',
+                       'LABEL'    => 'Resultados',
+                   ],
                      'created_at' => [
                        'TYPE'       => 'DateTime',
                        'LABEL'      => 'Fecha de creación',
@@ -101,30 +105,30 @@ class Definition extends BaseModelDefinition
                        'TIMEZONE'   => 'SERVER',
                      ],
                  ],
-        	     'ALIASES'=>[
-        	         'workers'=>[
-        	             'TYPE'=>'InverseRelation',
-        	             'MODEL'=>'\model\web\Worker',
-        	             'ROLE'=>'HAS_MANY',
-        	             'MULTIPLICITY'=>'1:N',
-        	             'CARDINALITY'=>100,
-        	             'FIELDS'=>['job_id'=>'job_id'],
+        	     'ALIASES' => [
+        	         'workers' => [
+        	             'TYPE'         => 'InverseRelation',
+        	             'MODEL'        => '\model\web\Jobs\Worker',
+        	             'ROLE'         => 'HAS_MANY',
+        	             'MULTIPLICITY' => '1:N',
+        	             'CARDINALITY'  => 100,
+        	             'FIELDS'       => ['job_id' => 'job_id'],
         	         ],
-        	         'pending_workers'=>[
-        	             'TYPE'=>'InverseRelation',
-        	             'MODEL'=>'\model\web\Worker',
-        	             'ROLE'=>'HAS_MANY',
-        	             'MULTIPLICITY'=>'1:N',
-        	             'CARDINALITY'=>100,
-        	             'FIELDS'=>['job_id'=>'job_id'],
-        	             'CONDITIONS'=>[
+        	         'pending_workers' => [
+        	             'TYPE'         => 'InverseRelation',
+        	             'MODEL'        => '\model\web\Jobs\Worker',
+        	             'ROLE'         => 'HAS_MANY',
+        	             'MULTIPLICITY' => '1:N',
+        	             'CARDINALITY'  => 100,
+        	             'FIELDS'       => ['job_id' => 'job_id'],
+        	             'CONDITIONS'   => [
         	                 [
-        	                     'FILTER'=>array(
-        	                         'F'=>'status',
-        	                         'OP'=>'=',
-        	                         'V'=>Job::PENDING
-        	                     )
-        	                 ]        	                 
+        	                     'FILTER' => [
+        	                         'F'  => 'status',
+        	                         'OP' => '=',
+        	                         'V'  => Worker::PENDING
+        	                     ]
+        	                 ]
         	             ]
         	         ]
         	   ],

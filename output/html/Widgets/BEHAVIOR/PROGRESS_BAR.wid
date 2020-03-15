@@ -1,0 +1,28 @@
+<?php 
+    switch ($valor) {
+        case ($valor < 20):
+        {
+            $color = "danger";
+            break;
+        }
+        case ($valor > 20 && $valor < 50) :
+        {
+            $color = "warning";
+            break;
+        }
+        case ($valor > 50):
+        {
+            $color = "success";
+            break;
+        }        
+        default:
+            $color = "primary";        
+            break;
+    }
+
+?>
+
+
+<div class="progress progress-bar-<?php echo $color;?> progress-sm mb-3">
+    <div class="progress-bar progress-label" role="progressbar" aria-valuenow="<?php echo $valor; ?>" style="width:<?php echo $valor;?>%"></div>
+</div>

@@ -117,6 +117,11 @@ class ModelDescriptor
         return $this->getNamespaced();
     }
 
+    function getWidgetPath($widget="JOB_DEFAULT")
+    {
+        return "/model/" . $this->layer . "/objects/" . str_replace('\\', '/', $this->namespaceClassName) . "/" . $this->className . "/widgets/$widget";
+    }
+    
     function getPath($extra)
     {
         return $this->getDestinationFile($extra);

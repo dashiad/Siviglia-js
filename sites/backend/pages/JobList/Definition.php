@@ -6,7 +6,7 @@
  * Time: 1:22
  */
 
-namespace sites\backend\pages\Job;
+namespace sites\backend\pages\JobList;
 
 include_once(PROJECTPATH."/model/web/objects/Page/PageDefinition.php");
 class Definition extends \model\web\Page\PageDefinition
@@ -21,7 +21,7 @@ class Definition extends \model\web\Page\PageDefinition
             ),
             'FIELDS'=>array(
                 'job_id'=>[
-                    "MODEL"=>"/model/web/Jobs/Worker",
+                    "MODEL"=>"/model/web/Job",
                     "FIELD"=>"job_id"
                 ]
             )

@@ -30,7 +30,7 @@ $params=$currentPage->getPageParams();
                     [#]
                     [_:ROWS]
 						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/AutoIncrement({"name":"id_job","model":"$iterator"})][#][#][#]
-						[_:ROW][_:VALUE][*::/ELEMENT/TEXT/LINK][_::LINK_URL]/Jobs/<?php echo $iterator->job_id;?>/view[#][_::LINK_TEXT]<?php echo $iterator->job_id;?>[#][#][#][#]
+						[_:ROW][_:VALUE][*::/ELEMENT/TEXT/LINK][_::LINK_URL]/JobDetail/<?php echo $iterator->job_id;?>/view[#][_::LINK_TEXT]<?php echo $iterator->job_id;?>[#][#][#][#]
 						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"name","model":"$iterator"})][#][#][#]
 						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer_Job_Status({"name":"status","model":"$iterator"})][#][#][#]
 						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"created_at","model":"$iterator"})][#][#][#]

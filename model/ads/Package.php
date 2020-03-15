@@ -9,6 +9,8 @@
 namespace model\ads;
 
 
+use lib\model\ModelService;
+
 class Package extends \lib\model\Package
 {
     const WORKERS_DIRNAME = "WORKERS";
@@ -21,7 +23,7 @@ class Package extends \lib\model\Package
             return $this->includeModel($className);
         }
     }
-    
+        
     protected function getWorkersPath($className) : string
     {
         $classParts = explode("\\", ltrim($className, ltrim($this->baseNamespace, "\\")));

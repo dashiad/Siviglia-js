@@ -2,6 +2,7 @@
 namespace model\web\Jobs;
 
 use \lib\model\{BaseModel, BaseException};
+use lib\model\ModelService;
 
 class WorkerException extends BaseException
 {
@@ -35,11 +36,6 @@ class Worker extends BaseModel
     public static function getStatus(Int $status) : ?String
     {
         return self::STATUS[$status] ?? null;
-    }
-
-    public function getWidgetPath() : ?String
-    {
-        return dirname(__FILE__)."/WORKER.wid";
     }
     
     public function getResults() : ?Array

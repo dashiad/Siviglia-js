@@ -31,9 +31,14 @@ trait Persistable
     
     public function persist()
     {
+        $this->beforePersist();
         if (empty($this->model))
             $this->model = new $this->modelName;
         $this->fill();
         $this->model->save();
+        $this->afterPersist();
     }   
+    
+    protected function beforePersist() {}
+    protected function afterPersist() {}
 }
