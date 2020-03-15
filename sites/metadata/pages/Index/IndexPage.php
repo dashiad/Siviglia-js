@@ -21,41 +21,56 @@ class IndexPage extends \model\web\Page
         $params=$this;
         // TODO: Implement initializePage() method.
         $mDProv=new MetaDataProvider();
-        $model="/model/".$this->modelName;
+
+
         $out=null;
         switch($this->type)
         {
             case "formDefinition":{
+                $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_FORM,MetaDataProvider::GET_DEFINITION,$model,$this->formName);
             }break;
             case "formDefinitionField":{
+                $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_FORM,MetaDataProvider::GET_DEFINITION,$model,$this->formName,$this->fieldName);
             }break;
             case "modelDefinition":{
+                $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_MODEL,MetaDataProvider::GET_DEFINITION,$model);
             }break;
             case "modelDefinitionField":{
+                $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_MODEL,MetaDataProvider::GET_FIELD,$model,null,$this->fieldName);
             }break;
             case "datasourceDefinition":{
+                $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_DATASOURCE,MetaDataProvider::GET_DEFINITION,$model,$this->datasourceName);
             }break;
             case "datasourceDefinitionField":{
+                $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_DATASOURCE,MetaDataProvider::GET_FIELD,$model,$this->datasourceName,$this->fieldName);
             }break;
             case "datasourceParams":{
+                $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_DATASOURCE,MetaDataProvider::GET_PARAM_DEFINITION,$model,$this->datasourceName);
             }break;
             case "datasourceParamsField":{
+                $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_DATASOURCE,MetaDataProvider::GET_PARAM,$model,$this->datasourceName,$this->fieldName);
             }break;
             case "actionDefinition":{
+                $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_ACTION,MetaDataProvider::GET_DEFINITION,$model,$this->actionName);
             }break;
             case "actionDefinitionField":{
+                $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_ACTION,MetaDataProvider::GET_FIELD,$model,$this->actionName,$this->fieldName);
             }break;
+            case "typeJs":{
+                $param='\\'.str_replace("/",'\\',$this->fieldName);
 
+                $out=$mDProv->getMetaData(MetaDataProvider::META_TYPE_JS,MetaDataProvider::GET_FIELD,$model,null,$param);
+            }break;
             case "pageDefinition":{}break;
             case "pageDefinitionField":{}break;
             case "typeDefinition":{}break;
@@ -66,7 +81,7 @@ class IndexPage extends \model\web\Page
             case "pages":{}break;
         }
         if($out!==null)
-            echo json_encode($out);
+            return $out;
 
     }
     function validate()

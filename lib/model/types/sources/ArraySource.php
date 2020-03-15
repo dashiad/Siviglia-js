@@ -14,6 +14,8 @@ namespace lib\model\types\sources;
  *
  */
 
+use lib\model\PathResolver;
+
 class ArraySource extends BaseSource
 {
     var $source;
@@ -25,22 +27,20 @@ class ArraySource extends BaseSource
         if(isset($this->definition["VALUES"])) {
             $idx=-1;
             $this->source=array_map(function($item) use (&$idx) {$idx++;return ["VALUE"=>$idx,"LABEL"=>$item];},$this->definition["VALUES"]);
-            $this->definition["LABEL"]="[%LABEL%]";
-            $this->definition["VALUE"]="VALUE";
+            if(!isset($this->definition["LABEL"]))
+                $this->definition["LABEL"]="LABEL";
+            if(!isset($this->definition["VALUE"]))
+                $this->definition["VALUE"]="VALUE";
             }
     }
     function getData()
     {
         if(isset($this->definition["PATH"])) {
-
-            $parsedPath=\lib\php\ParametrizableString::getParametrizedString($this->definition["PATH"],$this->parent);
-            if($parsedPath[0]=="/")
-                $parsedPath=substr($parsedPath,1);
-            $parts=explode("/",$parsedPath);
-            $pointer=& $this->definition["DATA"];
-            for($k=0;$k<count($parts);$k++)
-                $pointer=& $pointer[$parsedPath[$k]];
-            return $pointer;
+            $ctxStack=new \lib\model\ContextStack();
+            $ctx=new \lib\model\BaseObjectContext($this->definition["DATA"],"/",$ctxStack);
+            $ctx=new \lib\model\BaseObjectContext($this->parent,"#",$ctxStack);
+            $path=new \lib\model\PathResolver($ctxStack,$this->definition["PATH"]);
+            return $path->getPath();
         }
 
         return $this->source;

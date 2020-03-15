@@ -69,7 +69,7 @@ class DataSourceTest extends TestCase
                 "TYPE"=>"DataSource",
                 "MODEL"=>'\model\tests\User',
                 "DATASOURCE"=>"FullList",
-                "LABEL"=>"[%Name%] [%id%]",
+                "LABEL_EXPRESSION"=>"[%/Name%] [%/id%]",
                 "VALUE"=>"id"
             ]);
     }

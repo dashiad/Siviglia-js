@@ -79,7 +79,27 @@ include_once(LIBPATH."/model/types/BaseType.php");
             }
             else
             {
-                return new $type($def,$value);
+                // Los tipos "custom" son de tipo:
+                // \model\site\types\typeName
+                // Este codigo quita las dos ultimas partes, y busca el modelDescriptor para ese tipo.
+
+                $parts=explode('\\',$type);
+                array_shift($parts);
+                $typeName=array_pop($parts);
+                if(array_pop($parts)=="types")
+                {
+
+                    $s=\Registry::getService("model");
+                    $md=$s->getModelDescriptor('\\'.implode('\\',$parts));
+                    if($md)
+                    {
+                        $instance=$md->getType($typeName,$def,$value);
+                        if($instance==null)
+                            throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type),null);
+                        return $instance;
+                    }
+                }
+                throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type),null);
             }
           }
           catch(\Exception $e)
@@ -154,8 +174,8 @@ include_once(LIBPATH."/model/types/BaseType.php");
           }
           if($objName==null)
               $s=11;
-          $objName->getDefinition();
-          $className=$objName->getNamespaced().'\Definition';
+          //$objName->getDefinition();
+          $className=$objName->getNamespaced();//.'\Definition';
           if(!class_exists($className))
           {
               throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$className),null);

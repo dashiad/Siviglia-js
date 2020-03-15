@@ -18,7 +18,9 @@
 --
 -- Table structure for table `GroupedData`
 --
-
+DROP DATABASE IF EXISTS modeltests;
+CREATE DATABASE modeltests;
+use modeltests;
 DROP TABLE IF EXISTS `GroupedData`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

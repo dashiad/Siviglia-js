@@ -7,10 +7,10 @@
  */
 
 namespace model\reflection\Html\forms;
-include_once(PROJECTPATH."/model/reflection/objects/base/BaseMetadata");
+include_once(PROJECTPATH."/model/reflection/objects/Meta/Meta.php");
 
 
-class FormMetaData extends \model\reflection\base\BaseMetadata {
+class FormMetaData extends \model\reflection\Meta {
     function __construct($objName,$formName)
     {
 

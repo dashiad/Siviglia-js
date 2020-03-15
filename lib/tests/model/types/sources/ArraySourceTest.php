@@ -46,7 +46,7 @@ class ArraySourceTest extends TestCase
         return new \lib\model\types\sources\ArraySource($parent,
             [
                 "TYPE"=>"Array",
-                "LABEL"=>"[%Label%] [%SubLabel%]",
+                "LABEL_EXPRESSION"=>"[%/Label%] [%/SubLabel%]",
                 "VALUE"=>"Id",
                 "DATA"=>[
                     ["Id"=>1,"Label"=>"Primero","SubLabel"=>"1º"],
@@ -88,8 +88,9 @@ class ArraySourceTest extends TestCase
                       "TYPE"=>"Integer",
                       "SOURCE"=>[
                           "TYPE"=>"Array",
-                          "LABEL"=>"[%Label%] [%SubLabel%]",
+                          "LABEL_EXPRESSION"=>"[%/Label%] [%/SubLabel%]",
                           "VALUE"=>"Id",
+
                           "DATA"=>[
                               "a"=>[
                                   "b"=>[
@@ -106,7 +107,7 @@ class ArraySourceTest extends TestCase
                                           ]
                                   ]
                           ],
-                          "PATH"=>"/[%../f1%]/[%../f2%]"
+                          "PATH"=>"/{%#../f1%}/{%#../f2%}"
 
                       ]
                   ]
@@ -145,8 +146,8 @@ class ArraySourceTest extends TestCase
     function testSimple5()
     {
         $s=$this->getSource4(null);
-        $this->assertEquals(false,$s->contains("x"));
-        $this->assertEquals(true,$s->contains("a"));
+        $this->assertEquals(false,$s->containsLabel("x"));
+        $this->assertEquals(true,$s->containsLabel("a"));
     }
     function testFieldNames()
     {
@@ -171,7 +172,8 @@ class ArraySourceTest extends TestCase
         $ins->f2="b";
         $src=$ins->{"*f3"}->getSource();
         $d=$src->getData();
-        $h=11;
-
+        $this->assertEquals(1,count($d));
+        $this->assertEquals(1,$d[0]["Id"]);
+        $this->assertEquals("Primero",$d[0]["Label"]);
     }
 }

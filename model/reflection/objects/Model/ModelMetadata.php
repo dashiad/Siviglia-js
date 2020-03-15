@@ -7,9 +7,9 @@
  */
 
 namespace model\reflection\Model;
-include_once(PROJECTPATH."/model/reflection/objects/base/BaseMetadata.php");
+include_once(PROJECTPATH."/model/reflection/objects/Meta/Meta.php");
 
-class ModelMetadata extends \model\reflection\base\BaseMetadata {
+class ModelMetadata extends \model\reflection\Meta {
     function __construct($objName)
     {
         $Obj=new \model\reflection\model\ModelName($objName);
@@ -34,5 +34,9 @@ class ModelMetadata extends \model\reflection\base\BaseMetadata {
             $this->definition["ALIASES"]=array_merge($this->definition["ALIASES"]?$this->definition["ALIASES"]:array(),
                 $parentMeta->definition["ALIASES"]?$parentMeta->definition["ALIASES"]:array());
         }
+    }
+    public function getMeta()
+    {
+        return $this->definition;
     }
 }

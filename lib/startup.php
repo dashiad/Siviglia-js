@@ -11,8 +11,8 @@ class Startup
     static function init()
     {
         global $Container;
-        global $globalContext;
-        $globalContext=new \lib\model\SimpleContext();
+
+
         if(defined("DEVELOPMENT"))
         {
             error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
@@ -76,12 +76,12 @@ class Startup
     }
     static function initializeContext()
     {
-
-        global $globalContext;
+        return;
+        /*global $globalContext;
         global $globalPath;
         $globalContext=new \lib\model\SimpleContext();
         $globalPath=new \lib\model\SimplePathObject();
-        $globalPath->addPath("registry",Registry::$registry);
+        $globalPath->addPath("registry",Registry::$registry);*/
     }
 
 }

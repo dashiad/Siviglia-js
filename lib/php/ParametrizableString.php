@@ -8,6 +8,8 @@
 
 namespace lib\php;
 use lib\model\BaseException;
+use phpDocumentor\Reflection\DocBlock\Tags\Param;
+
 class ParametrizableStringException extends BaseException
 {
     const ERR_MISSING_REQUIRED_PARAM=1;
@@ -35,6 +37,14 @@ class ParametrizableString
         ParametrizableString::$usedParams=array();
         if(!$params)
             $params=array();
+        $stack=null;
+        if(!is_object($params) || !is_a($params,'\lib\model\ContextStack'))
+        {
+            $stack=new \lib\model\ContextStack();
+            $ctx=new \lib\model\BaseObjectContext($params,"/",$stack);
+        }
+        else
+            $stack=$params;
         /*$start='\[\%';
         $end='\%\]';
         $simpleTag='(?<simple>[^: ,%]*)';
@@ -47,23 +57,24 @@ class ParametrizableString
 
         $fullRegex="/".$start."(?:(?:".$simpleTag.$end.")|".$complexTagRegexp.")/";
         echo $fullRegex;*/
-        $f=function($matches) use ($params){
-            return ParametrizableString::parseTopMatch($matches,$params);
+        $f=function($matches) use ($stack){
+            return ParametrizableString::parseTopMatch($matches,$stack);
         };
         return preg_replace_callback(ParametrizableString::BASEREGEXP,$f,$source);
     }
-    static function parseTopMatch($match,$params)
+    static function parseTopMatch($match,$stack)
     {
 
         $t=$match["simple"];
         if($t)
         {
-            if(!isset($params[$t]))
+            try{
+                return ParametrizableString::getValue($t,$stack);
+            }
+            catch(\Exception $e)
             {
                 throw new ParametrizableStringException(ParametrizableStringException::ERR_MISSING_REQUIRED_PARAM,array("param"=>$t));
             }
-            ParametrizableString::$usedParams[]=$t;
-            return $params[$t];
         }
         $t=$match["complex1"];
         $t1=$match["complex2"];
@@ -72,44 +83,64 @@ class ParametrizableString
 
         if($t)
         {
-            if($t[0]=="!")
-            {
-                if(!isset($params[substr($t,1)]))
-                    $mustInclude=true;
+            $paramName=$t;
+            $negated=(substr($t,0,1)=="!");
+            $exists=false;
+            if($negated)
+                $paramName=substr($t,1);
+            try{
+                ParametrizableString::getValue($paramName,$stack);
+                $exists=true;
+
+            }catch(\Exception $e){
+
             }
-            else
-            {
-                if(isset($params[$t]))
-                    $mustInclude=true;
-            }
+            $mustInclude=((!$negated && $exists) || ($negated && !$exists));
         }
         else
         {
-            $mustInclude=ParametrizableString::parseComplexTag($t1,$params);
+            $mustInclude=ParametrizableString::parseComplexTag($t1,$stack);
         }
+
         if($mustInclude)
         {
-            $f2=function($m2) use ($params){
-                return ParametrizableString::parseBody($m2,$params);
+            $f2=function($m2) use ($stack){
+                return ParametrizableString::parseBody($m2,$stack);
             };
             $body=preg_replace_callback(ParametrizableString::BODYREGEXP,$f2,$match["body"]);
         }
         return $body;
     }
-    static function parseBody($match,$params)
+    static function getValue($paramName,$stack)
+    {
+        if(!$stack->hasPrefix($paramName[0]))
+        {
+            $paramName="/".$paramName;
+        }
+        $controller=new \lib\model\PathResolver($stack,$paramName);
+        return $controller->getPath();
+    }
+    static function parseBody($match,$stack)
     {
         $v=$match["simple"];
         if($v)
         {
-            if(!isset($params[$v]))
+            try{
+                return ParametrizableString::getValue($v,$stack);
+            }catch(\Exception $e)
             {
                 throw new ParametrizableStringException(ParametrizableStringException::ERR_MISSING_REQUIRED_VALUE,array("param"=>$v));
             }
-            ParametrizableString::$usedParams[]=$v;
-            return $params[$v];
         }
+
         $tag=$match["complex"];
-        $cVal=isset($params[$tag])?$params[$tag]:null;
+        $cVal=null;
+        try {
+            $cVal = ParametrizableString::getValue($tag,$stack);
+        }catch(\Exception $e)
+        {
+
+        }
         if($cVal)
             ParametrizableString::$usedParams[]=$tag;
         preg_match_all(ParametrizableString::PARAMREGEXP,$match["predicates"],$matches);
@@ -149,7 +180,7 @@ class ParametrizableString
         }
         return $cVal;
     }
-    static function parseComplexTag($format,$params)
+    static function parseComplexTag($format,$stack)
     {
         $parts=explode(",",$format);
         $nParts=count($parts);
@@ -177,27 +208,33 @@ class ParametrizableString
                 }
             }
             // Si no esta el tag actual, lanzamos excepcion.
-            if(!isset($params[$tag]))
-                throw new ParametrizableStringException(ParametrizableStringException::ERR_MISSING_REQUIRED_PARAM,array("param"=>$tag));
+            $curValue="";
+            try{
+                $curValue=ParametrizableString::getValue($tag,$stack);
+            }
+            catch(\Exception $e) {
+                throw new ParametrizableStringException(ParametrizableStringException::ERR_MISSING_REQUIRED_PARAM, array("param" => $tag));
+            }
+
 
             $result=false;
             switch($sParts[1])
             {
                 case "is":{
                     $fName="is_".$sParts[2];
-                    $result=$fName($params[$tag]);
+                    $result=$fName($curValue);
                 }break;
                 case "!=":{
-                    $result=($params[$tag]!=$sParts[2]);
+                    $result=($curValue!=$sParts[2]);
                 }break;
                 case "==":{
-                    $result=($params[$tag]==$sParts[2]);
+                    $result=($curValue==$sParts[2]);
                 }break;
                 case ">":{
-                    $result=($params[$tag]>$sParts[2]);
+                    $result=($curValue>$sParts[2]);
                 }break;
                 case "<":{
-                    $result=($params[$tag]<$sParts[2]);
+                    $result=($curValue<$sParts[2]);
                 }break;
             }
             if($negated)
@@ -207,37 +244,4 @@ class ParametrizableString
         }
         return true;
     }
-
-    static function getParametrizedStringArray($sourceArray,$params,$unusedReplacement="")
-    {
-        $result=array();
-        foreach($sourceArray as $key=>$value)
-        {
-            $result[$key]=ParametrizableString::getParametrizedString($value,$params,$unusedReplacement);
-        }
-        return $result;
-    }
-    static function applyRecursive(& $sourceArray,$params,$unsetOnException=0)
-    {
-        foreach($sourceArray as $key=>$value)
-        {
-            if(is_array($value))
-                ParametrizableString::applyRecursive($sourceArray[$key],$params,$unsetOnException);
-            else {
-                try {
-                    $sourceArray[$key] = ParametrizableString::getParametrizedString($value, $params);
-                    if($unsetOnException)
-                    {
-                        if(count(array_keys($sourceArray))==0)
-                            unset($sourceArray[$key]);
-                    }
-                }catch(\Exception $e)
-                {
-                    if($unsetOnException)
-                        unset($sourceArray[$key]);
-                }
-            }
-        }
-    }
-
 }

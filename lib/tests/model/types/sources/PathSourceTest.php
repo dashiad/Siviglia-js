@@ -19,25 +19,22 @@ use PHPUnit\Framework\TestCase;
  *   CLARO QUE ESTE TIPO DE SOURCE LO NECESITEMOS, ESPECIALMENTE
  *   PARA CHEQUEOS
  */
-class DataSourceTest extends TestCase
+class PathSourceTest extends TestCase
 {
     var $initialized=false;
 
-    function getSource1($parent)
-    {
-        return new \lib\model\types\sources\PathSource($parent,
-            [
-                "TYPE"=>"PathSource",
-                "PATH"=>"../f1/{keys}"
-        ]);
-    }
+
     function getContainer()
     {
         $cnt=new \lib\model\types\Container([
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "f0"=>[
-                    "TYPE"=>"String"
+                    "TYPE"=>"String",
+                    "SOURCE"=>[
+                        "TYPE"=>"Path",
+                        "PATH"=>"#../f1/[[KEYS]]"
+                    ]
                     ],
                 "f1"=>[
                     "TYPE"=>"Dictionary",
@@ -51,6 +48,8 @@ class DataSourceTest extends TestCase
                 ]
             ]
         ]);
+        return $cnt;
+
     }
     function getSource2($parent)
     {
@@ -59,7 +58,7 @@ class DataSourceTest extends TestCase
                 "TYPE"=>"DataSource",
                 "MODEL"=>'\model\tests\User',
                 "DATASOURCE"=>"FullList",
-                "LABEL"=>"[%Name%] [%id%]",
+                "LABEL"=>"[%/Name%] [%/id%]",
                 "VALUE"=>"id"
             ]);
     }
@@ -68,22 +67,22 @@ class DataSourceTest extends TestCase
 
     function testSimple()
     {
-        $this->init();
-        $s=$this->getSource1(null);
-        $this->assertEquals(true,$s->contains(1));
+        $n=$this->getContainer();
+        $n->setValue(["f1"=>["aa"=>["q1"=>"uno","q2"=>4],"bb"=>["q1"=>"dos","q2"=>6]]]);
+        $s=$n->{"*f0"}->getSource();
+        $data=$s->getData();
+        $this->assertEquals(2,count($data));
+        $this->assertEquals("aa",$data[0]["VALUE"]);
+        $this->assertEquals("bb",$data[1]["VALUE"]);
+        $this->expectException('\lib\model\types\BaseTypeException');
+        $this->expectExceptionCode(\lib\model\types\BaseTypeException::ERR_INVALID);
+        $n->f0="hh";
     }
     function testSimple2()
     {
-        $this->init();
-        $s=$this->getSource1(null);
-        $this->assertEquals(false,$s->contains(5));
-    }
-    function testComplexLabel()
-    {
-        $this->init();
-        $s3=$this->getSource2(null);
-        $data=$s3->getData();
-        $l=$s3->getLabel($data[0]);
-        $this->assertEquals("User1 1",$l);
+        $n=$this->getContainer();
+        $n->setValue(["f1"=>["aa"=>["q1"=>"uno","q2"=>4],"bb"=>["q1"=>"dos","q2"=>6]]]);
+        $n->f0="bb";
+        $this->assertEquals("bb",$n->f0);
     }
 }

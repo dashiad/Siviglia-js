@@ -137,6 +137,8 @@
       }
       function __get($index)
       {
+          if($index=="[[KEYS]]")
+              return array_keys($this->subObjects);
           return $this->subObjects[$index];
       }
       function __set($index,$value)
@@ -186,25 +188,7 @@
           return '\model\reflection\Types\meta\_Array';
       }
 
-      function __getPathProperty($pathProperty,$mode)
-      {
 
-          if(is_numeric($pathProperty))
-          {
-              return $this->subObjects[intval($pathProperty)];
-          }
-          if($pathProperty[0]=="{")
-          {
-              $pathProperty=substr($pathProperty,1,-1);
-              $results=[];
-              for($k=0;$k<count($this->subObjects);$k++)
-                  $results[] = $this->subObjects[$k]->getPath($pathProperty);
-              return $results;
-          }
-          if($pathProperty=="length")
-              return count($this->subObjects);
-
-      }
       function getEmptyValue()
       {
           return [];

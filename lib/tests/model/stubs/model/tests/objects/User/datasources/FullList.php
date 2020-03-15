@@ -58,7 +58,7 @@ class FullList
                             'FILTER'=>array(
                                 'F'=>'id',
                                 'OP'=>'=',
-                                'V'=>'[%id%]'
+                                'V'=>'[%/id%]'
                             ),
                             'TRIGGER_VAR'=>'id',
                             'DISABLE_IF'=>'0',
@@ -68,7 +68,7 @@ class FullList
                             'FILTER'=>array(
                                 'F'=>'Name',
                                 'OP'=>'=',
-                                'V'=>'[%Name%]'
+                                'V'=>'[%/Name%]'
                             ),
                             'TRIGGER_VAR'=>'Name',
                             'DISABLE_IF'=>'0',

@@ -157,7 +157,7 @@ class ModelTest extends TestCase
     {
         $this->init();
         $ins = new \model\tests\Post();
-        $ins->{"creator_id/Name"} = "Lalas";
+        $ins->{"/creator_id/Name"} = "Lalas";
         $ins->title = "TITULIN";
         $ins->save();
         $id = $ins->{"*creator_id"}->getValue();
@@ -402,7 +402,7 @@ class ModelTest extends TestCase
                 "title" => "hola",
                 "content" => "adios",
                 "creator_id" => 1,
-                "creator_id/Name" => "Juanin"
+                "/creator_id/Name" => "Juanin"
             ]
         );
         $fieldErrors = $result->getFieldErrors();
@@ -647,6 +647,33 @@ class ModelTest extends TestCase
         $this->assertEquals(2, $n);
         $this->assertEquals(2, $ins2->roles[0]->{"!id_role"});
         $this->assertEquals("NuevoRol", $ins2->roles[1]->id_role->role);
+    }
+    // Se testea un caso posiblemente problematico de getPath
+    function testAliasPath()
+    {
+
+        $this->init();
+        $ins = new \model\tests\User;
+        $ins->id = 1;
+        $ins->loadFromFields();
+
+        $p=$ins->getPath("/posts/0/title");
+        $p1=$ins->getPath("/posts/0/comments/0/id");
+        $this->assertEquals("Post-1",$p);
+        $this->assertEquals(1,$p1);
+
+
+        $p=$ins->getPath("/posts");
+        $nPosts = $p->count();
+        $this->assertEquals(3, $nPosts);
+
+
+        $comment = new \model\tests\Post\Comment;
+        $comment->id = 1;
+        $comment->loadFromFields();
+        $p=$comment->getPath("/id_user/Name");
+        $this->assertEquals("Comment-user2-post1", $comment->title);
+        $this->assertEquals("User2",$p);
     }
 }
 

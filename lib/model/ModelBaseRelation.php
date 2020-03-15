@@ -51,6 +51,10 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
             $this->relation->set($value);
         }
 	}
+	function getModel()
+    {
+        return $this->model;
+    }
 
     abstract function createRelationValues();
 
@@ -103,10 +107,7 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
         return $this->getRaw();
     }
 
-    function getModel()
-    {
-        return $this->model;
-    }
+
     function getName()
     {
         return $this->name;
@@ -472,7 +473,7 @@ class RelationFields
             if(isset($definition["REMOTEDEF"]))
             {
                 $this->types[$key]=\lib\model\types\TypeFactory::getType($relObject->getModel(),$definition["REMOTEDEF"]["FIELDS"][$value]);
-                $this->types[$key]->setParent($this,$key);
+                $this->types[$key]->setParent($this->relObject->getModel(),$key);
             }
             else
             {

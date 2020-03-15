@@ -52,7 +52,7 @@ class Relationship extends BaseType {
       {
           $keys=array_keys($this->definition["FIELDS"]);
           $metadata=$this->getmetaData("SOURCE");
-          if(isset($metadata["LABEL"])) {
+          if($metadata!==null && isset($metadata["LABEL"])) {
               $label = $metadata["LABEL"];
           }
           else {

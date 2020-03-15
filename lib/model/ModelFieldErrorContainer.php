@@ -28,10 +28,10 @@ class ModelFieldErrorContainer
     {
         $this->isOk=false;
         $code=$exception->getCode();
-        if(is_a($exception,'\lib\model\BaseTypedException'))
+  //      if(is_a($exception,'\lib\model\BaseTypedException'))
             $path=$field;
-        else
-            $path=$exception->getPath();
+ //       else
+ //           $path=$exception->getPath();
         $this->fieldErrors[$path][$exception->getCodeString()][$code]=array(
             "value"=>$value,
             "code"=>$code,

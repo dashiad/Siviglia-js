@@ -218,6 +218,8 @@ class Dictionary extends \lib\model\types\BaseContainer
     }
     function __get($fieldName)
     {
+        if($fieldName==="[[KEYS]]")
+            return array_keys($this->value);
         if($fieldName[0]=="*")
         {
             $fieldName=substr($fieldName,1);
@@ -249,29 +251,6 @@ class Dictionary extends \lib\model\types\BaseContainer
         $type = \lib\model\types\TypeFactory::getType($this, $this->definition["VALUETYPE"]);
         $type->setParent($this,$path[0]);
         return $type->getTypeFromPath($path);
-    }
-    function __getPathProperty($pathProperty,$mode)
-    {
-        if($pathProperty[0]=="{")
-        {
-            $pathProperty=substr($pathProperty,1,-1);
-            if($pathProperty=="keys")
-            {
-                if($this->valueSet==true)
-                    return array_keys($this->value);
-                return [];
-            }
-            $results=[];
-            if($this->valueSet==true) {
-                foreach ($this->value as $key => $val) {
-                    $results[] = $this->value[$key]->getPath($pathProperty);
-                }
-            }
-            return $results;
-        }
-        if($mode=="reference")
-            return $this->{"*".$pathProperty};
-        return $this->{$pathProperty};
     }
     function getMetaClassName()
     {

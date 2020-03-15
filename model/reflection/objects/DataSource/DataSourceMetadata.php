@@ -7,10 +7,10 @@
  */
 
 namespace model\reflection\DataSource;
-include_once(PROJECTPATH."/model/reflection/objects/Meta/BaseMetadata.php");
-use \model\reflection\Meta\BaseMetadata;
+include_once(PROJECTPATH."/model/reflection/objects/Meta/Meta.php");
+use \model\reflection\Meta;
 
-class DataSourceMetadata extends BaseMetadata {
+class DataSourceMetadata extends Meta {
     function __construct($objName,$dsName)
     {
         include_once(LIBPATH."/datasource/DataSourceFactory.php");

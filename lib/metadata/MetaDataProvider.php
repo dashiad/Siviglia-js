@@ -2,6 +2,8 @@
 namespace lib\metadata;
 
 
+use lib\model\types\BaseTypeException;
+
 class MetaDataProvider
 {
     const META_MODEL=1;
@@ -11,7 +13,8 @@ class MetaDataProvider
     const META_FORM=5;
     const META_PAGE=6;
     const META_PACKAGE=7;
-    const META_OTHER=8;
+    const META_TYPE_JS=8;
+    const META_OTHER=100;
     const GET_DEFINITION=1;
     const GET_FIELD=2;
     const GET_LIST=3;
@@ -32,7 +35,7 @@ class MetaDataProvider
     // mode: Si hay que devolver definiciones con referencias (model=>"..",field=>".."), o con las referencias resueltas.
     function getMetaData($type,$target,$modelName,$targetName=null,$field=null,$mode=MetaDataProvider::MODE_PLAIN)
     {
-        $callbacks=["","Model","Datasource","Action","Type","Form","Page","Package","Other"];
+        $callbacks=["","Model","Datasource","Action","Type","Form","Page","Package","TypeJs","Other"];
         return call_user_func(array($this,"get".$callbacks[$type]),$target,$modelName,$targetName,$field,$mode);
     }
     function getBaseTypedObjectMeta($baseTypedObject,$field=null,$mode=MetaDataProvider::MODE_PLAIN)
@@ -77,6 +80,55 @@ class MetaDataProvider
             return $this->getBaseTypedObjectMeta($a,$target==MetaDataProvider::GET_DEFINITION?null:$field,$mode);
         }
     }
+    function getType($target,$modelName,$targetName,$field,$mode)
+    {
+        if($target!==MetaDataProvider::GET_LIST){
+            $targetType=\lib\model\types\TypeFactory::getType(null,$targetName);
+            if(!is_a($targetType,'\lib\model\types\BaseType'))
+                return null;
+            return $targetType->getDefinition();
+        }
+    }
+
+    function getTypeJs($target,$modelName,$targetName,$field,$mode)
+    {
+        if($target!==MetaDataProvider::GET_LIST){
+            $parts=explode('\\',$field);
+            $n=count($parts);
+            if($n==0)
+            {
+                // Si no es un tipo custom, que hacemos aqui??
+                return "";
+            }
+            array_shift($parts);
+            $typeName=array_pop($parts);
+            if(array_pop($parts)=="types")
+            {
+                $s=\Registry::getService("model");
+                $md=$s->getModelDescriptor('\\'.implode('\\',$parts));
+
+                if($md)
+                {
+                    $target=$md->getDestinationFile("/js/types/$typeName.js");
+                    if(is_file($target))
+                    {
+                        return ["type"=>"class","content"=>file_get_contents($target)];
+                    }
+                    $meta=$md->getDestinationFile("/types/meta/$typeName.php");
+                    if(is_file($meta))
+                    {
+                        $targetClass=$md->getNormalizedName().'\\types\\meta\\'.$typeName;
+                        include_once($meta);
+                        $instance=new $targetClass();
+                        $meta=$instance->getMeta();
+                        return ["type"=>"definition","content"=>$meta];
+                    }
+                }
+
+            }
+            return null;
+        }
+    }
 
     function validate($type,$modelName,$targetName,$field,$path,$value)
     {
@@ -91,6 +143,7 @@ class MetaDataProvider
             }break;
         }
     }
+
 
 
 

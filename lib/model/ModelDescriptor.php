@@ -204,6 +204,21 @@ class ModelDescriptor
         }
         return $files;
     }
+    function getType($typeName,$def,$value)
+    {
+        $startPath=$this->getPath("/types/".$typeName."php");
+        if(!is_file($startPath))
+            return null;
+        $className=$this->getNamespaced().'\\types\\'.$typeName;
+        return new $className($def,$value);
+    }
+    function getTypeMetaData($typeName)
+    {
+        $startPath=$this->getPath("/metadata/types/".$typeName."php");
+        if(!is_file($startPath))
+            return null;
+        $className=$this->getNamespaced().'\\metadata\\types\\'.$typeName;
+    }
 
     function getFormWidgets()
     {

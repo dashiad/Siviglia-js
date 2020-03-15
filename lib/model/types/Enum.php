@@ -50,7 +50,11 @@ class Enum extends BaseType
                 "VALUES"=>$this->definition["VALUES"]
                 ],$validating);
     }
-
+    function checkSource($value)
+    {
+        // El tipo enum chequea su fuente en _validate.
+        return true;
+    }
     function getDefaultValue()
     {
         if(isset($this->definition["DEFAULT"]))

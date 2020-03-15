@@ -394,12 +394,6 @@ class BaseModel extends BaseTypedObject
     function __saveMembers($serializer)
     {
         $dFields = array();
-        // Se establece este modelo en el contexto global, para que sea accedido por las columnas
-        // de este mismo modelo, que requiren acceder a el, desde los tipos de dato.
-        // El nombre del objeto en el contexto es "currentModel"
-        global $globalContext;
-        $curSaved=$globalContext->currentModel; // Se guarda el valor actual, en caso de que estemos en un guardado en cadena.
-        $globalContext->currentModel=$this;
         // se tienen que guardar todos, ya que puede haber valores por defecto.
         $fields=$this->__getFields();
         $aliasFields=array();
@@ -465,8 +459,6 @@ class BaseModel extends BaseTypedObject
         $this->__new = false;
         //$this->cleanDirtyFields();
         $this->__isDirty=(count(array_keys($this->__dirtyFields))>0);
-        // Se recupera el valor antiguo para el valor del contexto del modelo guardado
-        $globalContext->currentModel=$curSaved;
     }
 
 
@@ -591,8 +583,7 @@ class BaseModel extends BaseTypedObject
     }
     function __getOwner()
     {
-        $ctx=new SimpleContext();
-        return $this->getPath($this->definition->getOwnerPath(),$ctx);
+        return $this->getPath($this->definition->getOwnerPath());
     }
     function __isOwner(BaseModel $model)
     {

@@ -34,7 +34,7 @@ class BaseTypeException extends \lib\model\BaseException{
         $this->params=$params;
         parent::__construct($code,$params);
     }
-    public function getPath()
+    public function getFullPath()
     {
         $pathParts=[];
 

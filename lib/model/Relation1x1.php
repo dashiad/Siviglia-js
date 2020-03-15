@@ -60,6 +60,8 @@ class Relation1x1 extends ModelBaseRelation
 
     function __get($varName)
     {
+        if(is_numeric($varName))
+            return $this->relationValues[$varName];
         return $this->relationValues[0]->{$varName};
     }
 

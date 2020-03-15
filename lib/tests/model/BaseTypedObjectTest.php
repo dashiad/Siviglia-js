@@ -707,8 +707,7 @@ class BaseTypedObjectTest extends TestCase
         $obj=$this->getDefinition6();
         $obj->one="str_one";
 
-        $context=new \lib\model\SimpleContext();
-        $val=$obj->getPath("/one",$context);
+        $val=$obj->getPath("/one");
         $this->assertEquals("str_one",$val);
 
     }
@@ -719,12 +718,12 @@ class BaseTypedObjectTest extends TestCase
         $obj->arr=["c1","c2"];
         $obj->{"*dict"}->c1="f1";
         $obj->{"*dict"}->c2=["first","second"];
-        $context=new \lib\model\SimpleContext();
-        $val=$obj->getPath("/arr/0",$context);
+
+        $val=$obj->getPath("/arr/0");
         $this->assertEquals("c1",$val);
-        $val2=$obj->getPath("/dict/c1",$context);
+        $val2=$obj->getPath("/dict/c1");
         $this->assertEquals("f1",$val2);
-        $val3=$obj->getPath("/dict/c2/1",$context);
+        $val3=$obj->getPath("/dict/c2/1");
         $this->assertEquals("second",$val3);
     }
     function testPath2()
@@ -732,8 +731,8 @@ class BaseTypedObjectTest extends TestCase
         $obj=$this->getDefinition6();
         $obj->one="arr";
         $obj->arr=["c1","c2"];
-        $context=new \lib\model\SimpleContext();
-        $val=$obj->getPath("/{%/one%}/0",$context);
+
+        $val=$obj->getPath("/{%/one%}/0");
         $this->assertEquals("c1",$val);
     }
     function testFields1()

@@ -46,7 +46,7 @@
           $this->parent=$parent;
           $this->fieldName=$fieldName;
       }
-      function getPath()
+      function getFullPath()
       {
           if(!isset($this->fieldPath))
           {
@@ -58,14 +58,14 @@
                 $n++;
                 if($n>20)
                 die("<h1>".$n."</h1>");
-                  
+
                   $parts[]=$cur->getFieldName();
                   $cur=$cur->getParent();
             }
             $this->fieldPath="/".implode("/",array_reverse($parts));
 
         }
-        return $this->fieldPath;          
+        return $this->fieldPath;
       }
       function getFieldName()
       {
@@ -128,10 +128,10 @@
 
             if($value===null)
                 return true;
+            $res=$this->_validate($value);
             $this->validatingValue=$value;
             if(!$this->checkSource($value))
                 throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$value],$this);
-            $res=$this->_validate($value);
             $this->validatingValue=null;
             return $res;
       }
@@ -284,9 +284,22 @@
               throw new BaseTypeException(BaseTypeException::ERR_PATH_NOT_FOUND,["path"=>implode("/",$path)],$this);
           return $this;
       }
+      /*
+       *  getPath "canonico", usando context,etc,etc
+       *  La posicion actual del basetypedobject, es el contexto "#"
+       */
+      function getPath($path,$ctxStack=null)
+      {
+          if($ctxStack===null) {
+              $ctxStack = new \lib\model\ContextStack();
+          }
+          $ctx = new \lib\model\BaseObjectContext($this, "#", $ctxStack);
+          $path=new \lib\model\PathResolver($ctxStack,$path);
+          return $path->getPath();
+      }
       function getmetaData($key)
       {
-        
+
         if(isset($this->definition["METADATA"]) && isset($this->definition["METADATA"][$key]))
         {
             return $this->definition["METADATA"][$key];
@@ -303,13 +316,13 @@
           {
               if($req!=true && $req!="true")
                   $req=false;
-                 
-          }          
+
+          }
           return [
             "name"=>$this->fieldName,
             "def"=>$this->definition,
             "required"=>$req,
-            "path"=>$this->getPath(),
+            "path"=>$this->getFullPath(),
             "hasDefault"=>$this->hasDefaultValue(),
             "default"=>$this->getDefaultValue(),
             "source"=>$this->getSource(),
@@ -318,6 +331,6 @@
             "hasValue"=>$this->valueSet
           ];
       }
-        
+
       abstract function getMetaClassName();
   }

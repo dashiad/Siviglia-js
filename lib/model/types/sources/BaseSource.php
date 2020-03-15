@@ -26,7 +26,21 @@ abstract class BaseSource
         $f=$this->getValueField();
         for($k=0;$k<count($d);$k++)
         {
-            if($d[$k][$f]==$value)
+            if($d[$k][$f]===$value)
+                return true;
+
+        }
+        return false;
+    }
+    function containsLabel($value)
+    {
+        if($value===null)
+            return false;
+        $d=$this->getData();
+        $f=$this->getLabelField();
+        for($k=0;$k<count($d);$k++)
+        {
+            if($d[$k][$f]===$value)
                 return true;
 
         }
@@ -38,15 +52,21 @@ abstract class BaseSource
     }
     function getLabel($row)
     {
-        if(isset($this->definition["LABEL"]))
-            return \lib\php\ParametrizableString::getParametrizedString($this->definition["LABEL"],$row);
-        else
-            return $row["LABEL"];
+        if(isset($this->definition["LABEL_EXPRESSION"]))
+            return \lib\php\ParametrizableString::getParametrizedString($this->definition["LABEL_EXPRESSION"],$row);
+        else {
+            return $row[$this->definition["LABEL"]];
+        }
     }
     function getLabelField()
     {
 
         return isset($this->definition["LABEL"])?$this->definition["LABEL"]:"LABEL";
+    }
+    function getLabelExpression()
+    {
+
+        return isset($this->definition["LABEL_EXPRESSION"])?$this->definition["LABEL_EXPRESSION"]:null;
     }
     function getValueField()
     {

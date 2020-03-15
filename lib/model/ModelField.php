@@ -34,7 +34,7 @@ class ModelField
           $this->definition=$definition;
           $this->listeners=[];
           $this->type=types\TypeFactory::getType($this->model,$definition);
-          $this->type->setParent($this,$this->name);
+          $this->type->setParent($this->model,$this->name);
 
           if(is_a($this->type,'\lib\model\types\Composite'))
           {
