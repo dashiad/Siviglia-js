@@ -1,19 +1,19 @@
 <?php
 namespace model\reflection\Model;
-include_once(PROJECTPATH."/model/reflection/objects/Model/ModelComponent.php");
+
 include_once(PROJECTPATH."/model/reflection/objects/Model/objects/Type/TypeReflectionFactory.php");
 class Field extends \model\reflection\Model\ModelComponent
 {
     var $targetRelation="";
         function __construct($name,$parentModel,$definition)
         {
-            parent::__construct($name,$parentModel,$definition);              
+            parent::__construct($name,$parentModel,$definition);
             $this->shortlabel=io($definition,"SHORTLABEL",$name);
             $this->label=io($definition,"LABEL",$name);
             $this->type=$this->createType($this->definition);
             if(isset($definition["TARGET_RELATION"]))
                 $this->targetRelation=$definition["TARGET_RELATION"];
-        }        
+        }
         function isDescriptive()
         {
             return io($this->definition,"SHORTLABEL",false);
@@ -100,7 +100,7 @@ class Field extends \model\reflection\Model\ModelComponent
             $fieldNames=array_keys($rawT);
             $def=$rawT[$fieldNames[0]]->getDefinition();
             if($this->isRequired())
-                $def["REQUIRED"]=true;            
+                $def["REQUIRED"]=true;
             $def["LABEL"]=$this->label;
             $def["SHORTLABEL"]=$this->shortlabel;
             $def["DESCRIPTIVE"]=$this->isDescriptive()?"true":"false";
@@ -121,6 +121,6 @@ class Field extends \model\reflection\Model\ModelComponent
             return $this->targetRelation;
         }
 
-        
+
 }
- 
+

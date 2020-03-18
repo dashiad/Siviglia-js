@@ -7,10 +7,10 @@ class SimpleModelDefinition extends ClassFileGenerator
 {
     var $fields=array();
     var $hasDefinition=false;
-    var $baseDir;        
+    var $baseDir;
     var $config;
     var $definition;
-        
+
     function load()
     {
         $this->initialize();
@@ -23,21 +23,21 @@ class SimpleModelDefinition extends ClassFileGenerator
             if(!is_file($this->filePath))
                 return;
             include_once($this->filePath);
-            $className=$this->getNamespaced(); 
+            $className=$this->getNamespaced();
 
             $definition=$className::$definition;
             $this->definition=$definition;
-        }        
+        }
         if(!$definition)
             return;
-        
-        
+
+
         $this->definition=$definition;
         $this->hasDefinition=true;
         $this->indexFields=io($this->definition,"INDEXFIELDS",null);
         if(isset($this->definition["PARAMS"]))
             $this->loadParams();
-        $this->loadFields();        
+        $this->loadFields();
     }
 
     function hasDefinition()
@@ -53,7 +53,7 @@ class SimpleModelDefinition extends ClassFileGenerator
         foreach($this->definition["PARAMS"] as $key=>$value)
             $this->params[$key]=\model\reflection\Model\Type\TypeReflectionFactory::getReflectionType($value);
     }
-        
+
     function getLabel()
     {
         $def=$this->getDefinition();
@@ -61,15 +61,15 @@ class SimpleModelDefinition extends ClassFileGenerator
     }
 
     function loadFields()
-    {            
+    {
             $this->fields=array();
             if(!isset($this->definition["FIELDS"]))
                 return;
-                            
+
             foreach($this->definition["FIELDS"] as $key=>$value)
             {
                 if(\model\reflection\Model\Field::isFieldARelation($value))
-                    $this->fields[$key]=new \model\reflection\Model\Relationship\Relationship($key,$this,$value);
+                    $this->fields[$key]=new \model\reflection\Model\Relationship($key,$this,$value);
                 else
                     $this->fields[$key]=new \model\reflection\Model\Field($key,$this,$value);
             }
@@ -116,10 +116,10 @@ class SimpleModelDefinition extends ClassFileGenerator
     {
         if(!is_array($this->indexFields))
             return array($this->indexFields=>$this->fields[$this->indexFields]);
-        $results=array();        
+        $results=array();
         foreach($this->indexFields as $key=>$value)
         {
-            
+
             $results[$value]=$this->fields[$value];
         }
         return $results;

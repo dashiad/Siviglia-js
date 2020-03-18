@@ -7,7 +7,15 @@
 
 
 namespace lib\model;
-
+class PackageException extends \lib\model\BaseException
+{
+    const ERR_UNKNOWN_PACKAGE=100;
+    const ERR_UNKNOWN_CLASS=101;
+    const ERR_UNKNOWN_RESOURCE_TYPE=102;
+    const TXT_UNKNOWN_PACKAGE="Paquete desconocido:[%package%]";
+    const TXT_UNKNOWN_CLASS="Clases desconocida:[%class%]";
+    const TXT_UNKNOWN_RESOURCE_TYPE="Tipo de recurso desconocido:[%type%]";
+}
 
 class Package
 {
@@ -16,16 +24,44 @@ class Package
     var $baseNamespace;
     var $fullPath;
     var $configInstance;
+    const ACTION            =1;
+    const DATASOURCE        =2;
+    const HTMLFORM          =3;
+    const HTMLFORM_TEMPLATE =4;
+    const HTMLVIEW          =5;
+    const JSMODEL           =6;
+    const JS_JQUERY_FORM    =7;
+    const TYPE              =8;
+    const TYPE_METADATA     =9;
+    const JS_TYPE           =10;
+    const DEFINITION        =11;
+    const MODEL             =12;
+    const CONFIG            =13;
+    const WIDGET            =14;
+    const WORKER            =15;
 
-    function __construct($baseNamespace, $basePath)
+    static $packages=array();
+    function __construct($baseNamespace, $basePath,$name=null)
     {
         $parts=explode('\\',$baseNamespace);
         $k=0;
         while($parts[$k]=="" || $parts[$k]=="model")$k++;
-        $this->name=$parts[$k];
+        if($name!==null)
+            $this->name=$name;
+        else
+            $this->name=$parts[$k];
+        Package::$packages[$this->name]=$this;
+        $len=strlen($basePath);
+        if($basePath[$len-1]!=='/')
+        {
+            if($basePath[$len-1]=='\\')
+                $basePath[$len-1]="/";
+            else
+                $basePath.="/";
+        }
         $this->basePath = PROJECTPATH.$basePath;
-        $this->baseNamespace = $baseNamespace;
-        $this->fullPath=$this->basePath.DIRECTORY_SEPARATOR.str_replace('\\',DIRECTORY_SEPARATOR,$baseNamespace);
+        $this->baseNamespace = rtrim($baseNamespace,'\\');
+        $this->fullPath=$this->basePath.str_replace('\\',DIRECTORY_SEPARATOR,ltrim($baseNamespace,'\\'));
         $this->configInstance=null;
         $configFilePath=$this->fullPath."/config/Config.php";
         if(is_file($configFilePath))
@@ -82,9 +118,7 @@ class Package
             return null;
         $dir = new \DirectoryIterator($path);
         $objects=array();
-        if($prefix!=null)
-            $prefix.='\\';
-        else
+        if($prefix==null)
             $prefix=$this->getBaseNamespace();
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot() && $fileinfo->isDir()) {
@@ -109,10 +143,10 @@ class Package
         $path    = $path   ?? $this->getFullPath();
         $path   .= "/objects/";
         $workers = [];
-        
+
         if(!is_dir($path))
             return null;
-        
+
         $dir = new \DirectoryIterator($path);
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot() && $fileinfo->isDir()) {
@@ -129,6 +163,286 @@ class Package
             }
         }
         return $workers;
+    }
+
+    static function getInfoFromClass($className)
+    {
+        $normalized=str_replace("\\",'/',$className);
+        $classes=self::getResourcesByType("class");
+        $regPrefix="^/?model/(?<package>[^/]+)/(?<model>[^/]+)";
+
+        $info=null;
+        for($k=0;$k<count($classes);$k++)
+        {
+            $c=$classes[$k];
+            $reg=$regPrefix;
+
+            $reg .= "(?:/(?!Definition)(?<submodel>[^/]+))?";
+            if (isset($c["directory"]) && $c["directory"] !== "")
+                $reg .= ("/".($c["directory"] ));
+            if (isset($c["class"])) {
+                $reg .= ("/".$c["class"]);
+            }
+            else {
+                    if(!isset($c["noitem"]))
+                        $reg .= "/(?<item>(.*))";
+                }
+
+            $reg.="$";
+            $matches=[];
+            if(preg_match("#".$reg."#",$normalized,$matches))
+            {
+                if(isset($matches["submodel"]) && $matches["submodel"]=="")
+                    unset($matches["submodel"]);
+                $package=Package::$packages[$matches["package"]];
+                if(!$package)
+                {
+                    throw new PackageException(PackageException::ERR_UNKNOWN_PACKAGE,["package"=>$matches["package"]]);
+                }
+                $startClass='\model\\'.$matches["package"].'\\'.$matches["model"];
+                $startFile=$package->getFullPath()."/objects/".$matches["model"];
+                switch($c["resource"])
+                {
+                    case Package::MODEL:{
+                        if(!isset($matches["submodel"]))
+                            $startFile=$startFile."/".$matches["model"].".php";
+                        else {
+                            $startClass .= ('\\' . $matches["submodel"]);
+                            $startFile .= ('/objects/' . $matches["submodel"] . "/" . $matches["submodel"] . ".php");
+                        }
+                    }break;
+                    default:{
+                        $startClass.=(isset($matches["submodel"])?'\\'.$matches["submodel"]:'').
+                            ($c["directory"]!==""?'\\'.str_replace('/','\\',$c["directory"]):"").'\\'.
+                            (isset($c["class"])?$c["class"]:$matches["item"]);
+                        $startFile.=(isset($matches["submodel"])?'/objects/'.$matches["submodel"]:'').
+                            ($c["directory"]!==""?'/'.$c["directory"]:"").
+                            "/".(isset($c["class"])?$c["class"]:$matches["item"]).".php";
+                    }
+                }
+                $info=[
+                    "package"=>$matches["package"],
+                    "model"=>$matches["model"],
+                    "submodel"=>$matches["submodel"],
+                    "resource"=>$c["resource"],
+                    "item"=>$matches["item"],
+                    "class"=>$startClass,
+                    "file"=>$startFile,
+                ];
+            }
+        }
+        if($info==null)
+            throw new PackageException(PackageException::ERR_UNKNOWN_CLASS,["class"=>$className]);
+        return $info;
+    }
+    // Obtiene todos los elementos de un tipo definido en un modelo, sean datasources, forms, vistas, etc.
+
+
+    static function getInfo($package,$model,$submodel,$resourceType,$item=null)
+    {
+        $c=Package::getResourceById($resourceType);
+
+        if(!isset(Package::$packages[$package]))
+            throw new PackageException(PackageException::ERR_UNKNOWN_PACKAGE,["package"=>$package]);
+        $packageClass=Package::$packages[$package];
+
+        $class='\model\\'.$package.'\\'.$model;
+        $path=$packageClass->getFullPath()."/objects/".$model;
+        if($submodel!==null)
+        {
+            $class.='\\'.$submodel;
+            $path.='/objects/'.$submodel;
+        }
+        if($resourceType==Package::MODEL)
+        {
+            if($submodel!==null)
+                $path.=("/".$submodel.".php");
+            else
+                $path.=("/".$model.".php");
+        }
+        else
+        {
+            $class.='\\';
+            $path.='/';
+            if($c["directory"]!="") {
+                $path .= $c["directory"];
+                $class.=str_replace('/','\\',$c["directory"]);
+            }
+            if($c["class"]) {
+                $class .= $c["class"];
+                $path.=($c["class"].".php");
+            }
+            else
+            {
+                if($c["file"])
+                {
+                    $path.="/".$c["file"];
+                    // $class no tiene sentido
+                    $class=null;
+                }
+                else
+                {
+                    if($c["type"]=="class")
+                    {
+                        $class.=('\\'.($item!=="*"?$item:""));
+                        $path.=('/'.$item.".php");
+                    }
+                    else
+                    {
+                        // $class no tiene sentido
+                        $class=null;
+                        $path.=('/'.$c["item"].".".$c["extension"]);
+                    }
+                }
+            }
+        }
+        $info = [
+            "package" => $package,
+            "model" => $model,
+            "submodel" => $submodel,
+            "resource" => $resourceType,
+            "class" => $class,
+            "file" => $path
+        ];
+        if($item!=="*") {
+            return $info;
+        }
+        else
+        {
+                $src=glob($path);
+                $result=[];
+                for($k=0;$k<count($src);$k++)
+                {
+                    $cur=$info;
+                    $curFile=basename($src[$k]);
+                    $p=explode(".",$curFile);
+                    $cur["file"]=$src[$k];
+                    $cur["class"].=$p[0];
+                    $cur["item"]=$p[0];
+                    $result[]=$cur;
+                }
+                return $result;
+        }
+    }
+
+    static $packageResourcesByType=[];
+    static function getResourceById($resourceId)
+    {
+        $res=array_filter(Package::getResourceMetaData(),function($item) use ($resourceId){return $item["resource"]==$resourceId;});
+        if(count($res)==0)
+            throw new PackageException(PackageException::ERR_UNKNOWN_RESOURCE_TYPE,["type"=>$resourceId]);
+        return array_shift($res);
+    }
+    static function getResourcesByType($type)
+    {
+        if(!isset(Package::$packageResourcesByType[$type])) {
+
+            $res = [];
+            $meta=self::getResourceMetaData();
+            for ($k=0;$k<count($meta);$k++) {
+                $v=$meta[$k];
+                if ($v["type"] == $type) {
+                    $res[] = $v;
+                }
+            }
+            Package::$packageResourcesByType[$type] = $res;
+        }
+        return Package::$packageResourcesByType[$type];
+
+    }
+    static function getResourceMetaData()
+    {
+
+        return [
+            [
+                "resource"=>Package::MODEL,
+                "type"=>"class",
+                "directory"=>"",
+                "noitem"=>true
+            ],
+
+            [
+                "resource"=>Package::ACTION,
+                "type"=>"class",
+                "directory"=>"actions"//,
+                //"extension"=>".php"
+            ],
+            [
+                "resource"=>Package::DATASOURCE,
+                "type"=>"class",
+                "directory"=>"datasources"
+                /*"classRegex"=>$regPrefix."datasources/(?<datasource>.*)$",
+                "directory"=>$filePrefix."/datasource",
+                "file"=>"[%datasource%].php"*/
+            ],
+            [
+                "resource"=>Package::HTMLFORM,
+                "type"=>"class",
+                "directory"=>"html/forms"
+            ],
+            [
+                "resource"=>Package::HTMLFORM_TEMPLATE,
+                "type"=>"file",
+                "directory"=>"html/forms",
+                "extension"=>".wid"
+            ],
+            [
+                "resource"=>Package::HTMLVIEW,
+                "type"=>"file",
+                "directory"=>"html/views",
+                "extension"=>".wid"
+            ],
+            [
+                "resource"=>Package::JSMODEL,
+                "type"=>"file",
+                "directory"=>"js",
+                "file"=>"Model.js"
+            ],
+            [
+                "resource"=>Package::JS_JQUERY_FORM,
+                "type"=>"file",
+                "directory"=>"js/jQuery/forms",
+            ],
+            [
+                "resource"=>Package::TYPE,
+                "type"=>"class",
+                "directory"=>"types",
+            ],
+            [
+                "resource"=>Package::TYPE_METADATA,
+                "type"=>"class",
+                "directory"=>"metadata/types"
+            ],
+            [
+                "resource"=>Package::JS_TYPE,
+                "type"=>"file",
+                "directory"=>"js/types"
+            ],
+            [
+                "resource"=>Package::DEFINITION,
+                "type"=>"class",
+                "directory"=>"",
+                "class"=>"Definition"
+            ],
+            [
+                "resource"=>Package::CONFIG,
+                "type"=>"class",
+                "directory"=>"config",
+                "class"=>"Config"
+            ],
+            [
+                "resource"=>Package::WIDGET,
+                "type"=>"file",
+                "directory"=>"widgets",
+                "extension"=>".wid"
+            ],
+            [
+                "resource"=>Package::WORKER,
+                "type"=>"class",
+                "directory"=>"workers"
+            ]
+
+        ];
     }
 
 

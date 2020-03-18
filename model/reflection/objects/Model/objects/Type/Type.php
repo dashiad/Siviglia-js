@@ -1,10 +1,10 @@
 <?php
-namespace model\reflection\Model\Type;
-class BaseType
+namespace model\reflection\Model;
+class Type
 {
         function __construct($definition)
         {
-            
+
             if(is_object($definition))
             {
                 debug_trace();

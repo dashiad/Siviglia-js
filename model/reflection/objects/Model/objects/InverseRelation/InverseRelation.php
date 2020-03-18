@@ -1,7 +1,7 @@
 <?php
   namespace model\reflection\Model\Alias;
-  include_once(__DIR__."/../Relationship/BaseRelation.php");
-  class InverseRelation extends \model\reflection\Model\Relationship\BaseRelation
+
+  class InverseRelation extends \model\reflection\Model\BaseRelation
   {
       var $localFieldNames;
       var $remoteFieldNames;

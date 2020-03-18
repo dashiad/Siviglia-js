@@ -1,8 +1,7 @@
 <?php
 
-namespace model\reflection\Model\Relationship;
-include_once("BaseRelation.php");
-class Relationship extends \model\reflection\Model\Relationship\BaseRelation
+namespace model\reflection\Model;
+class Relationship extends \model\reflection\Model\BaseRelation
 {
     function __construct($name,$parentModel,$definition)
     {
