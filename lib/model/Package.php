@@ -33,7 +33,7 @@ class Package
     const CONFIG            =13;
     const WIDGET            =14;
     const WORKER            =15;
-    const HTML_FORM          =3;
+    const HTML_FORM          =99;
     const HTML_FORM_TEMPLATE =4;
     const HTML_VIEW          =5;
     const JS_TYPE           =10;

@@ -3,6 +3,7 @@ namespace lib\metadata;
 
 
 use lib\model\types\BaseTypeException;
+use lib\model\Package;
 
 class MetaDataProvider
 {
@@ -56,6 +57,7 @@ class MetaDataProvider
         }
     }
 
+    // Mostrar listado de todos los Datasources en formato JSON
     function getDatasource($target,$modelName,$targetName,$field,$mode)
     {
         if ($target !== MetaDataProvider::GET_LIST) {
@@ -66,15 +68,26 @@ class MetaDataProvider
                 $params=$ds->getParametersInstance();
                 return $this->getBaseTypedObjectMeta($params, $target == MetaDataProvider::GET_DEFINITION ? null : $field, $mode);
             }
+        }else
+        {   
+            // constante Package::DATASOURCE
+            return $this->genericGetInfo ($modelName, Package::DATASOURCE);
         }
     }
+
+    // Mostrar listado de todos los Forms en formato JSON
     function getForm($target,$modelName,$targetName,$field,$mode)
     {
         if($target!==MetaDataProvider::GET_LIST) {
             $f=\lib\output\html\Form::getForm($modelName,$targetName,null,null);
             return $this->getBaseTypedObjectMeta($f,$target==MetaDataProvider::GET_DEFINITION?null:$field,$mode);
+        }else
+        {
+            // constante Package::HTML_FORM
+            return $this->genericGetInfo ($modelName, Package::HTML_FORM);
         }
     }
+
     function getAction($target,$modelName,$targetName,$field,$mode)
     {
         if($target!==MetaDataProvider::GET_LIST) {
@@ -143,7 +156,6 @@ class MetaDataProvider
             $s = \Registry::getService("model");
             $md = $s->getModelDescriptor('\\' . implode('\\', $parts));
 
-            if ($md)
         }
 
 
@@ -180,6 +192,33 @@ class MetaDataProvider
     }
 
 
-
+    /*  Funcion genérica para obtener el GetInfo, cuando se cumpla:
+    *        $target == MetaDataProvider::GET_LIST
+    *    @param modelName y constante existente lib\model\Package.php
+    *    @return getInfo() de lib\model\Package.php
+    */
+    function genericGetInfo($modelName, $resourceType)
+    {
+        $s=\Registry::getService("model");              // servicio del modelo
+        $package=$s->getPackage($modelName);            // paquete 
+        $md=$package->getModelDescriptor($modelName);   // nombre del modelo
+        $packageName = $package->getName();             // nombre del paquete
+            
+        // obtenemos los valores del submodel y className
+        if ($md->isPrivate())
+        {
+            $submodel = $md->getClassName();
+            $className = $md->getNamespaceModel();
+        }
+        else
+        {
+            $className = $md->getClassName();
+            $submodel = null;
+        }
+                
+        // Llamada a la funcion getInfo con todos los parámetros
+        $info = Package::getInfo($packageName, $className, $submodel, $resourceType,"*");
+        return $info;
+    }
 
 }
