@@ -12,6 +12,7 @@
       var $parent;
       var $setOnEmpty;
       var $fieldPath;
+      var $validating;
       const TYPE_SET_ON_SAVE=0x1;
       const TYPE_SET_ON_ACCESS=0x2;
       const TYPE_IS_FILE=0x4;
@@ -27,6 +28,7 @@
           $this->definition=$def;
           $this->flags=0;
           $this->setOnEmpty=false;
+          $this->validating=false;
           if(isset($def["SET_ON_EMPTY"]) && $def["SET_ON_EMPTY"]==true)
               $this->setOnEmpty=true;
           if($this->hasDefaultValue() && !isset($definition["DISABLE_DEFAULT"]))
@@ -125,14 +127,16 @@
 
       final function validate($value)
       {
-
+            $this->validating=true;
             if($value===null)
                 return true;
-            $res=$this->_validate($value);
             $this->validatingValue=$value;
+            $res=$this->_validate($value);
+
             if(!$this->checkSource($value))
                 throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$value],$this);
             $this->validatingValue=null;
+            $this->validating=false;
             return $res;
       }
       function getValidatingValue()
@@ -193,7 +197,6 @@
               $this->_setValue($val);
           }
       }
-
 
       function is_set()
       {

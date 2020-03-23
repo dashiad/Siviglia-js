@@ -14,7 +14,9 @@ class MetaDataProvider
     const META_PAGE=6;
     const META_PACKAGE=7;
     const META_TYPE_JS=8;
+    const META_FORM_JS=9;
     const META_OTHER=100;
+
     const GET_DEFINITION=1;
     const GET_FIELD=2;
     const GET_LIST=3;
@@ -35,7 +37,7 @@ class MetaDataProvider
     // mode: Si hay que devolver definiciones con referencias (model=>"..",field=>".."), o con las referencias resueltas.
     function getMetaData($type,$target,$modelName,$targetName=null,$field=null,$mode=MetaDataProvider::MODE_PLAIN)
     {
-        $callbacks=["","Model","Datasource","Action","Type","Form","Page","Package","TypeJs","Other"];
+        $callbacks=["","Model","Datasource","Action","Type","Form","Page","Package","TypeJs","FormJs","Other"];
         return call_user_func(array($this,"get".$callbacks[$type]),$target,$modelName,$targetName,$field,$mode);
     }
     function getBaseTypedObjectMeta($baseTypedObject,$field=null,$mode=MetaDataProvider::MODE_PLAIN)
@@ -109,26 +111,59 @@ class MetaDataProvider
 
                 if($md)
                 {
-                    $target=$md->getDestinationFile("/js/types/$typeName.js");
-                    if(is_file($target))
+                    $target=$md->getTypeJs($typeName);
+                    if($target!==null)
                     {
                         return ["type"=>"class","content"=>file_get_contents($target)];
                     }
-                    $meta=$md->getDestinationFile("/types/meta/$typeName.php");
-                    if(is_file($meta))
+                    $instance=$md->getTypeMetaData($typeName);
+                    if($instance)
                     {
-                        $targetClass=$md->getNormalizedName().'\\types\\meta\\'.$typeName;
-                        include_once($meta);
-                        $instance=new $targetClass();
                         $meta=$instance->getMeta();
                         return ["type"=>"definition","content"=>$meta];
                     }
-                }
 
+                }
             }
             return null;
         }
     }
+    function getTypeMeta($typeName)
+    {
+        $parts=explode('\\',$typeName);
+        $n=count($parts);
+        if($n==0)
+        {
+            // Si no es un tipo custom, que hacemos aqui??
+            return "";
+        }
+        array_shift($parts);
+        $typeName=array_pop($parts);
+        if(array_pop($parts)=="types") {
+            $s = \Registry::getService("model");
+            $md = $s->getModelDescriptor('\\' . implode('\\', $parts));
+
+            if ($md)
+        }
+
+
+    }
+
+    function getFormJs($target,$modelName,$targetName,$field,$mode)
+    {
+        $s=\Registry::getService("model");
+        $md=$s->getModelDescriptor($modelName);
+        $mustRebuild=true;
+        $fileJs=$md->getDestinationFile("js/jQuery/actions/$targetName.js");
+        $fileHtml=$md->getDestinationFile("js/jQuery/actions/$targetName.html");
+        if(!is_file($fileJs) || !is_file($fileHtml))
+        {
+
+        }
+        return ["template"=>file_get_contents($fileHtml),"js"=>file_get_contents($fileJs)];
+
+    }
+
 
     function validate($type,$modelName,$targetName,$field,$path,$value)
     {

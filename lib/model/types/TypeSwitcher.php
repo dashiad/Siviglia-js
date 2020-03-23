@@ -237,7 +237,7 @@ class TypeSwitcher extends BaseContainer
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/TypeSwitcher.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/TypeSwitcher.php");
         return '\model\reflection\Types\meta\TypeSwitcher';
     }
 

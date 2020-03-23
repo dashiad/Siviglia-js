@@ -46,6 +46,20 @@ include_once(LIBPATH."/model/types/BaseType.php");
       {
           try
           {
+              if(is_string($def))
+              {
+                  $info = \lib\model\Package::getInfoFromClass($def);
+                  if($info==null)
+                      throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def),null);
+                  if($info["resource"]!==\lib\model\Package::TYPE)
+                      throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def),null);
+                  include_once($info["file"]);
+                  $class=$info["class"];
+                  $instance=new $class();
+                  if($value!==null)
+                      $instance->setValue($value);
+                  return $instance;
+              }
 
             if(!isset($def["TYPE"]))
             {

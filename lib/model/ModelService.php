@@ -39,6 +39,8 @@ class ModelService extends \lib\service\Service
             $this->addPackage($pkg);
         }
     }
+
+
     static function addPackage($instance)
     {
         $path=$instance->getBaseNamespace();
@@ -73,9 +75,17 @@ class ModelService extends \lib\service\Service
     {
         if(isset(ModelService::$cache[$model]))
             return ModelService::$cache[$model];
+        $resolver=self::getPackageForClass($model);
+        if($resolver==null)
+            throw new ModelServiceException(ModelServiceException::ERR_MODEL_PROVIDER_NOT_FOUND,["model"=>$model]);
+        ModelService::$cache[$model]=$resolver;
+        return $resolver;
+    }
+    static function getPackageForClass($model)
+    {
+        $resolver=null;
         $model=ltrim($model,"/");
         $maxLength=-1;
-        $resolver=null;
         $model=ModelService::normalizePath($model);
         foreach(ModelService::$packages as $k=>$v)
         {
@@ -89,9 +99,6 @@ class ModelService extends \lib\service\Service
                 }
             }
         }
-        if($resolver==null)
-            throw new ModelServiceException(ModelServiceException::ERR_MODEL_PROVIDER_NOT_FOUND,["model"=>$model]);
-        ModelService::$cache[$model]=$resolver;
         return $resolver;
     }
 

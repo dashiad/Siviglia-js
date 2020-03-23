@@ -72,7 +72,6 @@ class Container extends BaseContainer
             if(!isset($value[$key]) && isset($curDef["REQUIRED"]) && $curDef["REQUIRED"]!=false)
                 throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key),$this);
             if(isset($value[$key])) {
-
                 if (!$tempType->validate($value[$key]))
                     return false;
                 $tempType->__rawSet($value[$key]);
@@ -81,6 +80,10 @@ class Container extends BaseContainer
                 throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key),$this);
         }
         return true;
+    }
+    function __sortFields()
+    {
+        //
     }
     function _getValue()
     {
@@ -198,39 +201,54 @@ class Container extends BaseContainer
     }
     function __get($fieldName)
     {
-        if($fieldName[0]=="*")
+        // Si se esta validando,lo que hacemos es devolver un campo "temporal". Asi, es posible
+        // validar SOURCES, que hacen referencia al valor de otros campos, mientra se está
+        // validando, y esos campos aun no han sido asignados.
+
+        $returnType=false;
+        if($fieldName[0]=="*") {
+            $returnType=true;
+            $fieldName = substr($fieldName, 1);
+        }
+        if($this->validating==true)
         {
-            $fieldName=substr($fieldName,1);
-            if(!isset($this->__fields[$fieldName])) {
-                if(!isset($this->definition["FIELDS"][$fieldName]))
-                    throw new ContainerException(ContainerException::ERR_NOT_A_FIELD, ["field" => $fieldName],$this);
+            // Si estoy validando, creo un campo temporal,
+            $target=\lib\model\types\TypeFactory::getType($this, $this->definition["FIELDS"][$fieldName]);
+            if(isset($this->validatingValue[$fieldName]))
+                $target->setValue($this->validatingValue[$fieldName]);
+        }
+        else {
+            if (!isset($this->__fields[$fieldName])) {
+                if (!isset($this->definition["FIELDS"][$fieldName]))
+                    throw new ContainerException(ContainerException::ERR_NOT_A_FIELD, ["field" => $fieldName], $this);
                 else {
                     $this->__fields[$fieldName] = \lib\model\types\TypeFactory::getType($this, $this->definition["FIELDS"][$fieldName]);
-                    $this->__fields[$fieldName]->setParent($this,$fieldName);
+                    $this->__fields[$fieldName]->setParent($this, $fieldName);
                 }
             }
-            return $this->__fields[$fieldName];
+            $target=$this->__fields[$fieldName];
         }
-        if(!isset($this->__fields[$fieldName]))
-            throw new ContainerException(ContainerException::ERR_NOT_A_FIELD,["field"=>$fieldName],$this);
-        return $this->__fields[$fieldName]->getValue();
+            if($returnType)
+                return $target;
+
+        return $target->getValue();
     }
     function _copy($ins)
     {
-        $curDef=$this->definition["FIELDS"];
-        $nSet=0;
         $this->setValue($ins->getValue());
         $this->valueSet=$ins->valueSet;
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Container.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/Container.php");
         return '\model\reflection\Types\meta\Container';
     }
     function getEmptyValue()
     {
         return [];
     }
+
+
     function getTypeFromPath($path)
     {
         if(!is_array($path))

@@ -186,7 +186,7 @@ class Image extends File
 
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Image.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/Image.php");
         return '\model\reflection\Types\meta\Image';
     }
 }

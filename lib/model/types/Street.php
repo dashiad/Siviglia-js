@@ -33,7 +33,7 @@ class Street extends _String {
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Street.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/Street.php");
         return '\model\reflection\Types\meta\Street';
     }
 }

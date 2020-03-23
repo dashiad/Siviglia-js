@@ -161,8 +161,8 @@ class Definition extends \lib\model\BaseModelDefinition
                 'MAXLENGTH'=>128
             ),
             'requiredPermission'=>array(
-                'TYPE'=>'ENUM',
-                'DEFAULT'=>'PUBLIC',
+                'TYPE'=>'Enum',
+                'DEFAULT'=>'Public',
                 'LABEL'=>'Required permission',
                 'VALUES'=>array(
                     "Public","Logged","Owner","Model","Site"

@@ -31,7 +31,7 @@ class NIF extends _String{
 
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/NIF.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/NIF.php");
         return '\model\reflection\Types\meta\NIF';
     }
 

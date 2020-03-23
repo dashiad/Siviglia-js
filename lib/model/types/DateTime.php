@@ -46,7 +46,7 @@
       {
           if($v=="NOW")
               $this->setAsNow();
-          else 
+          else
             $this->value=$v;
           $this->valueSet=true;
       }
@@ -192,7 +192,7 @@
 
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/DateTime.php");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/DateTime.php");
           return '\model\reflection\Types\meta\DateTime';
       }
 

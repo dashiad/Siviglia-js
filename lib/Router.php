@@ -73,7 +73,6 @@ class Router
                     return $request->resolveActions();
                 });
                 return;
-
             }break;
             case "datasource":{
                 $regex="#datasource/(.*)/([^/?]+)#";
@@ -88,7 +87,7 @@ class Router
                 }
                 return;
             }break;
-/*            case "js":{
+            case "js":{
                 if(!isset($parts[1]))
                     die();
                 $handler='\lib\output\html\renderers\js\\'.ucfirst(strtolower($parts[1]));
@@ -99,7 +98,7 @@ class Router
                     return $instance->resolve($subpath,$parts);
                 });
                 return;
-            }break;*/
+            }break;
         }
 
         $site = \model\web\Site::getCurrentWebsite();

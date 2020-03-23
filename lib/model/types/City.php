@@ -8,7 +8,7 @@ class City extends _String {
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/City.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/City.php");
         return '\model\reflection\Types\meta\City';
     }
 }

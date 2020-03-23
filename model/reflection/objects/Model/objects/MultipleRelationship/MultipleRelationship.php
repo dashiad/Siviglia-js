@@ -1,6 +1,6 @@
 <?php
-  namespace model\reflection\Model\Relationship;
-  class MultipleRelationship extends  \model\reflection\Model\Alias\AliasDefinition
+  namespace model\reflection\Model;
+  class MultipleRelationship extends  \model\reflection\Model\AliasDefinition
   {
       var $localFieldNames;
       var $remoteFieldNames;
@@ -17,7 +17,8 @@
 
        function __construct($name,$parentModel,$definition)
        {
-           parent::__construct($parentModel,$definition);
+           $this->definition=$definition;
+           $this->parentModel=$parentModel;
            if(!isset($this->definition["ROLE"]))
               $this->definition["ROLE"]="HAS_MANY";
            $this->relationModelName=$this->definition["MODEL"];
@@ -28,6 +29,10 @@
        function getRelationModelName()
        {
            return $this->relationModelName;
+       }
+       function getDefinition()
+       {
+           return $this->definition;
        }
        static function createFromRelationship($name,$relationshipName,$relationshipObj,$sourceObj)
        {
@@ -208,7 +213,7 @@
                 $relFieldDef=$relDef["FIELDS"][$value];
                 $pointedField=$relFieldDef["FIELDS"][$value];
 
-                if($this->parentModel->objectName->equals($relFieldDef["MODEL"]))
+                if($this->parentModel->modelDescriptor->equals($relFieldDef["MODEL"]))
                 {
                     $this->localFieldNames[]=$pointedField;
                     $this->relationTableLocalFields[$pointedField]=$value;
@@ -241,8 +246,6 @@
                 $inputDef["TYPE"]="/types/inputs/".$this->getDefaultInputName();
             $relDef["MODEL"]=$this->parentModel->objectName->getNormalizedName();
             $relDef["FIELD"]=$this->getName();
-
-
             return parent::getFormInput($form,$name,$relDef,$inputDef);
         }
         function getDefaultInputParams($form,$actDef)

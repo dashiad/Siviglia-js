@@ -7,7 +7,7 @@
       }
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Color.php");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/Color.php");
           return '\model\reflection\Types\meta\Color';
       }
   }

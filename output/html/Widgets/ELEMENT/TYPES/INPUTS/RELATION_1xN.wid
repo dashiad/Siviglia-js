@@ -4,7 +4,7 @@
     $localDefinition=$remField->getDefinition();
 
     if(!$ds)
-    {        
+    {
 
         // un campo relation siempre tiene una fuente. xq su valor vienen de otro sitio
 
@@ -13,26 +13,13 @@
 
             $remoteDefinition=\lib\model\types\TypeFactory::getObjectField($localDefinition["MODEL"],$localDefinition["FIELD"]);
             $remField=new lib\model\Relation1x1($name,$curModel, $remoteDefinition, $remField->getValue());
-        }        
-
-        $params=$form->__getInputParams($name); 
-        if($params["DATASOURCE"])
-        {
-            
-            $ds=\lib\datasource\DataSourceFactory::getDataSource($params["DATASOURCE"]["MODEL"],$params["DATASOURCE"]["NAME"]);
-            if(isset($params["DATASOURCE"]["PARAMS"]))
-            {
-                global $globalContext;
-                global $globalPath;
-                $globalContext->currentModel=$form;            
-                foreach($params["DATASOURCE"]["PARAMS"] as $key=>$value)
-                    $ds->{$key}=$globalPath->parseString($value,$globalContext);
-            }            
         }
-        else
-           $ds=\lib\datasource\DataSourceFactory::getDataSource($remoteDefinition["MODEL"],"FullList");
-        
-                
+
+        $params=$form->__getInputParams($name);
+
+        $ds=\lib\datasource\DataSourceFactory::getDataSource($remoteDefinition["MODEL"],"FullList");
+
+
     }
     try
     {
@@ -45,9 +32,9 @@
         }
     }
     $labelField=$params["LABEL"];
-    $valueField=$params["VALUE"]; 
+    $valueField=$params["VALUE"];
     ?>
-    
+
     [*:/ELEMENT/FORM/INPUTS/SELECT({"name":"$name","value":"$val","form":"$form"})]
         [_:DATASOURCE({"ds":"$ds"})][#]
-    [#]    
+    [#]

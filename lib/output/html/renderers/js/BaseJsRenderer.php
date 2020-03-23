@@ -1,5 +1,7 @@
 <?php
 namespace lib\output\html\renderers\js;
+use Registry;
+
 class BaseJsRenderer
 {
     function __construct($regexes)
@@ -12,29 +14,39 @@ class BaseJsRenderer
         {
             if(preg_match($key,$path,$matches))
             {
-                $modelName=$matches[1];
-                $path=str_replace("#1#",$matches[2],$value["regex"]);
-                $filePath=$this->getTargetFile($modelName,$path);
-                $fileType=$value["type"];
-                $callbackName="on".ucfirst(strtoupper($fileType));
-                if(method_exists($this,$callbackName))
-                    return $this->{$callbackName}($filePath);
-                if(!is_file($filePath))
-                {
-                    \lib\Response::generateError();
-                    die();
+                if($value["root"]=="model") {
+                    $modelName = $matches[1];
+                    $path = str_replace("#1#", $matches[2], $value["regex"]);
+                    $filePath = $this->getTargetFile($modelName, $path);
+                    $fileType = $value["type"];
+                    $callbackName = "on" . ucfirst(strtoupper($fileType));
+                    if (method_exists($this, $callbackName))
+                        return $this->{$callbackName}($filePath);
                 }
-                $op=fopen($filePath,"r");
-                fpassthru($op);
-                fclose($op);
+                else
+                {
+                    $currentSite=Registry::getService("site")->getCurrentWebsite();
+                    $root=$currentSite->getWidgetPath();
+                    $filePath=PROJECTPATH.$root[0].str_replace("#1#", $matches[1], $value["regex"]);
+                }
+            if (!is_file($filePath)) {
+                \lib\Response::generateError();
                 die();
             }
+            $op = fopen($filePath, "r");
+            fpassthru($op);
+            fclose($op);
+            die();
+            }
         }
+        \lib\Response::generateError();
+        die();
     }
+
     function getTargetFile($modelName,$path)
     {
         $s=\Registry::getService("model");
-        $inst=$s->getModelDescriptor($modelName);
+        $inst=$s->getModelDescriptor("/model/".$modelName);
         return $inst->getDestinationFile($path);
     }
 }

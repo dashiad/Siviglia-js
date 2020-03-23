@@ -235,13 +235,13 @@ class ContainerTest extends TestCase
     function testPath()
     {
         $cnt=$this->getDefinition6();
-        $result=$cnt->getPath("/two");
+        $result=$cnt->getPath("#two");
         $this->assertEquals("Lala",$result);
     }
     function testPath2()
     {
         $cnt=$this->getDefinition6();
-        $result=$cnt->getPath("/one/0/f1");
+        $result=$cnt->getPath("#one/0/f1");
         $keys=array_keys($result);
         $this->assertEquals(true,in_array("k1-1",$keys));
         $this->assertEquals(true,in_array("k1-2",$keys));
@@ -250,42 +250,12 @@ class ContainerTest extends TestCase
     function testPath3()
     {
         $cnt=$this->getDefinition6();
-        //$result=$cnt->getPath("/one/{/f1/{/q1}}");
-        $result=$cnt->getPath("/one/{/f1}");
-        $this->assertEquals(2,count($result));
-        $keys=array_keys($result[0]);
-        $keys1=array_keys($result[1]);
+        $keys=$cnt->getPath("#one/0/f1/[[KEYS]]");
         $this->assertEquals(true,in_array("k1-1",$keys));
         $this->assertEquals(true,in_array("k1-2",$keys));
         $this->assertEquals(true,in_array("k1-3",$keys));
-        $this->assertEquals(true,in_array("k2-1",$keys1));
-        $this->assertEquals(true,in_array("k2-2",$keys1));
     }
-    function testPath4()
-    {
-        $cnt=$this->getDefinition6();
-        $result=$cnt->getPath("/one/{/f1/{/q1}}");
 
-        $this->assertEquals(2,count($result));
-
-        $this->assertEquals("1",$result[0][0]);
-        $this->assertEquals("3",$result[0][1]);
-        $this->assertEquals("5",$result[0][2]);
-        $this->assertEquals("7",$result[1][0]);
-        $this->assertEquals("9",$result[1][1]);
-    }
-    function testPath5()
-    {
-        $cnt=$this->getDefinition6();
-        $result=$cnt->getPath("/one/{/f1/{keys}}");
-
-        $this->assertEquals(2,count($result));
-        $this->assertEquals("k1-1",$result[0][0]);
-        $this->assertEquals("k1-2",$result[0][1]);
-        $this->assertEquals("k1-3",$result[0][2]);
-        $this->assertEquals("k2-1",$result[1][0]);
-        $this->assertEquals("k2-2",$result[1][1]);
-    }
     function testPath6()
     {
         $cnt=$this->getDefinition6();
@@ -294,9 +264,47 @@ class ContainerTest extends TestCase
         $dict=$cnt2->{"*f1"};
         $cnt3=$dict->{"*k1-1"};
         $field=$cnt3->{"*q1"};
-        $v1=$field->parent->getPath("../k1-2/q1");
+        $v1=$field->parent->getPath("#../k1-2/q1");
         $this->assertEquals("3",$v1);
-        $v2=$field->parent->getPath("../../f2/Value");
+        $v2=$field->parent->getPath("#../../f2/Value");
         $this->assertEquals("hola",$v2);
+    }
+
+    function testCheckSource()
+    {
+        $instance=new \lib\model\types\Container([
+            "TYPE"=>"Container",
+            "FIELDS"=>[
+                "VALUES"=>[
+                    "TYPE"=>"Array",
+                    "ELEMENTS"=>[
+                        "TYPE"=>"Container",
+                        "FIELDS"=>[
+                            "VALUE"=>["TYPE"=>"Integer"],
+                            "LABEL"=>["TYPE"=>"String"]
+                        ]
+                    ]
+                ],
+                "DEFAULT"=>["TYPE"=>"String",
+                    "SOURCE"=>[
+                        "TYPE"=>"Path",
+                        "PATH"=>"#../VALUES",
+                        "LABEL"=>"LABEL",
+                        "VALUE"=>"LABEL"
+                    ]
+                ]
+            ]
+        ]);
+        $instance->validate([
+            "VALUES"=>[
+                ["VALUE"=>1,"LABEL"=>"Pepito"],
+                ["VALUE"=>2,"LABEL"=>"Juanito"]
+            ],
+            "DEFAULT"=>"Pepito"
+        ]);
+        // Esta asercion parece simple, pero lo unico que interesa es que lo anterior no
+        // haya dado una excepcion
+        $this->assertEquals(true,true);
+
     }
 }

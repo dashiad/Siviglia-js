@@ -1,7 +1,7 @@
 <?php
 
 namespace model\reflection\base;
-include_once(PROJECTPATH."/model/reflection/objects/base/BaseDefinition.php");
+
 class ClassFileGenerator extends BaseDefinition
 {
 
@@ -16,8 +16,8 @@ class ClassFileGenerator extends BaseDefinition
 
     function __construct($className, $layer, $namespace, $filePath, $extends = null, $createException = false)
     {
-        
-        @mkdir(dirname($filePath), 0777, true);        
+
+        @mkdir(dirname($filePath), 0777, true);
         $this->extends = $extends;
         $this->createException = $createException;
         parent::__construct($className,$layer,$namespace,$filePath);
@@ -36,7 +36,7 @@ class ClassFileGenerator extends BaseDefinition
                 $this->properties[$key]=$def;
                 return;
             }
-                
+
         }
         $this->properties[] = $def;
     }
@@ -46,7 +46,7 @@ class ClassFileGenerator extends BaseDefinition
         $code="";
         echo "Guardando fichero ".$this->filePath."<br>";
         @mkdir(dirname($this->filePath),0777,true);
-        
+
         $code.="<?php\n";
         if ($this->namespace)
         {

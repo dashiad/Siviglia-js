@@ -24,21 +24,22 @@ class Package
     var $baseNamespace;
     var $fullPath;
     var $configInstance;
-    const ACTION            =1;
-    const DATASOURCE        =2;
-    const HTMLFORM          =3;
-    const HTMLFORM_TEMPLATE =4;
-    const HTMLVIEW          =5;
-    const JSMODEL           =6;
-    const JS_JQUERY_FORM    =7;
-    const TYPE              =8;
-    const TYPE_METADATA     =9;
-    const JS_TYPE           =10;
-    const DEFINITION        =11;
-    const MODEL             =12;
+    const MODEL             =1;
+    const ACTION            =2;
+    const DATASOURCE        =3;
+    const TYPE              =4;
+    const TYPE_METADATA     =5;
+    const DEFINITION        =6;
     const CONFIG            =13;
     const WIDGET            =14;
     const WORKER            =15;
+    const HTML_FORM          =3;
+    const HTML_FORM_TEMPLATE =4;
+    const HTML_VIEW          =5;
+    const JS_TYPE           =10;
+    const JS_MODEL           =6;
+    const JS_FORM           =16;
+    const JS_VIEW           =17;
 
     static $packages=array();
     function __construct($baseNamespace, $basePath,$name=null)
@@ -220,7 +221,7 @@ class Package
                             "/".(isset($c["class"])?$c["class"]:$matches["item"]).".php";
                     }
                 }
-                $info=[
+                return [
                     "package"=>$matches["package"],
                     "model"=>$matches["model"],
                     "submodel"=>$matches["submodel"],
@@ -229,6 +230,7 @@ class Package
                     "class"=>$startClass,
                     "file"=>$startFile,
                 ];
+
             }
         }
         if($info==null)
@@ -371,35 +373,37 @@ class Package
                 "resource"=>Package::DATASOURCE,
                 "type"=>"class",
                 "directory"=>"datasources"
-                /*"classRegex"=>$regPrefix."datasources/(?<datasource>.*)$",
-                "directory"=>$filePrefix."/datasource",
-                "file"=>"[%datasource%].php"*/
             ],
             [
-                "resource"=>Package::HTMLFORM,
+                "resource"=>Package::HTML_FORM,
                 "type"=>"class",
                 "directory"=>"html/forms"
             ],
             [
-                "resource"=>Package::HTMLFORM_TEMPLATE,
+                "resource"=>Package::HTML_FORM_TEMPLATE,
                 "type"=>"file",
                 "directory"=>"html/forms",
                 "extension"=>".wid"
             ],
             [
-                "resource"=>Package::HTMLVIEW,
+                "resource"=>Package::HTML_VIEW,
                 "type"=>"file",
                 "directory"=>"html/views",
                 "extension"=>".wid"
             ],
             [
-                "resource"=>Package::JSMODEL,
+                "resource"=>Package::JS_MODEL,
                 "type"=>"file",
                 "directory"=>"js",
                 "file"=>"Model.js"
             ],
             [
-                "resource"=>Package::JS_JQUERY_FORM,
+                "resource"=>Package::JS_FORM,
+                "type"=>"file",
+                "directory"=>"js/jQuery/forms",
+            ],
+            [
+                "resource"=>Package::JS_VIEW,
                 "type"=>"file",
                 "directory"=>"js/jQuery/forms",
             ],
@@ -441,6 +445,7 @@ class Package
                 "type"=>"class",
                 "directory"=>"workers"
             ]
+
 
         ];
     }

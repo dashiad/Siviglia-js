@@ -1,6 +1,6 @@
 <?php
 namespace model\reflection\Js\dojo;
-class DojoGenerator
+class JQueryGenerator
 {
     var $model;
     var $parentModel;
@@ -78,6 +78,7 @@ CLASS;
         @mkdir(dirname($destFile),0777,true);
         file_put_contents($destFile,$this->generate());
     }
+
     function saveForm($formName,$code)
     {
         $destFile=$this->model->objectName->getDestinationFile("js/dojo/actions/".$formName.".js");
@@ -90,6 +91,7 @@ CLASS;
         file_put_contents($targetDir."/".$formName.".js",$code["formCode"]);
         file_put_contents($targetDir."/templates/".$formName.".html",$code["formTemplate"]);
     }
+
     function generateForm($name,$form)
     {
 

@@ -43,7 +43,7 @@
 
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/IP.php");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/IP.php");
           return '\model\reflection\Types\meta\IP';
       }
 

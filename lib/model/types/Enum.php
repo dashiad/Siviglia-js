@@ -95,7 +95,7 @@ class Enum extends BaseType
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Enum.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/Enum.php");
         return '\model\reflection\Types\meta\Enum';
     }
 }

@@ -73,7 +73,7 @@ class UUID extends BaseType
       }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/UUID.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/UUID.php");
         return '\model\reflection\Types\meta\UUID';
     }
 

@@ -42,7 +42,7 @@
       }
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/_String");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/_String");
           return '\model\reflection\Types\meta\_String';
       }
 

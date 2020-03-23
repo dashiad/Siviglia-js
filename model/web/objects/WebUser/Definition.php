@@ -38,7 +38,9 @@ class Definition extends \lib\model\BaseModelDefinition
                            'MAXLENGTH'=>'16',
                            'TYPE'=>'Password',
                            'DESCRIPTIVE'=>'false',
-                           'ISLABEL'=>'false'
+                           'ISLABEL'=>'false',
+                            'PASSWORD_ENCODING'=>'BCRYPT',
+                            'COST'=>3
                            ),
                      'USER_ID'=>array(
                            'DEFAULT'=>'',

@@ -1,5 +1,5 @@
 <?php
-namespace model\reflection\Model\Type;
+namespace model\reflection\Model;
 class ModelReferenceType
 {
         function __construct($definition)

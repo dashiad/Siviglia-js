@@ -76,7 +76,7 @@
 
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Password.php");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/Password.php");
           return '\model\reflection\Types\meta\Password';
       }
   }

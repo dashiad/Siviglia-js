@@ -80,7 +80,7 @@ class Link extends _String
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Link.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/Link.php");
         return '\model\reflection\Types\meta\Link';
     }
 

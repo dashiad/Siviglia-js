@@ -66,11 +66,7 @@ class IndexPage extends \model\web\Page
                 $model="/model/".$this->modelName;
                 $out=$mDProv->getMetaData(MetaDataProvider::META_ACTION,MetaDataProvider::GET_FIELD,$model,$this->actionName,$this->fieldName);
             }break;
-            case "typeJs":{
-                $param='\\'.str_replace("/",'\\',$this->fieldName);
-
-                $out=$mDProv->getMetaData(MetaDataProvider::META_TYPE_JS,MetaDataProvider::GET_FIELD,$model,null,$param);
-            }break;
+            
             case "pageDefinition":{}break;
             case "pageDefinitionField":{}break;
             case "typeDefinition":{}break;

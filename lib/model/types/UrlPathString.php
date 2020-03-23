@@ -15,7 +15,7 @@ class UrlPathString extends _String
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/UrlPathString.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/UrlPathString.php");
         return '\model\reflection\Types\meta\UrlPathString';
     }
 }

@@ -13,7 +13,7 @@
 
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Email.php");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/Email.php");
           return '\model\reflection\Types\meta\Email';
       }
 

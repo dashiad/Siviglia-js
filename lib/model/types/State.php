@@ -1,6 +1,6 @@
 <?php
 namespace lib\model\types;
-class State extends Enum 
+class State extends Enum
 {
     function __construct(& $definition,$value=null)
     {
@@ -13,7 +13,7 @@ class State extends Enum
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/State.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/State.php");
         return '\model\reflection\Types\meta\State';
     }
 }

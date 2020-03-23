@@ -16,7 +16,7 @@
       }
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/AutoIncrement.php");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/AutoIncrement.php");
           return '\model\reflection\Types\meta\AutoIncrement';
       }
   }

@@ -9,8 +9,6 @@
  * @author Jose (13/10/2012)
  */
 namespace model\reflection;
-include_once(PROJECTPATH."/model/reflection/objects/base/SimpleModelDefinition.php");
-include_once(PROJECTPATH."/model/reflection/objects/base/ModelConfiguration.php");
 include_once(PROJECTPATH."/model/reflection/objects/Permissions/ModelPermissionsDefinition.php");
 include_once(PROJECTPATH."/model/reflection/objects/Model/objects/Alias/AliasFactory.php");
 
@@ -140,9 +138,22 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         return $this->extendedModel;
 
     }
+    function getModelDescriptor()
+    {
+        return $this->modelDescriptor;
+    }
     function getClassName()
     {
         return $this->modelDescriptor->getNormalizedName();
+    }
+    function getNamespaceClassName()
+    {
+        return $this->modelDescriptor->getNamespaceModel();
+    }
+    // Retorna solo la parte final del path.
+    function getShortName()
+    {
+        return $this->modelDescriptor->getClassName();
     }
     // Funcion que , en caso de que se pase un fieldName con un path ("a/b/c"), en vez de devolver a, devuelve c.
     function resolveField($fieldName)

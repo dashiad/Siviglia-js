@@ -14,7 +14,7 @@ class Money extends Decimal {
 
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Money.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/Money.php");
         return '\model\reflection\Types\meta\Money';
     }
 

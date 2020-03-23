@@ -106,7 +106,9 @@ class PackageTest extends TestCase
     function testGetAllItems()
     {
         $info=\lib\model\Package::getInfo("web","Site",null,\lib\model\Package::DATASOURCE,"*");
-        $this->assertEquals(6)
+        $this->assertEquals(6,count($info));
+        $info=\lib\model\Package::getInfo("reflection","Model",null,"types","*");
+
     }
 
 

@@ -15,11 +15,13 @@ class Siviglia extends BaseJsRenderer
     {
         parent::__construct(
           [
-              "#/js/siviglia/(.*)/Model.js#"         => ["type"=>"model", "regex"=>"/js/Siviglia/Model.js"],
-              "#/js/siviglia/(.*)/forms/(.*).js#"    => ["type"=>"forms", "regex"=>"/js/Siviglia/forms/#1#.js"],
-              "#/js/siviglia/(.*)/forms/(.*).html#"  => ["type"=>"formsTpl", "regex"=>"/js/Siviglia/forms/#1#.html"],
-              "#/js/siviglia/(.*)/views/(.*).js#"    => ["type"=>"views", "regex"=>"/js/Siviglia/views/#1#.js"],
-              "#/js/siviglia/(.*)/views/(.*).html#"  => ["type"=>"viewsTpl", "regex"=>"/js/Siviglia/views/#1#.html"]
+              "#/js/siviglia/model/(.*)/Model.js#"         => ["root"=>"model","type"=>"model", "regex"=>"/js/Model.js"],
+              "#/js/siviglia/model/(.*)/forms/(.*).js#"    => ["root"=>"model","type"=>"forms", "regex"=>"/js/Siviglia/forms/#1#.js"],
+              "#/js/siviglia/model/(.*)/forms/(.*).html#"  => ["root"=>"model","type"=>"formsTpl", "regex"=>"/js/Siviglia/forms/#1#.html"],
+              "#/js/siviglia/model/(.*)/views/(.*).js#"    => ["root"=>"model","type"=>"views", "regex"=>"/js/Siviglia/views/#1#.js"],
+              "#/js/siviglia/model/(.*)/views/(.*).html#"  => ["root"=>"model","type"=>"viewsTpl", "regex"=>"/js/Siviglia/views/#1#.html"],
+              "#/js/siviglia/site/widgets/(.*).js#"  => ["root"=>"site","type"=>"views", "regex"=>"/#1#.js"],
+              "#/js/siviglia/site/widgets/(.*).html#"  => ["root"=>"site","type"=>"viewsTpl", "regex"=>"/#1#.html"]
           ]
         );
     }

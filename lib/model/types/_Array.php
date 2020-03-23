@@ -139,6 +139,15 @@
       {
           if($index=="[[KEYS]]")
               return array_keys($this->subObjects);
+          if($index=="[[SOURCE]]")
+          {
+              $result=[];
+              for($k=0;$k<count($this->subObjects);$k++)
+              {
+                  $result[]=["LABEL"=>$this->subObjects[$k]->getValue(),"VALUE"=>$index];
+              }
+              return $result;
+          }
           return $this->subObjects[$index];
       }
       function __set($index,$value)
@@ -184,7 +193,7 @@
       }
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/_Array");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/_Array");
           return '\model\reflection\Types\meta\_Array';
       }
 

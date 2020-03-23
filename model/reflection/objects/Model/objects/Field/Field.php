@@ -1,7 +1,6 @@
 <?php
 namespace model\reflection\Model;
 
-include_once(PROJECTPATH."/model/reflection/objects/Model/objects/Type/TypeReflectionFactory.php");
 class Field extends \model\reflection\Model\ModelComponent
 {
     var $targetRelation="";
@@ -57,14 +56,14 @@ class Field extends \model\reflection\Model\ModelComponent
 
 		function getType()
 		{
-			return array($this->name=>\model\reflection\Model\Type\TypeReflectionFactory::getReflectionType($this->definition));
+			return array($this->name=>\model\reflection\Model\TypeReflectionFactory::getReflectionType($this->definition));
 		}
         function getRawType()
         {
             $type=$this->getType();
             foreach($type as $key=>$value)
             {
-                $res[$key]=\lib\model\types\TypeFactory::getType(null,$value->getDefinition());
+                $res[$key]=$value->typeInstance;
             }
             return $res;
         }
@@ -98,19 +97,24 @@ class Field extends \model\reflection\Model\ModelComponent
         {
             $rawT=$this->getRawType();
             $fieldNames=array_keys($rawT);
-            $def=$rawT[$fieldNames[0]]->getDefinition();
-            if($this->isRequired())
-                $def["REQUIRED"]=true;
-            $def["LABEL"]=$this->label;
-            $def["SHORTLABEL"]=$this->shortlabel;
-            $def["DESCRIPTIVE"]=$this->isDescriptive()?"true":"false";
-            $def["ISLABEL"]=$this->isLabel()?"true":"false";
-            $targetRelation=$this->getTargetRelation();
-            if($targetRelation!="")
-                $def["TARGET_RELATION"]=$targetRelation;
-            if(isset($this->definition["UNIQUE"]))
-                $def["UNIQUE"]="true";
-            return $def;
+            $curType=$rawT[$fieldNames[0]];
+
+            $typeDef=$rawT[$fieldNames[0]]->getDefinition();
+            if(isset($typedef["REQUIRED"]) && $this->isRequired())
+                $curType->REQUIRED=true;
+            if(isset($typedef["LABEL"]))
+                $curType->LABEL=$this->label;
+            if(isset($typedef["SHORTLABEL"]))
+                $curType->SHORTLABEL=$this->shortlabel;
+            if(isset($typedef["DESCRIPTIVE"]))
+                $curType->DESCRIPTIVE=$this->isDescriptive()?"true":"false";
+            if(isset($typedef["ISLABEL"]))
+                $curType->ISLABEL=$this->isLabel()?"true":"false";
+            if(isset($typedef["TARGET_RELATION"]) && $this->getTargetRelation())
+                $curType->TARGET_RELATION=$this->getTargetRelation();
+            if(isset($typedef["UNIQUE"]))
+                $curType->UNIQUE=true;
+            return $curType->getValue();
         }
         function getRawDefinition()
         {

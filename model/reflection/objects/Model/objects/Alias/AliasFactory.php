@@ -10,18 +10,18 @@ class AliasFactory
                 {
                 case "InverseRelation":
                     {
-                        $typeReflectionFile=__DIR__."/InverseRelation.php";
-                        $className='\model\reflection\Model\Alias\\InverseRelation';
+                        $typeReflectionFile=__DIR__."/../InverseRelation/InverseRelation.php";
+                        $className='\model\reflection\Model\InverseRelation';
                     }break;
                 case "RelationMxN":
                     {
-                        $typeReflectionFile=__DIR__."/../Relationship/MultipleRelationship.php";
-                        $className='\model\reflection\Model\Relationship\MultipleRelationship';
+                        $typeReflectionFile=__DIR__."/../MultipleRelationship/MultipleRelationship.php";
+                        $className='\model\reflection\Model\MultipleRelationship';
                     }break;
                 case "TreeAlias":
                     {
-                        $typeReflectionFile=__DIR__."/TreeAlias.php";
-                        $className='\model\reflection\Model\Alias\\TreeAlias';
+                        $typeReflectionFile=__DIR__."/../TreeAlias/TreeAlias.php";
+                        $className='\model\reflection\Model\TreeAlias';
                     }break;
                 }
 

@@ -1,5 +1,5 @@
 <?php
-namespace model\reflection\Model\Alias;
+namespace model\reflection\Model;
 class AliasDefinition extends \model\reflection\base\BaseDefinition
 {
         function __construct($parentModel,$definition)

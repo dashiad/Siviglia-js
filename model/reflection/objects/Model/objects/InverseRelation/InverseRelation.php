@@ -1,5 +1,5 @@
 <?php
-  namespace model\reflection\Model\Alias;
+  namespace model\reflection\Model;
 
   class InverseRelation extends \model\reflection\Model\BaseRelation
   {
@@ -55,7 +55,10 @@
           return new InverseRelation($name,$parentModel,$def);
 
       }
-
+      function getDefinition()
+      {
+          return $this->definition;
+      }
       function getMultiplicity()
       {
           $mult=$this->targetField->getMultiplicity();

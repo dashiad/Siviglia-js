@@ -1,6 +1,6 @@
 <?php
 namespace model\reflection\Model;
-include_once(PROJECTPATH."/model/reflection/objects/Model/ModelComponent.php");
+
 
 class BaseRelation extends \model\reflection\Model\ModelComponent
 {

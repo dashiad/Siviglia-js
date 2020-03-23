@@ -14,8 +14,8 @@ class CLayoutHTMLParserManager
         return $widgetName.$this->varMap[$widgetName];
     }
     function process($layout,$layoutManager)
-    {    
-        $result="";    
+    {
+        $result="";
         $staticData=$layoutManager->staticData;
 
 
@@ -28,7 +28,7 @@ class CLayoutHTMLParserManager
                     $result.=$value2;
                 }
             }
-        }        
+        }
         $nResults=count($layout->contents);
         for($k=0;$k<$nResults;$k++)
         {
@@ -39,13 +39,13 @@ class CLayoutHTMLParserManager
                 $q=11;
             }
             $parserClass=$resultClass."Parser";
-            $oNodeParser=new $parserClass($layout->contents[$k]);            
+            $oNodeParser=new $parserClass($layout->contents[$k]);
             $result.=$oNodeParser->process($this);
-        }        
+        }
         //echo htmlentities($result);
         return $result;
     }
-}  
+}
 
 
 abstract class CLayoutElementParser
@@ -54,7 +54,7 @@ abstract class CLayoutElementParser
 
     function __construct($node)
     {
-       
+
         $this->element=$node;
 
         if($node->contents)
@@ -77,7 +77,7 @@ abstract class CLayoutElementParser
                 var_dump($this->element);
             }*/
             $this->contents[]=new $cName($contents[$k]);
-        }               
+        }
     }
     abstract function process($referenceNode);
     function processContents()
@@ -101,7 +101,7 @@ class CPHPElementParser extends CLayoutElementParser{
     function process($referenceNode)
     {
         return $this->element->preparedContents;
-        
+
     }
 }
 
@@ -115,7 +115,7 @@ class CHTMLElementParser extends CLayoutElementParser{
 class CDataSourceElementParser extends CLayoutElementParser{
     function process($referenceNode)
     {
-        return "<?php echo \$globalPath->getPath('".str_replace(array("{%","%}"),array('',''), $this->element->preparedContents)."',\$globalContext);?>";
+        return "";
     }
 }
 
@@ -133,11 +133,11 @@ class CContentTagParser extends CLayoutElementParser{
             // Por lo tanto, en el primer nivel esta la definicion, y en el segundo nivel, esta el uso de parametros.
             // Y, en los nodos de segundo nivel, en parentWidget esta la plantilla, y en parentTag, esta la instancia
             // del tag en el widget.
-              
+
 
             if(!$this->element->parentWidget)
             {
-                
+
                 $parentPrefix="";
                 $localPrefix=$this->element->getPrefix();
             }
@@ -150,11 +150,11 @@ class CContentTagParser extends CLayoutElementParser{
                     $localPrefix=$this->element->getPrefix();
             }
 
-            
+
             $text="<?php \n";
             foreach($this->element->params as $key=>$value)
             {
-              
+
                 if($value[0]=='$')
                 {
                     $text.='$'.$localPrefix.$key.'=$'.$parentPrefix.substr($value,1).";\n";
@@ -170,12 +170,12 @@ class CContentTagParser extends CLayoutElementParser{
                 }
             }
             $text.="\n?>";
-            
+
 
         }
-          
 
-     
+
+
         return $this->processContents();
     }
 }
@@ -200,7 +200,7 @@ class CWidgetItemParser extends CLayoutElementParser {
     }
     function process($referenceNode)
     {
-        
+
         if($this->element->startBlockControl)
             $content=$this->element->startBlockControl->preparedContents;
         $content.=$this->processContents();
@@ -223,7 +223,7 @@ class CWidgetParser extends CWidgetItemParser {
         $this->layoutName=$node->name;
         //$node->contents=& $node->layout->contents;
         CWidgetItemParser::__construct($node);
-        
+
     }
     function process($referenceNode)
     {
@@ -249,11 +249,11 @@ class CWidgetParser extends CWidgetItemParser {
             // Por lo tanto, en el primer nivel esta la definicion, y en el segundo nivel, esta el uso de parametros.
             // Y, en los nodos de segundo nivel, en parentWidget esta la plantilla, y en parentTag, esta la instancia
             // del tag en el widget.
-              
+
 
             if(!$this->element->parentWidget)
             {
-                
+
                 $parentPrefix="";
                 $localPrefix=$this->element->getPrefix();
             }
@@ -266,11 +266,11 @@ class CWidgetParser extends CWidgetItemParser {
                     $localPrefix=$this->element->getPrefix();
             }
 
-            
+
             $text="<?php \n";
             foreach($this->element->params as $key=>$value)
             {
-              
+
                 if($value[0]=='$')
                 {
                     $text.='$'.$localPrefix.$key.'=$'.$parentPrefix.substr($value,1).";\n";
@@ -286,10 +286,10 @@ class CWidgetParser extends CWidgetItemParser {
                 }
             }
             $text.="\n?>";
-            
+
 
         }
-          
+
 
         return $text.=$this->processContents();
     }
@@ -297,10 +297,10 @@ class CWidgetParser extends CWidgetItemParser {
 
 class CSubWidgetParser extends CWidgetItemParser {
     function process($referenceNode)
-    {        
-        
+    {
+
         if($this->element->startBlockControl)
-            $content=$this->element->startBlockControl->preparedContents;        
+            $content=$this->element->startBlockControl->preparedContents;
         $content.=$this->__process($referenceNode);
         if($this->element->endBlockControl)
             $content.=$this->element->endBlockControl->preparedContents;
@@ -325,7 +325,7 @@ class CSubWidgetParser extends CWidgetItemParser {
             }
             else
             {
-                if($this->element->parentWidget->parentWidget)                
+                if($this->element->parentWidget->parentWidget)
                 //$parentPrefix=$this->element->parentWidget->getPrefix();
                     $parentPrefix=$this->element->parentWidget->parentWidget->getPrefix();
             }
@@ -353,7 +353,7 @@ class CSubWidgetParser extends CWidgetItemParser {
                 }
             }
             $text.="\n?>";
-            
+
 
         }
         return $text.=$this->processContents();

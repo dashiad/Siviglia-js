@@ -26,7 +26,6 @@ class Definition extends \lib\model\BaseModelDefinition
                            'MAX'=>9999999999,
                            'LABEL'=>'id_website',
                            'SHORTLABEL'=>'id_website',
-
                            'ISLABEL'=>'true'
                            ),
                      'host'=>array(

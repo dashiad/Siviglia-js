@@ -47,6 +47,7 @@ class ModelDescriptor
         }
 
     }
+
     function getBaseDir()
     {
         return $this->baseDir;
@@ -76,6 +77,8 @@ class ModelDescriptor
             return $base.$this->className;
         }
     }
+
+
 
     function getNamespaceModel()
     {
@@ -121,7 +124,7 @@ class ModelDescriptor
     {
         return "/model/" . $this->layer . "/objects/" . str_replace('\\', '/', $this->namespaceClassName) . "/" . $this->className . "/widgets/$widget";
     }
-    
+
     function getPath($extra)
     {
         return $this->getDestinationFile($extra);
@@ -209,21 +212,63 @@ class ModelDescriptor
         }
         return $files;
     }
+    function normalizeTypeName($typeName)
+    {
+        $normalized=str_replace('\\','/',$typeName);
+        $parts=explode("/",$normalized);
+        return array_pop($parts);
+    }
     function getType($typeName,$def,$value)
     {
-        $startPath=$this->getPath("/types/".$typeName."php");
+        $typeName=$this->normalizeTypeName($typeName);
+        $startPath=$this->getTypePath()."/".$typeName."php";
         if(!is_file($startPath))
             return null;
+        include_once($startPath);
         $className=$this->getNamespaced().'\\types\\'.$typeName;
         return new $className($def,$value);
     }
     function getTypeMetaData($typeName)
     {
+        $typeName=$this->normalizeTypeName($typeName);
         $startPath=$this->getPath("/metadata/types/".$typeName."php");
         if(!is_file($startPath))
             return null;
+        include_once($startPath);
         $className=$this->getNamespaced().'\\metadata\\types\\'.$typeName;
+        return new $className();
     }
+    function getTypePath()
+    {
+        return $this->getPath("/types");
+    }
+    function getTypeJs($typeName)
+    {
+        $typeName=$this->normalizeTypeName($typeName);
+        $startPath=$this->getPath("/js/types");
+        $file=$startPath."/".$typeName.".js";
+        if(is_file($file))
+            return $file;
+        return null;
+    }
+    function getTypes()
+    {
+        $path=$this->getTypePath();
+        if(!is_dir($path))
+            return null;
+
+        $src=glob($path."/*.php");
+        $result=[];
+        $namespace=$this->getNamespace();
+        for($k=0;$k<count($src);$k++)
+        {
+            $cur=basename($src[$k]);
+            $p=explode(".",$cur);
+            $result[]=$namespace.'\types\\'.$p[0];
+        }
+        return $result;
+    }
+
 
     function getFormWidgets()
     {

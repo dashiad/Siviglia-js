@@ -18,7 +18,7 @@ class Timestamp extends DateTime
         }
         function getMetaClassName()
         {
-            include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Timestamp.php");
+            include_once(PROJECTPATH."/model/reflection/objects/Types/Timestamp.php");
             return '\model\reflection\Types\meta\Timestamp';
         }
 }

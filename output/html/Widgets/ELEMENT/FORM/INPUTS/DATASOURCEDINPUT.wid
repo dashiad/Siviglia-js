@@ -1,12 +1,7 @@
 [_ITERATOR]
-<?php    
-      global $globalContext; 
-      $globalContext->name=$name;
-
-?>
         [*:DATASOURCE]
                 [_:ITERATOR({"name":"$name","ds":"$ds","iterator":"&$inputIterator"})]
-                        [_*]        
+                        [_*]
                 [#]
-        [#] 
+        [#]
 [#]

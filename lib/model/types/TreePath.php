@@ -8,7 +8,7 @@ class TreePath extends _String
    }
    function getMetaClassName()
    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/TreePath.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/TreePath.php");
         return '\model\reflection\Types\meta\TreePath';
    }
 }

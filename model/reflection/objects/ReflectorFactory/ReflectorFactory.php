@@ -44,13 +44,21 @@ class ReflectorFactoryException extends \lib\model\BaseException
            if($nameObj->isPrivate())
                $className=$nameObj->getNamespaceModel().'\\'.$className;
 
-           if(isset(ReflectorFactory::$objectDefinitions[$layer][$className]))
-               return ReflectorFactory::$objectDefinitions[$layer][$className];
-           if(ReflectorFactory::$factoryLoaded==true)
-               return null;
+           if(!isset(ReflectorFactory::$objectDefinitions[$layer])) {
+               if(ReflectorFactory::$factoryLoaded==true)
+                   return null;
+               ReflectorFactory::loadFactory();
+               }
 
-           ReflectorFactory::loadFactory();
-           return ReflectorFactory::$objectDefinitions[$layer][$className];
+           for($k=0;$k<count(ReflectorFactory::$objectDefinitions[$layer]);$k++)
+           {
+                   $c=ReflectorFactory::$objectDefinitions[$layer][$k];
+                   if($c["class"]==$modelName)
+                       return $c["instance"];
+           }
+           // TODO : Excepcion
+           return null;
+
        }
        static function getModelsByPackage($pkg)
        {
@@ -125,7 +133,7 @@ class ReflectorFactoryException extends \lib\model\BaseException
                        }
                    }
                    $parsedModels[$name]=1;
-                   $cur->initialize();
+                   $cur["instance"]->initialize();
                }
                $newExisting=count(array_keys($newModels));
                if($newExisting>=$lastExisting)
@@ -142,7 +150,7 @@ class ReflectorFactoryException extends \lib\model\BaseException
            foreach(ReflectorFactory::$objectDefinitions as $pkg=>$models)
            {
                foreach ($models as $className => $curModel)
-                   $curModel->initializeAliases();
+                   $curModel["instance"]->initializeAliases();
            }
        }
 

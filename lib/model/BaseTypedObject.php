@@ -151,7 +151,7 @@ class ContextStack
                     } else {
                         if (is_object($this->pointer)) {
                             if(is_a($this->pointer,'\lib\model\types\BaseContainer') &&
-                              $spec!=="[[KEYS]]")
+                              $spec!=="[[KEYS]]" && $spec!=="[[SOURCE]]")
                             {
                                 $v=$this->pointer->{"*".$spec};
                             }

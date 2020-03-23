@@ -36,7 +36,7 @@ class PHPVariable extends \lib\model\types\BaseType {
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/PHPVariable.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/PHPVariable.php");
         return '\model\reflection\Types\meta\PHPVariable';
     }
 

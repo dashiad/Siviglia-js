@@ -24,22 +24,6 @@
     [_CSS][*:/HTML/METADATA/CSS][_*][#][#]
     [_EXTRA][_*][#]
 
-    <!-- select2 library for jQuery replacement for select boxes -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-
-    <!-- script general que carga jquery 3 y demás dependencias de codigo js para la plantilla.
-    Importante que esté antes de las siguientes librerías para que puedan funcionar bien: datatables, etc... -->
-    <script src="http://statics.adtopy.com/editor/js/vendors/vendors2.min.js"></script>    
-
-    <!-- datatables -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.20/b-1.6.1/b-html5-1.6.1/b-print-1.6.1/datatables.min.css"/>
- 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.20/b-1.6.1/b-html5-1.6.1/b-print-1.6.1/datatables.min.js"></script>
-
-
-
 </head>
 
 
@@ -60,24 +44,6 @@
 
     [_CONTENT][_*][#]
 
-
-    <script src="http://statics.adtopy.com/editor/js/app2.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/app-menu.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/vertical-menu-dark.js"></script>
-    
-    <!-- <script src="http://statics.adtopy.com/editor/js/vendors/prism.min.js"></script> -->
-    <!-- disabled form-validation, because we use: metadata server-validation
-    <script src="http://statics.adtopy.com/editor/js/vendors/jqBootstrapValidation.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/form/form-validation.js"></script>
-     -->
-    <script src="http://statics.adtopy.com/editor/js/vendors/components.min.js"></script>    
-    <script src="http://statics.adtopy.com/editor/js/vendors/pickers/picker.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/vendors/pickers/picker.date.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/vendors/pickers/picker.time.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/vendors/pickers/pick-a-datetime.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/vendors/pickers/daterangepicker.js"></script>
-    <script src="http://statics.adtopy.com/editor/js/vendors/datatable-jobs.js"></script>
-    
     [@DEPENDENCY]
         [_BUNDLE]Page[#]
 
@@ -97,7 +63,7 @@
             [_SCRIPT]
                 [_PHASE]BODYEND[#]
                 [_FILE]editor/js/vendors/prism.min.js[#]
-            [#]      
+            [#]
         [#]
     [#]
 </body>

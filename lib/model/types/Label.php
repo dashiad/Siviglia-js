@@ -8,7 +8,7 @@
 
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Label.php");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/Label.php");
           return '\model\reflection\Types\meta\Label';
       }
 

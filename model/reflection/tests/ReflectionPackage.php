@@ -20,15 +20,16 @@ class ReflectionPackage extends TestCase
     function getPackageInstance()
     {
         $testPackage=new \lib\tests\model\stubs\model\tests\Package();
-        \Registry::getService("model")->addPackage($testPackage);
-        $package=new \model\reflection\ReflectionPackage("test");
+        $modelService=\Registry::getService("model");
+        $modelService->addPackage($testPackage);
+        $package=new \model\reflection\ReflectionPackage("tests");
         return $package;
     }
     function testListObjects()
     {
         $pkg=$this->getPackageInstance();
         $models=$pkg->getModels();
-        $this->assertEquals(4,count($models));
+        $this->assertEquals(8,count($models));
         for($k=0;$k<count($models);$k++)
         {
             $r[$models[$k]["name"]]=$models[$k];

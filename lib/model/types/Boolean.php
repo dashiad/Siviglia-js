@@ -23,7 +23,7 @@
       }
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Boolean");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/Boolean");
           return '\model\reflection\Types\meta\Boolean';
       }
       function _validate($val)

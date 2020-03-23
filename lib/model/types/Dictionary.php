@@ -254,7 +254,7 @@ class Dictionary extends \lib\model\types\BaseContainer
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Dictionary.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/Dictionary.php");
         return '\model\reflection\Types\meta\Dictionary';
     }
 }

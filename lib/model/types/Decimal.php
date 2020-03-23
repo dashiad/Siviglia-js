@@ -24,7 +24,7 @@ class Decimal extends BaseType
     }
     function getMetaClassName()
     {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Decimal.php");
+        include_once(PROJECTPATH."/model/reflection/objects/Types/Decimal.php");
         return '\model\reflection\Types\meta\Decimal';
     }
 

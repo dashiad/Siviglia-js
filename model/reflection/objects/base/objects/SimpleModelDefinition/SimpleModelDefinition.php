@@ -1,7 +1,6 @@
 <?php
 
 namespace model\reflection\base;
-include_once(PROJECTPATH."/model/reflection/objects/base/ClassFileGenerator.php");
 
 class SimpleModelDefinition extends ClassFileGenerator
 {

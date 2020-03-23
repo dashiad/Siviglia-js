@@ -24,7 +24,7 @@
       }
       function getMetaClassName()
       {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/meta/Text.php");
+          include_once(PROJECTPATH."/model/reflection/objects/Types/Text.php");
           return '\model\reflection\Types\meta\Text';
       }
   }

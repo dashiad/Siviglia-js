@@ -51,21 +51,21 @@ class ModelComponent
         if(!$input)
         {
             $input="/types/inputs/".$this->getDefaultInputName($definition);
-        }     
+        }
         $errors=$this->getFormInputErrors($definition);
-        
+
         return $this->getInputPattern($name,$label,$help,$definition["REQUIRED"],$input,$errors,$form);
     }
     function getFormInputErrors($definition)
-    {        
+    {
         $type=\lib\model\types\TypeFactory::getType($this->parentModel,$definition);
         $errors=array();
         if($type)
         {
-            $type=$type->getRelationshipType(); // So autoincrements return ints.        
+            $type=$type->getRelationshipType(); // So autoincrements return ints.
             // Se obtienen las cadenas de errores por defecto para este campo.
             $errors=array();
-            $this->fillTypeErrors($type,$definition,$errors);              
+            $this->fillTypeErrors($type,$definition,$errors);
         }
         return $errors;
     }
@@ -86,36 +86,36 @@ class ModelComponent
 
         $inputStr.="\t\t\t\t\t\t[*:".$inputType."({\"model\":\"\$currentModel\",\"name\":\"".$name."\",\"form\":\"\$form\"})][#]\n\t\t\t\t\t[#]\n";
         if(isset($errors))
-        {        
+        {
             $inputStr.="\t\t\t\t\t[_ERRORS]\n";
             foreach($errors as $key2=>$value2)
             {
                 $inputStr.="\t\t\t\t\t\t[_ERROR({\"type\":\"".$key2."\",\"code\":\"".$value2."\"})][@L]".$this->parentModel->objectName->getNormalizedName()."_".$form->action->getName()."_".$name."_".$key2."[#][#]\n";
-            }   
+            }
             $inputStr.="\t\t\t\t\t[#]\n";
         }
         $inputStr.="\t\t\t\t[#]\n";
         return $inputStr;
     }
-    
+
 
 
     function fillTypeErrors($type,$definition,& $errors)
-    {                
+    {
         // Se obtienen las constantes de la clase base, BaseType, para filtrarlas.
         // Se deben filtrar ya que dichas constantes son para excepciones internas,
         // no relacionadas con los errores que pueden aparecer en un formulario.
         $baseClass=new \ReflectionClass('\lib\model\types\BaseTypeException');
         $baseExceptions=$baseClass->getConstants();
-                
-        if($definition["REQUIRED"])                        
+
+        if($definition["REQUIRED"])
             unset($baseExceptions["ERR_UNSET"]); // Queremos que se procese esta excepcion
-                            
+
         $errors=array("INVALID"=>2);
         $typeList=array_values(class_parents($type));
         $nEls=array_unshift($typeList,get_class($type));
         $typeList=array_values(array_reverse($typeList));
-        
+
         foreach($typeList as $key=>$value)
         {
             $parts=explode("\\",$value);
@@ -123,50 +123,54 @@ class ModelComponent
             $exceptionClass=$value."Exception";
             if( !class_exists($exceptionClass) )
                 continue;
-            
+
             $reflectionClass=new \ReflectionClass($exceptionClass);
             $constants=$reflectionClass->getConstants();
             foreach($constants as $key2=>$value2)
             {
-                
+
                 if(array_key_exists($key2,$baseExceptions))
                         continue;
-                // Se filtran las excepciones que existen en la clase base.                
+                // Se filtran las excepciones que existen en la clase base.
                 if( strpos($key2,"ERR_")===0 )
                 {
                     $key2=substr($key2,4);
                 }
                 $errors[$key2]=$value2;
-            }  
-            
+            }
+
         }
-        
-                
+
+
     }
 
     function createType($definition)
     {
         if(!isset($this->definition["TYPE"]))
             return null;
-        $type=$this->definition["TYPE"]."Type";
-
-        $typeReflectionFile=PROJECTPATH."/model/reflection/objects/Model/objects/Type/$type".".php";
+        $type=$this->definition["TYPE"];
+        $oType=$type;
+        if($type=="String" || $type=="Array")
+            $type="_".$type;
+        $typeReflectionFile=PROJECTPATH."/model/reflection/objects/Types/types/$type".".php";
         $dtype=$type;
+
 
         if(!is_file($typeReflectionFile))
         {
             $dtype="BaseType";
-            $typeReflectionFile=PROJECTPATH."/model/reflection/objects/Model/objects/Type/BaseType.php";
+
         }
-        $className='\model\reflection\Model\Type\\'.$dtype;
+
+        $className='\model\reflection\Types\types\meta\\'.$dtype;
 
         include_once($typeReflectionFile);
 
         // Los "alias" siempre tienen un parentModel.Los "types", no necesariamente.
         // Por eso, los constructores de alias tienen $parentModel como primer parametro del constructor.
 
-         $instance=new $className($definition);     
-         $instance->setTypeName($type);
+         $instance=new $className($definition);
+         $instance->setTypeName($oType);
          return $instance;
 
     }
@@ -177,7 +181,7 @@ class ModelComponent
      }
        function dumpArray($arr,$initialNestLevel=0)
        {
-           return \lib\php\ArrayTools::dumpArray($arr,$initialNestLevel);     
+           return \lib\php\ArrayTools::dumpArray($arr,$initialNestLevel);
        }
 
 
