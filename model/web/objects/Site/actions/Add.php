@@ -1,28 +1,49 @@
 <?php
 namespace model\web\Site\actions;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Site/actions/DeleteAction.php
-  CLASS:DeleteAction
+ FILENAME:/var/www/adtopy/model/web/objects/Site/actions/AddAction.php
+  CLASS:AddAction
 *
 *
 **/
 
-class DeleteAction extends \lib\action\Action
+
+class Add extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'\model\Site',
-               'ROLE'=>'Delete',
+               'MODEL'=>'\model\web\Site',
+               'ROLE'=>'Add',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'\model\Site',
-                           'PERMISSION'=>'delete'
+                           'MODEL'=>'\model\web\Site',
+                           'PERMISSION'=>'create'
                            )
                      ),
                'IS_ADMIN'=>false,
-               'INDEXFIELDS'=>array(
-                     'id_site'=>array(
+               'FIELDS'=>array(
+                     'host'=>array(
                            'REQUIRED'=>1,
-                           'FIELD'=>'id_site',
+                           'FIELD'=>'host',
+                           'MODEL'=>'\model\web\Site'
+                           ),
+                     'canonical_url'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'canonical_url',
+                           'MODEL'=>'\model\web\Site'
+                           ),
+                     'hasSSL'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'hasSSL',
+                           'MODEL'=>'\model\web\Site'
+                           ),
+                     'namespace'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'namespace',
+                           'MODEL'=>'\model\web\Site'
+                           ),
+                     'websiteName'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'websiteName',
                            'MODEL'=>'\model\web\Site'
                            )
                      )
@@ -33,7 +54,7 @@ class DeleteAction extends \lib\action\Action
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for DeleteAction
+	 * DESCRIPTION: Constructor for AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -42,8 +63,8 @@ class DeleteAction extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(DeleteAction::$definition);
-	
+			parent::__construct(Add::$definition);
+
 	}
 
 
@@ -52,13 +73,13 @@ class DeleteAction extends \lib\action\Action
 	 *
 	 * NAME:validate
 	 *
-	 * DESCRIPTION: Callback for validation of action :DeleteAction
+	 * DESCRIPTION: Callback for validation of action :AddAction
 	 *
 	 * PARAMS:
 	 *
 	 * $params: Parameters received,as a BaseTypedObject.
 	 *		 Its fields are:
-	 *		 
+	 *		 fields: host,canonical_url,hasSSL,namespace,websiteName
 	 *
 	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object
 	 *
@@ -71,9 +92,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -82,7 +103,7 @@ class DeleteAction extends \lib\action\Action
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this action had success.DeleteAction
+	 * DESCRIPTION: Callback executed when this action had success.AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -97,9 +118,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -108,7 +129,7 @@ class DeleteAction extends \lib\action\Action
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorDeleteAction
+	 * DESCRIPTION: Callback executed when this action had an errorAddAction
 	 *
 	 * PARAMS:
 	 *
@@ -127,9 +148,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

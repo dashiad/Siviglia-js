@@ -53,12 +53,13 @@ class Package
             $this->name=$parts[$k];
         Package::$packages[$this->name]=$this;
         $len=strlen($basePath);
-        if($basePath[$len-1]!=='/')
-        {
-            if($basePath[$len-1]=='\\')
-                $basePath[$len-1]="/";
-            else
-                $basePath.="/";
+        if($len > 0) {
+            if ($basePath[$len - 1] !== '/') {
+                if ($basePath[$len - 1] == '\\')
+                    $basePath[$len - 1] = "/";
+                else
+                    $basePath .= "/";
+            }
         }
         $this->basePath = PROJECTPATH.$basePath;
         $this->baseNamespace = rtrim($baseNamespace,'\\');

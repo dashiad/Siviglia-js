@@ -7,14 +7,14 @@ namespace model\web\Lang\html\forms;
 *
 **/
 
-class DeleteAction extends \lib\output\html\Form
+class Delete extends \lib\output\html\Form
 {
 	 static  $definition=array(
-               'NAME'=>'DeleteAction',
+               'NAME'=>'Delete',
                'OBJECT'=>'Lang',
                'ACTION'=>array(
                      'OBJECT'=>'\model\web\Lang',
-                     'ACTION'=>'DeleteAction'
+                     'ACTION'=>'Delete'
                      ),
                'FIELDS'=>array(),
                'ROLE'=>'Delete',
@@ -48,8 +48,8 @@ class DeleteAction extends \lib\output\html\Form
 	function __construct( $actionResult=null)
 	{
 
-			parent::__construct(DeleteAction::$definition,$actionResult);
-	
+			parent::__construct(Delete::$definition,$actionResult);
+
 	}
 
 
@@ -74,9 +74,9 @@ class DeleteAction extends \lib\output\html\Form
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -97,9 +97,9 @@ class DeleteAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -120,9 +120,9 @@ class DeleteAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

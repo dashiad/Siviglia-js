@@ -9,7 +9,7 @@ use model\web\Jobs\App\Jobs\JobManager;
  *
  **/
 
-class AddAction extends \lib\action\Action
+class Add extends \lib\action\Action
 {
     static  $definition = [
         //'MODEL' => '\model\web\Jobs', // no se asocia a un modelo
@@ -45,8 +45,8 @@ class AddAction extends \lib\action\Action
             ],
         ],
     ];
-    
-    
+
+
     /**
      *
      * NAME:__construct
@@ -59,11 +59,11 @@ class AddAction extends \lib\action\Action
      */
     function __construct( )
     {
-        parent::__construct(AddAction::$definition);       
+        parent::__construct(Add::$definition);
     }
-    
-    
-    
+
+
+
     /**
      *
      * NAME:validate
@@ -87,8 +87,8 @@ class AddAction extends \lib\action\Action
         /* Insert the validation code here */
         return $actionResult->isOk();
     }
-    
-    function onSaved($model) 
+
+    function onSaved($model)
     {
         $jobId = JobManager::createJob(json_decode($model->descriptor, true));
         $realModel = new \model\web\Jobs;
@@ -99,8 +99,8 @@ class AddAction extends \lib\action\Action
         //$realModel->loadFromFields(); // no sabemos si está en bd
         $this->setModel($realModel);
     }
-    
-    
+
+
     /**
      *
      * NAME:onSuccess
@@ -118,11 +118,11 @@ class AddAction extends \lib\action\Action
     function onSuccess( $model, $user)
     {
         /* Insert callback code here */
-        return true;        
+        return true;
     }
-    
-    
-    
+
+
+
     /**
      *
      * NAME:onError
@@ -144,7 +144,7 @@ class AddAction extends \lib\action\Action
     function onError( $keys, $params, $actionResult, $user)
     {
         /* Insert callback code here */
-        return true;       
+        return true;
     }
-    
+
 }

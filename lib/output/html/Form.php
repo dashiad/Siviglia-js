@@ -100,43 +100,8 @@ class Form extends \lib\model\BaseTypedObject
     }
     function resolve($request)
     {
-        $data=$request->getActionData();
-        if(!$data)
-        {
-            throw new FormException(FormException::ERR_NO_DATA_RECEIVED);
-        }
-        if(!isset($data["name"]) || !isset($data["object"]) || !isset($data["site"]) || !isset($data["validationCode"])  || !isset($data["page"]))
-        {
-            throw new FormException(FormException::ERR_INVALID_IDENTIFYING_DATA);
-        }
-        $form=$data["name"];
-        $model=$data["object"];
-        $site=$data["site"];
-        $seccode=$data["validationCode"];
-        $page=$data["page"];
-        $keys=isset($data["KEYS"])?$data["KEYS"]:null;
-        // Se comprueba el codigo de seguridad.
-        if(!$this->checkHash($seccode,$site,$page,$keys,\Registry::$registry["session"]))
-        {
-            throw new FormException(FormException::ERR_INVALID_FORM_HASH);
-        }
-        $formInfo=\lib\output\html\Form::getFormPath(
-            $model,
-            $form
-        );
-        if(!$formInfo)
-        {
-            throw new FormException(FormException::ERR_FORM_NOT_FOUND);
-        }
-        $actionResult=new \lib\action\ActionResult();
-        $className=$formInfo["CLASS"];
-        $classPath=$formInfo["PATH"];
 
-        // Se incluye la definicion del formulario.
-        include_once($classPath);
-        $curForm=new $className($actionResult);
-        $curForm->initialize($model,$form,$keys);
-        $this->actionResult=$curForm->process($request);
+        $this->actionResult=$this->process($request);
     }
 
     // Se sobreescribe getField para que la definicion de campos tipo model/field, se creen con definiciones del tipo de dato,

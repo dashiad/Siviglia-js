@@ -75,7 +75,7 @@ class DataSourceFactory
                     continue;
                 $dsHandler=ucfirst(strtolower($k));
                 $dsN='\lib\datasource\\'.$dsHandler.'DataSource';
-                $mainDs = new $dsN($objName, $dsName, $instance::$definition, null, $options);
+                $mainDs = new $dsN($objName, $dsName, $instance, null, $options);
                 return $mainDs;
             }
             // Y, si no hay nada, lanzamos excepcion

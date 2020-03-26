@@ -1,23 +1,23 @@
 <?php
 namespace model\web\Page\html\forms;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Page//html/forms/AddAction.php
-  CLASS:AddAction
+ FILENAME:/var/www/adtopy/model/web/objects/Page//html/forms/EditAction.php
+  CLASS:EditAction
 *
 *
 **/
 
-class AddAction extends \lib\output\html\Form
+class Edit extends \lib\output\html\Form
 {
 	 static  $definition=array(
-               'NAME'=>'AddAction',
-               'MODEL'=>'\model\Page',
+               'NAME'=>'Edit',
+               'MODEL'=>'\model\web\Page',
                'ACTION'=>array(
                      'MODEL'=>'\model\web\Page',
-                     'ACTION'=>'AddAction',
+                     'ACTION'=>'Edit',
                      'INHERIT'=>1
                      ),
-               'ROLE'=>'Add',
+               'ROLE'=>'Edit',
                'REDIRECT'=>array(
                      'ON_SUCCESS'=>'',
                      'ON_ERROR'=>''
@@ -43,16 +43,15 @@ class AddAction extends \lib\output\html\Form
                                        )
                                  )
                            )
-                     ),
-               'INDEXFIELDS'=>array()
-               );
+                     )
+     );
 
 
 	/**
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for AddAction
+	 * DESCRIPTION: Constructor for EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -63,8 +62,8 @@ class AddAction extends \lib\output\html\Form
 	 function __construct( $actionResult=null)
 	{
 
-			parent::__construct(AddAction::$definition,$actionResult);
-	
+			parent::__construct(Edit::$definition,$actionResult);
+
 	}
 
 
@@ -73,7 +72,7 @@ class AddAction extends \lib\output\html\Form
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this form had success.AddAction
+	 * DESCRIPTION: Callback executed when this form had success.EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -86,9 +85,9 @@ class AddAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -97,7 +96,7 @@ class AddAction extends \lib\output\html\Form
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorAddAction
+	 * DESCRIPTION: Callback executed when this action had an errorEditAction
 	 *
 	 * PARAMS:
 	 *
@@ -110,10 +109,9 @@ class AddAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }
-?>

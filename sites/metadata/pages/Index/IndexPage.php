@@ -64,15 +64,24 @@ class IndexPage extends \model\web\Page
             }break;
             case "actionDefinitionField":{
                 $model="/model/".$this->modelName;
-                $out=$mDProv->getMetaData(MetaDataProvider::META_ACTION,MetaDataProvider::GET_FIELD,$model,$this->actionName,$this->fieldName);
+                $out=$mDProv->getMetaData(MetaDataProvider::META_ACTION,
+                        MetaDataProvider::GET_FIELD,
+                        $model,
+                        $this->actionName,
+                        $this->fieldName);
             }break;
-            
+
             case "pageDefinition":{}break;
             case "pageDefinitionField":{}break;
             case "typeDefinition":{}break;
             case "other":{}break;
-            case "forms":{}break;
-            case "datasources":{}break;
+            case "listForms":{
+                echo "hola";
+
+            }break;
+            case "datasources":{
+
+            }break;
             case "actions":{}break;
             case "pages":{}break;
         }

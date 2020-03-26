@@ -1,44 +1,29 @@
 <?php
-namespace model\web\WebUser\actions;
+namespace model\web\Lang\actions;
 /**
- FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser/actions/EditAction.php
-  CLASS:EditAction
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang/actions/DeleteAction.php
+  CLASS:DeleteAction
 *
 *
 **/
 
-class EditAction extends \lib\action\Action
+class Delete extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'\model\web\WebUser',
-               'ROLE'=>'Edit',
+               'OBJECT'=>'Lang',
+               'ROLE'=>'Delete',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'\model\web\WebUser',
-                           'PERMISSION'=>'edit'
+                           'MODEL'=>'\model\web\Lang',
+                           'PERMISSION'=>'delete'
                            )
                      ),
                'IS_ADMIN'=>false,
-               'FIELDS'=>array(
-                     'LOGIN'=>array(
+               'INDEXFIELDS'=>array(
+                     'id_lang'=>array(
                            'REQUIRED'=>1,
-                           'FIELD'=>'LOGIN',
-                           'MODEL'=>'\model\web\WebUser'
-                           ),
-                     'PASSWORD'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'PASSWORD',
-                           'MODEL'=>'\model\web\WebUser'
-                           ),
-                     'USER_ID'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'USER_ID',
-                           'MODEL'=>'\model\web\WebUser'
-                           ),
-                     'EMAIL'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'EMAIL',
-                           'MODEL'=>'\model\web\WebUser'
+                           'FIELD'=>'id_lang',
+                           'MODEL'=>'\model\web\Lang'
                            )
                      )
                );
@@ -48,7 +33,7 @@ class EditAction extends \lib\action\Action
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for EditAction
+	 * DESCRIPTION: Constructor for DeleteAction
 	 *
 	 * PARAMS:
 	 *
@@ -57,7 +42,7 @@ class EditAction extends \lib\action\Action
 	function __construct( )
 	{
 
-			parent::__construct(EditAction::$definition);
+			parent::__construct(Delete::$definition);
 
 	}
 
@@ -67,13 +52,13 @@ class EditAction extends \lib\action\Action
 	 *
 	 * NAME:validate
 	 *
-	 * DESCRIPTION: Callback for validation of action :EditAction
+	 * DESCRIPTION: Callback for validation of action :DeleteAction
 	 *
 	 * PARAMS:
 	 *
 	 * $params: Parameters received,as a BaseTypedObject.
 	 *		 Its fields are:
-	 *		 fields: LOGIN,PASSWORD,USER_ID,EMAIL	 *
+	 *		 	 *
 	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object	 *
 	 * $user: User executing this request	 *
 	 * RETURNS:
@@ -94,7 +79,7 @@ class EditAction extends \lib\action\Action
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this action had success.EditAction
+	 * DESCRIPTION: Callback executed when this action had success.DeleteAction
 	 *
 	 * PARAMS:
 	 *
@@ -118,7 +103,7 @@ class EditAction extends \lib\action\Action
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorEditAction
+	 * DESCRIPTION: Callback executed when this action had an errorDeleteAction
 	 *
 	 * PARAMS:
 	 *

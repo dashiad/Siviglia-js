@@ -1,55 +1,40 @@
 <?php
-namespace model\web\Lang\html\forms;
+namespace model\web\WebUser\html\forms;
 /**
- FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang//html/forms/AddAction.php
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser//html/forms/AddAction.php
   CLASS:AddAction
 *
 *
 **/
 
-class AddAction extends \lib\output\html\Form
+class Add extends \lib\output\html\Form
 {
 	 static  $definition=array(
-               'NAME'=>'AddAction',
-               'OBJECT'=>'Lang',
+               'NAME'=>'Add',
+               'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
-                     'OBJECT'=>'\model\web\Lang',
+                     'MODEL'=>'\model\web\WebUser',
                      'ACTION'=>'AddAction'
                      ),
                'FIELDS'=>array(
-                     'name'=>array(
-                           'MODEL'=>'\model\web\Lang',
-                           'FIELD'=>'name',
+                     'LOGIN'=>array(
+                           'MODEL'=>'\model\web\WebUser',
+                           'FIELD'=>'LOGIN',
                            'REQUIRED'=>1
                            ),
-                     'is_rtl'=>array(
-                           'MODEL'=>'\model\web\Lang',
-                           'FIELD'=>'is_rtl',
+                     'PASSWORD'=>array(
+                           'MODEL'=>'\model\web\WebUser',
+                           'FIELD'=>'PASSWORD',
                            'REQUIRED'=>1
                            ),
-                     'language_code'=>array(
-                           'MODEL'=>'\model\web\Lang',
-                           'FIELD'=>'language_code',
+                     'USER_ID'=>array(
+                           'MODEL'=>'\model\web\WebUser',
+                           'FIELD'=>'USER_ID',
                            'REQUIRED'=>1
                            ),
-                     'iso_code'=>array(
-                           'MODEL'=>'\model\web\Lang',
-                           'FIELD'=>'iso_code',
-                           'REQUIRED'=>1
-                           ),
-                     'active'=>array(
-                           'MODEL'=>'\model\web\Lang',
-                           'FIELD'=>'active',
-                           'REQUIRED'=>1
-                           ),
-                     'date_format_full'=>array(
-                           'MODEL'=>'\model\web\Lang',
-                           'FIELD'=>'date_format_full',
-                           'REQUIRED'=>1
-                           ),
-                     'date_format_lite'=>array(
-                           'MODEL'=>'\model\web\Lang',
-                           'FIELD'=>'date_format_lite',
+                     'EMAIL'=>array(
+                           'MODEL'=>'\model\web\WebUser',
+                           'FIELD'=>'EMAIL',
                            'REQUIRED'=>1
                            )
                      ),
@@ -77,8 +62,8 @@ class AddAction extends \lib\output\html\Form
 	function __construct( $actionResult=null)
 	{
 
-			parent::__construct(AddAction::$definition,$actionResult);
-	
+			parent::__construct(Add::$definition,$actionResult);
+
 	}
 
 
@@ -93,7 +78,7 @@ class AddAction extends \lib\output\html\Form
 	 *
 	 * $params: Parameters received,as a BaseTypedObject.
 	 *		 Its fields are:
-	 *		 fields: name,is_rtl,language_code,iso_code,active,date_format_full,date_format_lite	 *
+	 *		 fields: LOGIN,PASSWORD,USER_ID,EMAIL	 *
 	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object	 *
 	 * $user: User executing this request	 *
 	 * RETURNS:
@@ -103,9 +88,9 @@ class AddAction extends \lib\output\html\Form
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -126,9 +111,9 @@ class AddAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -149,9 +134,9 @@ class AddAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

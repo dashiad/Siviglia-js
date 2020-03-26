@@ -57,6 +57,10 @@ class ModelDescriptor
     {
         return $this->layer;
     }
+    function getPackageName()
+    {
+        return $this->layer;
+    }
 
     function isPrivate()
     {
@@ -76,6 +80,14 @@ class ModelDescriptor
         } else {
             return $base.$this->className;
         }
+    }
+    function getNormalizedDotted()
+    {
+        $base='model.'.$this->package->getName().'.';
+        if ($this->isPrivate) {
+            return $this->namespaceClassName . '.' . $this->className;
+        }
+        return $base.$this->className;
     }
 
 

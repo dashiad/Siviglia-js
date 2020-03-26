@@ -1,65 +1,68 @@
 <?php
-namespace model\web\Lang\actions;
+namespace model\web\Lang\html\forms;
 /**
- FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang/actions/EditAction.php
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang//html/forms/EditAction.php
   CLASS:EditAction
 *
 *
 **/
 
-class EditAction extends \lib\action\Action
+class Edit extends \lib\output\html\Form
 {
 	 static  $definition=array(
+               'NAME'=>'Edit',
                'OBJECT'=>'Lang',
-               'ROLE'=>'Edit',
-               'PERMISSIONS'=>array(
-                     array(
+               'ACTION'=>array(
+                     'OBJECT'=>'\model\web\Lang',
+                     'ACTION'=>'Edit'
+                     ),
+               'FIELDS'=>array(
+                     'name'=>array(
                            'MODEL'=>'\model\web\Lang',
-                           'PERMISSION'=>'edit'
+                           'FIELD'=>'name',
+                           'REQUIRED'=>1
+                           ),
+                     'is_rtl'=>array(
+                           'MODEL'=>'\model\web\Lang',
+                           'FIELD'=>'is_rtl',
+                           'REQUIRED'=>1
+                           ),
+                     'language_code'=>array(
+                           'MODEL'=>'\model\web\Lang',
+                           'FIELD'=>'language_code',
+                           'REQUIRED'=>1
+                           ),
+                     'iso_code'=>array(
+                           'MODEL'=>'\model\web\Lang',
+                           'FIELD'=>'iso_code',
+                           'REQUIRED'=>1
+                           ),
+                     'active'=>array(
+                           'MODEL'=>'\model\web\Lang',
+                           'FIELD'=>'active',
+                           'REQUIRED'=>1
+                           ),
+                     'date_format_full'=>array(
+                           'MODEL'=>'\model\web\Lang',
+                           'FIELD'=>'date_format_full',
+                           'REQUIRED'=>1
+                           ),
+                     'date_format_lite'=>array(
+                           'MODEL'=>'\model\web\Lang',
+                           'FIELD'=>'date_format_lite',
+                           'REQUIRED'=>1
                            )
                      ),
-               'IS_ADMIN'=>false,
+               'ROLE'=>'Edit',
+               'REDIRECT'=>array(
+                     'ON_SUCCESS'=>'',
+                     'ON_ERROR'=>''
+                     ),
+               'INPUTS'=>array(),
                'INDEXFIELDS'=>array(
                      'id_lang'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'id_lang',
-                           'MODEL'=>'\model\web\Lang'
-                           )
-                     ),
-               'FIELDS'=>array(
-                     'name'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'name',
-                           'MODEL'=>'\model\web\Lang'
-                           ),
-                     'is_rtl'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'is_rtl',
-                           'MODEL'=>'\model\web\Lang'
-                           ),
-                     'language_code'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'language_code',
-                           'MODEL'=>'\model\web\Lang'
-                           ),
-                     'iso_code'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'iso_code',
-                           'MODEL'=>'\model\web\Lang'
-                           ),
-                     'active'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'active',
-                           'MODEL'=>'\model\web\Lang'
-                           ),
-                     'date_format_full'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'date_format_full',
-                           'MODEL'=>'\model\web\Lang'
-                           ),
-                     'date_format_lite'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'date_format_lite',
                            'MODEL'=>'\model\web\Lang'
                            )
                      )
@@ -74,13 +77,14 @@ class EditAction extends \lib\action\Action
 	 *
 	 * PARAMS:
 	 *
+	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object	 *
 	 * RETURNS:
 	 */
-	function __construct( )
+	function __construct( $actionResult=null)
 	{
 
-			parent::__construct(EditAction::$definition);
-	
+			parent::__construct(Edit::$definition,$actionResult);
+
 	}
 
 
@@ -89,7 +93,7 @@ class EditAction extends \lib\action\Action
 	 *
 	 * NAME:validate
 	 *
-	 * DESCRIPTION: Callback for validation of action :EditAction
+	 * DESCRIPTION: Callback for validation of form :EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -105,9 +109,9 @@ class EditAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -116,22 +120,21 @@ class EditAction extends \lib\action\Action
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this action had success.EditAction
+	 * DESCRIPTION: Callback executed when this form had success.EditAction
 	 *
 	 * PARAMS:
 	 *
-	 * $model: If this object had a related model, it'll be received in this parameter, once it has been saved.	 *
-	 * $user: User executing this request	 *
+	 * $actionResult: Action Result object	 *
 	 * RETURNS:
 	 */
-	function onSuccess( $model, $user)
+	function onSuccess( $actionResult)
 	{
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -144,19 +147,17 @@ class EditAction extends \lib\action\Action
 	 *
 	 * PARAMS:
 	 *
-	 * $params: Parameters received.Note these parameters are the same received in Validate	 *
 	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object	 *
-	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function onError ($keys, $params, $actionResult, $user)
+	function onError( $actionResult)
 	{
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

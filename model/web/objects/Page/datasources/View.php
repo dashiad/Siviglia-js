@@ -72,7 +72,7 @@ class View
                            )
                      ),
                'INCLUDE'=>array(
-                     '\model\Site_id_site'=>array(
+                     '\model\web\Site_id_site'=>array(
                            'MODEL'=>'\model\web\Site',
                            'DATASOURCE'=>'FullList',
                            'JOINTYPE'=>'LEFT',

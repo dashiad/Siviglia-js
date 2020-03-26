@@ -1,23 +1,23 @@
 <?php
 namespace model\web\Page\html\forms;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Page//html/forms/EditAction.php
-  CLASS:EditAction
+ FILENAME:/var/www/adtopy/model/web/objects/Page//html/forms/AddAction.php
+  CLASS:AddAction
 *
 *
 **/
 
-class EditAction extends \lib\output\html\Form
+class Add extends \lib\output\html\Form
 {
 	 static  $definition=array(
-               'NAME'=>'EditAction',
+               'NAME'=>'Add',
                'MODEL'=>'\model\web\Page',
                'ACTION'=>array(
                      'MODEL'=>'\model\web\Page',
-                     'ACTION'=>'EditAction',
+                     'ACTION'=>'Add',
                      'INHERIT'=>1
                      ),
-               'ROLE'=>'Edit',
+               'ROLE'=>'Add',
                'REDIRECT'=>array(
                      'ON_SUCCESS'=>'',
                      'ON_ERROR'=>''
@@ -43,15 +43,16 @@ class EditAction extends \lib\output\html\Form
                                        )
                                  )
                            )
-                     )
-     );
+                     ),
+               'INDEXFIELDS'=>array()
+               );
 
 
 	/**
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for EditAction
+	 * DESCRIPTION: Constructor for AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -62,7 +63,7 @@ class EditAction extends \lib\output\html\Form
 	 function __construct( $actionResult=null)
 	{
 
-			parent::__construct(EditAction::$definition,$actionResult);
+			parent::__construct(Add::$definition,$actionResult);
 
 	}
 
@@ -72,7 +73,7 @@ class EditAction extends \lib\output\html\Form
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this form had success.EditAction
+	 * DESCRIPTION: Callback executed when this form had success.AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -96,7 +97,7 @@ class EditAction extends \lib\output\html\Form
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorEditAction
+	 * DESCRIPTION: Callback executed when this action had an errorAddAction
 	 *
 	 * PARAMS:
 	 *
@@ -115,3 +116,4 @@ class EditAction extends \lib\output\html\Form
 	}
 
 }
+?>

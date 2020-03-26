@@ -48,7 +48,7 @@ class Edit2 extends \lib\action\Action
 	function __construct( )
 	{
 
-			parent::__construct(EditAction::$definition);
+			parent::__construct(Edit::$definition);
 
 	}
 

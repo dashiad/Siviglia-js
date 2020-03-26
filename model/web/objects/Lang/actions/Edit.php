@@ -1,24 +1,31 @@
 <?php
 namespace model\web\Lang\actions;
 /**
- FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang/actions/AddAction.php
-  CLASS:AddAction
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang/actions/EditAction.php
+  CLASS:EditAction
 *
 *
 **/
 
-class AddAction extends \lib\action\Action
+class Edit extends \lib\action\Action
 {
 	 static  $definition=array(
                'OBJECT'=>'Lang',
-               'ROLE'=>'Add',
+               'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
                      array(
                            'MODEL'=>'\model\web\Lang',
-                           'PERMISSION'=>'create'
+                           'PERMISSION'=>'edit'
                            )
                      ),
                'IS_ADMIN'=>false,
+               'INDEXFIELDS'=>array(
+                     'id_lang'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'id_lang',
+                           'MODEL'=>'\model\web\Lang'
+                           )
+                     ),
                'FIELDS'=>array(
                      'name'=>array(
                            'REQUIRED'=>1,
@@ -63,7 +70,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for AddAction
+	 * DESCRIPTION: Constructor for EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -72,8 +79,8 @@ class AddAction extends \lib\action\Action
 	function __construct( )
 	{
 
-			parent::__construct(AddAction::$definition);
-	
+			parent::__construct(Edit::$definition);
+
 	}
 
 
@@ -82,7 +89,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:validate
 	 *
-	 * DESCRIPTION: Callback for validation of action :AddAction
+	 * DESCRIPTION: Callback for validation of action :EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -98,9 +105,9 @@ class AddAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -109,7 +116,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this action had success.AddAction
+	 * DESCRIPTION: Callback executed when this action had success.EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -122,9 +129,9 @@ class AddAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -133,7 +140,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorAddAction
+	 * DESCRIPTION: Callback executed when this action had an errorEditAction
 	 *
 	 * PARAMS:
 	 *
@@ -147,9 +154,9 @@ class AddAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

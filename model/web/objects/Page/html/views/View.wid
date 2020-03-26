@@ -59,11 +59,11 @@ $params=Registry::$registry["PAGE"];
                         [#]
                     [#]
            [#]
- $\model\Site_id_siteIterator=$iterator->\model\Site_id_site;
+ $\model\web\Site_id_siteIterator=$iterator->\model\web\Site_id_site;
  ?><?php
 
 ?>
-[*LIST_IT({"currentPage":"$currentPage","iterator":"&$\model\Site_id_siteIterator","subModel":"&$curModel"})]
+[*LIST_IT({"currentPage":"$currentPage","iterator":"&$\model\web\Site_id_siteIterator","subModel":"&$curModel"})]
                 [_HEADER]
                     [_TITLE]Titulo de la lista[#]
                     [_DESCRIPTION]Descripcion de la lista[#]

@@ -1,20 +1,20 @@
 <?php
 namespace model\web\Lang\html\forms;
 /**
- FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang//html/forms/EditAction.php
-  CLASS:EditAction
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang//html/forms/AddAction.php
+  CLASS:AddAction
 *
 *
 **/
 
-class EditAction extends \lib\output\html\Form
+class Add extends \lib\output\html\Form
 {
 	 static  $definition=array(
-               'NAME'=>'EditAction',
+               'NAME'=>'Add',
                'OBJECT'=>'Lang',
                'ACTION'=>array(
                      'OBJECT'=>'\model\web\Lang',
-                     'ACTION'=>'EditAction'
+                     'ACTION'=>'Add'
                      ),
                'FIELDS'=>array(
                      'name'=>array(
@@ -53,19 +53,13 @@ class EditAction extends \lib\output\html\Form
                            'REQUIRED'=>1
                            )
                      ),
-               'ROLE'=>'Edit',
+               'ROLE'=>'Add',
                'REDIRECT'=>array(
                      'ON_SUCCESS'=>'',
                      'ON_ERROR'=>''
                      ),
                'INPUTS'=>array(),
-               'INDEXFIELDS'=>array(
-                     'id_lang'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'id_lang',
-                           'MODEL'=>'\model\web\Lang'
-                           )
-                     )
+               'INDEXFIELDS'=>array()
                );
 
 
@@ -73,7 +67,7 @@ class EditAction extends \lib\output\html\Form
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for EditAction
+	 * DESCRIPTION: Constructor for AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -83,8 +77,8 @@ class EditAction extends \lib\output\html\Form
 	function __construct( $actionResult=null)
 	{
 
-			parent::__construct(EditAction::$definition,$actionResult);
-	
+			parent::__construct(Add::$definition,$actionResult);
+
 	}
 
 
@@ -93,7 +87,7 @@ class EditAction extends \lib\output\html\Form
 	 *
 	 * NAME:validate
 	 *
-	 * DESCRIPTION: Callback for validation of form :EditAction
+	 * DESCRIPTION: Callback for validation of form :AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -109,9 +103,9 @@ class EditAction extends \lib\output\html\Form
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -120,7 +114,7 @@ class EditAction extends \lib\output\html\Form
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this form had success.EditAction
+	 * DESCRIPTION: Callback executed when this form had success.AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -132,9 +126,9 @@ class EditAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -143,7 +137,7 @@ class EditAction extends \lib\output\html\Form
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorEditAction
+	 * DESCRIPTION: Callback executed when this action had an errorAddAction
 	 *
 	 * PARAMS:
 	 *
@@ -155,9 +149,9 @@ class EditAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

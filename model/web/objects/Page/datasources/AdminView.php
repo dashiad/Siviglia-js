@@ -22,7 +22,7 @@ class AdminView
                'IS_ADMIN'=>1,
                'INDEXFIELDS'=>array(
                      'id_page'=>array(
-                           'MODEL'=>'\model\Page',
+                           'MODEL'=>'\model\web\Page',
                            'FIELD'=>'id_page',
                            'REQUIRED'=>'true'
                            )
@@ -78,7 +78,7 @@ class AdminView
                            )
                      ),
                'INCLUDE'=>array(
-                     '\model\Site_id_site'=>array(
+                     '\model\web\Site_id_site'=>array(
                            'MODEL'=>'\model\web\Site',
                            'DATASOURCE'=>'AdminFullList',
                            'JOINTYPE'=>'LEFT',

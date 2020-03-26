@@ -7,26 +7,25 @@ namespace model\web\Site\actions;
 *
 **/
 
-class EditAction extends \lib\action\Action
+class Edit extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'\model\Site',
+               'MODEL'=>'\model\web\Site',
                'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'\model\Site',
+                           'MODEL'=>'\model\web\Site',
                            'PERMISSION'=>'edit'
                            )
                      ),
                'IS_ADMIN'=>false,
-               'INDEXFIELDS'=>array(
-                     'id_site'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'id_site',
-                           'MODEL'=>'\model\web\Site'
-                           )
-                     ),
+               'INDEXFIELDS'=>array('id_site'),
                'FIELDS'=>array(
+				   'id_site'=>array(
+					   'REQUIRED'=>1,
+					   'FIELD'=>'id_site',
+					   'MODEL'=>'\model\web\Site'
+				   ),
                      'host'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'host',
@@ -38,7 +37,6 @@ class EditAction extends \lib\action\Action
                            'MODEL'=>'\model\web\Site'
                            ),
                      'hasSSL'=>array(
-                           'REQUIRED'=>1,
                            'FIELD'=>'hasSSL',
                            'MODEL'=>'\model\web\Site'
                            ),
@@ -69,8 +67,8 @@ class EditAction extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(EditAction::$definition);
-	
+			parent::__construct(Edit::$definition);
+
 	}
 
 
@@ -98,9 +96,9 @@ class EditAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -124,9 +122,9 @@ class EditAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -154,9 +152,9 @@ class EditAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

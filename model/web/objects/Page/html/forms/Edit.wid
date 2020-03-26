@@ -6,12 +6,12 @@ $currentModel=$params->getFormModel("Page","EditAction");
 
 ?>
 [*containers/TITLED_CONTAINER]
-    [_TITLE]Formulario A[#]    
+    [_TITLE]Formulario A[#]
     [_CONTENT]
     Descripcion del formulario
 
     [*/FORMS/form({"object":"/model/web/Page","layer":"web","name":"EditAction","form":"&$form"})]
-        [_TITLE]EditAction \model\Page[#]
+        [_TITLE]EditAction \model\web\Page[#]
         [_DESCRIPTION]Form Description[#]
         [_LAYOUT]vertical[#]
         [_INPUTCONTAINERS]/FORMS/INPUTCONTAINERS/HORIZONTAL[#]
@@ -19,7 +19,7 @@ $currentModel=$params->getFormModel("Page","EditAction");
         [_FORMGROUP]
             [_TITLE]Titulo del Form Group[#]
             [_DESCRIPTION]Descripcion del form group de formulario editado en el "editAction.wid"[#]
-            [_FORMERRORS][#]        
+            [_FORMERRORS][#]
             [_FIELDS]
                 [*:/FORMS/INPUTCONTAINER/HORIZONTAL_ICONS({"name":"tag","form":"&$form"})]
                     [_:LABEL]Nombre[#]
@@ -110,7 +110,7 @@ $currentModel=$params->getFormModel("Page","EditAction");
                     [_:ERRORS]
                         [_:ERROR]errores vacios[#]
                     [#]
-                [#]            
+                [#]
 
 
                 [*:/FORMS/INPUTCONTAINER/VERTICAL({"name":"name","form":"&$form"})]
@@ -122,7 +122,7 @@ $currentModel=$params->getFormModel("Page","EditAction");
                     [_:ERRORS]
                         [_:ERROR]errores vacios[#]
                     [#]
-                [#]            
+                [#]
 
             [#]
         [#]
@@ -136,14 +136,14 @@ $currentModel=$params->getFormModel("Page","EditAction");
                     [*:/INPUTS/BUTTON/SEND({"form":"&$form"})][#]
                 [#]
             [#]
-            
+
             [*:/INPUTS/BUTTON/ACCEPT({"form":"&$form"})][#]
             [*:/INPUTS/BUTTON/CANCEL({"form":"&$form"})][#]
             [*:/INPUTS/BUTTON/SEND({"form":"&$form"})][#]
             [*:/INPUTS/BUTTON/DELETE({"form":"&$form"})][#]
             [*:/INPUTS/BUTTON/ADD({"form":"&$form"})][#]
             [*:/INPUTS/BUTTON/CUSTOM][#]
-                       
+
         [#]
 
 

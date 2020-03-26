@@ -22,7 +22,7 @@ class AdminView
                'IS_ADMIN'=>1,
                'INDEXFIELDS'=>array(
                      'id_site'=>array(
-                           'MODEL'=>'\model\Site',
+                           'MODEL'=>'\model\web\Site',
                            'FIELD'=>'id_site',
                            'REQUIRED'=>'true'
                            )

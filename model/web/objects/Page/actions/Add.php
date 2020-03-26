@@ -1,31 +1,25 @@
 <?php
 namespace model\web\Page\actions;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Page/actions/EditAction.php
-  CLASS:EditAction
+ FILENAME:/var/www/adtopy/model/web/objects/Page/actions/AddAction.php
+  CLASS:AddAction
 *
 *
 **/
 
-class EditAction extends \lib\action\Action
+class Add extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'\model\Page',
-               'ROLE'=>'Edit',
+               'MODEL'=>'\model\web\Page',
+               'ROLE'=>'Add',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'\model\Page',
-                           'PERMISSION'=>'edit'
+                           'MODEL'=>'\model\web\Page',
+                           'PERMISSION'=>'create'
                            )
                      ),
                'IS_ADMIN'=>false,
-               'INDEXFIELDS'=>array("id_page"),
                'FIELDS'=>array(
-                   'id_page'=>array(
-                       'REQUIRED'=>1,
-                       'FIELD'=>'id_page',
-                       'MODEL'=>'\model\web\Page'
-                   ),
                      'tag'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'tag',
@@ -94,7 +88,7 @@ class EditAction extends \lib\action\Action
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for EditAction
+	 * DESCRIPTION: Constructor for AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -103,8 +97,8 @@ class EditAction extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(EditAction::$definition);
-	
+			parent::__construct(Add::$definition);
+
 	}
 
 
@@ -113,7 +107,7 @@ class EditAction extends \lib\action\Action
 	 *
 	 * NAME:validate
 	 *
-	 * DESCRIPTION: Callback for validation of action :EditAction
+	 * DESCRIPTION: Callback for validation of action :AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -132,9 +126,9 @@ class EditAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -143,7 +137,7 @@ class EditAction extends \lib\action\Action
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this action had success.EditAction
+	 * DESCRIPTION: Callback executed when this action had success.AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -158,9 +152,9 @@ class EditAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -169,7 +163,7 @@ class EditAction extends \lib\action\Action
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorEditAction
+	 * DESCRIPTION: Callback executed when this action had an errorAddAction
 	 *
 	 * PARAMS:
 	 *
@@ -188,9 +182,9 @@ class EditAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

@@ -1,50 +1,46 @@
 <?php
-namespace model\web\WebUser\html\forms;
+namespace model\web\WebUser\actions;
 /**
- FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser//html/forms/AddAction.php
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser/actions/AddAction.php
   CLASS:AddAction
 *
 *
 **/
 
-class AddAction extends \lib\output\html\Form
+class Add extends \lib\action\Action
 {
 	 static  $definition=array(
-               'NAME'=>'AddAction',
                'MODEL'=>'\model\web\WebUser',
-               'ACTION'=>array(
-                     'MODEL'=>'\model\web\WebUser',
-                     'ACTION'=>'AddAction'
-                     ),
-               'FIELDS'=>array(
-                     'LOGIN'=>array(
+               'ROLE'=>'Add',
+               'PERMISSIONS'=>array(
+                     array(
                            'MODEL'=>'\model\web\WebUser',
-                           'FIELD'=>'LOGIN',
-                           'REQUIRED'=>1
-                           ),
-                     'PASSWORD'=>array(
-                           'MODEL'=>'\model\web\WebUser',
-                           'FIELD'=>'PASSWORD',
-                           'REQUIRED'=>1
-                           ),
-                     'USER_ID'=>array(
-                           'MODEL'=>'\model\web\WebUser',
-                           'FIELD'=>'USER_ID',
-                           'REQUIRED'=>1
-                           ),
-                     'EMAIL'=>array(
-                           'MODEL'=>'\model\web\WebUser',
-                           'FIELD'=>'EMAIL',
-                           'REQUIRED'=>1
+                           'PERMISSION'=>'create'
                            )
                      ),
-               'ROLE'=>'Add',
-               'REDIRECT'=>array(
-                     'ON_SUCCESS'=>'',
-                     'ON_ERROR'=>''
-                     ),
-               'INPUTS'=>array(),
-               'INDEXFIELDS'=>array()
+               'IS_ADMIN'=>false,
+               'FIELDS'=>array(
+                     'LOGIN'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'LOGIN',
+                           'MODEL'=>'\model\web\WebUser'
+                           ),
+                     'PASSWORD'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'PASSWORD',
+                           'MODEL'=>'\model\web\WebUser'
+                           ),
+                     'USER_ID'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'USER_ID',
+                           'MODEL'=>'\model\web\WebUser'
+                           ),
+                     'EMAIL'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'EMAIL',
+                           'MODEL'=>'\model\web\WebUser'
+                           )
+                     )
                );
 
 
@@ -56,13 +52,12 @@ class AddAction extends \lib\output\html\Form
 	 *
 	 * PARAMS:
 	 *
-	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object	 *
 	 * RETURNS:
 	 */
-	function __construct( $actionResult=null)
+	function __construct( )
 	{
 
-			parent::__construct(AddAction::$definition,$actionResult);
+			parent::__construct(Add::$definition);
 
 	}
 
@@ -72,7 +67,7 @@ class AddAction extends \lib\output\html\Form
 	 *
 	 * NAME:validate
 	 *
-	 * DESCRIPTION: Callback for validation of form :AddAction
+	 * DESCRIPTION: Callback for validation of action :AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -99,14 +94,15 @@ class AddAction extends \lib\output\html\Form
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this form had success.AddAction
+	 * DESCRIPTION: Callback executed when this action had success.AddAction
 	 *
 	 * PARAMS:
 	 *
-	 * $actionResult: Action Result object	 *
+	 * $model: If this object had a related model, it'll be received in this parameter, once it has been saved.	 *
+	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function onSuccess( $actionResult)
+	function onSuccess( $model, $user)
 	{
 
 
@@ -126,10 +122,12 @@ class AddAction extends \lib\output\html\Form
 	 *
 	 * PARAMS:
 	 *
+	 * $params: Parameters received.Note these parameters are the same received in Validate	 *
 	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object	 *
+	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function onError( $actionResult)
+	function onError ($keys, $params, $actionResult, $user)
 	{
 
 

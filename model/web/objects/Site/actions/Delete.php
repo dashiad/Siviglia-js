@@ -1,49 +1,28 @@
 <?php
 namespace model\web\Site\actions;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Site/actions/AddAction.php
-  CLASS:AddAction
+ FILENAME:/var/www/adtopy/model/web/objects/Site/actions/DeleteAction.php
+  CLASS:DeleteAction
 *
 *
 **/
 
-
-class AddAction extends \lib\action\Action
+class Delete extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'\model\Site',
-               'ROLE'=>'Add',
+               'MODEL'=>'\model\web\Site',
+               'ROLE'=>'Delete',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'\model\Site',
-                           'PERMISSION'=>'create'
+                           'MODEL'=>'\model\web\Site',
+                           'PERMISSION'=>'delete'
                            )
                      ),
                'IS_ADMIN'=>false,
-               'FIELDS'=>array(
-                     'host'=>array(
+               'INDEXFIELDS'=>array(
+                     'id_site'=>array(
                            'REQUIRED'=>1,
-                           'FIELD'=>'host',
-                           'MODEL'=>'\model\web\Site'
-                           ),
-                     'canonical_url'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'canonical_url',
-                           'MODEL'=>'\model\web\Site'
-                           ),
-                     'hasSSL'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'hasSSL',
-                           'MODEL'=>'\model\web\Site'
-                           ),
-                     'namespace'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'namespace',
-                           'MODEL'=>'\model\web\Site'
-                           ),
-                     'websiteName'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'websiteName',
+                           'FIELD'=>'id_site',
                            'MODEL'=>'\model\web\Site'
                            )
                      )
@@ -54,7 +33,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for AddAction
+	 * DESCRIPTION: Constructor for DeleteAction
 	 *
 	 * PARAMS:
 	 *
@@ -63,7 +42,7 @@ class AddAction extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(AddAction::$definition);
+			parent::__construct(Delete::$definition);
 
 	}
 
@@ -73,13 +52,13 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:validate
 	 *
-	 * DESCRIPTION: Callback for validation of action :AddAction
+	 * DESCRIPTION: Callback for validation of action :DeleteAction
 	 *
 	 * PARAMS:
 	 *
 	 * $params: Parameters received,as a BaseTypedObject.
 	 *		 Its fields are:
-	 *		 fields: host,canonical_url,hasSSL,namespace,websiteName
+	 *
 	 *
 	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object
 	 *
@@ -103,7 +82,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this action had success.AddAction
+	 * DESCRIPTION: Callback executed when this action had success.DeleteAction
 	 *
 	 * PARAMS:
 	 *
@@ -129,7 +108,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorAddAction
+	 * DESCRIPTION: Callback executed when this action had an errorDeleteAction
 	 *
 	 * PARAMS:
 	 *

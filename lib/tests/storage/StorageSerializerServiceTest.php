@@ -31,12 +31,14 @@ class StorageSerializerServiceTest extends TestCase
          $s->init($def);
          return $s;
      }
+
      function testCreateService()
      {
          $s=$this->getDefaultService();
          $ss=$s->getDefaultSerializer();
          $this->assertEquals("default",$ss->getName());
      }
+
      function testAddSerializer()
      {
          $s=$this->getDefaultService();

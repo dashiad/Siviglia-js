@@ -151,7 +151,10 @@ class BaseModel extends BaseTypedObject
     {
         return $this->__objName;
     }
-
+    function __getModelDescriptor()
+    {
+        return $this->__objName;
+    }
     function __getFullObjectName()
     {
         return $this->__objName->getNamespaced();

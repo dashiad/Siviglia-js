@@ -144,8 +144,13 @@ class HTMLRequest extends \Request implements \ArrayAccess
 
     function getActionData()
     {
+
         if(!isset($this->actionData))
             return null;
+
+        if(isset($this->actionData["json"]))
+
+            $this->actionData=json_decode($this->actionData["json"],true);
 
         if(!isset($this->actionData["FORM"]))
             return null;

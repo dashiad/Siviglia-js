@@ -19,9 +19,9 @@ class BaseJsRenderer
                     $path = str_replace("#1#", $matches[2], $value["regex"]);
                     $filePath = $this->getTargetFile($modelName, $path);
                     $fileType = $value["type"];
-                    $callbackName = "on" . ucfirst(strtoupper($fileType));
+                    $callbackName = "on" . ucfirst(strtolower($fileType));
                     if (method_exists($this, $callbackName))
-                        return $this->{$callbackName}($filePath);
+                        return $this->{$callbackName}($modelName,$filePath);
                 }
                 else
                 {

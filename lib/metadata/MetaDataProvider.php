@@ -67,12 +67,35 @@ class MetaDataProvider
                 return $this->getBaseTypedObjectMeta($params, $target == MetaDataProvider::GET_DEFINITION ? null : $field, $mode);
             }
         }
+        else
+        {
+            $s=\Registry::getService("model");
+            $md=$s->getPackage($modelName)->getModelDescriptor($modelName);
+            $package=$md->getPackageName();
+
+            if($md->isPrivate())
+            {
+                $submodel=$md->getClassName();
+                $className=$md->getNamespaceModel();
+            }
+            else {
+                $className = $md->getClassName();
+                $submodel=null;
+            }
+
+            $info=\lib\model\Package::getInfo($package,$className,$submodel,
+                            \lib\model\Package::DATASOURCE,"*");
+            return $info;
+
+        }
     }
     function getForm($target,$modelName,$targetName,$field,$mode)
     {
         if($target!==MetaDataProvider::GET_LIST) {
             $f=\lib\output\html\Form::getForm($modelName,$targetName,null,null);
             return $this->getBaseTypedObjectMeta($f,$target==MetaDataProvider::GET_DEFINITION?null:$field,$mode);
+        }else{
+
         }
     }
     function getAction($target,$modelName,$targetName,$field,$mode)
@@ -143,9 +166,7 @@ class MetaDataProvider
             $s = \Registry::getService("model");
             $md = $s->getModelDescriptor('\\' . implode('\\', $parts));
 
-            if ($md)
         }
-
 
     }
 

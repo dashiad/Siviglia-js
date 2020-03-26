@@ -1,31 +1,24 @@
 <?php
-namespace model\web\Lang\actions;
+namespace model\web\WebUser\actions;
 /**
- FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang/actions/DeleteAction.php
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser/actions/DeleteAction.php
   CLASS:DeleteAction
 *
 *
 **/
 
-class DeleteAction extends \lib\action\Action
+class Delete extends \lib\action\Action
 {
 	 static  $definition=array(
-               'OBJECT'=>'Lang',
+               'MODEL'=>'\model\web\WebUser',
                'ROLE'=>'Delete',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'\model\web\Lang',
+                           'MODEL'=>'\model\web\WebUser',
                            'PERMISSION'=>'delete'
                            )
                      ),
-               'IS_ADMIN'=>false,
-               'INDEXFIELDS'=>array(
-                     'id_lang'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'id_lang',
-                           'MODEL'=>'\model\web\Lang'
-                           )
-                     )
+               'IS_ADMIN'=>false
                );
 
 
@@ -42,8 +35,8 @@ class DeleteAction extends \lib\action\Action
 	function __construct( )
 	{
 
-			parent::__construct(DeleteAction::$definition);
-	
+			parent::__construct(Delete::$definition);
+
 	}
 
 
@@ -68,9 +61,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -92,9 +85,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -117,9 +110,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

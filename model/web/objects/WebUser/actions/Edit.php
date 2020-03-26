@@ -1,24 +1,46 @@
 <?php
 namespace model\web\WebUser\actions;
 /**
- FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser/actions/DeleteAction.php
-  CLASS:DeleteAction
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser/actions/EditAction.php
+  CLASS:EditAction
 *
 *
 **/
 
-class DeleteAction extends \lib\action\Action
+class Edit extends \lib\action\Action
 {
 	 static  $definition=array(
                'MODEL'=>'\model\web\WebUser',
-               'ROLE'=>'Delete',
+               'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
                      array(
                            'MODEL'=>'\model\web\WebUser',
-                           'PERMISSION'=>'delete'
+                           'PERMISSION'=>'edit'
                            )
                      ),
-               'IS_ADMIN'=>false
+               'IS_ADMIN'=>false,
+               'FIELDS'=>array(
+                     'LOGIN'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'LOGIN',
+                           'MODEL'=>'\model\web\WebUser'
+                           ),
+                     'PASSWORD'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'PASSWORD',
+                           'MODEL'=>'\model\web\WebUser'
+                           ),
+                     'USER_ID'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'USER_ID',
+                           'MODEL'=>'\model\web\WebUser'
+                           ),
+                     'EMAIL'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'EMAIL',
+                           'MODEL'=>'\model\web\WebUser'
+                           )
+                     )
                );
 
 
@@ -26,7 +48,7 @@ class DeleteAction extends \lib\action\Action
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for DeleteAction
+	 * DESCRIPTION: Constructor for EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -35,7 +57,7 @@ class DeleteAction extends \lib\action\Action
 	function __construct( )
 	{
 
-			parent::__construct(DeleteAction::$definition);
+			parent::__construct(Edit::$definition);
 
 	}
 
@@ -45,13 +67,13 @@ class DeleteAction extends \lib\action\Action
 	 *
 	 * NAME:validate
 	 *
-	 * DESCRIPTION: Callback for validation of action :DeleteAction
+	 * DESCRIPTION: Callback for validation of action :EditAction
 	 *
 	 * PARAMS:
 	 *
 	 * $params: Parameters received,as a BaseTypedObject.
 	 *		 Its fields are:
-	 *		 	 *
+	 *		 fields: LOGIN,PASSWORD,USER_ID,EMAIL	 *
 	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object	 *
 	 * $user: User executing this request	 *
 	 * RETURNS:
@@ -72,7 +94,7 @@ class DeleteAction extends \lib\action\Action
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this action had success.DeleteAction
+	 * DESCRIPTION: Callback executed when this action had success.EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -96,7 +118,7 @@ class DeleteAction extends \lib\action\Action
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorDeleteAction
+	 * DESCRIPTION: Callback executed when this action had an errorEditAction
 	 *
 	 * PARAMS:
 	 *

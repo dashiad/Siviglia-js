@@ -1,44 +1,59 @@
 <?php
-namespace model\web\WebUser\actions;
+namespace model\web\Lang\actions;
 /**
- FILENAME:/var/www/percentil/backoffice//backoffice/objects/WebUser/actions/AddAction.php
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang/actions/AddAction.php
   CLASS:AddAction
 *
 *
 **/
 
-class AddAction extends \lib\action\Action
+class Add extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'\model\web\WebUser',
+               'OBJECT'=>'Lang',
                'ROLE'=>'Add',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'\model\web\WebUser',
+                           'MODEL'=>'\model\web\Lang',
                            'PERMISSION'=>'create'
                            )
                      ),
                'IS_ADMIN'=>false,
                'FIELDS'=>array(
-                     'LOGIN'=>array(
+                     'name'=>array(
                            'REQUIRED'=>1,
-                           'FIELD'=>'LOGIN',
-                           'MODEL'=>'\model\web\WebUser'
+                           'FIELD'=>'name',
+                           'MODEL'=>'\model\web\Lang'
                            ),
-                     'PASSWORD'=>array(
+                     'is_rtl'=>array(
                            'REQUIRED'=>1,
-                           'FIELD'=>'PASSWORD',
-                           'MODEL'=>'\model\web\WebUser'
+                           'FIELD'=>'is_rtl',
+                           'MODEL'=>'\model\web\Lang'
                            ),
-                     'USER_ID'=>array(
+                     'language_code'=>array(
                            'REQUIRED'=>1,
-                           'FIELD'=>'USER_ID',
-                           'MODEL'=>'\model\web\WebUser'
+                           'FIELD'=>'language_code',
+                           'MODEL'=>'\model\web\Lang'
                            ),
-                     'EMAIL'=>array(
+                     'iso_code'=>array(
                            'REQUIRED'=>1,
-                           'FIELD'=>'EMAIL',
-                           'MODEL'=>'\model\web\WebUser'
+                           'FIELD'=>'iso_code',
+                           'MODEL'=>'\model\web\Lang'
+                           ),
+                     'active'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'active',
+                           'MODEL'=>'\model\web\Lang'
+                           ),
+                     'date_format_full'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'date_format_full',
+                           'MODEL'=>'\model\web\Lang'
+                           ),
+                     'date_format_lite'=>array(
+                           'REQUIRED'=>1,
+                           'FIELD'=>'date_format_lite',
+                           'MODEL'=>'\model\web\Lang'
                            )
                      )
                );
@@ -57,7 +72,7 @@ class AddAction extends \lib\action\Action
 	function __construct( )
 	{
 
-			parent::__construct(AddAction::$definition);
+			parent::__construct(Add::$definition);
 
 	}
 
@@ -73,7 +88,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * $params: Parameters received,as a BaseTypedObject.
 	 *		 Its fields are:
-	 *		 fields: LOGIN,PASSWORD,USER_ID,EMAIL	 *
+	 *		 fields: name,is_rtl,language_code,iso_code,active,date_format_full,date_format_lite	 *
 	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object	 *
 	 * $user: User executing this request	 *
 	 * RETURNS:

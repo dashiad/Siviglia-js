@@ -1,25 +1,31 @@
 <?php
 namespace model\web\Page\actions;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Page/actions/AddAction.php
-  CLASS:AddAction
+ FILENAME:/var/www/adtopy/model/web/objects/Page/actions/EditAction.php
+  CLASS:EditAction
 *
 *
 **/
 
-class AddAction extends \lib\action\Action
+class Edit extends \lib\action\Action
 {
 	 static  $definition=array(
                'MODEL'=>'\model\web\Page',
-               'ROLE'=>'Add',
+               'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'\model\Page',
-                           'PERMISSION'=>'create'
+                           'MODEL'=>'\model\web\Page',
+                           'PERMISSION'=>'edit'
                            )
                      ),
                'IS_ADMIN'=>false,
+               'INDEXFIELDS'=>array("id_page"),
                'FIELDS'=>array(
+                   'id_page'=>array(
+                       'REQUIRED'=>1,
+                       'FIELD'=>'id_page',
+                       'MODEL'=>'\model\web\Page'
+                   ),
                      'tag'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'tag',
@@ -88,7 +94,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for AddAction
+	 * DESCRIPTION: Constructor for EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -97,7 +103,7 @@ class AddAction extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(AddAction::$definition);
+			parent::__construct(Edit::$definition);
 
 	}
 
@@ -107,7 +113,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:validate
 	 *
-	 * DESCRIPTION: Callback for validation of action :AddAction
+	 * DESCRIPTION: Callback for validation of action :EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -137,7 +143,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this action had success.AddAction
+	 * DESCRIPTION: Callback executed when this action had success.EditAction
 	 *
 	 * PARAMS:
 	 *
@@ -163,7 +169,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorAddAction
+	 * DESCRIPTION: Callback executed when this action had an errorEditAction
 	 *
 	 * PARAMS:
 	 *

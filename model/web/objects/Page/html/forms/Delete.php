@@ -1,35 +1,36 @@
 <?php
-namespace model\web\Site\html\forms;
+namespace model\web\Page\html\forms;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Site//html/forms/EditAction.php
-  CLASS:EditAction
+ FILENAME:/var/www/adtopy/model/web/objects/Page//html/forms/DeleteAction.php
+  CLASS:DeleteAction
 *
 *
 **/
 
-class EditAction extends \lib\output\html\Form
+class Delete extends \lib\output\html\Form
 {
 	 static  $definition=array(
-               'NAME'=>'EditAction',
-               'MODEL'=>'\model\Site',
+               'NAME'=>'Delete',
+               'MODEL'=>'\model\web\Page',
                'ACTION'=>array(
-                     'MODEL'=>'\model\web\Site',
-                     'ACTION'=>'EditAction',
+                     'MODEL'=>'\model\web\Page',
+                     'ACTION'=>'Delete',
                      'INHERIT'=>1
                      ),
-               'ROLE'=>'Edit',
+               'ROLE'=>'Delete',
                'REDIRECT'=>array(
                      'ON_SUCCESS'=>'',
                      'ON_ERROR'=>''
                      ),
                'INPUTS'=>array(),
                'INDEXFIELDS'=>array(
-                     'id_site'=>array(
+                     'id_page'=>array(
                            'REQUIRED'=>1,
-                           'FIELD'=>'id_site',
-                           'MODEL'=>'\model\web\Site'
+                           'FIELD'=>'id_page',
+                           'MODEL'=>'\model\web\Page'
                            )
-                     )
+                     ),
+               'NOFORM'=>1
                );
 
 
@@ -37,7 +38,7 @@ class EditAction extends \lib\output\html\Form
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for EditAction
+	 * DESCRIPTION: Constructor for DeleteAction
 	 *
 	 * PARAMS:
 	 *
@@ -48,8 +49,8 @@ class EditAction extends \lib\output\html\Form
 	 function __construct( $actionResult=null)
 	{
 
-			parent::__construct(EditAction::$definition,$actionResult);
-	
+			parent::__construct(Delete::$definition,$actionResult);
+
 	}
 
 
@@ -58,7 +59,7 @@ class EditAction extends \lib\output\html\Form
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this form had success.EditAction
+	 * DESCRIPTION: Callback executed when this form had success.DeleteAction
 	 *
 	 * PARAMS:
 	 *
@@ -71,9 +72,9 @@ class EditAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -82,7 +83,7 @@ class EditAction extends \lib\output\html\Form
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorEditAction
+	 * DESCRIPTION: Callback executed when this action had an errorDeleteAction
 	 *
 	 * PARAMS:
 	 *
@@ -95,9 +96,9 @@ class EditAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

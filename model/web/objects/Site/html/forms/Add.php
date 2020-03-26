@@ -1,36 +1,29 @@
 <?php
 namespace model\web\Site\html\forms;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Site//html/forms/DeleteAction.php
-  CLASS:DeleteAction
+ FILENAME:/var/www/adtopy/model/web/objects/Site//html/forms/AddAction.php
+  CLASS:AddAction
 *
 *
 **/
 
-class DeleteAction extends \lib\output\html\Form
+class Add extends \lib\output\html\Form
 {
 	 static  $definition=array(
-               'NAME'=>'DeleteAction',
-               'MODEL'=>'\model\Site',
+               'NAME'=>'Add',
+               'MODEL'=>'\model\web\Site',
                'ACTION'=>array(
                      'MODEL'=>'\model\web\Site',
-                     'ACTION'=>'DeleteAction',
+                     'ACTION'=>'Add',
                      'INHERIT'=>1
                      ),
-               'ROLE'=>'Delete',
+               'ROLE'=>'Add',
                'REDIRECT'=>array(
                      'ON_SUCCESS'=>'',
                      'ON_ERROR'=>''
                      ),
                'INPUTS'=>array(),
-               'INDEXFIELDS'=>array(
-                     'id_site'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'id_site',
-                           'MODEL'=>'\model\web\Site'
-                           )
-                     ),
-               'NOFORM'=>1
+               'INDEXFIELDS'=>array()
                );
 
 
@@ -38,7 +31,7 @@ class DeleteAction extends \lib\output\html\Form
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for DeleteAction
+	 * DESCRIPTION: Constructor for AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -49,8 +42,8 @@ class DeleteAction extends \lib\output\html\Form
 	 function __construct( $actionResult=null)
 	{
 
-			parent::__construct(DeleteAction::$definition,$actionResult);
-	
+			parent::__construct(Add::$definition,$actionResult);
+
 	}
 
 
@@ -59,7 +52,7 @@ class DeleteAction extends \lib\output\html\Form
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this form had success.DeleteAction
+	 * DESCRIPTION: Callback executed when this form had success.AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -72,9 +65,9 @@ class DeleteAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -83,7 +76,7 @@ class DeleteAction extends \lib\output\html\Form
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorDeleteAction
+	 * DESCRIPTION: Callback executed when this action had an errorAddAction
 	 *
 	 * PARAMS:
 	 *
@@ -96,9 +89,9 @@ class DeleteAction extends \lib\output\html\Form
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

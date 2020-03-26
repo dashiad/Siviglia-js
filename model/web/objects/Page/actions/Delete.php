@@ -7,14 +7,14 @@ namespace model\web\Page\actions;
 *
 **/
 
-class DeleteAction extends \lib\action\Action
+class Delete extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'\model\Page',
+               'MODEL'=>'\model\web\Page',
                'ROLE'=>'Delete',
                'PERMISSIONS'=>array(
                      array(
-                           'MODEL'=>'\model\Page',
+                           'MODEL'=>'\model\web\Page',
                            'PERMISSION'=>'delete'
                            )
                      ),
@@ -42,8 +42,8 @@ class DeleteAction extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(DeleteAction::$definition);
-	
+			parent::__construct(Delete::$definition);
+
 	}
 
 
@@ -58,7 +58,7 @@ class DeleteAction extends \lib\action\Action
 	 *
 	 * $params: Parameters received,as a BaseTypedObject.
 	 *		 Its fields are:
-	 *		 
+	 *
 	 *
 	 * $actionResult:\lib\action\ActionResult instance.Errors found while validating this action must be notified to this object
 	 *
@@ -71,9 +71,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert the validation code here */
-	
+
 			return $actionResult->isOk();
-	
+
 	}
 
 
@@ -97,9 +97,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 
@@ -127,9 +127,9 @@ class DeleteAction extends \lib\action\Action
 
 
 	/* Insert callback code here */
-	
+
 	return true;
-	
+
 	}
 
 }

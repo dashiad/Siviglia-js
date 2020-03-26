@@ -20,13 +20,6 @@ class View
                            )
                      ),
                'IS_ADMIN'=>0,
-               'INDEXFIELDS'=>array(
-                     'id_site'=>array(
-                           'MODEL'=>'\model\Site',
-                           'FIELD'=>'id_site',
-                           'REQUIRED'=>'true'
-                           )
-                     ),
                'FIELDS'=>array(
                      'id_site'=>array(
                            'MODEL'=>'\model\web\Site',
