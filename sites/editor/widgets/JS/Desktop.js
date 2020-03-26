@@ -10,6 +10,16 @@ Siviglia.Utils.buildClass({
                     this.applications=[
                         {
                             iconId:'resIcon',
+                            iconTitle:'Test App 2',
+                            iconImage:'http://statics.adtopy.com/packages/njdesktop/images/bws_logo2k9.png',
+                            windowTitle:'Test App',
+                            windowWidth:640,
+                            windowHeight:480,
+                            targetWidget:'Siviglia.model.web.Site.forms.Add2',
+                            targetWidgetParams:{}
+                        },
+                        {
+                            iconId:'resIcon2',
                             iconTitle:'Test App',
                             iconImage:'http://statics.adtopy.com/packages/njdesktop/images/bws_logo2k9.png',
                             windowTitle:'Test App',

@@ -18,7 +18,10 @@ class Pages
         "indexActionField"=>array("TYPE" => "PAGE","RESPONSE"=>["TYPE"=>"JSON"],"SOURCES"=>["definition"=>["ROLE"=>"method","NAME"=>"getMetaDefinition"]], "PAGE" => "index","PARAMS"=>["type"=>"actionDefinitionField"]),
         "indexTypeJs"=>array("TYPE" => "PAGE","RESPONSE"=>["TYPE"=>"JSON"],"SOURCES"=>["definition"=>["ROLE"=>"method","NAME"=>"getMetaDefinition"]], "PAGE" => "index","PARAMS"=>["type"=>"typeJs"]),
         "validateFormsField"=>array("TYPE" => "PAGE","RESPONSE"=>["TYPE"=>"JSON"],"SOURCES"=>["validation"=>["ROLE"=>"method","NAME"=>"validate"]], "PAGE" => "index","PARAMS"=>["type"=>"validateFormField"]),
-        "listForms"=>array("TYPE" => "PAGE","RESPONSE"=>["TYPE"=>"JSON"],"SOURCES"=>["definition"=>["ROLE"=>"method","NAME"=>"getMetaDefinition"]], "PAGE" => "index","PARAMS"=>["type"=>"listForms"]),
+        // Listado Forms y Datasources
+        "listForms" => array("TYPE" => "PAGE","RESPONSE"=>["TYPE"=>"JSON"],"SOURCES"=>["definition"=>["ROLE"=>"method","NAME"=>"getMetaDefinition"]],"PAGE" => "index","PARAMS"=>["type"=>"forms"]),
+        "listDatasources" => array("TYPE" => "PAGE","RESPONSE"=>["TYPE"=>"JSON"],"SOURCES"=>["definition"=>["ROLE"=>"method","NAME"=>"getMetaDefinition"]],"PAGE" => "index","PARAMS"=>["type"=>"datasources"]),
+
 
         /*
 

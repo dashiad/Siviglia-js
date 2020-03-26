@@ -75,12 +75,25 @@ class IndexPage extends \model\web\Page
             case "pageDefinitionField":{}break;
             case "typeDefinition":{}break;
             case "other":{}break;
-            case "listForms":{
-                echo "hola";
-
+            case "forms":{
+                // caso para devolver el listado de todos los Forms
+                $model="/model/".$this->modelName;
+                $out=$mDProv->
+                getMetaData(MetaDataProvider::META_FORM,
+                MetaDataProvider::GET_LIST,
+                $model,
+                null,
+                null);
             }break;
             case "datasources":{
-
+                // caso para devolver el listado de todos los Datasources
+                $model="/model/".$this->modelName;
+                $out=$mDProv->
+                getMetaData(MetaDataProvider::META_DATASOURCE,
+                MetaDataProvider::GET_LIST,
+                $model,
+                null,
+                null);
             }break;
             case "actions":{}break;
             case "pages":{}break;

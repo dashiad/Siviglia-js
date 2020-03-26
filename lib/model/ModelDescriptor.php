@@ -132,9 +132,10 @@ class ModelDescriptor
         return $this->getNamespaced();
     }
 
-    function getWidgetPath($widget="JOB_DEFAULT")
+    function getWidgetPath($widget, $extraPath="")
     {
-        return "/model/" . $this->layer . "/objects/" . str_replace('\\', '/', $this->namespaceClassName) . "/" . $this->className . "/widgets/$widget";
+        if (!empty($extraPath)) $extraPath = "/$extraPath/";
+        return "/model/" . $this->layer . "/objects/" . $this->className . "/widgets/{$extraPath}{$widget}";
     }
 
     function getPath($extra)

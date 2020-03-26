@@ -26,6 +26,8 @@ class Pages
         "/model/{*modelName}/forms/"=>"listForms",
         "/js/types/{*fieldName}"=>"indexTypeJs",
         "/validate/model/{*modelName}/forms/{formName}/field/{fieldName}" => "validateFormsField",
-
+        // Listado Forms y Datasources
+        "/model/{*modelName}/forms/" => "listForms",
+        "/model/{*modelName}/datasources/" => "listDatasources",
     );
 }
