@@ -176,12 +176,12 @@ class Form extends \lib\model\BaseTypedObject
                 }
             }
         }
-        if(isset($this->formDefinition["INDEXFIELDS"])) {
+        /*if(isset($this->formDefinition["INDEXFIELDS"])) {
             for ($k = 0; $k < count($this->formDefinition["INDEXFIELDS"]); $k++) {
                 $this->{$this->formDefinition["INDEXFIELDS"][$k]} = $value;
             }
         }
-        $errored=false;
+        $errored=false;*/
         if($this->actionResult->isOk())
         {
             if(!$this->__validate($unserializedFields,$this->actionResult,"PHP"))

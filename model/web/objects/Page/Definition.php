@@ -42,6 +42,9 @@ class Definition extends \lib\model\BaseModelDefinition
                      'id_site'=>array(
                            'DEFAULT'=>'NULL',
                            'FIELDS'=>array('id_site'=>'id_site'),
+                           "SOURCE"=>[
+                               "LABEL"=>"websiteName"
+                           ],
                            'MODEL'=>'\model\web\Site',
                            'LABEL'=>'id_website',
                            'SHORTLABEL'=>'id_site',
@@ -140,7 +143,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'DESCRIPTIVE'=>true,
                            'ISLABEL'=>'true'
                            ),
-                        
+
                         'model'=>array(
                             'TYPE'=>'String',
                             'REQUIRED'=>false,

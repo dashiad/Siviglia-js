@@ -27,8 +27,7 @@ abstract class DataSource extends \lib\model\BaseTypedObject
         // Se hace un merge de indices y params.Esto deberia ser cambiado.
         // TODO: hacer que la generacion de codigo genere INDEXFIELDS como solo nombres de campo, estando la definicion en PARAMS.
         $this->originalDefinition=$definition;
-        $localFields=array_merge(isset($definition["INDEXFIELDS"])?$definition["INDEXFIELDS"]:array(),
-            isset($definition["PARAMS"])?$definition["PARAMS"]:array());
+        $localFields=isset($definition["PARAMS"])?$definition["PARAMS"]:array();
 
         $pagingParams=array(
             "__start"=>array("TYPE"=>"Integer"),

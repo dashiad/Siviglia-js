@@ -300,15 +300,7 @@
           $path=new \lib\model\PathResolver($ctxStack,$path);
           return $path->getPath();
       }
-      function getmetaData($key)
-      {
 
-        if(isset($this->definition["METADATA"]) && isset($this->definition["METADATA"][$key]))
-        {
-            return $this->definition["METADATA"][$key];
-        }
-        return null;
-      }
 
       function summarize()
       {
