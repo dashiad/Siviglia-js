@@ -21,8 +21,8 @@
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/js/jdesktop.js[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/js/jdesktop.widgets.js[#][#]
 
-        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/jqx-all.js[#][#]
-        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/globalization/globalize.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/jqx-all.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/globalization/globalize.js[#][#]
         [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/styles/jqx.base.css[#][#]
         [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/styles/jqx.light.css[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Siviglia.js[#][#]
