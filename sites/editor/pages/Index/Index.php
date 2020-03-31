@@ -27,8 +27,9 @@
         [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/styles/jqx.light.css[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Siviglia.js[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/SivigliaStore.js[#][#]
-        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Model.js[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/SivigliaTypes.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Model.js[#][#]
+
         [_SCRIPT]
             [_CODE]
             <script>
@@ -41,7 +42,7 @@
                     jsFramework:'jquery',
                     datasourcePrefix:'datasources',
                     isDevelopment:0,
-                    mapper: 'BackofficeMapper',
+                    mapper: 'Siviglia',
                     id_lang:'es'
                 };
                 Siviglia.Model.initialize(Siviglia.config);
