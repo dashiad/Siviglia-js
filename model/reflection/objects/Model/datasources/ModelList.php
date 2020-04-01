@@ -6,7 +6,7 @@ CLASS:AdminFullList
  *
  *
  **/
-include_once(PROJECTPATH."/model/reflection/objects/Html/forms/FormDefinition.php");
+
 class ModelList
 {
     static  $definition=array(

@@ -543,6 +543,7 @@ class BaseTypedObject extends PathObject
                 return $this->__objectDef;
         }
 
+
         function __getFields()
         {
                foreach($this->__fieldDef as $key=>$value)

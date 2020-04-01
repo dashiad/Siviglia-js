@@ -9,9 +9,9 @@ class MethodDataSource extends \lib\datasource\ArrayDataSource
     protected $iterator;
     protected $parameters;
 
-    function __construct($objName,$dsName,$definition,$serializer,$serializerDefinition=null)
+    function __construct($objName,$dsName,$definitionInstance,$serializer,$serializerDefinition=null)
     {
-        parent::__construct($objName, $dsName, $definition);
+        parent::__construct($objName, $dsName, $definitionInstance::$definition);
 
         if($serializerDefinition)
             $this->serializerDefinition=$serializerDefinition;
