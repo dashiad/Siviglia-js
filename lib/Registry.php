@@ -62,16 +62,7 @@ class Registry
     {
         Registry::$registry[$key]=$value;
     }
-    static function getPermissionsManager()
-    {
-        if(!Registry::$registry["acl"])
-        {
-            include_once(PROJECTPATH."/lib/model/permissions/PermissionsManager.php");
-            $oAcl=new PermissionsManager(\lib\storage\StorageFactory::getDefaultSerializer());
-            Registry::$registry["acl"]=$oAcl;
-        }
-        return Registry::$registry["acl"];
-    }
+
     static function getRequest()
     {
         return Registry::$registry["request"];

@@ -48,12 +48,12 @@ class AccessDefinition
             {
                 continue;
             }
-            if($req==\PermissionsManager::PERM_SPEC_PUBLIC)
+            if($req==\lib\model\permissions\PermissionsManager::PERM_SPEC_PUBLIC)
                 return true;
 
             //continue;
 
-            if($req==\PermissionsManager::PERM_SPEC_LOGGED && !$user->isLogged())
+            if($req==\lib\model\permissions\PermissionsManager::PERM_SPEC_LOGGED && !$user->isLogged())
                 return false;
 
 

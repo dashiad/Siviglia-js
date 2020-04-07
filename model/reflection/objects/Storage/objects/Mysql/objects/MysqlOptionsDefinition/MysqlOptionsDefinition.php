@@ -40,13 +40,11 @@ class MysqlOptionsDefinition
             if($def["MULTIPLE_RELATION"]["UNIQUE_RELATIONS"])
                 $defaultDefinition["INDEXES"][]=array("FIELDS"=>$mulF,"UNIQUE"=>"true");
         }
-        $def=$parentModel->getDefinition();
-
-        $aliases=$parentModel->getInvRelationships();
+        /*$aliases=$parentModel->getInvRelationships();
         foreach($aliases as $key=>$value)
         {
             $defaultDefinition["ALIASES"][$key]=array("LAZY_LOAD"=>"true");
-        }
+        }*/
         return new MysqlOptionsDefinition($parentModel,$defaultDefinition);
     }
     function getDefinition()

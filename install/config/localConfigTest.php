@@ -23,7 +23,7 @@ $Config=[
     ],
 
      "SERIALIZERS"=>array(
-        "default"=>array("NAME"=>"default","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"adtopy")),
+        "default"=>array("NAME"=>"default","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"modeltests")),
          "web"=>array("NAME"=>"web","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"adtopy")),
          "test"=>array("NAME"=>"test","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"test")),
          "modeltests"=>array("NAME"=>"test","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"modeltests")),

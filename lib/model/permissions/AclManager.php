@@ -17,12 +17,13 @@ class AclException extends \lib\model\BaseException
 class AclManager
 {
 
-    const DEFAULT_USER_GROUP="Users";
-    const DEFAULT_ADMIN_GROUP="Admins";
-    const DEFAULT_EDITORS_GROUP="Editors";
-    const DEFAULT_REFLECTION_GROUP="Reflection";
     const PERMISSIONTYPE_GROUP=1;
     const PERMISSIONTYPE_ITEM=0;
+
+
+
+
+
     // Aro => usuarios
     const ARO = 0;
     // Aco => tipos de permisos
@@ -32,13 +33,8 @@ class AclManager
 
     var $conn;
 
-    function __construct($serializer = null)
+    function __construct($serializer)
     {
-        if (!$serializer)
-        {
-            global $Config;
-            $serializer=\Registry::getService("storage")->getSerializerByName($Config["SERIALIZERS"][$Config["DEFAULT_SERIALIZER"]]);
-        }
 
         $this->itemTypes = array("aro", "aco", "axo");
         $this->conn = $serializer->getConnection();
@@ -49,7 +45,7 @@ class AclManager
     {
         // Los campos "TYPE" en grupos,items,etc, significan : 0: ARO, 1:ACO, 2:AXO
         // Primera tabla : grupos.
-        $q[] = "CREATE TABLE IF NOT EXISTS _permission_groups (id smallint(8) AUTO_INCREMENT PRIMARY KEY NOT NULL,group_name varchar(30),group_type smallint(2),group_parent smallint(8) DEFAULT 0,group_path varchar(200),group_charPath char(255), KEY USING HASH(group_type,group_name,group_parent),KEY(group_name,group_path),UNIQUE KEY(group_charPath))";
+        $q[] = "CREATE TABLE IF NOT EXISTS _permission_groups (id smallint(8) AUTO_INCREMENT PRIMARY KEY NOT NULL,group_name varchar(30),group_type smallint(2),group_parent smallint(8) DEFAULT 0,group_path varchar(200),group_charPath char(255), KEY USING HASH(group_type,group_name,group_parent),KEY(group_name,group_path),UNIQUE KEY(group_type,group_charPath))";
         $q[] = "CREATE TABLE IF NOT EXISTS _permission_items (id smallint(8) AUTO_INCREMENT PRIMARY KEY NOT NULL,item_type smallint(2),item_name varchar(20),item_value varchar(50),KEY USING HASH(item_type,item_name,item_value))";
         $q[] = "CREATE TABLE IF NOT EXISTS _permission_group_items (group_id smallint(8),item_id smallint(8),KEY (group_id),KEY(item_id))";
         $q[] = "CREATE TABLE IF NOT EXISTS _permissions (id smallint(8) AUTO_INCREMENT PRIMARY KEY,aro_type smallint(1),aco_type smallint(1),aro_id smallint(8),aco_id smallint(8),axo_type smallint(1) DEFAULT 0,axo_id smallint(8) DEFAULT 0,allow smallint(1) DEFAULT 1,enabled smallint(1) DEFAULT 1,ACLDATE TIMESTAMP,UNIQUE KEY(aro_type,aro_id,aco_type,aco_id,axo_type,axo_id))";
@@ -147,7 +143,10 @@ class AclManager
             else
             {
                 $expr="'".(is_array($curVal["GROUP"])?implode("','", $curVal["GROUP"]):$curVal["GROUP"])."'";
-                $q = "SELECT 1 as type,id FROM _permission_groups WHERE group_type=" . $k . " AND group_name IN (" . $expr . ")";
+                if($curVal["GROUP"][0]==="/")
+                    $q = "SELECT 1 as type,id FROM _permission_groups WHERE group_type=" . $k . " AND group_charPath IN (" . $expr . ")";
+                else
+                    $q = "SELECT 1 as type,id FROM _permission_groups WHERE group_type=" . $k . " AND group_name IN (" . $expr . ")";
             }
 
 
@@ -200,6 +199,10 @@ class AclManager
             $fieldNames[] = $curItem . "_id";
             $fieldValues[] = $val;
         }
+        $fieldNames[]="allow";
+        $fieldValues[]=$allow;
+        $fieldNames[]="enabled";
+        $fieldValues[]=$enabled;
         $insertQuery = "INSERT INTO _permissions (" . implode(",", $fieldNames) . ") VALUES (" . implode(",", $fieldValues).") ON DUPLICATE KEY UPDATE ACLDATE=NOW()";
         $this->conn->insert($insertQuery);
     }
@@ -261,13 +264,26 @@ class AclManager
      * The path is supposed to be in the form : "/a/b/c/d"
      * All paths must be absolute.
      */
+    /*
+     *   // Aro => usuarios
+    const ARO = 0;
+    // Aco => tipos de permisos
+    const ACO = 1;
+    // Axo => objetos sobre los que se definen permisos
+    const AXO = 2;
+
+     */
     function getGroupFromPath($path, $type = AclManager::ARO,$autoCreate=false)
     {
+        // Eliminamos los posibles duplicados de "/" que haya
+        while(strpos($path,"//")>0)
+            $path=str_replace("//","/",$path);
         // Si es una cadena, se espera que sean nombres de grupos separados por "/", que
         // es mas intuitivo que por comas.
         $parts = explode("/", $path);
         $currentPath = "";
         $lastId = 0;
+        $currentCharPath="";
         // El path no era absoluto...esto se considera un error.
         for ($k = 1; $k < count($parts); $k++)
         {
@@ -275,7 +291,8 @@ class AclManager
                 continue;
             if ($currentPath != "")
                 $currentPath.=",";
-            $q = "SELECT id from _permission_groups WHERE group_name='" . $parts[$k] . "' AND group_type=$type";
+            $currentCharPath.="/".$parts[$k];
+            $q = "SELECT id from _permission_groups WHERE group_charPath='" . $currentCharPath . "' AND group_type=$type";
 
 
             if ($currentPath != "")
@@ -399,7 +416,7 @@ class AclManager
 
 		}
         $q="SELECT group_id from _permission_group_items WHERE item_id=$item_id AND group_id=$gid";
-        echo $q."\n";
+
         $res = $this->conn->select($q);
         if (count($res) == 0) // No existia la asignacion de item a grupo.
             $this->conn->insert("INSERT INTO _permission_group_items (group_id,item_id) VALUES ($gid,$item_id)");
@@ -442,7 +459,7 @@ class AclManager
             return;
         // Primero, obtenemos informacion del grupo:
         $groupInfo = $this->__getGroupFrom($group_id);
-		$group_id=$groupInfo[0]["group_id"];
+		$group_id=$groupInfo[0]["id"];
 
         if (!$groupInfo || count($groupInfo) == 0)
             throw new AclException(AclException::ERR_GROUP_DOESNT_EXIST);
@@ -606,7 +623,10 @@ class AclManager
             }
             else
             {
-                $subQ.="SELECT $k as item_type,null as id,g.id as group_id,group_path from _permission_groups g WHERE group_type=$k AND group_name='" . $c["GROUP"] . "'";
+                if($c["GROUP"][0]=="/")
+                    $subQ.="SELECT $k as item_type,null as id,g.id as group_id,group_path from _permission_groups g WHERE group_type=$k AND group_charPath='" . $c["GROUP"] . "'";
+                else
+                    $subQ.="SELECT $k as item_type,null as id,g.id as group_id,group_path from _permission_groups g WHERE group_type=$k AND group_name='" . $c["GROUP"] . "'";
             }
             $subqueries[] = $subQ . ")" . $current . "s";
         }
@@ -746,8 +766,8 @@ class AclManager
             IF(aro_type=1,aro_id,0) as aroNumber,
             ACLDATE FROM _permissions p,' .
           */
-        if(count($res)==0)
-            return array("allow"=>false);
+        if(!$res || count($res)==0)
+            return [false,[]];
         // General incluira el permiso para el modulo (el grupo).
         $general=null;
         $allow=array();
@@ -802,42 +822,6 @@ class AclManager
             "GROUP" => $oName);
     }
 
-
-    function canAccess($permsDefinition, $user, $model = null)
-    {
-        $permsObj = new \model\reflection\Permissions\PermissionRequirementsDefinitionRequirementsDefinition($permsDefinition);
-        if ($permsObj->isJustPublic())
-            return true;
-        if ($model)
-        {
-            $curState = $model->getState();
-            $reqPermissions = $permsObj->getRequiredPermissionsForState($curState);
-        }
-        else
-            $reqPermissions = $permsObj->getRequiredPermissions();
-
-        if ($model)
-        {
-            $axoParam = $this->getModelPermissionSpec($model);
-        }
-
-        foreach ($reqPermissions as $key => $value)
-        {
-            $reqPerms = array();
-            if ($value == 'PUBLIC')
-                return true;
-            if ($value == 'OWNER')
-            {
-                $owner = $model->getOwner();
-                if ($owner == $user->getId())
-                    return true;
-            }
-
-            if ($this->acl_check(array("ITEM" => $value), array("ITEM" => $user->getId(), "GROUP" => "Users"), $axoParam))
-                return true;
-        }
-        return false;
-    }
 
     // Funcion para simplificar la busqueda de ids en los siguientes metodos.
     // Cada uno de los elementos, es un array, que contiene un elemento "ITEM" o un elemento "GROUP",  un flag "CREATE", en caso de que no se haya encontrado, y un valor "CREATEPATH" para, si se quiere crear, agregarlo a ese PATH.
@@ -1035,7 +1019,7 @@ class AclManager
 
     function getUserGroups($userId)
     {
-        $q = "SELECT group_name from 
+        $q = "SELECT group_charPath from 
             _permission_groups pg
                 LEFT JOIN (SELECT CONCAT(',',CONCAT(group_path,',')) as mgroup 
                             from _permission_groups g
@@ -1044,14 +1028,37 @@ class AclManager
                                 WHERE i.item_value='" . $userId . "'
                             ) ig
                 ON LOCATE(CONCAT(',',CONCAT(pg.group_path,',')),mgroup)>0 WHERE mgroup IS NOT NULL";
-        return $this->conn->selectColumn($q, "group_name");
+        return $this->conn->selectColumn($q, "group_charPath");
     }
+    function getUniqueUserGroups($userId)
+    {
+        $q="SELECT group_charPath
+                            from _permission_groups g
+                                LEFT JOIN _permission_group_items gi ON g.id=gi.group_id
+                                LEFT JOIN _permission_items i ON gi.item_id=i.id
+                                WHERE i.item_value='" . $userId . "'";
+        return $this->conn->selectColumn($q,"group_charPath");
 
+    }
     // Se busca si el usuario pertenece al grupo, o a alguno de sus padres.
     function userBelongsToGroup($groupName, $userId)
     {
         //_d($this->getUserGroups($userId));
-        return in_array($groupName, $this->getUserGroups($userId));
+        $groups=$this->getUniqueUserGroups($userId);
+        if(in_array($groupName, $groups))
+            return true;
+        // Si alguno de los grupos en los que esta el usuario, esta incluido completamente en el grupo pedido,
+        // es que el usuario pertenece a un grupo padre de este grupo.
+        // Para ver si esta incluido completamente, se hace una regex, que dice que el grupo
+        // que probamos, tiene que estar en el grupo pedido, seguido o de "/" y algo más, o de fin
+        // de cadena. Un substr no es bastante, ya que entonces, el grupo /a/b contendría al /a/b_2
+
+        for($k=0;$k<count($groups);$k++)
+        {
+            if(preg_match('@'.$groups[$k]."(?:/.*)?$@", $groupName))
+                return true;
+        }
+        return false;
     }
 
     function removeUserFromGroup($groupName, $userId)
@@ -1076,6 +1083,8 @@ class AclManager
                 array("GROUP" => $groupName), array("ITEM" => $permissionName)
         );
     }
+
+
 
 }
 

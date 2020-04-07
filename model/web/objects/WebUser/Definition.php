@@ -40,7 +40,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'DESCRIPTIVE'=>'false',
                            'ISLABEL'=>'false',
                             'PASSWORD_ENCODING'=>'BCRYPT',
-                            'COST'=>3
+                            'COST'=>11
                            ),
                      'USER_ID'=>array(
                            'DEFAULT'=>'',
@@ -74,7 +74,7 @@ class Definition extends \lib\model\BaseModelDefinition
                          'DESCRIPTIVE'=>'false',
                          'ISLABEL'=>'false'
                      ),
-                        'lastLogin'=>array(
+                        'lastlogin'=>array(
                             'DEFAULT'=>'',
                             'SHORTLABEL'=>'lastLogin',
                             'TYPE'=>'DateTime',

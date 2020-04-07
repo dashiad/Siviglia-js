@@ -1,0 +1,87 @@
+<?php
+namespace model\tests\Post\datasources;
+/**
+FILENAME:/var/www/percentil/backoffice//backoffice/objects/ps_orders/datasources/OrdersReport.php
+CLASS:OrdersReport
+ *
+ *
+ **/
+
+class Grouped
+{
+    static $definition=array(
+            'ROLE'=>'list',
+            'DATAFORMAT'=>'Table',
+            'PARAMS'=>array(
+                'id'=>array(
+                    'MODEL'=>'\model\tests\Post',
+                    'FIELD'=>'id',
+                    'TRIGGER_VAR'=>'id'
+                ),
+                'creator_id'=>array(
+                    'MODEL'=>'\model\tests\Post',
+                    'FIELD'=>'creator_id',
+                    'TRIGGER_VAR'=>'creator_id'
+                )
+            ),
+            'IS_ADMIN'=>0,
+            'FIELDS'=>array(
+                'id'=>array(
+                    'MODEL'=>'\model\tests\Post',
+                    'FIELD'=>'id',
+                ),
+                'creator_id'=>array(
+                    'MODEL'=>'\model\tests\Post',
+                    'FIELD'=>'creator_id',
+                    'GROUPING'=>'DISCRETE'
+                ),
+                'title'=>[
+                    'MODEL'=>'\model\tests\Post',
+                    'FIELD'=>'title',
+                ],
+                'content'=>[
+                    'MODEL'=>'\model\tests\Post',
+                    'FIELD'=>'content',
+                ],
+                'created_on'=>[
+                    'MODEL'=>'\model\tests\Post',
+                    'FIELD'=>'created_on',
+                    'GROUPING'=>'DATETIME'
+                ],
+                'likes'=>[
+                    'MODEL'=>'\model\tests\Post',
+                    'FIELD'=>'likes',
+                    'GROUPING'=>'CONTINUOUS',
+                    'DEFAULTGROUPING'=>5,
+                    'GROUP_UNTIL'=>200,
+                    'ALLOW_SUM'=>true
+                ]
+            ),
+            'PERMISSIONS'=>array('_PUBLIC_'),
+        'SOURCE'=>[
+            'STORAGE'=>array(
+                'MYSQL'=>array(
+                    'DEFINITION'=>array(
+                        'TABLE'=>'Posts',
+                        'DEFAULT_ORDER'=>'created_on',
+                        'DEFAULT_ORDER_DIRECTION'=>'DESC',
+                        'BASE'=>"SELECT * from post WHERE [%0%] AND [%1%]",
+                        'CONDITIONS'=>array(
+                            array(
+                                'FILTER'=>'id=[%id]',
+                                'TRIGGER_VAR'=>'id',
+                                'DISABLE_IF'=>''
+                            ),
+                            array(
+                                'FILTER'=>'creator_id=[%creator_id%]',
+                                'TRIGGER_VAR'=>'creator_id',
+                                'DISABLE_IF'=>''
+                            )
+                        )
+                    )
+                )
+            )
+            ]
+        );
+
+}

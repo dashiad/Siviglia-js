@@ -1,4 +1,5 @@
 <?php
+namespace lib\model\permissions;
 include_once(LIBPATH."/model/permissions/AclManager.php");
 class PermissionManagerException extends \lib\model\BaseException
 {
@@ -7,6 +8,7 @@ class PermissionManagerException extends \lib\model\BaseException
 }
 class PermissionsManager {
     static $aclManager;
+
     const PERMS_REFLECTION="Reflection";
     const PERMS_ADMIN="Admin";
     const PERMS_EDIT="Edit";
@@ -15,7 +17,21 @@ class PermissionsManager {
     const PERMS_LIST="List";
     const PERMS_DESTROY="Destroy";
     const PERMS_DISABLE="Disable";
-    const PERMS_REPORT="Report";
+    const PERMS_ACCESS="Access";
+    const PERMS_CUSTOM1="Custom1";
+    const PERMS_CUSTOM2="Custom2";
+    const PERMS_CUSTOM3="Custom3";
+
+    const DEFAULT_USER_GROUP="Users";
+    const DEFAULT_ADMIN_GROUP="Admins";
+    const DEFAULT_EDITORS_GROUP="Editors";
+    const DEFAULT_REFLECTION_GROUP="Reflection";
+
+    const PERMISSIONSPEC_PUBLIC="Public";
+    const PERMISSIONSPEC_OWNER="Owner";
+    const PERMISSIONSPEC_LOGGED="Logged";
+    const PERMISSIONSPEC_ACL="ACL";
+    const PERMISSIONSPEC_ROLE="Role";
 
     const PERM_TYPE_USER=\lib\model\permissions\AclManager::ARO;
     const PERM_TYPE_PERMISSIONS=\lib\model\permissions\AclManager::ACO;
@@ -28,14 +44,10 @@ class PermissionsManager {
     var $currentUserProfiles;
     static $permCache=array();
     var $effectiveProfiles;
-    var $modelService;
     var $userService;
     var $siteService;
 
-    function __construct($modelService,$userService,$siteService,$serializer) {
-        $this->modelService=$modelService;
-        $this->userService=$userService;
-        $this->siteService=$siteService;
+    function __construct($serializer) {
 
         if(!PermissionsManager::$aclManager)
             PermissionsManager::$aclManager=new \lib\model\permissions\AclManager($serializer);
@@ -66,49 +78,13 @@ class PermissionsManager {
             PermissionsManager::$aclManager->getModulePath($model),
             ($loaded?PermissionsManager::$aclManager->getModelId($model):null),
             "USER_".$user->getId());
-        
-                
+
+
         PermissionsManager::$permCache[$user->getId()][$objName][$keyPart]=$permissions;
         return $permissions;
     }
 
-    
-    // The item parameter can be :
-    //      a BaseModel instance
-    //      an array("ITEM"=>x,"GROUP"=>y)
-    //      a string (equivalent to array("ITEM"=>x))
-    function canAccess($reqPermission, $item,$user=null)
-    {
 
-        if (is_array($item))
-        {
-            $axo = $item;
-        }
-        else
-        {
-            if($item)
-                $axo = array("ITEM" => $item);
-            else
-                $axo=null;
-        }
-
-        $aro=array("GROUP"=>"Users");
-        
-        if(!$user)
-        {
-            $oCurrentUser=$this->userService->getUser();
-            if($oCurrentUser->isLogged())
-                $aro["ITEM"]=$oCurrentUser->getId();
-            else
-                $aro["GROUP"]="Anonymous";
-            
-        }
-        else
-        {
-            $aro["ITEM"]=$user->getId();
-        }
-        return PermissionsManager::$aclManager->acl_check(array("ITEM" => $reqPermission), $aro, $axo);
-    }
 
 
 
@@ -122,20 +98,12 @@ class PermissionsManager {
             include_once(PROJECTPATH."/objects/".$model."/".$model.".php");
             $model=new $model();
         }
-        $website=$this->siteService->getCurrentWebsite();
+
         // Se obtiene una lista completa de los perfiles.
         $effectiveProfiles=array("ANONYMOUS","LOGGED","OWNER");
-        // Se une el tipo de usuario actual
-        if($website["USER_TYPES"]) {
-            $effectiveProfiles[]=$website["USER_TYPES"][$oCurrentUser->getUserType()];
-        }
 
         $modelDef=$model->getDefinition();
 
-        if($modelDef["OWNERSHIP"] && $oCurrentUser->isLogged() && $website["USER_PROFILES"]) {
-            $ownerProfiles=$website["USER_PROFILES"];
-            $effectiveProfiles=array_merge($effectiveProfiles,array_keys($ownerProfiles));
-        }
         // El permiso implicito para que un elemento salga en una lista, es que el usuario
         // tenga permisos $requiredPerm sobre los items.
         // Por lo tanto, hay que obtener todos los perfiles posibles del usuario, ver cuales de
@@ -152,9 +120,9 @@ class PermissionsManager {
         $modelDefaultPermissions=$model->getDefaultPermissions();
         if($modelDefaultPermissions)
             $this->loadRolePermissions($modelDefaultPermissions,$effectiveProfiles,$userPermissions);
-            
+
         $defaultExpr=$this->getSQLSubExpression($userPermissions,$requiredPerm,$ownerProfiles,$modelDef,$prefix);
-        
+
         // Hasta aqui, tenemos un array constante de permisos.
         // En caso de que haya estados, el array anterior hay que seguir procesandolo con cada uno de los estados.
         if(!$states)
@@ -200,12 +168,12 @@ class PermissionsManager {
         $possibleOwners=array();
         $noOwners="";
 
-        foreach($perms as $key=>$value) {            
+        foreach($perms as $key=>$value) {
             if(!in_array($requiredPerm,$value["ALLOW"]))
                 continue;
             switch($key) {
-                case "OWNER": {                        
-                        if($oCurrentUser->isLogged()) {                            
+                case "OWNER": {
+                        if($oCurrentUser->isLogged()) {
                             $possibleOwners[]=$oCurrentUser->getId();
                         }
                         else
@@ -239,7 +207,7 @@ class PermissionsManager {
                     ;
             }
         }
-        
+
         if(count($possibleOwners)>0)
             $subParts[]=$this->getSQLOwnershipExpression($modelDef,$possibleOwners,$prefix);
         else
@@ -254,7 +222,7 @@ class PermissionsManager {
     }
     function getSQLOwnershipExpression(& $modelDef,$possibleOwners,$prefix="") {
         if($modelDef["OWNERSHIP"]) {
-            if(!is_array($modelDef["OWNERSHIP"]))         
+            if(!is_array($modelDef["OWNERSHIP"]))
             {
                 return ($prefix==""?"":$prefix.".").$modelDef["OWNERSHIP"]." IN (".implode(",",$possibleOwners).")";
             }
@@ -281,17 +249,17 @@ class PermissionsManager {
         $name=null;
         switch ($type) {
             case PermissionsManager::PERM_TYPE_MODULE: {
-                $fgroup = "/AllModules/Sys/";
+                $fgroup = "/AllModules/Sys";
                 $name="MODULE";
             }
                 break;
             case PermissionsManager::PERM_TYPE_PERMISSIONS: {
-                $fgroup = "/AllPermissions/Sys/";
+                $fgroup = "/AllPermissions/Sys";
                 $name="PERMISSION";
             }
                 break;
             case PermissionsManager::PERM_TYPE_USER: {
-                $fgroup = "/AllUsers/Sys/";
+                $fgroup = "/AllUsers/Sys";
                 $name="USER";
             }
                 break;
@@ -300,10 +268,10 @@ class PermissionsManager {
     }
     function normalizeGroupPath($groupPath)
     {
-        $groupPath=str_replace('\\',"/",$groupPath);
-        return str_replace("/model/","/",$groupPath);
+        return str_replace('\\',"/",$groupPath);
+
     }
-    function createGroup($groupPath,$type,$raw=false)
+    function createGroup($groupPath,$type,$raw=false,$autocreate=true)
     {
         $prefix=$this->getDefaultPrefixes($type);
         $groupPath=$this->normalizeGroupPath($groupPath);
@@ -311,6 +279,10 @@ class PermissionsManager {
             $groupPath=$prefix["group"].$groupPath;
 
         return PermissionsManager::$aclManager->getGroupFromPath($groupPath,$type,true);
+    }
+    function getGroup($groupPath,$type,$raw=false)
+    {
+        return $this->createGroup($groupPath,$type,false);
     }
 
     // Permissions debe ser un array
@@ -355,7 +327,7 @@ class PermissionsManager {
         }
     }
 
-    function addPermissions($user,$module,$permissions)
+    function addPermissions($user,$module,$permissions,$allow=1)
     {
         if(isset($user["ITEM"])) {
             $uid = "USER_" . $user["ITEM"]->getId();
@@ -377,16 +349,17 @@ class PermissionsManager {
         {
             if(!isset($module["RAW"]))
             {
-                $user["GROUP"]="/AllModules/Sys".$module["GROUP"];
+                $module["GROUP"]="/AllModules/Sys".$module["GROUP"];
             }
         }
         if(!isset($permissions["RAW"]))
         {
+
             $permissions["GROUP"]="/AllPermissions/Sys/".$permissions["GROUP"];
         }
 
         $result=PermissionsManager::$aclManager->resolveAccessIds($user,$permissions,$module);
-        PermissionsManager::$aclManager->add_acl_by_id($result["aco"],$result["aro"],$result["axo"],1,1);
+        PermissionsManager::$aclManager->add_acl_by_id($result["aco"],$result["aro"],$result["axo"],$allow,1);
     }
 
     function install()
@@ -395,6 +368,148 @@ class PermissionsManager {
         $this->createGroup("/AllModules/Sys",PermissionsManager::PERM_TYPE_MODULE,true);
         $this->createGroup("/AllUsers/Sys",PermissionsManager::PERM_TYPE_USER,true);
         $this->createGroup("/AllPermissions/Sys",PermissionsManager::PERM_TYPE_PERMISSIONS,true);
+        $this->createGroup("/CRUD",PermissionsManager::PERM_TYPE_PERMISSIONS,false);
+        $this->addToGroup(array(
+            PermissionsManager::PERMS_EDIT,
+            PermissionsManager::PERMS_VIEW,
+            PermissionsManager::PERMS_CREATE,
+            PermissionsManager::PERMS_DESTROY,
+        ),"/CRUD",PermissionsManager::PERM_TYPE_PERMISSIONS,true);
+        $this->addToGroup(array(
+            PermissionsManager::PERMS_REFLECTION,
+            PermissionsManager::PERMS_ADMIN,
+            PermissionsManager::PERMS_DISABLE,
+            PermissionsManager::PERMS_LIST,
+            PermissionsManager::PERMS_ACCESS,
+        ),"/AllPermissions/Sys",PermissionsManager::PERM_TYPE_PERMISSIONS,true,true);
+
+
+        $AdminUserId=\model\web\WebUser::createAdminUser();
+        $this->addToGroup(array($AdminUserId),"/AllUsers",\lib\model\permissions\PermissionsManager::PERM_TYPE_USER,true,true);
+        $this->addPermissions(array("GROUP"=>"/AllUsers","RAW"=>true),array("GROUP"=>"/AllModules","RAW"=>true),array("GROUP"=>"/AllPermissions","RAW"=>true));
+
+        $modelService=\Registry::getService("model");
+        $packages=$modelService->getPackages();
+        $m=$this;
+        array_walk($packages,function($val,$index) use ($m){
+            $val["instance"]->installPermissions($m);
+        });
+
+        $sites=\model\web\Site::getAllSites();
+        $nSites=$sites->count();
+        for($k=0;$k<$nSites;$k++)
+        {
+            $cSite=$sites[$k];
+            $id_site=$cSite->id_site;
+            $instance=$modelService->loadModel("/model/web/Site",array("id_site"=>$id_site));
+
+            $instance->installPermissions($this);
+        }
+    }
+
+    /*
+     *  Las especificaciones de permisos de modelos, son para todas las operaciones de tipo CRUD.
+     *  Cada operacion, tiene sus propios permisos:
+     *   'PERMISSIONS'=>array(
+                        "ADD"=>array(array("REQUIRES"=>"ADD","ON"=>"/model/web/Page")),
+                        "DELETE"=>array(array("REQUIRED"=>"DELETE","ON"=>"/model/web/Page")),
+                        "EDIT"=>[["REQUIRES"=>"ADMIN","ON"=>"/model/web/Page")),
+                        "VIEW"=>[["REQUIREs"=>"VIEW","ON"=>"/model/web/Page"
+                    )
+         A esta funcion, se le pasa la operacion (ADD,DELETE,EDIT,VIEW), el modelo, y el usuario.
+         Si el modelo es una string,se obtiene una instancia del modelo, y se le preguntan los permisos.
+
+        ESTE ES UNO DE LOS PUNTOS DE ENTRADA PRINCIPALES, PARA PEDIR PERMISOS SOBRE MODELOS.
+
+     */
+    function canExecuteCRUD($CRUDOp, $model,$user=null)
+    {
+        if($user==null)
+            $user=\Registry::getService("user");
+        if(is_string($model))
+        {
+            // Si es una cadena, se crea una instancia, para poder preguntar los permisos.
+            // Pero eso significa que no se nos ha pasado una instancia, por lo que a canAccess se le pasara
+            // un null en model.
+            $service=\Registry::getService("model");
+            $instance=$service-getModel($model);
+            $spec=$instance->getRequiredPermission($CRUDOp);
+            $model=null;
+        }
+        else
+            $spec=$model->getRequiredPermission($CRUDOp);
+
+        return $this->canAccess($spec,$user,$model);
+    }
+    /*
+     *
+     *   ESTE ES EL PUNTO DE ENTRADA GENERAL, PARA CUALQUIER COSA QUE NO SEA UN MODELO (PAGINAS,DATASOURCES,ETC).
+     *   LA ESPECIFICACION DEBE SER:
+     *   "TYPE": (public,owner,logged,permission,role)
+     *   Si type=="permission"=["REQUIRES"=>xx, "ON"=>"yy"]
+     *   Si type=="role"=["ROLE"=>""]
+     *
+     */
+
+    function canAccess($permsDefinition, $user=null, $model = null)
+    {
+        if($user==null)
+            $user=\Registry::getService("user");
+        for($k=0;$k<count($permsDefinition);$k++)
+        {
+            $curDef=$permsDefinition[$k];
+
+            switch($curDef["TYPE"])
+            {
+                case PermissionsManager::PERMISSIONSPEC_PUBLIC:{
+                    return true;
+                }break;
+                case PermissionsManager::PERMISSIONSPEC_OWNER:{
+                    $owner = $model->getOwnershipField();
+                    if ($owner->getValue() == $user->getId())
+                        return true;
+                    // Ya que el permiso "owner" es independiente de ACL, el usuario
+                    // "admin" no tendria permisos sobre algo declarado con permisos "OWNER".
+                    // Por lo tanto, se comprueba aqui directamente
+                    $prefix=$this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_USER);
+                    return PermissionsManager::$aclManager->userBelongsToGroup("/AllUsers",$prefix["name"]."_".$user->getId());
+                }break;
+                case PermissionsManager::PERMISSIONSPEC_LOGGED:{
+                    return $user->isLogged();
+                }break;
+                case PermissionsManager::PERMISSIONSPEC_ACL:
+                    {
+                        $axoPrefix=$this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_MODULE);
+
+                        $axoParam=["GROUP"=>$axoPrefix["group"].$curDef["ON"]];
+                        if ($model)
+                        {
+                            $keys=$model->__getKeys();
+                            $aKeys=$keys->get();
+                            $axoParam["ITEM"]=implode("_", $aKeys);
+                        }
+                        if(isset($curDef["REQUIRES"]["GROUP"]) && !isset($curDef["REQUIRES"]["RAW"])) {
+                            $prefix=$this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_PERMISSIONS);
+                            $curDef["REQUIRES"]["GROUP"] =  $prefix["group"]. $curDef["REQUIRES"]["GROUP"];
+                        }
+
+                        return PermissionsManager::$aclManager->acl_check($curDef["REQUIRES"], array("ITEM" => "USER_".$user->getId()), $axoParam);
+
+                    }break;
+                case PermissionsManager::PERMISSIONSPEC_ROLE:
+                    {
+                        $role=$curDef["ROLE"];
+                        $prefix=$this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_USER);
+                        if(!isset($curDef["RAW"]) || $curDef["RAW"]==true)
+                        {
+
+                            $role=$prefix["group"].$role;
+                        }
+                        return PermissionsManager::$aclManager->userBelongsToGroup($role,$prefix["name"]."_".$user->getId());
+                    }break;
+            }
+        }
+        return false;
     }
     function uninstall()
     {
@@ -404,7 +519,6 @@ class PermissionsManager {
     {
         return PermissionsManager::$aclManager->addModule($moduleClass);
     }
-
 
 }
 

@@ -373,5 +373,9 @@ EOT;
         return file_get_contents($baseDir."/".$filename.".wid");
     }
 
+    function installPermissions($manager)
+    {
+        $manager->createGroup("/site/".$this->namespace,\lib\model\permissions\PermissionsManager::PERM_TYPE_MODULE);
+    }
 }
 ?>

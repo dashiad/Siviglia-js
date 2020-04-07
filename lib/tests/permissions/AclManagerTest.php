@@ -6,10 +6,11 @@
  * Time: 23:37
  */
 
-namespace lib\tests\model\permissions;
-$dirName=__DIR__."/../../../../install/config/CONFIG_test.php";
+namespace lib\tests\permissions;
+$dirName=__DIR__."/../../../install/config/CONFIG_test.php";
 include_once($dirName);
 include_once(LIBPATH."/autoloader.php");
+include_once(LIBPATH."/startup.php");
 include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
 
 use PHPUnit\Framework\TestCase;
@@ -370,7 +371,7 @@ class AclManagerTest extends TestCase
         $this->assertEquals($oid,$oid1);
        $id=$this->acl->add_group_object($gid,$oid);
        $id1=$this->acl->__itemIdFromGroupAndId($gid,$oid,"item1");
-        $this->assertEquals($id,$id1);
+        $this->assertEquals($id,$id1["item"]);
        // First test, without reparenting children.
         $this->acl->del_group($gid,FALSE);
         $this->expectExceptionCode(\lib\model\permissions\AclException::ERR_GROUP_DOESNT_EXIST);
@@ -453,7 +454,8 @@ class AclManagerTest extends TestCase
             ->disallowMockingUnknownTypes()
             ->getMock();*/
         $user=null;
-        $access=$this->acl->canAccess(array('PUBLIC'),$user);
+        $access=$this->acl->canAccess(
+            [["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PUBLIC]],$user);
         $this->assertEquals(true,$access);
     }
     function testCanAccessUserModel()
@@ -477,9 +479,13 @@ class AclManagerTest extends TestCase
         $this->acl->add_acl(array("GROUP"=>"Page","ITEM"=>array("view")),
             array("GROUP"=>"Users","ITEM"=>array("1")),
             array("GROUP"=>"Page"));
-        $res=$this->acl->canAccess(array("view"),$user,$model);
+        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+                                          "REQUIRES"=>"view",
+                                          "ON"=>'Page']],$user,$model);
         $this->assertEquals(true,$res);
-        $res=$this->acl->canAccess(array("create"),$user,$model);
+        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+            "REQUIRES"=>"create",
+            "ON"=>'Page']],$user,$model);
         $this->assertEquals(false,$res);
     }
     function testResolveAccessId()
@@ -536,7 +542,7 @@ class AclManagerTest extends TestCase
         $method->setAccessible(true);
 
         $path=$method->invokeArgs($this->acl, array("/model/web/Sites"));
-        $this->assertEquals("/AllObjects/Sys/web/webModules/Sites",$path);
+        $this->assertEquals("/AllModules/Sys/web/Sites",$path);
     }
     function testAddPermissionOverModule()
     {
@@ -558,7 +564,11 @@ class AclManagerTest extends TestCase
         }));
         $this->acl->addPermissionOverModule("view",1,"Page");
 
-        $res=$this->acl->canAccess(array("view"),$user,$model);
+        $res=$this->acl->canAccess(
+            [["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+                "REQUIRES"=>"view",
+                "ON"=>'Page']]
+            ,$user,$model);
         $this->assertEquals(true,$res);
     }
     // This test checks that a previously given permission over a certain module, is revoked.
@@ -582,10 +592,15 @@ class AclManagerTest extends TestCase
         }));
         $this->acl->addPermissionOverModule("view",1,"Page");
 
-        $res=$this->acl->canAccess(array("view"),$user,$model);
+        $res=$this->acl->canAccess(
+            [["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+                "REQUIRES"=>"view",
+                "ON"=>'Page']],$user,$model);
         $this->assertEquals(true,$res);
         $this->acl->removePermissionOverModule("view",1,"/AllObjects/Sys/web/webModules/Page");
-        $res=$this->acl->canAccess(array("view"),$user,$model);
+        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+            "REQUIRES"=>"view",
+            "ON"=>'Page']],$user,$model);
         $this->assertEquals(false,$res);
     }
     // This test checks that if permission over all modules is given, but one module is revoked, it still
@@ -612,11 +627,15 @@ class AclManagerTest extends TestCase
             array("ITEM"=>array(1)),
             array("GROUP"=>array("webModules")));
 
-        $res=$this->acl->canAccess(array("view"),$user,$model);
+        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+            "REQUIRES"=>"view",
+            "ON"=>'Page']],$user,$model);
         $this->assertEquals(true,$res);
 
         $this->acl->removePermissionOverModule("view",1,"/AllObjects/Sys/web/webModules/Page");
-        $res=$this->acl->canAccess(array("view"),$user,$model);
+        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+            "REQUIRES"=>"view",
+            "ON"=>'Page']],$user,$model);
         $this->assertEquals(false,$res);
         $id=$this->acl->resolveAccessIds(null,null,array(
             "GROUP"=>"Sites",
@@ -633,7 +652,9 @@ class AclManagerTest extends TestCase
         $model->method("__getKeys")->will($this->returnCallback(function(){
             return new class {public function get(){return array(1);}};
         }));
-        $res=$this->acl->canAccess(array("view"),$user,$model);
+        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+            "REQUIRES"=>"view",
+            "ON"=>'Sites']],$user,$model);
         $this->assertEquals(true,$res);
 
     }

@@ -7,6 +7,8 @@
 
 
 namespace lib\model;
+use lib\model\permissions\AclException;
+
 class PackageException extends \lib\model\BaseException
 {
     const ERR_UNKNOWN_PACKAGE=100;
@@ -450,6 +452,26 @@ class Package
 
         ];
     }
+    function installPermissions($manager)
+    {
+        $models=$this->getModels();
+        if($models===null)
+            return;
+        // Creamos u obtenemos el grupo asociado a este paquete.
+        $manager->createGroup("/model/".$this->name,\lib\model\permissions\PermissionsManager::PERM_TYPE_MODULE);
+        $this->recurse_installPermissions($manager,$models);
 
+    }
+    function recurse_installPermissions($manager,$models)
+    {
+        for($k=0;$k<count($models);$k++)
+        {
+            $current=$models[$k];
+            $class=str_replace('\\','/',$current["class"]);
+            $manager->createGroup($class,\lib\model\permissions\PermissionsManager::PERM_TYPE_MODULE);
+            if(isset($current["subobjects"]))
+                $this->recurse_installPermissions($manager,$current["subobjects"]);
+        }
 
+    }
 }

@@ -3,7 +3,6 @@
 use lib\model\Package;
 use lib\model\ModelService;
 
-include_once(LIBPATH."/model/permissions/PermissionsManager.php");
 include_once(LIBPATH."/model/BaseTypedObject.php");
 
 class Startup
@@ -47,29 +46,26 @@ class Startup
         include_once(LIBPATH."/Request.php");
         $request=Request::getInstance();
         Registry::initialize($request);
+        Startup::commonSetup();
 
     }
 
 
     static function commonSetup()
     {
-        global $Container;
+
         Startup::initializeContext();
         $s=\Registry::getService("storage");
         $ser=$s->getSerializerByName("default");
-        $oPerms = new \PermissionsManager(
-            \Registry::getService("model"),
-            \Registry::getService("user"),
-            \Registry::getService("site"),
-            $ser);
+        $oPerms = new \lib\model\permissions\PermissionsManager($ser);
 
-        $Container->addService("permissions",$oPerms);
+        \Registry::addService("permissions",$oPerms);
 
         //Incluimos las constantes en el registro para poder ser usadas en DS
-        $constants = get_defined_constants(true);
+        /*$constants = get_defined_constants(true);
         foreach($constants["user"] as $constant=>$constantValue) {
             Registry::store($constant, $constantValue);
-        }
+        }*/
         //Startup::initializeSerializers();
 
         //   date_default_timezone_set($confClass::$DEFAULT_TIMEZONE);

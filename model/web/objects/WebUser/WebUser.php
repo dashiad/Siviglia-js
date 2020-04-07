@@ -105,10 +105,6 @@ class WebUser extends \lib\model\BaseModel
         return @mkdir($basePath . "/" . $this->getUserPath(), 0777, true);
     }
 
-    function getRole()
-    {
-        return $this->ROLE;
-    }
 
     static function login($userName,$password,$model=null)
     {
@@ -164,6 +160,26 @@ class WebUser extends \lib\model\BaseModel
     {
         return WebUser::$currentUser;
     }
+    static function createAdminUser()
+    {
+        $serializerService=\Registry::getService("storage");
+        $serializer=$serializerService->getSerializerByName("default");
+        $user=new \model\web\WebUser($serializer);
+        $user->LOGIN="admin";
+        try
+        {
+            $user->loadFromFields();
+        }
+        catch(\Exception $e) {
+            $user->PASSWORD = "admin";
+            $user->EMAIL = "admin@admin.com";
+            $user->active = true;
+            $user->{"*last_passwd_gen"}->setAsNow();
+            $user->save();
+        }
+        return $user->USER_ID;
+
+    }
 
     function save($serializer=null)
     {
@@ -172,10 +188,7 @@ class WebUser extends \lib\model\BaseModel
             $this->{"*date_add"}->setAsNow();
             if($this->{"*PASSWORD"}->hasValue())
             {
-                $site=\Registry::getService("site");
-                $conf=$site->getConfig();
-                $userConfig=$conf->getUserConfig();
-                $this->{"*PASSWORD"}->encode($userConfig);
+                $this->{"*PASSWORD"}->encode();
             }
         }
         parent::save($serializer);
@@ -253,8 +266,6 @@ class WebUser extends \lib\model\BaseModel
 
         $userId=$this->dblink->insertFromAssociative($this->userTable,$params);
 
-        if(!$userId)
-            return $this->setError(CUserManager::ERR_DATABASE,$fields["email"]);
 
         $this->onNewUser($userId);
 

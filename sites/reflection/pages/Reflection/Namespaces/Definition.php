@@ -16,7 +16,7 @@ class Definition extends \model\web\Page\PageDefinition
         return array(
             'CACHING'=>array('TYPE'=>'NO-CACHE'),
             'ENCODING'=>'utf8',
-            'PERMISSIONS'=>array(array("PERMISSION"=>\PermissionsManager::PERMS_REFLECTION)),
+            'PERMISSIONS'=>array(array("PERMISSION"=>\lib\model\permissions\PermissionsManager::PERMS_REFLECTION)),
             //'PERMISSIONS'=>array('PUBLIC'),
             'SOURCES'=>array(
             ),

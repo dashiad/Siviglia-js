@@ -1,13 +1,12 @@
 <?php
 namespace model\reflection\Permissions;
-class PermissionRequirementsDefinition 
+class PermissionRequirementsDefinition
 {
     var $stateDef;
     var $definition;
 
-
     function __construct($definition)
-    {                
+    {
         if(is_array($definition))
         {
 
@@ -19,11 +18,11 @@ class PermissionRequirementsDefinition
                 }
             }
             else
-            {                 
+            {
                 if(count($definition)==0) // "PERMISSIONS"=>array()
                     $this->definition=array('PUBLIC');
                 else
-                {                   
+                {
                     $this->definition=$definition;
                 }
             }
@@ -41,8 +40,8 @@ class PermissionRequirementsDefinition
     }
 
     static function create($def)
-    {                
-        $obj= new PermissionRequirementsDefinition($def);        
+    {
+        $obj= new PermissionRequirementsDefinition($def);
         return $obj;
     }
     function isStated()
@@ -55,13 +54,13 @@ class PermissionRequirementsDefinition
             return $this->definition;
         return $this->stateDef->getObjectForState($state);
     }
-    
+
     function isJustPublic()
     {
         return ($this->definition=='PUBLIC' || $this->definition==array('PUBLIC') );
     }
     function getDefinition()
-    {        
+    {
         if($this->stateDef)
             return $this->stateDef->getDefinition();
         if( !is_array($this->definition) )

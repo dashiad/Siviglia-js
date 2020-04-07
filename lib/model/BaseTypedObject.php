@@ -1346,5 +1346,19 @@ class BaseTypedObject extends PathObject
         }
         return $result;
     }
+    function getRequiredPermissions($action)
+    {
+
+        if($this->__stateDef->hasState())
+        {
+            $sDef=$this->__stateDef->getRequiredPermissions($action);
+            if($sDef!==null)
+                return $sDef;
+
+        }
+        if(isset($this->definition["PERMISSIONS"]) && isset($this->definition["PERMISSIONS"][$action]))
+            return $this->definition["PERMISSIONS"][$action];
+        return [["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PUBLIC]];
+    }
 
 }

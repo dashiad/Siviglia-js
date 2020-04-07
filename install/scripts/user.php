@@ -3,7 +3,8 @@
     include_once __DIR__.'/../config/localConfig.php';
     include_once LIBPATH . '/startup.php';
     Startup::initializeHTTPPage();
-    $serializer=\lib\storage\StorageFactory::getSerializerByName("default");
+    $storage=\Registry::getService("storage");
+    $serializer=$storage->getSerializerByName("default");
 
     $user=new \model\web\WebUser($serializer);
     $user->LOGIN="admin";

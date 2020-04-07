@@ -33,7 +33,13 @@ use \lib\model\BaseTypedException;
             "STATES"=>array(
             ps_order_state::STATE_ORDER_NONE=>array(
                     'LISTENERS'=>array('TEST'=>array(),'ON_LEAVE'=>array(),'ON_ENTER'=>array()),
-                    'FIELDS' => array('EDITABLE' => array('*'),'REQUIRED'=>array(),'FIXED'=>array(),'SET'=>array())
+                    'FIELDS' => array('EDITABLE' => array('*'),'REQUIRED'=>array(),'FIXED'=>array(),'SET'=>array()),
+                    'PERMISSIONS'=>array(
+                        "ADD"=>array(array("REQUIRES"=>"ADD","ON"=>"/model/web/Page")),
+                        "DELETE"=>array(array("REQUIRED"=>"DELETE","ON"=>"/model/web/Page")),
+                        "EDIT"=>[["REQUIRES"=>"ADMIN","ON"=>"/model/web/Page")),
+                        "VIEW"=>[["REQUIREs"=>"VIEW","ON"=>"/model/web/Page"
+                    )
             ),
             ps_order_state::STATE_ORDER_PAID=>array(
                     'ALLOW_FROM'=>array( ps_order_state::STATE_ORDER_NONE,
@@ -469,6 +475,15 @@ class StatedDefinition
         if(isset($this->definition["STATES"]["STATES"][$state]["FIELDS"]["REQUIRED"]))
             return $this->definition["STATES"]["STATES"][$state]["FIELDS"]["REQUIRED"];
         return [];
+    }
+
+    function getRequiredPermissions()
+    {
+        $currentState=$this->getCurrentState();
+        if(isset( $this->definition["STATES"]["STATES"][$this->getStateLabel($currentState)]["PERMISSIONS"]))
+            return $this->definition["STATES"]["STATES"][$this->getStateLabel($currentState)]["PERMISSIONS"];
+        return null;
+
     }
 
 }

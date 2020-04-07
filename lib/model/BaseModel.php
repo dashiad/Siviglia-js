@@ -490,7 +490,7 @@ class BaseModel extends BaseTypedObject
     function getRole()
     {
         if (isset($this->__objectDef["ROLE"]))
-            return $this->{$this->__objectDef["ROLE"]};
+            return $this->__objectDef["ROLE"];
         return "ENTITY";
     }
 
