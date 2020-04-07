@@ -13,6 +13,12 @@ class ModelList
         'ROLE'=>'list',
         'DATAFORMAT'=>'Table',
         'IS_ADMIN'=>1,
+        'PARAMS'=>array(
+            'smallName'=>[
+                "TYPE"=>"String",
+                "PARAMTYPE"=>"DYNAMIC"
+            ]
+        ),
         'FIELDS'=>array(
             'package'=>array(
                 'TYPE'=>'String',
@@ -48,14 +54,20 @@ class ModelList
     function getModelList($ds)
     {
         $list=[];
-        \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $list){
-            $pkg->iterateOnModels(function($model) use ($pkg,& $list){
+        $filter=null;
+        if($this->smallName!==null)
+            $filter=$this->smallName;
+        \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $list,$filter){
+            $pkg->iterateOnModels(function($model) use ($pkg,& $list,$filter){
                 if($pkg->getName()!=="reflection") {
-                    $list[] = ["package" => $pkg->getName(),
-                        "smallName" => str_replace('\\', '/', $model->getClassName()),
-                        "fullName" => $model->getClassName(),
-                        "modelPath" => $model->modelDescriptor->getBaseDir()
-                    ];
+                    $normalized=str_replace('\\', '/', $model->getClassName());
+                    if($filter==null || strpos($normalized,$filter)!==false) {
+                        $list[] = ["package" => $pkg->getName(),
+                            "smallName" => $normalized,
+                            "fullName" => $model->getClassName(),
+                            "modelPath" => $model->modelDescriptor->getBaseDir()
+                        ];
+                    }
                 }
             });
         });

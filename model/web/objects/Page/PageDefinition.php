@@ -94,7 +94,7 @@ abstract class PageDefinition extends \lib\model\BaseDefinition
     }
     abstract function getPageDefinition();
 
-    function getRequiredPermissions()
+    function getRequiredPermissions($action)
     {
         return io($this->getPageDefinition(),"PERMISSIONS",null);
     }

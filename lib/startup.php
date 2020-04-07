@@ -2,7 +2,7 @@
 
 use lib\model\Package;
 use lib\model\ModelService;
-
+include_once("autoloader.php");
 include_once(LIBPATH."/model/BaseTypedObject.php");
 
 class Startup
