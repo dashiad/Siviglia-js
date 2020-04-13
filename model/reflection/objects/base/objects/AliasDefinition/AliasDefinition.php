@@ -28,7 +28,7 @@ abstract class AliasDefinition extends \model\reflection\Model\ModelComponent
 
             if($this->datasources!=null)
                 return $this->datasources;
-            $perms=array('PUBLIC');
+            $perms=array(["TYPE"=>"Public"]);
             $isadmin=false;            
 
             $innerDs=$targetModel->getDataSource($baseName);

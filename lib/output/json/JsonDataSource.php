@@ -46,8 +46,7 @@ class JsonDataSource extends \lib\output\Datasource
             $result["start"]=$ds->getStartingRow();
             $result["end"]=$result["start"]+$it->count();
         }
-        $response=\Registry::$registry["response"];
-        $response->setBuilder(function() use ($result){ return json_encode($result);});
+        return json_encode($result);
     }
 }
 

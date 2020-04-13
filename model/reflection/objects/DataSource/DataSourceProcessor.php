@@ -71,7 +71,7 @@ class DataSourceProcessor extends \model\reflection\base\SystemPlugin {
 
         $defaultDs=array(array("FullList",$viewDsName,"AdminFullList","AdminView"),
                          array($descriptiveFields,$fullFields,$descriptiveFields,$fullFields),
-                         array(array('PUBLIC'),array('PUBLIC'),array(array("MODEL"=>$objName,"PERMISSION"=>"adminList")),array(array("MODEL"=>$objName,"PERMISSION"=>"adminView"))),
+                         array(array(["TYPE"=>"Public"]),array(["TYPE"=>"Public"]),array(array("MODEL"=>$objName,"PERMISSION"=>"adminList")),array(array("MODEL"=>$objName,"PERMISSION"=>"adminView"))),
                          array(array(),$indexFields,array(),$indexFields),
                          array($descriptiveFields,$indexFields,$descriptiveFields,$indexFields),
                          array("list","view","list","view"),
@@ -81,7 +81,7 @@ class DataSourceProcessor extends \model\reflection\base\SystemPlugin {
         {
             $defaultDs[0][]="View";
             $defaultDs[1][]=$fullFields;
-            $defaultDs[2][]=array('PUBLIC');
+            $defaultDs[2][]=array(["TYPE"=>"Public"]);
             $defaultDs[3][]=$urlPathFields;
             $defaultDs[4][]=array();
             $defaultDs[5][]="view";

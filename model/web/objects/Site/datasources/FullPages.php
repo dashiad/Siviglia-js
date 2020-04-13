@@ -37,7 +37,7 @@ class FullPages
                            'JOIN'=>array('id_site'=>'id_site')
                            )
                      ),
-               'PERMISSIONS'=>array('PUBLIC'),
+               'PERMISSIONS'=>array(["TYPE"=>"Public"]),
                'FIELDS'=>array(
                      'id_site'=>array(
                            'MODEL'=>'\model\web\Page',

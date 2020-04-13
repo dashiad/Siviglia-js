@@ -12,8 +12,8 @@ function callSivigliaForm($sivigliaUrl,$object,$formName,$keys,$params)
     $ch = curl_init();
 
     //set the url, number of POST vars, POST data
-    echo $sivigliaUrl."/action.php?output=json";
-    curl_setopt($ch,CURLOPT_URL, $sivigliaUrl."/action.php?output=json");
+    echo $sivigliaUrl."/action?output=json";
+    curl_setopt($ch,CURLOPT_URL, $sivigliaUrl."/action?output=json");
     curl_setopt($ch,CURLOPT_POST, 1);
     curl_setopt($ch,CURLOPT_POSTFIELDS, "json=".json_encode($json));
     curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);

@@ -465,6 +465,8 @@ class PermissionsManager {
                     return true;
                 }break;
                 case PermissionsManager::PERMISSIONSPEC_OWNER:{
+                    if(!$user->isLogged())
+                        return false;
                     $owner = $model->getOwnershipField();
                     if ($owner->getValue() == $user->getId())
                         return true;
@@ -479,6 +481,8 @@ class PermissionsManager {
                 }break;
                 case PermissionsManager::PERMISSIONSPEC_ACL:
                     {
+                        if(!$user->isLogged())
+                            return false;
                         $axoPrefix=$this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_MODULE);
 
                         $axoParam=["GROUP"=>$axoPrefix["group"].$curDef["ON"]];
@@ -498,6 +502,8 @@ class PermissionsManager {
                     }break;
                 case PermissionsManager::PERMISSIONSPEC_ROLE:
                     {
+                        if(!$user->isLogged())
+                            return false;
                         $role=$curDef["ROLE"];
                         $prefix=$this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_USER);
                         if(!isset($curDef["RAW"]) || $curDef["RAW"]==true)

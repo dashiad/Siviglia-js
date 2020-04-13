@@ -104,7 +104,7 @@ class FullList
                 'JOIN'       => ['job_id' => 'job_id'],
             ],
         ],*/
-        'PERMISSIONS' => ['PUBLIC'],
+        'PERMISSIONS' => [["TYPE"=>"Public"]],
         'SOURCE' => [
             'STORAGE' => [
                 'MYSQL' => [

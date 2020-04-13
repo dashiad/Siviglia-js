@@ -35,7 +35,7 @@ class ViewDs
                'INCLUDE'=>array(
 
                      ),
-               'PERMISSIONS'=>array('PUBLIC'),
+               'PERMISSIONS'=>array(["TYPE"=>"Public"]),
                'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(

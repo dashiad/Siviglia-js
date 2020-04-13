@@ -47,7 +47,7 @@ class AclManager
         // Primera tabla : grupos.
         $q[] = "CREATE TABLE IF NOT EXISTS _permission_groups (id smallint(8) AUTO_INCREMENT PRIMARY KEY NOT NULL,group_name varchar(30),group_type smallint(2),group_parent smallint(8) DEFAULT 0,group_path varchar(200),group_charPath char(255), KEY USING HASH(group_type,group_name,group_parent),KEY(group_name,group_path),UNIQUE KEY(group_type,group_charPath))";
         $q[] = "CREATE TABLE IF NOT EXISTS _permission_items (id smallint(8) AUTO_INCREMENT PRIMARY KEY NOT NULL,item_type smallint(2),item_name varchar(20),item_value varchar(50),KEY USING HASH(item_type,item_name,item_value))";
-        $q[] = "CREATE TABLE IF NOT EXISTS _permission_group_items (group_id smallint(8),item_id smallint(8),KEY (group_id),KEY(item_id))";
+        $q[] = "CREATE TABLE IF NOT EXISTS _permission_group_items (id int AUTO_INCREMENT PRIMARY KEY,group_id smallint(8),item_id smallint(8),KEY (group_id),KEY(item_id),UNIQUE KEY(group_id,item_id))";
         $q[] = "CREATE TABLE IF NOT EXISTS _permissions (id smallint(8) AUTO_INCREMENT PRIMARY KEY,aro_type smallint(1),aco_type smallint(1),aro_id smallint(8),aco_id smallint(8),axo_type smallint(1) DEFAULT 0,axo_id smallint(8) DEFAULT 0,allow smallint(1) DEFAULT 1,enabled smallint(1) DEFAULT 1,ACLDATE TIMESTAMP,UNIQUE KEY(aro_type,aro_id,aco_type,aco_id,axo_type,axo_id))";
         $this->conn->batch($q);
     }

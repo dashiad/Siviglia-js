@@ -79,7 +79,7 @@ class FullList
                          'FIELD'=>'id_site'
                      )
                      ),
-               'PERMISSIONS'=>array('PUBLIC'),
+               'PERMISSIONS'=>array(["TYPE"=>"Public"]),
                'STORAGE'=>array(
                      'MYSQL'=>array(
                            'DEFINITION'=>array(

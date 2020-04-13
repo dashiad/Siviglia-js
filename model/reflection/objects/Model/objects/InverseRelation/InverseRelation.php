@@ -118,7 +118,7 @@
 
             if($this->datasources!=null)
                 return $this->datasources;
-            $perms=array('PUBLIC');
+            $perms=array(["TYPE"=>"Public"]);
             $isadmin=false;
 
             $multiplicity=$this->targetField->getMultiplicity();

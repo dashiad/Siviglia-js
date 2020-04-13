@@ -81,7 +81,7 @@ class ViewDs
                            'JOIN'=>array('id_lang'=>'id_lang')
                            )
                      ),
-               'PERMISSIONS'=>array('PUBLIC'),
+               'PERMISSIONS'=>array(["TYPE"=>"Public"]),
          'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(

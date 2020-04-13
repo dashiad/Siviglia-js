@@ -377,5 +377,9 @@ EOT;
     {
         $manager->createGroup("/site/".$this->namespace,\lib\model\permissions\PermissionsManager::PERM_TYPE_MODULE);
     }
+    function getLoginPage()
+    {
+        return $this->getConfig()->getLoginPage();
+    }
 }
 ?>

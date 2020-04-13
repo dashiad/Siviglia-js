@@ -48,11 +48,10 @@ abstract class BaseDefinition extends BaseTypedObject
         if(!isset($def["PERMISSIONS"]))
         {
             // TODO : FIRE A WARNING
-            return;
+            return true;
         }
-
-        $accessDef=new \lib\model\permissions\AccessDefinition($def["PERMISSIONS"]);
-        $accessDef->check($user,$this->getPermissionsTarget());
+        $permissions=\Registry::getService("permissions");
+        return $permissions->canAccess($def["PERMISSIONS"]);
     }
 
 

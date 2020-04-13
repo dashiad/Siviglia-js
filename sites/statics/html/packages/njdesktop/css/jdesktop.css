@@ -36,15 +36,27 @@
  * 
  */
 
+@font-face {
+	font-family: "ExpresswayRg";
+	src: url("ExpresswayRg.woff") format("woff"),
+	url("ExpresswayRg.woff2") format("woff2")
+}
+@font-face {
+	font-family:"BoxIcons";
+	src:url("boxicons/fonts/boxicons.svg") format("svg"),
+	url("boxicons/fonts/boxicons.woff") format("woff"),
+	url("boxicons/fonts/boxicons.woff2") format("woff2");
+}
 html{width:100%; height:100%; overflow:hidden;}
 
-body{margin:0; padding:0; width:100%; height:100%; position:relative; background-color: #3A6EA5; font-family:Verdana, helvetica, sans-serif; font-size:14px;}
+body{margin:0; padding:0; width:100%; height:100%; position:relative; background-color: #222; font-family:ExpresswayRg; font-size:14px;}
 
 #wrapper{width:100%; height:100%; position:absolute; left:0;top:0; bottom:0; right:0}
 
-#nJDSKBG{width:100%; height:100%;}
 
-#topmenu{position:absolute; top:0; left:0; width:100%; z-index:#999999999; }
+
+#topmenu{position:absolute; top:0; left:0; width:100%; z-index:#999999999;background-color:#444;border-bottom:1px solid #666 }
+
 
 #widgets{position:absolute; right:0; z-index:#999999999; }
 
@@ -201,6 +213,7 @@ body{margin:0; padding:0; width:100%; height:100%; position:relative; background
         min-height:100px;
         left:10px;
         top:10px;
+
       }
 
       .titlebar{
@@ -215,7 +228,6 @@ body{margin:0; padding:0; width:100%; height:100%; position:relative; background
         display:block;
         float:left;
         text-decoration:none;
-        text-indent:-9999999px;
       }
       
       a img{border:0}

@@ -18,6 +18,7 @@ class Config extends \model\web\Site\SiteConfig
         "WIDGETPATH"=>array(
             "/sites/reflection/widgets/SKINS/GENTELELLA"
         ),
+        "LOGIN_PAGE"=>"Login",
         "services"=>array(
             "user"=>array(
                 'REQUIRE_UNIQUE_EMAIL' => true,

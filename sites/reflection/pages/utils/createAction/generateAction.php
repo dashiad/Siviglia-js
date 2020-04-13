@@ -72,7 +72,7 @@ for($k=0;$k<count($_POST["extraFields"]);$k++)
         $paths[$fName]=$fTarget;
     }
 }
-$perms=\model\reflection\Permissions\PermissionRequirementsDefinitionRequirementsDefinition::create(array('PUBLIC'));
+$perms=\model\reflection\Permissions\PermissionRequirementsDefinitionRequirementsDefinition::create(array(["TYPE"=>"Public"]));
 $curAction=new \model\reflection\Action\ActionDefinition($_POST["actionName"],$model);
 
 $curAction->create($_POST["tipo"],$indexFields,$requiredFields,$optionalFields,null,false,"",$paths);

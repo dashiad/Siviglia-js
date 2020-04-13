@@ -80,7 +80,7 @@
 		<div id="desktop">
 			<div id="desktop_iconarea"></div>
 		</div>
-		<div id="widgets"></div>
+		<!--<div id="widgets"></div>-->
 		<div id="topmenu">
 			<ul></ul>
 		</div>

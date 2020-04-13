@@ -128,7 +128,7 @@ class FullList
                 'FIELD' => 'updated_at'
             ],
         ],
-        'PERMISSIONS' => ['PUBLIC'],
+        'PERMISSIONS' => [["TYPE"=>"Public"]],
         'SOURCE' => [
             'STORAGE' => [
                 'MYSQL' => [

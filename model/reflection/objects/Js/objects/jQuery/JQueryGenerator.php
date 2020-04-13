@@ -109,7 +109,7 @@ CLASS;
         // va a ser necesario cargar en la clase del formulario.
         $formClass=$this->model->objectName->getUnderNamespaced();
         $title=$name;
-        $endPoint='/action.php?output=json';
+        $endPoint='/action?output=json';
         $def=$form->getDefinition();
         if(isset($def["DESCRIPTION"]))
             $desc=$def["DESCRIPTION"];

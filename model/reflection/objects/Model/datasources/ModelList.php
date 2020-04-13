@@ -55,8 +55,8 @@ class ModelList
     {
         $list=[];
         $filter=null;
-        if($this->smallName!==null)
-            $filter=$this->smallName;
+        if($ds->smallName!==null)
+            $filter=$ds->smallName;
         \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $list,$filter){
             $pkg->iterateOnModels(function($model) use ($pkg,& $list,$filter){
                 if($pkg->getName()!=="reflection") {

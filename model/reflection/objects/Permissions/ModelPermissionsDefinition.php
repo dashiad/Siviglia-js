@@ -37,7 +37,7 @@ class  ModelPermissionsDefinition
                 $targets=array();
                 foreach($who as $index=>$whoGroup)
                 {
-                    if( $whoGroup=='PUBLIC' || $whoGroup=='OWNER' )
+                    if( $whoGroup==["TYPE"=>"Public"] || $whoGroup=='OWNER' )
                         continue;
                     $targets[]=$whoGroup;
                 }
@@ -64,14 +64,14 @@ class  ModelPermissionsDefinition
         $layerPerm=ucfirst($layer)."Admin";
         return new ModelPermissionsDefinition($parentModel,  
                                                                     array(
-                                                                            $className."_create"=>array("ALLOW"=>array('PUBLIC')),
-                                                                            $className."_destroy"=>array("ALLOW"=>array('PUBLIC')),
-                                                                            $className."_edit"=>array("ALLOW"=>array('PUBLIC')),
-                                                                            $className."_view"=>array("ALLOW"=>array('PUBLIC')),
+                                                                            $className."_create"=>array("ALLOW"=>array(["TYPE"=>"Public"])),
+                                                                            $className."_destroy"=>array("ALLOW"=>array(["TYPE"=>"Public"])),
+                                                                            $className."_edit"=>array("ALLOW"=>array(["TYPE"=>"Public"])),
+                                                                            $className."_view"=>array("ALLOW"=>array(["TYPE"=>"Public"])),
                                                                             $className."_adminCreate"=>array("ALLOW"=>array($layerPerm)),
                                                                             $className."_adminDestroy"=>array("ALLOW"=>array($layerPerm)),
-                                                                            $className."_adminEdit"=>array("ALLOW"=>array('PUBLIC')),
-                                                                            $className."_adminView"=>array("ALLOW"=>array('PUBLIC')),
+                                                                            $className."_adminEdit"=>array("ALLOW"=>array(["TYPE"=>"Public"])),
+                                                                            $className."_adminView"=>array("ALLOW"=>array(["TYPE"=>"Public"])),
                                                                           )
                                                                  );
 

@@ -42,4 +42,9 @@ abstract class SiteConfig
         return io($def,"WIDGETPATH",array());
 
     }
+    function getLoginPage()
+    {
+        $def=$this->getDefinition();
+        return io($def,"LOGIN_PAG",null);
+    }
 }

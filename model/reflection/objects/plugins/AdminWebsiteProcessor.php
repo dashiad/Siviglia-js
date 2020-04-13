@@ -18,7 +18,7 @@ class AdminWebsiteProcessor extends \model\reflection\base\SystemPlugin
         if ($config->mustRebuild("page", "index", PROJECTPATH . "/html/Website/admin/index.wid")) {
             $this->generateIndexPageDefinition($sys, 'Website\\admin',
                 '/admin/index.wid',
-                array('PUBLIC'),
+                array(["TYPE"=>"Public"]),
                 "/admin/index",
                 PROJECTPATH . "/html/Website/admin");
 

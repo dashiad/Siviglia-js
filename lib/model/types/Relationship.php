@@ -66,7 +66,7 @@ class Relationship extends BaseType {
               "VALUE"=>$this->definition["FIELDS"][$keys[0]],
               "LABEL"=>$label
           ];
-          if(isset($this->definition["CONDITIONS"]))
+          if(isset($this->definition["PARAMS"]))
               $param["PARAMS"]=$this->definition["PARAMS"];
           return \lib\model\types\sources\SourceFactory::getSource($this,$param, false);
       }

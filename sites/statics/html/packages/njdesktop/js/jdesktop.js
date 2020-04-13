@@ -284,7 +284,7 @@ var nJDSK = (function(wnd,d,$){
 	  		  this.minimizeBtn = document.createElement('a');
 	  		  this.titleButtons.appendChild(this.minimizeBtn);
 	  		  $(this.minimizeBtn).attr('href','#');
-	  		  $(this.minimizeBtn).html('_');
+	  		 // $(this.minimizeBtn).html('_');
 	  		  $(this.minimizeBtn).addClass('minimizebtn');
 	  		  var minThat = this;
 	  		  $(this.minimizeBtn).click(function(){
@@ -299,7 +299,7 @@ var nJDSK = (function(wnd,d,$){
 	  		  this.maximizeBtn = document.createElement('a');
 	  		  this.titleButtons.appendChild(this.maximizeBtn);
 	  		  $(this.maximizeBtn).attr('href','#');
-	  		  $(this.maximizeBtn).html('O');
+	  		  //$(this.maximizeBtn).html('O');
 	  		  $(this.maximizeBtn).addClass('maximizebtn');
 	  		  var maxThat = this;
 	  		  $(this.maximizeBtn).click(function(){
@@ -392,7 +392,7 @@ var nJDSK = (function(wnd,d,$){
 	  	  this.closeBtn = document.createElement('a');
 	  	  this.titleButtons.appendChild(this.closeBtn);
 	  	  $(this.closeBtn).attr('href','#');
-	  	  $(this.closeBtn).html('X');
+	  	 // $(this.closeBtn).html('X');
 	  	  $(this.closeBtn).addClass('closebtn');
 
 	  	  var closeObject = this;
@@ -1244,8 +1244,8 @@ var nJDSK = (function(wnd,d,$){
 	  	 */
 	  	setBackground: function(bgimage)
 	  	{
-	  		$('#nJDSKBG').remove();
-	  		$('body').prepend('<img id="nJDSKBG" src="'+bgimage+'" />');
+	  		/*$('#nJDSKBG').remove();
+	  		$('body').prepend('<img id="nJDSKBG" src="'+bgimage+'" />');*/
 
 	  	},
 

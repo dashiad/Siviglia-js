@@ -49,7 +49,7 @@ class DataSource extends \model\reflection\base\ConfiguredObject
                 $this->haveIndexes=true;
                 $this->modelIndexes=$containsIndexes;
         }               
-        $this->permissions=new \model\reflection\Permissions\PermissionRequirementsDefinition($definition["PERMISSIONS"]?$definition["PERMISSIONS"]:'PUBLIC');
+        $this->permissions=new \model\reflection\Permissions\PermissionRequirementsDefinition($definition["PERMISSIONS"]?$definition["PERMISSIONS"]:["TYPE"=>"Public"]);
         $this->includes=array();
         if(isset($this->definition["INCLUDE"]))
         {

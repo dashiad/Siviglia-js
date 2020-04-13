@@ -20,7 +20,7 @@ class PermissionRequirementsDefinition
             else
             {
                 if(count($definition)==0) // "PERMISSIONS"=>array()
-                    $this->definition=array('PUBLIC');
+                    $this->definition=array(["TYPE"=>"Public"]);
                 else
                 {
                     $this->definition=$definition;
@@ -31,7 +31,7 @@ class PermissionRequirementsDefinition
         {
 
             if(!$definition)
-                $this->definition=array('PUBLIC');
+                $this->definition=array(["TYPE"=>"Public"]);
             else
             {
                 $this->definition=array($definition);
@@ -57,7 +57,7 @@ class PermissionRequirementsDefinition
 
     function isJustPublic()
     {
-        return ($this->definition=='PUBLIC' || $this->definition==array('PUBLIC') );
+        return ($this->definition==["TYPE"=>"Public"] || $this->definition==array(["TYPE"=>"Public"]) );
     }
     function getDefinition()
     {

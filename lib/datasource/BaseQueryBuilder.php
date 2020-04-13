@@ -77,7 +77,11 @@ abstract class BaseQueryBuilder
             $plainParams=$allSerialized[0];
 
         }
-        return ParametrizableString::getParametrizedString($text,$plainParams);
+        $stack=new \lib\model\ContextStack();
+        $ctx=new \lib\model\BaseObjectContext($plainParams,"/",$stack);
+        // Se aniade el contexto global
+        new \lib\model\BaseObjectContext(\lib\model\GlobalContext::getInstance(),"!",$stack);
+        return ParametrizableString::getParametrizedString($text,$stack);
     }
     abstract function getDynamicParamValue($paramValue,$paramType);
     abstract function getSerializerType();

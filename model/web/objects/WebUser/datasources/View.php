@@ -37,7 +37,7 @@ class View
 
 
                      ),
-               'PERMISSIONS'=>array('PUBLIC'),
+               'PERMISSIONS'=>array(["TYPE"=>"Public"]),
          'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(

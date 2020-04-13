@@ -63,7 +63,7 @@ class Page
     function onUnauthorized($response)
     {
         $router=\Registry::getService("router");
-        $response->setBuilder(\lib\Response::redirect($router->generateUrl("error",array())));
+        $response->setBuilder(\lib\Response::redirect($router->generateUrl("login",array())));
     }
     function onError($response)
     {

@@ -1,5 +1,5 @@
 [*/PAGE/PAGE]
-    [_TITLE]Testing[#]
+    [_TITLE]Reflection[#]
     [_CONTENT]
         [*/model/web/objects/Site/html/views/FullList][#]
     [#]

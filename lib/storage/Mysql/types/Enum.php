@@ -10,7 +10,7 @@ namespace lib\storage\Mysql\types;
           if($type->hasValue())
           {
               $def=$type->getDefinition();
-              if(isset($def["MYSQL_STORE_AS_INTEGER"]))
+              if(isset($def["MYSQL"]) && isset($def["MYSQL"]["STORE_AS_INTEGER"]))
                   return intval($type->getValue());
               return [$name=>"'".htmlentities($type->getLabel(),ENT_NOQUOTES,"UTF-8")."'"];
           }

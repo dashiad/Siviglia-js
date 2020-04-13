@@ -78,15 +78,36 @@ class Form extends \lib\model\BaseTypedObject
         return password_verify($hashString,$hash);
     }
 
-    function initialize($formName,$formModel,$keys)
+    function initialize($formName,$formModel)
     {
         $this->formModel=$formModel;
         $this->formName=$formName;
-        $this->keys=$keys;
 
     }
 
-    static function getForm($object,$name,$keys,$baseTypedObject=null)
+    function load($keys=null)
+    {
+        $modelService=\Registry::getService("model");
+        $instance=$modelService->getModel($this->formModel);
+        if($keys==null)
+            $keys=$this->keys;
+        if($keys)
+        {
+            foreach($keys as $k=>$v)
+            {
+                $instance->{$k}=$v;
+            }
+            $instance->loadFromFields();
+        }
+        $curValue=[];
+        foreach($this->__fieldDef as $key=>$value)
+        {
+            if(isset($value["MODEL"]))
+                $this->{$key}=$instance->{"*".$key}->getValue();
+        }
+    }
+
+    static function getForm($object,$name)
     {
         $instanceError=false;
 
@@ -95,7 +116,7 @@ class Form extends \lib\model\BaseTypedObject
         $formClass=$objName->getNamespacedForm($name);
         $actionResult=new \lib\action\ActionResult();
         $form=new $formClass($actionResult);
-        $form->initialize($name,$object,$keys,$baseTypedObject);
+        $form->initialize($name,$object);
         return $form;
     }
     function resolve($request)
@@ -124,10 +145,14 @@ class Form extends \lib\model\BaseTypedObject
 
 
         foreach ($this->formDefinition["FIELDS"] as $key => $value) {
-            if($this->__getField($key)->isDirty())
+            $isKey=false;
+            if(isset($this->formDefinition["INDEXFIELDS"]) && in_array($key,$this->formDefinition["INDEXFIELDS"]))
+                $isKey=true;
+            if($this->__getField($key)->isDirty() && !$isKey)
                     continue;
 
             $inputName=$key;
+
             // Si no viene el tipo de input , se supone textField.
             if(!isset($formData["INPUTS"][$key]))
                 $curInput = "DefaultInput";
@@ -140,23 +165,21 @@ class Form extends \lib\model\BaseTypedObject
             {
                 // Puede ser que formValues["FIELDS"][$field] no este "set",y, aun asi, el campo tenga un valor.
                 // Por ejemplo, en los checkboxes.
-
-                if(isset($formData["FIELDS"][$key]))
+                $currentInputValue=null;
+                if($isKey)
                 {
-                    $currentInputValue=$formData["FIELDS"][$key];
-                    $inputController->unserialize($currentInputValue);
-                    $val=$inputController->getValue();
-
-
-                    // DESERIALIZAR HTML!!!
-                    // function unserializeType($name,$mixedType,$value,$model)
-                    $unserializedFields[$key]=$val;
+                    $currentInputValue=$formData["keys"][$key];
                 }
                 else
                 {
-                    $currentInputValue = null;
+                    if(isset($formData["FIELDS"][$key]))
+                    {
+                        $currentInputValue=$formData["FIELDS"][$key];
+                    }
                 }
-
+                    $inputController->unserialize($currentInputValue);
+                    $val=$inputController->getValue();
+                    $unserializedFields[$key]=$val;
             }
             catch(\lib\output\html\inputs\InputException $e)
             {
@@ -187,7 +210,6 @@ class Form extends \lib\model\BaseTypedObject
             if(!$this->__validate($unserializedFields,$this->actionResult,"PHP"))
             {
                 $this->onError($this->actionResult);
-                $errored=true;
             }
             $this->__loaded=true;
         }
@@ -252,7 +274,7 @@ class Form extends \lib\model\BaseTypedObject
         return true;
     }
 
-    function onSuccess($actinResult)
+    function onSuccess($actionResult)
     {
         return true;
     }
@@ -273,9 +295,9 @@ class Form extends \lib\model\BaseTypedObject
              else
                  $keys=null;
 
-            global $oCurrentUser;
+            $user=\Registry::getService("user");
             $action=\lib\action\Action::getAction($this->formDefinition["ACTION"]["MODEL"],$this->formDefinition["ACTION"]["ACTION"]);
-            $action->process($this,$this->actionResult,$oCurrentUser);
+            $action->process($this,$this->actionResult,$user);
             return $this->actionResult->isOk();
         }
         return false;

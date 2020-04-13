@@ -134,7 +134,7 @@ class MysqlDsDefinition
             }
 
             $ds=new \model\reflection\DataSource\DataSource($dsName,$model);
-            $ds->create($metaData,array('PUBLIC'),array(),$parameters,"list");
+            $ds->create($metaData,array(["TYPE"=>"Public"]),array(),$parameters,"list");
             $mysqlDef=array(
                 "TABLE"=>$model->getTableName(),
                 "BASE"=>$query,
@@ -417,7 +417,7 @@ class MysqlDsDefinition
                     $descriptive=array_merge_recursive($descriptive,$curDescriptive);
                 }
                 $ds=new \model\reflection\DataSource\DataSource($queryName,$curModel);
-                $ds->create($descriptive,array('PUBLIC'),array(),$descriptive,"list");
+                $ds->create($descriptive,array(["TYPE"=>"Public"]),array(),$descriptive,"list");
                 $curModel->addDataSource($ds);
                 $myDs=new ESDsDefinition($curModel,$queryName,$ds);
                 $myDs->initialize(array("DEFINITION"=>$q));

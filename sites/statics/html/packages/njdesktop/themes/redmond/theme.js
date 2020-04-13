@@ -1,7 +1,7 @@
 nJDSKStyle = {
 	taskbarHeight: 30,
   	topMenuHeight: 25,
-  	widgetWidth: 200,
+  	widgetWidth: 0,
   	iconWidth:96,
   	iconMaxHeight:128,
   	iconMargin:10,

@@ -70,8 +70,10 @@ class Router
             case "action":{
 
                 $response->setBuilder(function() use ($request){
-                    return $request->resolveActions();
+                    $r=\lib\routing\Action::getInstance(null,$request,\lib\routing\Action::MODE_PROCESS_FORM);
+                    return $r->resolve();
                 });
+
                 return;
             }break;
             case "datasource":{
@@ -82,9 +84,30 @@ class Router
                     if($value["MODEL"][0]!="/")
                         $value["MODEL"]="/".$value["MODEL"];
                     $value["NAME"]=$matches[2];
-                    $r=\lib\routing\Datasource::getInstance($value,$request->getParameters(),$this->request);
-                    $r->resolve();
+                    $response->setBuilder(function() use ($request,$value) {
+                        $r = \lib\routing\Datasource::getInstance($value, $request->getParameters(), $this->request);
+                        return $r->resolve();
+                    });
+                    return;
                 }
+                //TODO : Y SI NO HACE MATCH?
+                return;
+            }break;
+            case "form":{
+                $regex="#form/(.*)/([^/?]+)#";
+                if(preg_match($regex,$subpath,$matches))
+                {
+                    $value["MODEL"]=$matches[1];
+                    if($value["MODEL"][0]!="/")
+                        $value["MODEL"]="/".$value["MODEL"];
+                    $value["NAME"]=$matches[2];
+                    $response->setBuilder(function() use ($request,$value) {
+                        $r = \lib\routing\Action::getInstance($value, $this->request, \lib\routing\Action::MODE_LOAD_FORM);
+                        return $r->resolve();
+                    });
+                    return;
+                }
+                // TODO: Y SI NO HACE MATCH?
                 return;
             }break;
             case "js":{

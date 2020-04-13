@@ -17,6 +17,7 @@ class Pages
         "/Jobs/{job_id}"=>"viewJob",
         "/Jobs/{job_id}/view"=>"viewJob",
         "/error"=>"error",
-        "/Site/{namespace}"=>"site"
+        "/Site/{namespace}"=>"site",
+        "/login" => "login"
     );
 }

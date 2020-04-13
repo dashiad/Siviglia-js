@@ -105,7 +105,13 @@ abstract class TypeSerializer
         $serializers=$this->getSerializersForObject($object);
         $object->beginUnserialize();
         foreach ($data as $key => $value) {
-            $serializers[$key]->unserialize($key, $object->{"*" . $key}, $data, $this, $object);
+            if(isset($serializers[$key]))
+                $serializers[$key]->unserialize($key, $object->{"*" . $key}, $data, $this, $object);
+            else
+            {
+                // TODO: Esta llegando data con una key que no esta en el modelo. Falta por añadir ese campo en el Definition?
+            }
+
         }
         $object->endUnserialize();
     }

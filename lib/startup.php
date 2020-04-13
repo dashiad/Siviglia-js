@@ -72,6 +72,10 @@ class Startup
     }
     static function initializeContext()
     {
+        $context=\lib\model\GlobalContext::getInstance();
+        $context->user=\Registry::getService("user");
+        $context->site=\model\web\Site::getCurrentWebsite();
+
         return;
         /*global $globalContext;
         global $globalPath;

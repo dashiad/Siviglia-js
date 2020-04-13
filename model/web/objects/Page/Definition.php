@@ -167,7 +167,7 @@ class Definition extends \lib\model\BaseModelDefinition
                         ),
                         /*'requiredPermission'=>array(
                             'TYPE'=>'ENUM',
-                            'DEFAULT'=>'PUBLIC',
+                            'DEFAULT'=>["TYPE"=>"Public"],
                             'LABEL'=>'Required permission',
                             'VALUES'=>array(
                                 \model\web\Page::PAGE_PERMISSION_PUBLIC,

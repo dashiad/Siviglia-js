@@ -6,7 +6,7 @@
  * Time: 1:22
  */
 
-namespace sites\editor\pages\User\Login;
+namespace sites\editor\pages\Login;
 
 include_once(PROJECTPATH."/model/web/objects/Page/PageDefinition.php");
 class Definition extends \model\web\Page\PageDefinition
@@ -16,7 +16,7 @@ class Definition extends \model\web\Page\PageDefinition
         return array(
             'CACHING'=>array('TYPE'=>'NO-CACHE'),
             'ENCODING'=>'utf8',
-            'PERMISSIONS'=>array('PUBLIC'),
+            'PERMISSIONS'=>array(["TYPE"=>"Public"]),
             'SOURCES'=>array(
             ),
             'FIELDS'=>array(

@@ -38,22 +38,13 @@ class Edit extends \lib\action\Action
                            'DATASOURCE'=>array(
                                  'MODEL'=>'\model\web\Site',
                                  'NAME'=>'FullList',
+                                 'LABEL'=>'websiteName',
                                  'PARAMS'=>array()
                                  )
                            ),
                      'name'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'name',
-                           'MODEL'=>'\model\web\Page'
-                           ),
-                     'date_add'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'date_add',
-                           'MODEL'=>'\model\web\Page'
-                           ),
-                     'date_modified'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'date_modified',
                            'MODEL'=>'\model\web\Page'
                            ),
                      'id_type'=>array(
@@ -77,12 +68,10 @@ class Edit extends \lib\action\Action
                            'MODEL'=>'\model\web\Page'
                            ),
                      'tags'=>array(
-                           'REQUIRED'=>1,
                            'FIELD'=>'tags',
                            'MODEL'=>'\model\web\Page'
                            ),
                      'description'=>array(
-                           'REQUIRED'=>1,
                            'FIELD'=>'description',
                            'MODEL'=>'\model\web\Page'
                            )

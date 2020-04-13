@@ -70,13 +70,9 @@ class Page extends \lib\model\BaseModel
 
     public function checkPermissions($user)
     {
-        try {
-            $this->getPageDefinition();
-            $this->__pageDef->checkPermissions($user);
-        }catch(\lib\model\permissions\AccessDefinitionException $e)
-        {
+        $this->getPageDefinition();
+        if(!$this->__pageDef->checkPermissions($user))
             throw new PageException(PageException::ERR_NOT_ALLOWED);
-        }
     }
 
     static function getPageFromPath($path,$site,$request,$params)
@@ -132,6 +128,10 @@ class Page extends \lib\model\BaseModel
         $instance = new $fullName();
         $instance->loadFromArray($data->getRow());
         $instance->setPageDefinition($definition);
+        if(!$instance->accessAllowed())
+        {
+            $loginPage=$site->getLoginPage();
+        }
         return $instance;
     }
     /*
@@ -552,12 +552,14 @@ EOT;
         $router=\Registry::getService("router");
         return $router->generateUrl($name,$params);
     }
-    function canAccess($permsService,$user)
+    function accessAllowed()
     {
+        $permsService=\Registry::getService("permissions");
+        $user=\Registry::getService("user");
         $this->getPageDefinition();
-        $perms=$this->__pageDef->getRequiredPermissions();
+        $perms=$this->__pageDef->getRequiredPermissions(null);
         if(!$perms)
             return true;
-        return $permsService->canAccess($perms,$this,$user);
+        return $permsService->canAccess($perms,$user);
     }
 }

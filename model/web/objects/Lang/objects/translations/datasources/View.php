@@ -45,7 +45,7 @@ class View
                            'FIELD'=>'id_translation'
                            )
                      ),
-               'PERMISSIONS'=>array('PUBLIC'),
+               'PERMISSIONS'=>array(["TYPE"=>"Public"]),
          'SOURCE'=>[
                'STORAGE'=>array(
                      'MYSQL'=>array(
