@@ -43,7 +43,8 @@ $Config=[
     "DEFAULT_SERIALIZER"=>"default",
     "DEVELOPMENT"=>0,
     "DEFAULT_LANGUAGE"=>"es",
-    "DEFAULT_LANGUAGE_ID"=>1
+    "DEFAULT_LANGUAGE_ID"=>1,
+    "RANDOM_STR"=>"/lkjlJLkuOPIuoBN/(/i76"
 
 ];
 

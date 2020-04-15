@@ -9,12 +9,20 @@
     url("/editor/boxicons/fonts/boxicons.woff") format("woff"),
     url("/editor/boxicons/fonts/boxicons.woff2") format("woff2");
 }
+:root {
+    --main-background:#222;
+    --secondary-background:#333;
+    --main-font:"ExpresswayRg";
+    --main-color:#EEE;
+    --contrast-0:#3B88B3;
+    --contrast-1:#03466B
+}
 body
 {
     margin:0px;
     padding:0px;
-    background-color:#222;
-    font-family:"ExpresswayRg"
+    background-color:var(--main-background);
+    font-family:var(--main-font);
 
 }
 

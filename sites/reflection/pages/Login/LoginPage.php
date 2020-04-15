@@ -6,7 +6,7 @@
  * Time: 0:22
  */
 
-namespace sites\editor\pages\Login;
+namespace sites\reflection\pages\Login;
 
 
 class LoginPage extends \model\web\Page

@@ -1,7 +1,7 @@
-[*/PAGE/PAGE]
-    [_TITLE]Reflection[#]
+[*PAGE/PAGE]
+    [_TITLE]Index SECCION - v.1.0 beta Smartclip[#]
     [_CONTENT]
-        [*/model/web/objects/Site/html/views/FullList][#]
+    <div data-sivView="Siviglia.site.widgets.JS.Desktop"></div>
     [#]
 [#]
 

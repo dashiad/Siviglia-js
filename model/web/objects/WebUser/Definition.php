@@ -40,7 +40,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'DESCRIPTIVE'=>'false',
                            'ISLABEL'=>'false',
                             'PASSWORD_ENCODING'=>'BCRYPT',
-                            'COST'=>11
+                            'COST'=>12
                            ),
                      'USER_ID'=>array(
                            'DEFAULT'=>'',

@@ -1,88 +1,31 @@
-<?php
-   $site=\Registry::getService("site");
-   $ds=\lib\datasource\DataSourceFactory::getDataSource('\model\reflection\ReflectorFactory','NamespaceList');
-   $it=$ds->fetchAll();
-?>
-
-[*:SKIN_PAGE]
-   [_:TITLE][_TITLE][_*][#][#]
-   [_:LOGO]Reflection[#]
-   [_:MAIN_MENU]
-      [*::SKIN_LATERAL_MENU]
-         [_::SUBMENU_SECTION]
-            [_::SECTION_TITLE]System[#]
-            [_::SECTION_GROUPS]
-                [_::SUBMENU_GROUP]
-                    [_::SUBMENU_TITLE]Namespaces[#]
-                    [_::SUBMENU_ICON]cubes[#]
-                    [_::SUBMENU_ENTRIES]
-                            [_::MENU_ENTRY<?php for($k=0;$k < $it->count();$k++){?>]
-                                [_::LABEL]<?php echo $it[$k]->name;?>[#]
-                                [_::LINK][@LINK][_PAGE]Namespaces[#][_PARAMS]namespace=$it[$k]->name[#][#][#]
-                            [#<?php } ?>]
-                    [#]
-                [#]
-            [#]
-          [#]
-          [_::SUBMENU_SECTION]
-            [_::SECTION_TITLE]Definitions[#]
-            [_::SECTION_GROUPS]
-                [_::SUBMENU_GROUP]
-                    [_::SUBMENU_TITLE]Definitions[#]
-                    [_::SUBMENU_ICON]cubes[#]
-                    [_::SUBMENU_ENTRIES]
-                            [_::MENU_ENTRY]
-                                [_::LABEL]Add[#]
-                                [_::LINK][@LINK][_PAGE]EditDefinition[#][#][#]
-                            [#]
-                    [#]
-                [#]
-            [#]
-          [#]
-        [#]
-   [#]
-    [_:CONTENT_TITLE]
-        [_CONTENT_TITLE]
-            [_*]
-        [#]
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/node_modules/jquery/dist/jquery.js[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/reflection/css/style.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/css/jdesktop.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/themes/redmond/jquery-ui/jquery-ui.min.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/themes/redmond/jquery-ui/jquery-ui.structure.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/themes/redmond/jquery-ui/jquery-ui.theme.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/themes/redmond/jdesktop.forms.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/themes/redmond/jdesktop.text.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/themes/redmond/style.css[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/js/vendor/jquery-ui.min.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/js/vendor/jquery.scrollTo-min.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/js/vendor/jquery.ui.selectmenu.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/themes/redmond/theme.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/js/jdesktop.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/js/jdesktop.widgets.js[#][#]
     [#]
-    [_:CONTENT_TITLE_RIGHT]
-        [_CONTENT_TITLE_RIGHT]
-            [_*]
-        [#]
-    [#]
+[#]
+[*:HTML/HTMLPAGE]
+    [_:BODYCLASSES][_BODYCLASSES][_*][#][#]
+    [_:TITLE][_TITLE][_*][#][#]
     [_:CONTENT]
+
         [_CONTENT]
             [_*]
         [#]
     [#]
 [#]
-
-[@DEPENDENCY]
-    [_BUNDLE]Site[#]
-    [_CONTENTS]
-        [_SCRIPT]
-            [_CODE]
-            <script>
-                var Siviglia=Siviglia || {};
-                Siviglia.config={
-                    baseUrl:'<?php echo $site->getCanonicalUrl();?>/',
-                    publicUrl:'<?php echo $site->getCanonicalUrl();?>',
-                    namespaces:['backoffice','web'],
-                    defaultNamespace:'backoffice',
-                    jsFramework:'jquery',
-                    datasourcePrefix:'datasources',
-                    isDevelopment:0,
-                    mapper: 'BackofficeMapper',
-                    id_lang:'es'
-                };
-               Siviglia.Model.initialize(Siviglia.config);
-                var oApp=new Siviglia.App.App({});
-                var Page=new Siviglia.App.Page(oApp);
-                oApp.setPage(Page);
-            </script>
-            [#]
-        [#]
-        [_WIDGET][_FILE]/sites/reflection/widgets/JSWIDGETS/Globals.wid[#][#]
-    [#]
-[#]
+[*::SIVIGLIA/INIT][#]

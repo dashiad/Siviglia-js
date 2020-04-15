@@ -1,10 +1,11 @@
+<?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/JqxWidgets.html"); ?>
 [@DEPENDENCY]
     [_BUNDLE]Page[#]
     [_CONTENTS]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/jqx-all.js[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/globalization/globalize.js[#][#]
         [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/styles/jqx.base.css[#][#]
-        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/styles/jqx.light.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/styles/jqx.darkblue.css[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Siviglia.js[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/SivigliaStore.js[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/SivigliaTypes.js[#][#]
@@ -32,9 +33,9 @@
                         //parser.addContext("/",obj1);
                         parser.parse($(document.body));
                     });
+                    $.jqx.theme = "darkblue";
                 </script>
             [#]
         [#]
     [#]
 [#]
-<?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/JqxWidgets.html"); ?>

@@ -65,7 +65,7 @@ class Site extends \lib\model\BaseModel
     {
         $parts=explode("/",$path);
         if($parts[0]=="")
-            $parts=array_shift($parts);
+            array_shift($parts);
         $newParts=array_map(function($item){return ucfirst($item);},$parts);
         return array("norm"=>implode($separator,$newParts),"last"=>$newParts[count($newParts)-1]);
     }

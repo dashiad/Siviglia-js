@@ -2,6 +2,7 @@
   class Password extends _String
   {
       const DEFAULT_COST=12;
+      var $encoded;
       function __construct($def=array(),$value=false)
       {
           $def["TYPE"]="Password";
@@ -9,10 +10,12 @@
           $def["MAXLENGTH"]=io($def,"MAXLENGTH",16);
           $def["REGEXP"]=io($def,"REGEXP",'/^[a-zA-Z0-9\d_]{'.$def["MINLENGTH"].','.$def["MAXLENGTH"].'}$/i');
           $def["TRIM"]=true;
+          $this->encoded=false;
           parent::__construct($def,$value);
       }
       function _validate($val)
       {
+
           if(strpos($val,'$argon2i$')===0 ||
               strpos($val,'$2y$')===0)
               return true;
@@ -23,31 +26,25 @@
           $this->value=$val;
           // Los sistemas de encriptacion ponen como primer caracter el $. Como $ no es valido
           // en teoria deberia servir.
-
-
-          if($val[0]!='$')
-              $this->encode();
+          if(preg_match('/^$[0-9]+$[0-9]+$/',$val))
+              $this->encoded=true;
+          else
+              $this->encoded=false;
           $this->valueSet=true;
       }
 
-      function encode($configuration=null)
+      function encode($str=null)
       {
-          if(!$configuration)
-          {
-              $passwordEncoding=$this->definition["PASSWORD_ENCODING"];
-              $options=array("cost"=>$this->definition["COST"]);
-          }
-          else {
-              $passwordEncoding = io($configuration, "PASSWORD_ENCODING", "default");
-              $options = array("cost" => io($configuration, "COST", Password::DEFAULT_COST));
-          }
-          if(!$passwordEncoding)
-              $passwordEncoding="BCRYPT";
-          if(!$options["cost"])
-              $options["cost"]=10;
+          if($this->encoded && $str==null)
+              return $this->value;
+
+
+          $passwordEncoding=io($this->definition,"PASSWORD_ENCODING","BCRYPT");
+          $options["cost"]=io($this->definition,"COST","12");
+
           switch($passwordEncoding)
           {
-              case "PLAINTEXT":{return;}break;
+              case "PLAINTEXT":{return $str?$str:$this->value;}break;
               case "BCRYPT":{
                   $type=PASSWORD_BCRYPT;}break;
               case "ARGON2I":{
@@ -57,7 +54,22 @@
                   $type=PASSWORD_DEFAULT;
               }
           }
-          $this->value=password_hash($this->value,$type,$options);
+          $this->encoded=true;
+          $peppered=$this->preEncode($str?$str:$this->value);
+          $returned=password_hash($peppered,$type,$options);
+          if(!$str) {
+              $this->value = $returned;
+              $this->encoded = true;
+          }
+          return $returned;
+      }
+      function preEncode($value)
+      {
+          global $Config;
+          $pepper="7092kadsfpa030(/%&/(32";
+          if(isset($Config) && isset($Config["RANDOM_STR"]))
+              $pepper=$Config["RANDOM_STR"];
+          return hash_hmac("sha256",$value,$pepper);
       }
       function setRandomValue()
       {
@@ -71,7 +83,8 @@
 
       function check($string)
       {
-          return password_verify($string,$this->value);
+          $enc=$this->preEncode($string);
+          return password_verify($enc,$this->value);
       }
 
       function getMetaClassName()

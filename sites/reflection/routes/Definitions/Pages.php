@@ -7,9 +7,8 @@ class Pages
 {
     static $definition = array(
         "meta" => array("TYPE"=>"META"),
-        "index" => array("TYPE" => "PAGE", "PAGE" => "index"),
+        "index" => array("TYPE" => "PAGE", "PAGE" => "Index"),
         "Datasources"=>array("TYPE"=>"DATASOURCE"),
-        "EditDefinition"=>array("TYPE"=>"PAGE","PAGE"=>"EditDefinition")
-
+        "login" => array("TYPE" => "PAGE", "PAGE" => "Login")
     );
 }

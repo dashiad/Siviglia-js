@@ -63,7 +63,7 @@ class WebUser extends \lib\model\BaseModel
         {
             try
             {
-                $this->unserialize();
+                $this->loadFromFields();
             }
             catch (\Exception $e)
             {
@@ -145,7 +145,7 @@ class WebUser extends \lib\model\BaseModel
         {
 
             //$model->NLOGINS=$model->NLOGINS+1;
-            $model->lastLogin=\lib\model\types\DateTime::getValueFromTimestamp();
+            $model->lastlogin=\lib\model\types\DateTime::getValueFromTimestamp();
             //$model->LASTIP=\Registry::$registry["client"]["ip"];
             //$model->FAILEDLOGINATTEMPTS=0;
             $model->save();
