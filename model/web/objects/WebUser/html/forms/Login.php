@@ -30,8 +30,7 @@ class Login extends \lib\output\html\Form
                      ),
                'ROLE'=>'SEARCH',
                'REDIRECT'=>array(
-                     'ON_SUCCESS'=>'',
-                     'ON_ERROR'=>''
+                     'ON_SUCCESS'=>'/',
                      ),
                'INPUTS'=>array(
                      'LOGIN'=>array(

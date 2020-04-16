@@ -84,7 +84,7 @@ class Login extends \lib\action\Action
                 global $oCurrentUser;
                 $oCurrentUser=$this->newUser;
             }
-            catch(\backoffice\WebUserException $e)
+            catch(\model\web\WebUserException $e)
             {
                 //_d("ADDING ERROR");
                 $actionResult->addGlobalError($e);

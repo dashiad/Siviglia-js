@@ -9,6 +9,11 @@ class WebUserException extends \lib\model\BaseException
     const ERR_FROZEN=3;
     const ERR_NOT_VALIDATED=4;
     const ERR_LOCKED_OUT=5;
+    const TXT_USER_NOT_LOADED="Instancia no cargada.";
+    const TXT_INVALID_USERNAME_PASSWORD="Usuario/Contraseña incorrecta.";
+    const TXT_FROZEN="Usuario deshabilitado.";
+    const TXT_NOT_VALIDATED="Usuario aún no validado.";
+    const TXT_LOCKED_OUT="Ha superado el número máximo de intentos fallidos de login.";
 }
 
 class WebUser extends \lib\model\BaseModel

@@ -5,9 +5,9 @@
 }
 @font-face {
     font-family:"BoxIcons";
-    src:url("/editor/boxicons/fonts/boxicons.svg") format("svg"),
-    url("/editor/boxicons/fonts/boxicons.woff") format("woff"),
-    url("/editor/boxicons/fonts/boxicons.woff2") format("woff2");
+    src:url("/editor/fonts/boxicons/boxicons.svg") format("svg"),
+    url("/editor/fonts/boxicons/boxicons.woff") format("woff"),
+    url("/editor/fonts/boxicons/boxicons.woff2") format("woff2");
 }
 body
 {
@@ -15,6 +15,5 @@ body
     padding:0px;
     background-color:#222;
     font-family:"ExpresswayRg"
-
 }
 

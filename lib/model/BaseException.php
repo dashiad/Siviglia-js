@@ -16,16 +16,8 @@
     {
         return true;
     }
-    public function __toString()
-      {
-        $rfl=new \ReflectionClass(get_class($this));
-        $constants=array_flip($rfl->getConstants());
-        $cad= get_class($this)."[ {$this->code} :".$constants[$this->code]." ] <br>";
-        //if($this->params)
-         //     debug($this->params);
-       print_r($this->getTrace());
-        return $cad;
-      }
+
+
 
     function getCodeString()
     {
@@ -56,65 +48,33 @@
         return ob_get_clean();
       }
 
-      static function getErrors($type)
+      public function __toString()
       {
 
-          $reflectionClass=new \ReflectionClass($type);
-          $unq=$reflectionClass->getShortName();
+          $reflectionClass=new \ReflectionClass($this);
           $constants=$reflectionClass->getConstants();
           $map=array();
-          $errors=array();
 
           // Primero se obtienen los errores reales, aquellos que no contienen "TXT"
+          $key=null;
           foreach($constants as $key2=>$value2)
           {
-              if( strpos($key2,"TXT_")!==0 && strpos($key2,"REQ_")!==0)
-              {
-                  $map[$key2]=array("code"=>$value2);
+              if($value2==$this->code) {
+                  $key = $key2;
+                  break;
               }
           }
+          if($key==null)
+              return $this->getCodeString();
           // Luego, se obtienen los valores de cadena, y se busca si hace match con
           // alguna de las excepciones anteriores
+          $txtKey=preg_replace("/^ERR_/","TXT_",$key2);
+          if(!isset($constants[$txtKey]))
+              return $this->getCodeString();
 
-          foreach($constants as $key2=>$value2)
-          {
-              if( strpos($key2,"TXT_")===0 || strpos($key2,"REQ_")===0 )
-              {
-                  $target=$key2;
-                  $cut=substr($key2,4);
-                  if(isset($map["ERR_".$cut]))
-                      $target="ERR_".$cut;
-                  if(isset($map[$cut]))
-                      $target=$cut;
-
-                  if(!isset($map[$target]))
-                      $map[$target]["name"]=$key2;
-                  $map[$target][strtolower(substr($key2,0,3))]=$value2;
-              }
-
-          }
-
-
-          return $map;
+          if($this->params==null)
+              return $constants[$txtKey];
+          // Se devuelve el resultado de evaluar una parametrizableString, con los parametros
+          return \lib\php\ParametrizableString::getParametrizedString($constants[$txtKey],$this->params);
       }
-      static function getPrintableErrors($type,$definition=null)
-      {
-          $err=BaseException::getErrors($type);
-          $results=array();
-
-              foreach($err as $key2=>$value2)
-              {
-                  // Si hay un texto:
-                  // Si no hay una constante "REQ", se incluye
-                  // Si hay  una constante REQ, y su valor no esta en la definicion, o esta, pero evalue a falso, no se incluye
-                  if(isset($value2["txt"]))
-                  {
-                      if(!isset($value2["req"]) || ($definition && isset($definition[$value2["req"]]) && $definition[$value2["req"]]))
-                          $results[$key2]=array("txt"=>$value2["txt"],"code"=>$value2["code"]);
-                  }
-              }
-          return $results;
-      }
-
-
   }

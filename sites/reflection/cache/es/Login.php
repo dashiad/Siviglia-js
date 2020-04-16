@@ -1,15 +1,28 @@
 <?php
-    $v3page=\Registry::getService("page");
-    $v3site=\Registry::getService("site");
-    $v3name=$v3page->getPageName();
-    $v3siteName=$v3site->getName();
-    $v3layout_structure = 'horizontal';
+    $v2page=\Registry::getService("page");
+    $v2site=\Registry::getService("site");
+    $v2name=$v2page->getPageName();
+    $v2siteName=$v2site->getName();
+    $v2layout_structure = 'horizontal';
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $v3site->getDefaultIso();?>">
+<html lang="<?php echo $v2site->getDefaultIso();?>">
 <head>
     <title></title><script type="text/javascript" src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js" ></script>
-<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/editor/css/style.css"/>
+<script type="text/javascript" src="http://statics.adtopy.com/packages/njdesktop/js/vendor/jquery-ui.min.js" ></script>
+<script type="text/javascript" src="http://statics.adtopy.com/packages/njdesktop/js/vendor/jquery.scrollTo-min.js" ></script>
+<script type="text/javascript" src="http://statics.adtopy.com/packages/njdesktop/js/vendor/jquery.ui.selectmenu.js" ></script>
+<script type="text/javascript" src="http://statics.adtopy.com/packages/njdesktop/themes/redmond/theme.js" ></script>
+<script type="text/javascript" src="http://statics.adtopy.com/packages/njdesktop/js/jdesktop.js" ></script>
+<script type="text/javascript" src="http://statics.adtopy.com/packages/njdesktop/js/jdesktop.widgets.js" ></script>
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/reflection/css/style.css"/>
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/njdesktop/css/jdesktop.css"/>
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/njdesktop/themes/redmond/jquery-ui/jquery-ui.min.css"/>
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/njdesktop/themes/redmond/jquery-ui/jquery-ui.structure.css"/>
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/njdesktop/themes/redmond/jquery-ui/jquery-ui.theme.css"/>
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/njdesktop/themes/redmond/jdesktop.forms.css"/>
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/njdesktop/themes/redmond/jdesktop.text.css"/>
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/njdesktop/themes/redmond/style.css"/>
 <?php $__serialized__bundle__Page=file_get_contents('C:\xampp\htdocs\adtopy\install\config/../..//sites/statics/html//reflection/bundles/bundle_Page.srl');?><link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.base.css"/>
 <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.darkblue.css"/>
 <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/reflection/bundles/Page-HEADERS-<?php echo $__serialized__bundle__Page;?>.css"/>
@@ -25,7 +38,7 @@
 </head>
 
 
-<body class="<?php echo $v3bodyClasses;?>loginPage" >
+<body class="<?php echo $v2bodyClasses;?>loginPage" >
 
 
 <!-- <body > -->
@@ -33,7 +46,7 @@
     
 </div>
 
-    <?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/JqxWidgets.html"); ?>
+    
         <div class="siteTitle">Reflection</div>
         <div class="siteSubtitle">Adtopy project</div>
         <div class="loginForm">
@@ -47,3 +60,4 @@
 
 </body>
 </html>
+<?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/JqxWidgets.html"); ?>

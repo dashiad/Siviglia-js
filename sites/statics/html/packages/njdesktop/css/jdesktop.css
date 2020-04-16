@@ -43,9 +43,9 @@
 }
 @font-face {
 	font-family:"BoxIcons";
-	src:url("/editor/boxicons/fonts/boxicons.svg") format("svg"),
-	url("/editor/boxicons/fonts/boxicons.woff") format("woff"),
-	url("/editor/boxicons/fonts/boxicons.woff2") format("woff2");
+	src:url("/editor/boxicons/fonts/boxicons/boxicons.svg") format("svg"),
+	url("/editor/fonts/boxicons/boxicons.woff") format("woff"),
+	url("/editor/fonts/boxicons/boxicons.woff2") format("woff2");
 }
 html{width:100%; height:100%; overflow:hidden;}
 

@@ -25,6 +25,7 @@ margin-left: 26px;
 margin-left: 430px;
 border: 4px solid var(--secondary-background);
     width:600px;
+    margin:0px auto;
 
 }
 .loginPage .inputContainer {
@@ -76,6 +77,10 @@ border: 4px solid var(--secondary-background);
     color: white;
     width:112px;
 }
+    .loginPage .globalError:before{
+        font-family:var(--icon-font);
+        content:var(--icon-error);
+    }
 </style>
             [#]
         [#]

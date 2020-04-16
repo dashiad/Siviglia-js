@@ -48,7 +48,6 @@ include_once(dirname(__FILE__) . "/../../Plugin.php");
 "DOCUMENT_ROOT"=><path al document root de la web>
 "WEB_ROOT"=><url de la web>
 "WIDGET_PATH"=>array("/es_mobile","/es","/") <-- Lista de carpetas dentro de los objetos donde buscar widgets
-
  */
 
 class DEPENDENCY_BUNDLE
@@ -56,7 +55,7 @@ class DEPENDENCY_BUNDLE
     var $resources = array();
     var $layoutManager = null;
     static $bundlePaths = array();
-    var $refTime;
+    static $rTime=null;
 
     function __construct($name, $basePath, $documentRoot, $webRoot = "")
     {
@@ -65,7 +64,9 @@ class DEPENDENCY_BUNDLE
         $this->documentRoot = $documentRoot;
         $this->usedFiles = array();
         $this->webRoot = $webRoot;
-        $this->refTime = time();
+        if(DEPENDENCY_BUNDLE::$rTime===null)
+            DEPENDENCY_BUNDLE::$rTime=time();
+        $this->refTime = DEPENDENCY_BUNDLE::$rTime;
         srand(microtime(true));
     }
 
@@ -354,7 +355,9 @@ class DEPENDENCY extends Plugin
             for ($j = 0; $j < count($contents); $j++) {
 
                 $method = "parse_" . $contents[$j][0];
-                $returnValue = array_merge($returnValue, $this->$method($this->mergeNodes($contents[$j][1]), $this->currentBundle));
+                $returned=$this->$method($this->mergeNodes($contents[$j][1]), $this->currentBundle);
+                if($returned)
+                    $returnValue = array_merge($returnValue,$returned );
 
             }
             return $returnValue;
@@ -422,6 +425,26 @@ class DEPENDENCY extends Plugin
         if (isset($spec["URL"]))
             $modelFileSpec["URL"] = $spec["URL"];
         return $this->parse_SCRIPT($modelFileSpec, $bundle);
+    }
+    function parse_JSWIDGET($spec, $bundle)
+    {
+
+        include_once(LIBPATH . "/reflection/Meta.php");
+        $objName = $spec["FILES"][0];
+        $sources=PROJECTPATH.trim($objName);
+        if(isset(DEPENDENCY::$usedWidgets[$sources]))
+            return null;
+        DEPENDENCY::$usedWidgets[$sources]=1;
+        $htmlSource=$sources.".html";
+        $jsSource=$sources.".js";
+
+        // El fichero del modelo en si, se obtiene de un parse_SCRIPT, para que asi se
+        // meta como dependencia de la plantilla
+        // Lo que no se mete como dependencia de la plantilla, es el meta del modelo.
+        $modelFileSpec = array("FILE" => array($jsSource));
+        $returned=$this->parse_SCRIPT($modelFileSpec, $bundle);
+        $returned[] = array("TYPE" => "HTML", "TEXT" => '<div style="display:none">'.file_get_contents($htmlSource)."</div>");
+        return $returned;
     }
 
     function parse_DATASOURCE($spec, $bundle)

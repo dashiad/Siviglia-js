@@ -27,7 +27,10 @@ class ActionResult extends \lib\model\ModelFieldErrorContainer
     {
         $this->isOk=false;
         $code=$exception->getCode();
-        $this->globalErrors[$exception->getCodeString()]=array("code"=>$code,"params"=>$exception->getParams());
+        $this->globalErrors[$exception->getCodeString()]=array(
+            "code"=>$code,
+            "params"=>$exception->getParams(),
+            "str"=>$exception->__toString());
     }
 
     function addPermissionError()

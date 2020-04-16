@@ -35,7 +35,8 @@ class ModelFieldErrorContainer
         $this->fieldErrors[$path][$exception->getCodeString()][$code]=array(
             "value"=>$value,
             "code"=>$code,
-            "path"=>$path
+            "path"=>"/".$path,
+            "str"=>$exception->__toString()
         );
     }
     function pushPath($p)

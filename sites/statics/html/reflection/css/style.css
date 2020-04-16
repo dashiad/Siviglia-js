@@ -5,17 +5,20 @@
 }
 @font-face {
     font-family:"BoxIcons";
-    src:url("/editor/boxicons/fonts/boxicons.svg") format("svg"),
-    url("/editor/boxicons/fonts/boxicons.woff") format("woff"),
-    url("/editor/boxicons/fonts/boxicons.woff2") format("woff2");
+    src: url("/editor/fonts/boxicons/boxicons.woff") format("woff"),
+    url("/editor/fonts/boxicons/boxicons.woff2") format("woff2");
 }
 :root {
     --main-background:#222;
     --secondary-background:#333;
     --main-font:"ExpresswayRg";
     --main-color:#EEE;
+    --error-color:#961717;
     --contrast-0:#3B88B3;
-    --contrast-1:#03466B
+    --contrast-1:#03466B;
+    /* iconos */
+    --icon-font:"BoxIcons";
+    --icon-error:"\eb50";
 }
 body
 {
@@ -23,6 +26,32 @@ body
     padding:0px;
     background-color:var(--main-background);
     font-family:var(--main-font);
+}
 
+.error-icon:before {
+    font-family:var(--icon-font);
+    content:var(--icon-error);
+    margin-right:10px;
+    font-size:14px;
+    color:white;
+}
+
+.globalErrors
+{
+
+}
+.globalError
+{
+    list-style: none;
+    margin: 0px;
+    padding: 4px;
+    background-color: var(--error-color);
+    color: var(--main-color);
+}
+.globalErrorList
+{
+    list-style-type: none;
+    padding: 3px;
+    margin-top: 0px;
 }
 
