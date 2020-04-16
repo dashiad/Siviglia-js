@@ -38,24 +38,43 @@ Siviglia.Utils.buildClass(
             PathAble:{
                 construct:function()
                 {
-                    this.parent=null;
-                    this.fieldName=null;
+                    this.__pathParent=null;
+                    this.__pathFieldName=null;
+                    this.__pathChildren={};
+                    this.__subscribed=false;
+                },
+                destruct:function()
+                {
+                    this.__pathChildren=null;
                 },
                 methods:
                     {
                         getParent: function () {
-                            return this.parent;
+                            return this.__pathParent;
                         },
                         setParent: function (parent) {
-                            this.parent = parent;
+                            this.__pathParent = parent;
+                            this.subscribe();
+
+                        },
+                        subscribe:function()
+                        {
+                            if(this.__pathParent && this.__pathFieldName && !this.__subscribed)
+                            {
+                                this.__pathParent.addPathChild(this,this.__pathFieldName);
+                            }
+                        },
+                        addPathChild:function(obj,name)
+                        {
+                            this.__pathChildren[name]=obj;
                         },
                         setFieldName:function(fieldName)
                         {
-                            this.fieldName=fieldName;
+                            this.__pathFieldName=fieldName;
                         },
                         getFieldName:function()
                         {
-                            return this.fieldName;
+                            return this.__pathFieldName;
                         },
                         getFullPath:function()
                         {
@@ -69,6 +88,26 @@ Siviglia.Utils.buildClass(
                                 cur=cur.getParent();
                             }
                             return "/"+stack.join("/");
+                        },
+                        findPath:function(path,asTypes)
+                        {
+                            var prefix="";
+                            if(typeof asTypes!=="undefined")
+                                prefix="*";
+                            var cur=this;
+                            if(typeof path==="string") {
+                                var parts =path.split("/");
+                                if(parts[0]=="")
+                                    parts.shift();
+                            }
+                            for(var k=0;k<parts.length;k++)
+                            {
+                                var f=parts[k];
+                                if(typeof cur[prefix+f]==="undefined")
+                                    throw "Path desconocido:"+path;
+                                cur=cur[f];
+                            }
+                            return cur;
                         }
                     }
             }
@@ -84,6 +123,8 @@ Siviglia.Utils.buildClass(
                 inherits:'Siviglia.Dom.EventManager,Siviglia.types.PathAble',
                 construct:function(defOrUrl,value,relaxed)
                 {
+                    this.EventManager();
+                    this.PathAble();
                     this.__type__="BaseTypedObject";
                     this.__definedPromise=$.Deferred();
                     this.__fields={};
@@ -115,8 +156,7 @@ Siviglia.Utils.buildClass(
                         }
 
                     }
-                    this.EventManager();
-                    this.PathAble();
+
                 },
                 destruct: function () {
                     for(var k in this.__fields)
@@ -817,11 +857,11 @@ Siviglia.Utils.buildClass(
                                 val = '' + val;
 
                                 var c = val.length;
-                                if ('MINLENGTH' in this.definition && c < this.definition["MINLENGTH"])
+                               /* if ('MINLENGTH' in this.definition && c < this.definition["MINLENGTH"])
                                     throw new Siviglia.types.StringException(this.getFullPath(),Siviglia.types.StringException.ERR_TOO_SHORT, {
                                         min: this.definition['MINLENGTH'],
                                         cur: c
-                                    });
+                                    });*/
 
                                 if ('MAXLENGTH' in this.definition && c > this.definition["MAXLENGTH"])
                                     throw new Siviglia.types.StringException(this.getFullPath(),Siviglia.types.StringException.ERR_TOO_LONG, {

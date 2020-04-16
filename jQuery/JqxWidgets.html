@@ -242,6 +242,8 @@
                         addError:function(path,exception)
                         {
                             if(path.length==0) {
+                                if(typeof exception.str!=="undefined")
+                                    return this.showError(exception.str);
                                 this.showError(Siviglia.i18n.es.base.getErrorFromJsException(exception));
                             }
                             else
@@ -981,6 +983,8 @@
                                 this.subwidgets={};
                                 this.description="";
                                 this.Dictionary$preInitialize(params);
+                                this.globalErrors = [];
+                                this.hasGlobalErrors = false;
 
                             },
                             getInputFor: function (node, params) {
@@ -1430,7 +1434,6 @@
                             },
                             setupBto:function()
                             {
-
                                 this.__container = new Siviglia.types.Container(this.__bto);
                                 var ip = Siviglia.issetOr(this.__bto.__definition.INPUTPARAMS, {});
                                 this.__ip = [];
@@ -1492,8 +1495,22 @@
                                 }
                                 return this.onSubmit(myIndexes,vals);
                             },
+                            doRedirect:function(type)
+                            {
+                                if(typeof this.__bto.__definition["REDIRECT"]!=="undefined" &&
+                                    typeof this.__bto.__definition["REDIRECT"][type]!=="undefined"
+                                ) {
+                                    var url=this.__bto.__definition["REDIRECT"][type];
+                                    setTimeout(function(){window.location.assign(url);},200);
+                                    return true;
+                                }
+                                return false;
+
+                            },
                             onSubmit:function(indexes,vals)
                             {
+                                this.globalErrors=[];
+                                this.hasGlobalErrors=false;
                                 var p=$.Deferred();
                                 if(this.__model===null) {
                                     p.resolve();
@@ -1504,16 +1521,111 @@
                                         function (r) {
                                             if (r.error == 0) {
                                                 //this.__bto.setValue(r.data[0]);
-                                                p.resolve(r);
-                                            } else
-                                                p.reject(r);
+                                                this.onSuccess(r.data[0]);
+                                                if(!this.doRedirect("ON_SUCCESS"))
+                                                    p.resolve(r);
+                                            } else {
+                                                this.parseErrors(r)
+                                                this.onError(r);
+                                                if (!this.doRedirect("ON_ERROR"))
+                                                    p.reject(r);
+                                            }
                                         }.bind(this),
                                         function (error) {
-                                            p.reject(error)
-                                        }
+                                            this.parseErrors(error)
+                                            if(!this.doRedirect("ON_ERROR"))
+                                                p.reject(error)
+                                        }.bind(this)
                                     )
                                 }
                                 return p;
+                            },
+                            onSuccess:function(data)
+                            {
+
+                            },
+                            onError:function(errors)
+                            {
+
+                            },
+                            parseErrors:function(e)
+                            {
+                                if (e.error == 1) {
+                                    var nFieldErrors=0;
+                                    if (e.action.fieldErrors) {
+                                        for (var k in e.action.fieldErrors) {
+                                                for (var c in e.action.fieldErrors[k]) {
+                                                    for(h in e.action.fieldErrors[k][c]) {
+                                                        var error = e.action.fieldErrors[k][c][h];
+                                                        var parts=error.path.split("/");
+                                                        if (parts[0] == "")
+                                                            parts.shift();
+                                                        this.addError(parts, error);
+                                                    }
+                                                }
+                                        }
+                                    }
+                                    var isArray=toString.call(e.action.globalErrors) === "[object Array]";
+                                    if (e.action.globalErrors && !isArray)
+                                    {
+                                        this.decodeGlobalServerErrors(e.action.globalErrors)
+                                    }
+                                }
+                                else
+                                {
+                                    if(e.message)
+                                        this.fireEvent("GENERAL_ERROR",e.message + e.response.text);
+                                }
+                            },
+                            /*
+
+                                NOTA : ESTOS METODOS SE DEJAN AQUI, PERO TENDRAN QUE MOVERSE MUY POSIBLEMENTE
+                                A LOS WIDGETS, YA QUE SE DEDICAN A PINTAR
+                             */
+                            decodeGlobalServerErrors:function(ex)
+                            {
+                                var messages=[];
+                                for(var k in ex)
+                                {
+                                    var parts= k.split("::");
+                                    var exName=parts[1];
+                                    var message='';
+                                    if (typeof this.__bto.__definition.ERRORS !== "undefined" &&
+                                        typeof this.__bto.__definition.ERRORS["GLOBAL"] !== "undefined" &&
+                                        typeof this.__bto.__definition.ERRORS["GLOBAL"][exName] !== "undefined")
+                                        messages.push(this.__bto.__definition.ERRORS["GLOBAL"][exName]["txt"]);
+                                    else {
+                                        messages.push(Siviglia.issetOr(ex[k]["str"],exName));
+                                    }
+                                }
+                                if(messages.length>0) {
+                                    this.globalErrors = messages;
+                                    this.hasGlobalErrors = true;
+                                }
+                            },
+                            decodeServerError: function (field, exception) {
+                                this[field].clearErrors();
+                                var exName="";
+                                for(var k in exception)
+                                    exName=k;
+                                var errDef=this.__bto.__definition.FIELDS[field]["ERRORS"];
+                                if(!errDef)
+                                {
+                                    var h;
+                                    if((h=this.__bto.__definition.ERRORS) && (h= h.FIELDS) && (h=h[field]))
+                                    {
+                                        errDef=h;
+                                    }
+                                }
+                                if(errDef && errDef[k])
+                                    return errDef[k]["txt"];
+
+
+                                var msg = Siviglia.i18n.es.base.getErrorFromServerException(k, exception[k]);
+                                if (msg) {
+                                    return msg;
+                                }
+                                return "Unknown error";
                             }
                         }
                 }
@@ -1679,7 +1791,14 @@
         <div class="panel panel-primary">
             <!--<div class="panel-heading" data-sivValue="/*title" class="title"></div>-->
             <div class="panel-body">
-                <!--<p class="text-info description" data-sivValue="/*description"></p>-->
+                <p class="text-info description" data-sivValue="/*description"></p>
+                <div data-sivIf="[%/*hasGlobalErrors%] == true">
+                    <div class="globalErrors">
+                        <ul class="globalErrorList" sata-sivLoop="/*globalErrors" data-contextIndex="current">
+                            <li class="globalError" sivValue="/@current"></li>
+                        </ul>
+                    </div>
+                </div>
                 <div class="inputs container" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
                     <div class="col col-sm-2" data-sivValue="/@current/LABEL"></div>
                     <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
