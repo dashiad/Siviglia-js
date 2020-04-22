@@ -1,0 +1,75 @@
+.Form-label {}
+.Form-row {}
+.Form-button {}
+
+.ContainerType {}
+.DictionaryType {
+    margin-left: 10px;
+}
+.Dictionary-row {}
+.Dictionary-keyList {
+    margin-left: 6px;
+}
+.Dictionary-mainKeyList {
+    min-height: 161px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+.Dictionary-newLabel {}
+.Dictionary-heading {}
+.Dictionary-body {}
+.Dictionary-button {
+    background: transparent;
+    border: 0px;
+    color: var(--main-color);
+    text-decoration: underline;
+}
+.Dictionary-removeButton {}
+.Dictionary-removeButton:before {
+    font-family: var(--icon-font);
+    content:var(--icon-remove);
+    color:var(--error-color-light);
+}
+.Dictionary-newItemWidget {}
+.Dictionary-keys-add {
+    margin: 0px;
+    padding: 5px;
+    background-color: var(--secondary-background);
+    border-radius: 4px;
+    color: var(--main-color);
+}
+.Dictionary-keys {
+    margin: 0px;
+    background-color: var(--secondary-background);
+    border-radius: 4px;
+    color: var(--main-color);
+    margin-bottom: 2px;
+    padding: 0px;
+    margin-top: 2px;
+}
+.Dictionary-keys > li {
+    list-style-type: none;
+    padding: 2px 6px 4px 4px;
+    border-bottom: 1px solid var(--svg-background2);
+}
+.Dictionary-current {
+    margin-left: 10px;
+    padding: 5px;
+    border: 2px solid var(--secondary-background);
+    border-radius: 5px;
+    min-height: 150px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+
+.NewItem-addButton {
+    cursor:hand;
+}
+.NewItem-addButton:before {
+    font-family: var(--icon-font);
+    content:var(--icon-add);
+    color:var(--main-color);
+    font-size: 16px;
+    margin-left: 4px;
+}

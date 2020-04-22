@@ -1731,32 +1731,34 @@
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Dictionary" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Dictionary"
          class="DictionaryType ContainerType">
         <div class="panel panel-primary">
-            <div class="panel-heading" data-sivValue="/*title" class="title"></div>
-            <div class="panel-body">
+            <div class="Dictionary-heading" data-sivValue="/*title" class="title"></div>
+            <div class="Dictionary-body">
                 <!--<div class="container-fluid">-->
                 <p class="text-info description" data-sivValue="/*description"></p>
-                <div data-sivIf="[%/*hasSimpleType%] == false">
+                <div data-sivIf="[%/*hasSimpleType%] == false" >
 
-                    <div class="row" style="margin-left:0px">
+                    <div class="Form-row Dictionary-row" style="margin-left:0px">
 
                         <div style="display:flex">
 
-                            <div class="containerLabel" width="150px">
-
-                                <div class="well">
-
-                                    <ul  class="nav nav-stacked" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-
-                                        <li role="presentation">
-                                            <button class="btn btn-primary" data-sivValue="/@current/LABEL" data-sivEvent="click" data-sivCallback="onLabelClicked" data-sivParams='{"key":"/@current/LABEL"}'></button>
-                                            <span class="removebutton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}'></span>
+                            <div class="Dictionary-keyList" width="150px">
+                                <div class="Dictionary-mainKeyList">
+                                    <ul class="Dictionary-keys-add">
+                                        <li>
+                                            <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
                                         </li>
                                     </ul>
+                                <ul  class="Dictionary-keys" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
+                                    <li role="presentation">
+                                        <button class="Form-button Dictionary-button" data-sivValue="/@current/LABEL" data-sivEvent="click" data-sivCallback="onLabelClicked" data-sivParams='{"key":"/@current/LABEL"}'></button>
+                                        <span class="Dictionary-removeButton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}'></span>
+                                    </li>
+                                </ul>
+
                                 </div>
-                                <div class="newItemWidget" data-sivCall="buildNewItemWidget"></div>
                             </div>
                             <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
-                                <div class="containerInput dictionaryInput">
+                                <div class="Dictionary-current">
                                     <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
                                     </div>
                                 </div>
@@ -1767,22 +1769,20 @@
                     </div>
                 </div>
                 <div data-sivIf="[%/*hasSimpleType%] == true" >
-                    POR 2;
                     <div  data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-
                         <div style="display:flex">
                             <div>
-                                <span class="label label-primary" data-sivValue="/@current"></span>
+                                <span class="Dictionary-label Form-label" data-sivValue="/@current"></span>
                             </div>
                             <div>
                                 <span data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></span>
                             </div>
                             <div>
-                                <span class="removebutton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current"}'></span>
+                                <span class="Dictionary-removeButton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current"}'></span>
                             </div>
                         </div>
                     </div>
-                    <div class="newItemWidget" data-sivCall="buildNewItemWidget"></div>
+                    <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
                 </div>
 
                 <!--</div>-->
@@ -1881,7 +1881,7 @@
             <div style="display:table-row">
                 <div style="display:table-cell" data-sivId="inputNode">
                 </div>
-                <div style="display:table-cell;vertical-align: top;line-height: 1.0;font-size: 20px;"><div data-sivEvent="click" data-sivCallback="onAdd" class="add"></div></div>
+                <div style="display:table-cell;vertical-align: top;line-height: 1.0;font-size: 20px;"><div class="NewItem-addButton" data-sivEvent="click" data-sivCallback="onAdd" class="add"></div></div>
             </div>
     </div>
     <!--
