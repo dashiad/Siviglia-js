@@ -15,6 +15,7 @@
 <script type="text/javascript" src="http://statics.adtopy.com/packages/njdesktop/themes/redmond/theme.js" ></script>
 <script type="text/javascript" src="http://statics.adtopy.com/packages/njdesktop/js/jdesktop.js" ></script>
 <script type="text/javascript" src="http://statics.adtopy.com/packages/njdesktop/js/jdesktop.widgets.js" ></script>
+<script type="text/javascript" src="http://statics.adtopy.com/packages/d3/d3.js" ></script>
 <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/reflection/css/style.css"/>
 <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/njdesktop/css/jdesktop.css"/>
 <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/njdesktop/themes/redmond/jquery-ui/jquery-ui.min.css"/>
@@ -60,4 +61,4 @@
 
 </body>
 </html>
-<?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/JqxWidgets.html"); ?>
+<?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/JqxWidgets.html"); ?><?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/Visual.html"); ?>

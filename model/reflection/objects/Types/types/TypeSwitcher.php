@@ -9,7 +9,7 @@ parent::__construct( [
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"TypeSwitcher"],
                 "ALLOWED_TYPES"=>["TYPE"=>"Dictionary",
                     "LABEL"=>"Types",
-                    "VALUETYPE"=>"BASETYPE",
+                    "VALUETYPE"=>"/model/reflection/Model/types/BaseType",
                     "REQUIRED"=>true
                     ],
                 "IMPLICIT_TYPE"=>["TYPE"=>"String",

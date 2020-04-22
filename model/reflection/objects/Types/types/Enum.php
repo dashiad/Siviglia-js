@@ -9,13 +9,15 @@ parent::__construct( [
             "FIELDS"=>[
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Enum"],
                 "VALUES"=>[
+                    "LABEL"=>"Valores permitidos",
                     "TYPE"=>"Array",
                     "ELEMENTS"=>[
                         "TYPE"=>"String"
                     ]
                 ],
-                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false],
+                "REQUIRED"=>["LABEL"=>"Requerido","TYPE"=>"Boolean","DEFAULT"=>false],
                 "DEFAULT"=>["TYPE"=>"String",
+                    "LABEL"=>"Valor por defecto",
                     "SOURCE"=>[
                         "TYPE"=>"Path",
                         "PATH"=>"#../VALUES/[[SOURCE]]",

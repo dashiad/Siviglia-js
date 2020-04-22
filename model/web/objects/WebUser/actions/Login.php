@@ -81,6 +81,7 @@ class Login extends \lib\action\Action
                     throw new \backoffice\WebUserException(\backoffice\WebUserException::ERR_UNAUTHORIZED);
                 }
      */
+
                 global $oCurrentUser;
                 $oCurrentUser=$this->newUser;
             }

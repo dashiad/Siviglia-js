@@ -10,7 +10,7 @@ parent::__construct( [
             "LABEL"=>"File",
             "TYPE" => "Container",
             "FIELDS" => [
-                "TYPE" => ["TYPE" => "String", "FIXED" => "File"],
+                "TYPE" => ["LABEL"=>"Tipo","TYPE" => "String", "FIXED" => "File"],
                 "MINSIZE"=>["TYPE"=>"Integer","LABEL"=>"Tamaño mínimo","KEEP_KEY_ON_EMPTY"=>false],
                 "MAXSIZE"=>["TYPE"=>"Integer","LABEL"=>"Tamaño máximo","KEEP_KEY_ON_EMPTY"=>false],
                 "EXTENSIONS"=>["TYPE"=>"Array","LABEL"=>"Extensiones","ELEMENTS"=>["TYPE"=>"String"],"REQUIRED"=>true,"KEEP_KEY_ON_EMPTY"=>false],

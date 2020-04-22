@@ -8,17 +8,20 @@ parent::__construct( [
             "FIELDS"=>[
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"State"],
                 "VALUES"=>[
+                    "LABEL"=>"Lista de estados",
                     "TYPE"=>"Array",
                     "ELEMENTS"=>[
                         "TYPE"=>"Container",
                         "FIELDS"=>[
-                            "VALUE"=>["TYPE"=>"Integer"],
-                            "LABEL"=>["TYPE"=>"String"]
+                            "LABEL"=>["LABEL"=>"Etiqueta","TYPE"=>"String"],
+                            "VALUE"=>["LABEL"=>"Valor","TYPE"=>"Integer"]
+
                         ]
                     ]
                 ],
-                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false],
+                "REQUIRED"=>["LABEL"=>"Requerido","TYPE"=>"Boolean","DEFAULT"=>false],
                 "DEFAULT"=>["TYPE"=>"Integer",
+                    "LABEL"=>"Valor por defecto",
                     "SOURCE"=>[
                         "TYPE"=>"PATH",
                         "PATH"=>"/{keys}"

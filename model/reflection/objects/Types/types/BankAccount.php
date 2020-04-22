@@ -13,7 +13,7 @@ parent::__construct( [
                 "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
                 "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
                 "SOURCE"=>\model\reflection\Types::getSourceMeta(),
-                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false]
+                "REQUIRED"=>["LABEL"=>"Requerido","TYPE"=>"Boolean","DEFAULT"=>false]
             ]
         ]);
 

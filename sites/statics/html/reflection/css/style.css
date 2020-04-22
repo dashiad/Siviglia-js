@@ -14,11 +14,16 @@
     --main-font:"ExpresswayRg";
     --main-color:#EEE;
     --error-color:#961717;
+    --error-color-light: #ef9b9b;
     --contrast-0:#3B88B3;
     --contrast-1:#03466B;
     /* iconos */
     --icon-font:"BoxIcons";
     --icon-error:"\eb50";
+    --icon-add:"\EB8A";
+    --icon-help:'\EAD9';
+    --icon-warning:'\EA94';
+    --icon-remove:'\EC4F';
 
     --svg-background: #444;
     --svg-background2: #333;

@@ -12,7 +12,7 @@ Siviglia.Utils.buildClass({
                             iconId:'resIcon',
                             iconTitle:'Definition Editor',
                             iconImage:'http://statics.adtopy.com/packages/njdesktop/images/bws_logo2k9.png',
-                            windowTitle:'Test App',
+                            windowTitle:'Definition Editor',
                             windowWidth:640,
                             windowHeight:480,
                             targetWidget:'Siviglia.model.reflection.MetaDefinition.forms.Add',
@@ -20,7 +20,7 @@ Siviglia.Utils.buildClass({
                         },
                         {
                             iconId:'resIcon2',
-                            iconTitle:'Test App',
+                            iconTitle:'Model Explorer',
                             iconImage:'http://statics.adtopy.com/packages/njdesktop/images/bws_logo2k9.png',
                             windowTitle:'Model Explorer',
                             windowWidth:640,

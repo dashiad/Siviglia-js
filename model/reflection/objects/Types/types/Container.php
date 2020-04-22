@@ -9,12 +9,11 @@ parent::__construct( [
             "LABEL"=>"Container",
             "TYPE" => "Container",
             "FIELDS" => [
-                "TYPE" => ["TYPE" => "String", "FIXED" => "Container"],
+                "TYPE" => ["LABEL"=>"Tipo","TYPE" => "String", "FIXED" => "Container"],
                 "FIELDS"=>[
                     "LABEL"=>"Campos",
                     "TYPE"=>"Dictionary",
-                    "VALUETYPE"=>"BASETYPE",
-                    "SOURCE" => \model\reflection\Types::getSourceMeta()
+                    "VALUETYPE"=>"/model/reflection/Model/types/BaseType",
                 ],
                 "SET_ON_EMPTY"=>["LABEL"=>"Permitir claves nulas","TYPE" => "Boolean", "DEFAULT" => false],
                 "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
