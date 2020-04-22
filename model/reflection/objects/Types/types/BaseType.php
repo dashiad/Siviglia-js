@@ -1,5 +1,5 @@
 <?php namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
+
 include_once(PROJECTPATH."/model/reflection/objects/Meta/Meta.php");
 include_once(__DIR__."/ModelDatasourceReference.php");
 class BaseType extends \lib\model\types\TypeSwitcher
@@ -26,7 +26,7 @@ class BaseType extends \lib\model\types\TypeSwitcher
     static function geCommonMeta()
     {
         return [
-            "FIXED"=>["TYPE"=>"String"],
+            "FIXED"=>["TYPE"=>"String","LABEL"=>"Valor Fijo","KEEP_ON_EMPTY"=>false],
             "DEFAULT"=>["TYPE"=>"String"]
         ];
     }
@@ -48,14 +48,14 @@ class BaseType extends \lib\model\types\TypeSwitcher
                     "Array"=>[
                         "TYPE"=>"Container",
                         "FIELDS"=>[
-                            "TYPE"=>["TYPE"=>"String","FIXED"=>"Array"],
+                            "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Array"],
                             "DATA"=>["TYPE"=>"Array",
                                      "ELEMENTS"=>[
                                          "TYPE"=>"CONTAINER",
                                          "REQUIRED"=>true,
                                          "FIELDS"=>[
                                              "Id"=>["TYPE"=>"Integer"],
-                                             "Label"=>["TYPE"=>"String"],
+                                             "LABEL"=>["LABEL"=>"Label","TYPE"=>"String"],
                                              "Extra"=>["TYPE"=>"String"]
                                          ]
                                      ],
@@ -88,11 +88,11 @@ class BaseType extends \lib\model\types\TypeSwitcher
                     "TYPE_FIELD"=>"TYPE",
                     "ALLOWED_TYPES"=>BaseType::getAllTypeClasses()
                 ],
-                "LABEL"=>["TYPE"=>"String"],
+                "LABEL"=>["LABEL"=>"Label","TYPE"=>"String"],
                 "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","KEEP_KEY_ON_EMPTY"=>false],
                 "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
                 "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
-                "FIXED"=>["TYPE"=>"String"],
+                "FIXED"=>["TYPE"=>"String","LABEL"=>"Valor Fijo","KEEP_ON_EMPTY"=>false],
                 "DEFAULT"=>["TYPE"=>"String"]
             ]
         ];

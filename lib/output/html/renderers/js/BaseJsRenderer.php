@@ -14,14 +14,18 @@ class BaseJsRenderer
         {
             if(preg_match($key,$path,$matches))
             {
+
                 if($value["root"]=="model") {
                     $modelName = $matches[1];
-                    $path = str_replace("#1#", $matches[2], $value["regex"]);
-                    $filePath = $this->getTargetFile($modelName, $path);
+                    $filePath=null;
                     $fileType = $value["type"];
+                    if($value["regex"]!=null) {
+                        $path = str_replace("#1#", $matches[2], $value["regex"]);
+                        $filePath = $this->getTargetFile($modelName, $path);
+                    }
                     $callbackName = "on" . ucfirst(strtolower($fileType));
                     if (method_exists($this, $callbackName))
-                        return $this->{$callbackName}($modelName,$filePath);
+                        return $this->{$callbackName}($modelName,$filePath,$matches);
                 }
                 else
                 {
@@ -36,7 +40,7 @@ class BaseJsRenderer
             $op = fopen($filePath, "r");
             fpassthru($op);
             fclose($op);
-            die();
+            return;
             }
         }
         \lib\Response::generateError();

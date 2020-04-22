@@ -1,13 +1,13 @@
 <?php namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
+
 
 namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
-class Image extends \model\reflection\Types\BaseReflectionType
+
+class Image extends \lib\model\types\Container
 {
-    function getMeta()
-    {
-        return [
+    function __construct(){
+parent::__construct( [
+            "LABEL"=>"Image",
             "TYPE" => "Container",
             "FIELDS" => [
                 "TYPE" => ["TYPE" => "String", "FIXED" => "Image"],
@@ -44,6 +44,7 @@ class Image extends \model\reflection\Types\BaseReflectionType
                 "KEEP_KEY_ON_EMPTY" => ["LABEL" => "Permitir valor vacío", "TYPE" => "Boolean", "KEEP_KEY_ON_EMPTY" => false],
                 "REQUIRED" => ["TYPE" => "Boolean", "DEFAULT" => false, "LABEL" => "Requerido", "KEEP_KEY_ON_EMPTY" => false]
             ]
-        ];
+        ]);
+
     }
 }

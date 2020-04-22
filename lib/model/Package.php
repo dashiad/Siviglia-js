@@ -26,22 +26,41 @@ class Package
     var $baseNamespace;
     var $fullPath;
     var $configInstance;
-    const MODEL             =1;
-    const ACTION            =2;
-    const DATASOURCE        =3;
-    const TYPE              =4;
-    const TYPE_METADATA     =5;
-    const DEFINITION        =6;
-    const CONFIG            =13;
-    const WIDGET            =14;
-    const WORKER            =15;
-    const HTML_FORM          =99;
-    const HTML_FORM_TEMPLATE =4;
-    const HTML_VIEW          =5;
-    const JS_TYPE           =10;
-    const JS_MODEL           =6;
-    const JS_FORM           =16;
-    const JS_VIEW           =17;
+    const MODEL             ="Model";
+    const ACTION            ="Action";
+    const DATASOURCE        ="Datasource";
+    const TYPE              ="TYPE";
+    const TYPE_METADATA     ="Type Metadata";
+    const DEFINITION        ="Definition";
+    const CONFIG            ="Config";
+    const WIDGET            ="Widget";
+    const WORKER            ="Worker";
+    const HTML_FORM          ="Html Form";
+    const HTML_FORM_TEMPLATE ="Html Form Template";
+    const HTML_VIEW          ="Html View";
+    const JS_TYPE           ="Js Type";
+    const JS_MODEL           ="Js Model";
+    const JS_FORM           ="Js Form";
+    const JS_VIEW           ="Js View";
+
+    static $resourceMetadata=[
+        Package::MODEL=>["plural"=>"Models"],
+        Package::ACTION=>["plural"=>"Actions"],
+        Package::DATASOURCE=>["plural"=>"Models"],
+        Package::TYPE=>["plural"=>"Types"],
+        Package::TYPE_METADATA=>["plural"=>"Types Metadata"],
+        Package::DEFINITION=>["plural"=>"Definition"],
+        Package::CONFIG=>["plural"=>"Config"],
+        Package::WIDGET=>["plural"=>"Widgets"],
+        Package::WORKER=>["plural"=>"Workers"],
+        Package::HTML_FORM=>["plural"=>"Html Forms"],
+        Package::HTML_FORM_TEMPLATE=>["plural"=>"Html Form Templates"],
+        Package::HTML_VIEW=>["plural"=>"Html Views"],
+        Package::JS_TYPE=>["plural"=>"Js Types"],
+        Package::JS_MODEL=>["plural"=>"Js Model"],
+        Package::JS_FORM=>["plural"=>"Js Forms"],
+        Package::JS_VIEW=>["plural"=>"Js Views"]
+    ];
 
     static $packages=array();
     function __construct($baseNamespace, $basePath,$name=null)
@@ -243,7 +262,7 @@ class Package
     // Obtiene todos los elementos de un tipo definido en un modelo, sean datasources, forms, vistas, etc.
 
 
-    static function getInfo($package,$model,$submodel,$resourceType,$item=null)
+    static function getInfo($package,$model,$submodel,$resourceType,$item="*",$includeProjectPath=true)
     {
         $c=Package::getResourceById($resourceType);
 
@@ -301,13 +320,16 @@ class Package
                 }
             }
         }
+
+
+
         $info = [
             "package" => $package,
             "model" => $model,
             "submodel" => $submodel,
             "resource" => $resourceType,
             "class" => $class,
-            "file" => $path
+            "file" => $includeProjectPath==false? str_replace(realpath(PROJECTPATH),"",realpath($path)):realpath($path)
         ];
         if($item!=="*") {
             return $info;
@@ -321,7 +343,8 @@ class Package
                     $cur=$info;
                     $curFile=basename($src[$k]);
                     $p=explode(".",$curFile);
-                    $cur["file"]=$src[$k];
+                    $p2=$src[$k];
+                    $cur["file"]=$includeProjectPath==false? str_replace(realpath(PROJECTPATH),"",realpath($p2)):realpath($p2);
                     $cur["class"].=$p[0];
                     $cur["item"]=$p[0];
                     $result[]=$cur;
@@ -354,6 +377,59 @@ class Package
         }
         return Package::$packageResourcesByType[$type];
 
+    }
+    function _getModelResourceTree($modelName,$parentModel=null)
+    {
+        $model=$parentModel==null?$modelName:$parentModel;
+        $submodel=$parentModel==null?null:$modelName;
+        $modelInfo=Package::getInfo($this->name,$model,$submodel, Package::MODEL,null,false);
+        $curName=$modelName;
+        $modelInfo["name"]=$modelInfo["model"];
+        $modelInfo["children"]=[];
+
+        $metaDatas=Package::getResourceMetaData();
+
+        for($j=0;$j<count($metaDatas);$j++)
+        {
+            $metaData=$metaDatas[$j];
+            switch($metaData["resource"])
+            {
+                case Package::MODEL:{
+
+                }break;
+                default:{
+                    $info=Package::getInfo($this->name,$model,$submodel,$metaData["resource"]);
+                    if(count($info)>0) {
+                        $modelInfo["children"][]= ["resource" => $metaData["resource"] . "_container", "name" => $metaData["resource"],
+                            "children" => Package::getInfo($this->name, $model, $submodel, $metaData["resource"],"*",false)
+                        ];
+
+                    }
+                }
+            }
+        }
+        if(isset($modelInfo["subobjects"]))
+        {
+            $newNode=["resource"=>"Submodel_Container","name"=>"Submodels","children"=>[]];
+            for($k=0;$k<count($modelInfo["subobjects"]);$k++)
+            {
+                $newNode["children"][]=$this->_getModelResourceTree($curName,$modelInfo["subobjects"][$k]["name"]);
+            }
+            $modelInfo["children"][]=$newNode;
+        }
+        return $modelInfo;
+
+    }
+    function getResourceTree()
+    {
+        $pkgNode=["resource"=>"Package","name"=>$this->name,"children"=>[]];
+        $models=$this->getModels();
+        if($models) {
+            for ($k = 0; $k < count($models); $k++) {
+                $pkgNode["children"][] = $this->_getModelResourceTree($models[$k]["name"]);
+            }
+        }
+        return $pkgNode;
     }
     static function getResourceMetaData()
     {
@@ -403,12 +479,12 @@ class Package
             [
                 "resource"=>Package::JS_FORM,
                 "type"=>"file",
-                "directory"=>"js/jQuery/forms",
+                "directory"=>"js/Siviglia/forms",
             ],
             [
                 "resource"=>Package::JS_VIEW,
                 "type"=>"file",
-                "directory"=>"js/jQuery/forms",
+                "directory"=>"js/Siviglia/views",
             ],
             [
                 "resource"=>Package::TYPE,

@@ -1,13 +1,12 @@
 <?php namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
-class TypeSwitcher extends \model\reflection\Types\BaseReflectionType
+
+class TypeSwitcher extends \lib\model\types\Container
 {
-    function getMeta()
-    {
-        return [
+    function __construct(){
+parent::__construct( [
             "TYPE"=>"Container",
             "FIELDS"=>[
-                "TYPE"=>["TYPE"=>"String","FIXED"=>"TypeSwitcher"],
+                "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"TypeSwitcher"],
                 "ALLOWED_TYPES"=>["TYPE"=>"Dictionary",
                     "LABEL"=>"Types",
                     "VALUETYPE"=>"BASETYPE",
@@ -37,6 +36,7 @@ class TypeSwitcher extends \model\reflection\Types\BaseReflectionType
                 "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","KEEP_KEY_ON_EMPTY"=>false]
 
             ]
-        ];
+        ]);
+
     }
 }

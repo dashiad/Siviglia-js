@@ -1,11 +1,11 @@
 <?php
 namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
-class UrlPathString extends \model\reflection\Types\BaseReflectionType
+
+class UrlPathString extends \lib\model\types\Container
 {
-    function getMeta()
-    {
-        return [
+    function __construct(){
+parent::__construct( [
+            "LABEL"=>"UrlPathString",
             "TYPE" => "Container",
             "FIELDS" => [
                 "TYPE" => ["TYPE" => "String", "FIXED" => "UrlPathString"],
@@ -14,7 +14,8 @@ class UrlPathString extends \model\reflection\Types\BaseReflectionType
                 "REQUIRED" => ["TYPE" => "Boolean", "DEFAULT" => false, "LABEL" => "Requerido", "KEEP_KEY_ON_EMPTY" => false],
                 "DEFAULT" => ["TYPE" => "String", "LABEL" => "Valor por defecto", "KEEP_KEY_ON_EMPTY" => false]
             ]
-        ];
+        ]);
+
     }
 
 }

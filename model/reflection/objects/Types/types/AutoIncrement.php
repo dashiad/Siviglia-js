@@ -1,17 +1,17 @@
 <?php namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
-include_once(__DIR__."/BaseType.php");
-  class AutoIncrement extends \model\reflection\Types\BaseReflectionType
+
+
+  class AutoIncrement extends \lib\model\types\Container
   {
-      function getMeta()
-      {
-          return [
+      function __construct(){
+parent::__construct( [
               "TYPE"=>"Container",
               "FIELDS"=>[
-                  "LABEL"=>["TYPE"=>"String"],
-                  "TYPE"=>["TYPE"=>"String","FIXED"=>"AutoIncrement"],
+                  "LABEL"=>["LABEL"=>"Label","TYPE"=>"String"],
+                  "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"AutoIncrement"],
                   "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
               ]
-          ];
+          ]);
+
       }
   }

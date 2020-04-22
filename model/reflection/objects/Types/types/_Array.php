@@ -1,14 +1,14 @@
 <?php
   namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
-  class _Array extends \model\reflection\Types\BaseReflectionType
+
+  class _Array extends \lib\model\types\Container
   {
-      function getMeta()
-      {
-          return [
+      function __construct(){
+parent::__construct( [
+              "LABEL"=>"Array",
               "TYPE"=>"Container",
               "FIELDS"=>[
-                  "TYPE"=>["TYPE"=>"String","FIXED"=>"Array"],
+                  "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Array"],
                   "LABEL"=>["TYPE"=>"String","LABEL"=>"Label"],
                   "ELEMENTS"=>[
                       "LABEL"=>"Elementos",
@@ -24,6 +24,7 @@ include_once(__DIR__."/../BaseReflectionType.php");
                   "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
                   "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false]
               ]
-          ];
+          ]);
+
       }
   }

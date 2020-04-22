@@ -16,6 +16,7 @@
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/themes/redmond/theme.js[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/js/jdesktop.js[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/njdesktop/js/jdesktop.widgets.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/d3/d3.js[#][#]
     [#]
 [#]
 [*:HTML/HTMLPAGE]

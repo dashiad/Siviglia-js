@@ -128,10 +128,10 @@ class MetaDataProvider
                     {
                         return ["type"=>"class","content"=>file_get_contents($target)];
                     }
-                    $instance=$md->getTypeMetaData($typeName);
+                    $instance=\lib\model\types\TypeFactory::getType(null,$field);
                     if($instance)
                     {
-                        $meta=$instance->getMeta();
+                        $meta=$instance->getDefinition();
                         return ["type"=>"definition","content"=>$meta];
                     }
 

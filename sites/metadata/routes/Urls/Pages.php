@@ -28,6 +28,6 @@ class Pages
         "/validate/model/{*modelName}/forms/{formName}/field/{fieldName}" => "validateFormsField",
         // Listado Forms y Datasources
         "/model/{*modelName}/forms/" => "listForms",
-        "/model/{*modelName}/datasources/" => "listDatasources",
+        "/model/{*modelName}/datasources/" => "listDatasources"
     );
 }

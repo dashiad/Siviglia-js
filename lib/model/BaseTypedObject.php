@@ -512,6 +512,11 @@ class BaseTypedObject extends PathObject
         function __construct($definition)
         {
                 $this->__objectDef=$definition;
+                if(isset($definition["TYPES"]))
+                {
+                    foreach($definition["TYPES"] as $key=>$value)
+                        \lib\model\types\TypeFactory::installType($key,$value);
+                }
                 $this->__fieldDef=& $this->__objectDef[$this->getFieldsKey()];
                 $this->__stateDef=new \lib\model\states\StatedDefinition($this);
 

@@ -1,6 +1,6 @@
 <?php namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
-class ModelField extends \model\reflection\Types\BaseReflectionType
+
+class ModelField extends \lib\model\types\Container
 {
     function getMeta()
     {

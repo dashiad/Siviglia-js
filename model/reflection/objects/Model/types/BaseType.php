@@ -50,12 +50,15 @@ class BaseType extends \lib\model\types\TypeSwitcher
             {
                 $p=explode(".",$cur);
                 $curClass="/model/reflection/Types/types/".$p[0];
-                $result[$curClass]=$curClass;
+                $short=$p[0];
+                $result[$short]=$curClass;
+                //$result[$curClass]=$curClass;
             }
         }
         // Se escanean los paquetes existentes, obteniendo los tipos que haya.
         \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $result){
-
+                if($pkg->getName()=="reflection")
+                    return;
                 $pkg->iterateOnModels(function($model) use ($pkg,& $result){
                     $d=$model->getModelDescriptor();
                     if($d->isPrivate())
@@ -77,8 +80,10 @@ class BaseType extends \lib\model\types\TypeSwitcher
                     if($typeList!==null){
                         for($k=0;$k<count($typeList);$k++)
                         {
-                            $cName=$typeList[$k]["class"];
-                            $result[$cName]=$cName;
+                            $cName=str_replace('\\',"/",$typeList[$k]["class"]);
+
+                            $short=str_replace("/model/reflection/Types/types/","",$cName);
+                            $result[$short]=$cName;
                         }
                     }
                 });

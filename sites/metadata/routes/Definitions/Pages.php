@@ -20,7 +20,7 @@ class Pages
         "validateFormsField"=>array("TYPE" => "PAGE","RESPONSE"=>["TYPE"=>"JSON"],"SOURCES"=>["validation"=>["ROLE"=>"method","NAME"=>"validate"]], "PAGE" => "index","PARAMS"=>["type"=>"validateFormField"]),
         // Listado Forms y Datasources
         "listForms" => array("TYPE" => "PAGE","RESPONSE"=>["TYPE"=>"JSON"],"SOURCES"=>["definition"=>["ROLE"=>"method","NAME"=>"getMetaDefinition"]],"PAGE" => "index","PARAMS"=>["type"=>"forms"]),
-        "listDatasources" => array("TYPE" => "PAGE","RESPONSE"=>["TYPE"=>"JSON"],"SOURCES"=>["definition"=>["ROLE"=>"method","NAME"=>"getMetaDefinition"]],"PAGE" => "index","PARAMS"=>["type"=>"datasources"]),
+        "listDatasources" => array("TYPE" => "PAGE","RESPONSE"=>["TYPE"=>"JSON"],"SOURCES"=>["definition"=>["ROLE"=>"method","NAME"=>"getMetaDefinition"]],"PAGE" => "index","PARAMS"=>["type"=>"datasources"])
 
 
         /*

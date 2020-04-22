@@ -1,13 +1,13 @@
 <?php namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
-class Enum extends \model\reflection\Types\BaseReflectionType
+
+class Enum extends \lib\model\types\Container
 {
-    function getMeta()
-    {
-        return [
+    function __construct(){
+parent::__construct( [
+            "LABEL"=>"Enum",
             "TYPE"=>"Container",
             "FIELDS"=>[
-                "TYPE"=>["TYPE"=>"String","FIXED"=>"Enum"],
+                "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Enum"],
                 "VALUES"=>[
                     "TYPE"=>"Array",
                     "ELEMENTS"=>[
@@ -24,6 +24,7 @@ class Enum extends \model\reflection\Types\BaseReflectionType
                     ]
                 ]
             ]
-        ];
+        ]);
+
     }
 }

@@ -6,16 +6,15 @@
  */
 
 namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
+
 include_once(__DIR__ . "/BaseType.php");
 
 
 
-class ModelDatasourceReference extends  \model\reflection\Meta
+class ModelDatasourceReference extends  \lib\model\types\Container
 {
-    function getMeta()
-    {
-        return [
+    function __construct(){
+parent::__construct( [
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "MODEL"=>[
@@ -44,6 +43,7 @@ class ModelDatasourceReference extends  \model\reflection\Meta
                     ]
                 ]
             ]
-        ];
+        ]);
+
     }
 }

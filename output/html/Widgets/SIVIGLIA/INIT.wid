@@ -1,4 +1,5 @@
 <?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/JqxWidgets.html"); ?>
+<?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/Visual.html"); ?>
 [@DEPENDENCY]
     [_BUNDLE]Page[#]
     [_CONTENTS]
@@ -16,9 +17,9 @@
                     var Siviglia=Siviglia || {};
                     Siviglia.config={
                         baseUrl:'##SITE_WEB_ROOT##/',
-                        publicUrl:'##SITE_WEB_ROOT##',
+                        publicUrl:'##SITE_WEB_ROOT##/',
                         staticsUrl:'##STATICS_WEB_ROOT##/',
-                        metadataUrl:'http://metadata.adtopy.com',
+                        metadataUrl:'http://metadata.adtopy.com/',
                         jsFramework:'jquery',
                         locale:'es-ES',
                         mapper:'Siviglia',

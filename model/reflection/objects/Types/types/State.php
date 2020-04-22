@@ -1,13 +1,12 @@
 <?php namespace model\reflection\Types\types;
-include_once(__DIR__."/../BaseReflectionType.php");
-class State extends \model\reflection\Types\BaseReflectionType
+
+class State extends \lib\model\types\Container
 {
-    function getMeta()
-    {
-        return [
+    function __construct(){
+parent::__construct( [
             "TYPE"=>"Container",
             "FIELDS"=>[
-                "TYPE"=>["TYPE"=>"String","FIXED"=>"State"],
+                "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"State"],
                 "VALUES"=>[
                     "TYPE"=>"Array",
                     "ELEMENTS"=>[
@@ -28,7 +27,8 @@ class State extends \model\reflection\Types\BaseReflectionType
                 "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
                 "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false]
             ]
-        ];
+        ]);
+
     }
 
 }

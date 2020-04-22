@@ -4,6 +4,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
   {
       static $typeProviders=array();
       static $typeProviderCache=array();
+      static $installedTypes=[];
 
       static function includeType($type,$suffix="")
       {
@@ -41,6 +42,14 @@ include_once(LIBPATH."/model/types/BaseType.php");
           }
           return $cName;
       }
+      // OJO, que este tipo va a ser global...Si 2 bto instalan 2 tipos con el mismo nombre, se van a pisar!
+      // Esto se resolveria si al instanciar un tipo, se le pasara el bto padre, para que las posibles
+      // definiciones de tipos extendidos, se buscaran solo en el bto padre.En ese caso, ni siquiera haria
+      // falta una variable estatica que almacenara los tipos, ni que los bto tuvieran que instalarlos.
+      static function installType($name,$def)
+      {
+            TypeFactory::$installedTypes[$name]=$def;
+      }
 
       static function getType($object,$def,$value=null)
       {
@@ -48,6 +57,11 @@ include_once(LIBPATH."/model/types/BaseType.php");
           {
               if(is_string($def))
               {
+                  // Se mira si el tipo ha sido instalado previamente por algun BaseTypedObject
+                  if(isset(TypeFactory::$installedTypes[$def]))
+                  {
+                      return TypeFactory::getType($object,TypeFactory::$installedTypes[$def],$value);
+                  }
                   $info = \lib\model\Package::getInfoFromClass($def);
                   if($info==null)
                       throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def),null);
