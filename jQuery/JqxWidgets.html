@@ -33,7 +33,9 @@
         display: table-cell;
     }
     .dictionaryInput {
-        min-width:200px
+        min-width:200px;
+        max-height:250px;
+        overflow-y:scroll;
     }
     .removebutton:after {
         font-family:"Ionicons";
@@ -429,12 +431,12 @@
                         },
                         getDefaultInputOptions: function () {
                             return {
-                                height: "400px",
-                                width: '800px'
+                                //height: "400px",
+                                //width: '200px'
                             };
                         },
                         getJqxWidgetName: function () {
-                            return "jqxEditor";
+                            return "jqxInput";
                         }
 
                     }
@@ -1248,6 +1250,10 @@
                                     return this.definition.TYPE_TYPE[ss].TYPE;
                             }
                         },
+                            _setInputValue:function(toSet)
+                            {
+
+                            },
                         getValue: function () {
                             if (this.subNode && !this.subNode.isUnset())
                                 return this.subNode.getValue();
@@ -1655,7 +1661,7 @@
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Text" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Text">
-        <textarea data-sivId="inputNode"></textarea>
+        <input type="text" data-sivId="inputNode"></input>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Boolean" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Boolean">
@@ -1749,7 +1755,7 @@
                                 </div>
                                 <div class="newItemWidget" data-sivCall="buildNewItemWidget"></div>
                             </div>
-                            <div data-sivIf="[%/*hasCurrentKey%] == true">
+                            <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
                                 <div class="containerInput dictionaryInput">
                                     <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
                                     </div>
