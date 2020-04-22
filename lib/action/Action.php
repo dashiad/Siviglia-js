@@ -88,14 +88,10 @@ class Action extends \lib\model\BaseTypedObject
                     $this->destModel=$this;
                     $unserializing=true;
                 }
+
 	        }
 
-	        if($keys)
-	        {
-	            foreach($keys as $k=>$v)
-	                $this->destModel->{$k}=$v;
-	            $this->destModel->loadFromFields();
-	        }
+
             // En este momento, ya se tiene el modelo.Ahora ya es posible comprobar permisos.
             if ($def["PERMISSIONS"]) {
                 /* $permissionDef=new \lib\reflection\classes\PermissionRequirementsDefinition($def["PERMISSIONS"]);
@@ -118,6 +114,10 @@ class Action extends \lib\model\BaseTypedObject
                         $actionResult->setModel(null);
                     }break;
                     case "Static":
+                    {
+                        $actionResult->setModel(null);
+                    }break;
+                    case "SEARCH":
                     {
                         $actionResult->setModel(null);
                     }break;
