@@ -1527,7 +1527,8 @@
                                         function (r) {
                                             if (r.error == 0) {
                                                 //this.__bto.setValue(r.data[0]);
-                                                this.onSuccess(r.data[0]);
+						var returned=r.data!==null?r.data[0]:null;
+                                                this.onSuccess(returned);
                                                 if(!this.doRedirect("ON_SUCCESS"))
                                                     p.resolve(r);
                                             } else {
