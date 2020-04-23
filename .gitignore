@@ -27,6 +27,7 @@ sites/backend/cache/es/Index.php
 sites/backend/cache/es/Job.php
 sites/metadata/cache/*
 sites/editor/cache/*
+sites/reflection/cache/*
 sites/backend/html/localConfig.php
 sites/statics/html/backend/bundles/*
 sites/statics/html/backend/bundles/bundle_Global.srl
