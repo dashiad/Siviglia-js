@@ -162,8 +162,8 @@ class ModelField
 
             if($typeObj)
             {
-                $val=$typeObj;
-                $value=$typeObj->getValue();
+                //$val=$typeObj;
+                $val=$typeObj->getValue();
             }
             else
             {

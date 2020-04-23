@@ -33,6 +33,7 @@
 <script type="text/javascript" src="http://statics.adtopy.com/reflection/bundles/Page-HEADERS-<?php echo $__serialized__bundle__Page;?>.js" ></script>
 <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.base.css"/>
 <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.darkblue.css"/>
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/Siviglia/jQuery/JqxWidgets.css"/>
 
 
 </head>
