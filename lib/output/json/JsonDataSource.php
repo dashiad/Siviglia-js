@@ -8,7 +8,6 @@
 
 namespace lib\output\json;
 
-include_once(PROJECTPATH."/model/reflection/objects/Datasource/DataSourceMetadata.php");
 class JsonDataSource extends \lib\output\Datasource
 {
     function resolve()

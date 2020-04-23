@@ -2,7 +2,7 @@
 
 
 namespace model\Reflection;
-include_once(__DIR__."./Definition.php");
+include_once(__DIR__."/Definition.php");
 
 class MetaDefinition extends \lib\model\BaseTypedObject
 {
