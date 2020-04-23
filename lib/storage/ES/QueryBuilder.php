@@ -40,8 +40,10 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
             if(isset($curQuery["BASE"])) {
                 if (is_array($curQuery["BASE"])) {
                     $selectStr = '{
-                    "index":"' . $curQuery["INDEX"] . '",
-                    "_source":["' . implode('","', $curQuery["BASE"]) . '"],
+                    "index":"' . $curQuery["INDEX"] . '",';
+                    if(count($curQuery["BASE"])>0)
+                        $selectStr.='"_source":["' . implode('","', $curQuery["BASE"]) . '"],';
+                    $selectStr.='    
                     "timeout":"30000ms",
                     [##PAGING##]
                     "body":{                    
@@ -76,6 +78,11 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 
 
             $conds = json_decode($replaced, true);
+            if($conds==null)
+            {
+                // TODO : Poner aqui una excepcion!!
+                throw new \Exception();
+            }
             $conds = $this->reduceJson($conds);
         }
 
@@ -203,8 +210,14 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
             }
         }
         }
-
-        return json_decode($qText,true);
+        $current=json_decode($qText,true);
+        // Si hay agregaciones, no queremos hits.
+        if(isset($current["body"]["aggs"])) {
+            $current["size"]=0;
+            $current["body"]["size"] = 0;
+        }
+        $current["body"]["track_total_hits"]=true;
+        return $current;
     }
 
     /**
@@ -303,6 +316,10 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 if (is_array($curCondition["FILTER"])) {
                     $field=$curCondition["FILTER"]["F"];
                     $value=$curCondition["FILTER"]["V"];
+                    if($value[0]==="[")
+                        $value[0]="{";
+                    if($value[strlen($value)-1]==="]")
+                        $value[strlen($value)-1]="}";
                     $trigger=(isset($curCondition["TRIGGER_VAR"])?$curCondition["TRIGGER_VAR"]:null);
                     switch($curCondition["FILTER"]["OP"])
                     {
@@ -357,6 +374,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         // Reconstruir los must y must-not
         $baseVars=["must"=>$must,"must_not"=>$mustNot];
         $conditions=[];
+        $options=[];
         foreach($baseVars as $bVk=>$bVv)
         {
             $cV=$bVv;
@@ -377,7 +395,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                                     $curText = "[%$trigger:";
                                     $curText .= '{"term":{';
                                     $vv = $vvs["value"];
-                                    $curText .= '"' . $kk . '":"' . $vv . '"}},';
+                                    $curText .= '"' . $kk . '":' . $vv . '}},';
                                     $curText .= '%]';
                                     $subFragments["terms"][] = $curText;
                                 }
@@ -419,13 +437,13 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                                 break;
                             case "range":
                                 {
-
+                                    // obtenemos el formato de la variable trigger,
                                     $curText = '{"'.$kk.'":{';
                                     $parts = [];
+
                                     $vv=$vvs;
                                     foreach ($vv as $op => $val) {
                                         $trigger=$val["trigger"];
-
                                         $txt="";
                                         if($trigger) {
                                             $txt .= "[%$trigger:";

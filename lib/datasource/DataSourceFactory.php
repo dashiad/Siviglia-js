@@ -43,28 +43,56 @@ class DataSourceFactory
 
             // Si se nos pasa un serializer, se busca un SOURCE de tipo STORAGE cuyo tipo coincida con el del serializer.
             $serType=null;
+            $serName=null;
             if($serializer)
             {
                 $serType=$serializer->getSerializerType();
             }
             else
             {
+
                 // Si no hay un serializer, y hay un STORAGE, el serializador se obtiene del modelo.
                 if(isset($mainDef["SOURCE"]["STORAGE"]))
                 {
-                    $modelService=\Registry::getService("model");
-                    $modelIns=$modelService->getModel($objName);
-                    $serializer=$modelIns->__getSerializer();
-                    $serType=ucfirst(strtolower($serializer->getSerializerType()));
+                    $keys=array_keys($mainDef["SOURCE"]["STORAGE"]);
+                    $firstKey=$keys[0];
+                    $serName=$firstKey; // En realidad no sabemos si esto es el nombre de un serializador, o de un tipo de serializador..
+                    // Deberia ser de un serializador, no de un tipo.
+                    $serializerService=\Registry::getService("storage");
+                    try{
+                        $serializer=$serializerService->getSerializerByName($firstKey);
+                        if($serializer)
+                            $serType=$serializer->getSerializerType();
+                    }catch(\Exception $e)
+                    {
+                        // TODO : ver si aqui necesitamos relanzar la excepcion.
+                    }
+                    if($serType===null) {
+                        $modelService = \Registry::getService("model");
+                        $modelIns = $modelService->getModel($objName);
+                        $serializer = $modelIns->__getSerializer();
+                        $serType = ucfirst(strtolower($serializer->getSerializerType()));
+                    }
                 }
+                // TODO : Datasource mal formado
             }
+
             if($serType!==null) {
                 $uSerType = ucfirst(strtolower($serType));
                 $options = null;
-                if (isset($mainDef["SOURCE"]["STORAGE"][strtoupper($serType)])) {
-                    $options = $mainDef["SOURCE"]["STORAGE"][strtoupper($serType)];
+
+                if($serName!==null && isset($mainDef["SOURCE"]["STORAGE"][$serName])) {
+                    $options = $mainDef["SOURCE"]["STORAGE"][$serName];
+
+                }
+                else
+                {
+                    $options=$mainDef["SOURCE"]["STORAGE"][strtoupper($serType)];
+                }
+                if($options){
+
                     $dsN = '\\lib\\storage\\' . $uSerType . '\\' . $uSerType . 'DataSource';
-                    $mainDs = new $dsN($objName, $dsName, $instance, null, $options);
+                    $mainDs = new $dsN($objName, $dsName, $instance, $serializer, $options);
                     return $mainDs;
                 }
             }

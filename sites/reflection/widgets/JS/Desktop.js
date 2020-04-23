@@ -27,6 +27,26 @@ Siviglia.Utils.buildClass({
                             windowHeight:480,
                             targetWidget:'Siviglia.model.reflection.Model.views.ModelEditor',
                             targetWidgetParams:{}
+                        },
+                        {
+                            iconId:'resIcon3',
+                            iconTitle:'Workers',
+                            iconImage:'http://statics.adtopy.com/packages/njdesktop/images/bws_logo2k9.png',
+                            windowTitle:'Workers',
+                            windowWidth:640,
+                            windowHeight:480,
+                            targetWidget:'Siviglia.model.web.Jobs.Worker.views.FullList',
+                            targetWidgetParams:{}
+                        },
+                        {
+                            iconId:'resIcon4',
+                            iconTitle:'Elasticsearch',
+                            iconImage:'http://statics.adtopy.com/packages/njdesktop/images/bws_logo2k9.png',
+                            windowTitle:'Elasticsearch query',
+                            windowWidth:640,
+                            windowHeight:480,
+                            targetWidget:'Siviglia.model.ads.AdManager.views.SitesView',
+                            targetWidgetParams:{}
                         }
                     ];
 
