@@ -8,6 +8,7 @@ use model\web\Jobs\App\Jobs\Workers\TestWorker;
 use model\web\Jobs\App\Jobs\Runnables\Job;
 use model\ads\Reporter\workers\SmartXDownloader;
 use model\ads\Reporter\workers\ComscoreReportCreator\ComscoreApi;
+use lib\php\ParametrizableString;
 
 
 const SIMPLE_JOB = [
@@ -203,8 +204,8 @@ const COMSCORE_TASK = [
     "args" => [
         "task"   => null,
         "name"   => "comscore_report_generator",
-        //"type"   => "DateRange", // procesa el rango de fechas día por día
-        "type" => "None",  // procesa el rango de fechas como un agregado
+        "type"   => "DateRange", // procesa el rango de fechas día por día
+        //"type" => "None",  // procesa el rango de fechas como un agregado
         "params" => [
             "timeout"        => "180",
             "region"         => "spain", // "spain" o "latam" (posible Enum) 
@@ -214,6 +215,124 @@ const COMSCORE_TASK = [
             "end_date"       => "2020-02-25",
             "max_chunk_size" => 10,
             "campaigns"      => ["DIR_29664"],
+        ],
+    ],
+];
+
+
+const COMSCORE_API_CALL_LIST = [
+    'region'   => 'spain',
+    'url'      => 'clients/[%client_id%]/jobs/processing',
+    'method'   => 'GET',
+    'headers'  => [
+        'Accept'       => 'application/json',
+        //'Content-type' => 'application/json',
+    ],
+];
+
+const COMSCORE_API_POST = [
+    'REGION'    => 'spain',
+    'URL'       => 'clients/[%client_id%]/jobs/reporting/Demographic',
+    'METHOD'    => 'POST',
+    'HEADERS'   => [
+        'Accept'       => 'application/json',
+        'Content-type' => 'application/json',
+    ],
+    'PARAMS'    => [
+        "responseMediaType" => "text/csv",
+        "includeMobile"     => true,
+        "campaignIds"       => ["DIR_29664"],
+        "clientId"          => "[%client_id%]",
+        "populationId"      => 724,
+        "viewByType"        => "Total",
+        "startDate"         => "01-03-2020",
+        "endDate"           => "03-03-2020"
+    ],
+];
+
+const COMSCORE_API_CALL_STATUS = [
+    'REGION'   => 'spain',
+    'URL'      => 'clients/[%client_id%]/jobs/reporting/10386096',
+    'METHOD'   => 'GET',
+    'HEADERS'  => [
+        'Accept' => 'application/json',
+    ],
+];
+
+const COMSCORE_API_CALL_RESULT = [
+    'REGION'   => 'spain',
+    'URL'      => 'clients/[%client_id%]/jobs/reporting/10363900/result',
+    'METHOD'   => 'GET',
+    'HEADERS'  => [
+        'Accept' => 'text/csv',
+    ],
+];
+
+const COMSCORE_DS_JOB = [
+    'type' => 'job',
+    //'name' => 'comscore_demographics',
+    'name' => 'comscore_frequency',
+    'max_retries' => 1,
+    'task' =>
+    [
+        'type' => 'task',
+        //'name' => 'comscore_demographics_worker',
+        'name' => 'comscore_frequency_worker',
+        'args' =>
+        [
+            'task' => 'model\\web\\Jobs\\App\\Jobs\\Workers\\DataSourceWorker',
+            'type' => 'None',
+            'params' =>
+            [
+                'model' => 'model\\web\\Comscore',
+                //'datasource' => 'DemographicReport',
+                'datasource' => 'FrequencyReport',
+                'start_date' => '2019-06-07',
+                'end_date' => '2019-07-07',
+                'campaigns' => ["DIR_25606", "DFP_2552176784"],
+            ],
+        ],
+    ],
+];
+
+const SITE_DS_JOB = [
+    'type' => 'job',
+    'name' => 'sites',
+    'max_retries' => 1,
+    'task' =>
+    [
+        'type' => 'task',
+        'name' => 'sites_worker',
+        'args' =>
+        [
+            'task' => 'model\\web\\Jobs\\App\\Jobs\\Workers\\DataSourceWorker',
+            'type' => 'None',
+            'params' =>
+            [
+                'model' => 'model\\web\\Site',
+                'datasource' => 'FullList',
+            ],
+        ],
+    ],
+];
+
+const PAGE_DS_JOB = [
+    'type' => 'job',
+    'name' => 'sites',
+    'max_retries' => 1,
+    'task' =>
+    [
+        'type' => 'task',
+        'name' => 'pages_worker',
+        'args' =>
+        [
+            'task' => 'model\\web\\Jobs\\App\\Jobs\\Workers\\DataSourceWorker',
+            'type' => 'None',
+            'params' =>
+            [
+                'model' => 'model\\web\\Page',
+                'datasource' => 'FullList',
+            ],
         ],
     ],
 ];
@@ -381,6 +500,12 @@ function testAction($args = SIMPLE_JOB)
     }
 }
 
+
+function testCreateDsJob($args = COMSCORE_DS_JOB)
+{
+    return JobManager::createJob($args);
+}
+
 //testCreateJobsTable();
 //testCreateWorkersTable();
 //testLocateWorkers();
@@ -391,7 +516,7 @@ function testAction($args = SIMPLE_JOB)
 //$jobs[] = testCreateEmployeeReport();
 //$jobs[] = testCreateParallelJob();
 //$jobs[] = testCreateApiJob();
-$jobs[] = testCreateComscoreJob();
+//$jobs[] = testCreateComscoreJob();
 //testListJobsDS();
 //testListWorkersDS();
 //$jobs[] = testAction()->job_id;
@@ -399,8 +524,6 @@ $jobs[] = testCreateComscoreJob();
 /*foreach($jobs as $job) {
     echo $job.PHP_EOL;
     testListWorkersDS($job);
-}
-for($i=0;$i<3;$i++)
-	testAction(EMPLOYEE_JOB);*/
-//testListJobsDS();
-//testListWorkersDS();
+}*/
+testCreateDsJob(PAGE_DS_JOB);
+testCreateDsJob(COMSCORE_JOB);

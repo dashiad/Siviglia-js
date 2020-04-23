@@ -1,17 +1,17 @@
 <?php
 namespace model\web\Comscore\datasources;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Comscore/datasources/DemographicReport.php
+ FILENAME:/var/www/adtopy/model/web/objects/Comscore/datasources/CacheTestReport.php
  CLASS:Definition
-*
-*
-**/
+ *
+ *
+ **/
 
-class DemographicReport
+class CacheTestReport
 {
     static $definition = [
         'ROLE' => 'list',
-        'DATAFORMAT' => 'Table', 
+        'DATAFORMAT' => 'Table',
         'PARAMS' => [
             'region' => [
                 'TYPE' => 'Enum',
@@ -288,15 +288,20 @@ class DemographicReport
         'PERMISSIONS' => [],
         'SOURCE'      => [
             'STORAGE' => [
-                'COMSCORE' => [
-                    'NAME'   => 'model\\web\\Comscore',
-                    'CLASS'  => 'model\\web\\Comscore\\serializers\\ComscoreSerializer',
-                    'ACTION' => 'report',
-                    'TYPE'   => 'Demographic',
+/*                'CACHE' => [
+                    'SOURCES' => [
+                        'COMSCORE' => [
+                            'ACTION' => 'report',
+                            'TYPE'   => 'Demographic',
+                            'DEFAULT_SERIALIZER' => 'Mysql',
+                        ],
+                        'DEFAULT_SERIALIZER' => 'Mysql',
+                    ],
+	    ],*/
+                'MYSQL' => [
+                    'DEFAULT_SERIALIZER' => 'Mysql',
                 ],
-            ],
+            ]
         ]
     ];
 }
-
-

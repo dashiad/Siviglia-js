@@ -21,8 +21,8 @@ $Config=[
         "web"=>["path"=>'',"namespace"=>'\model\web']
     ],
     "SERIALIZERS"=>array(
-        "default"=>array("NAME"=>"default","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"adtopy")),
-        "web"=>array("NAME"=>"web","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"adtopy")),
+        "default"=>array("NAME"=>"default","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"adtopy","password"=>"adtopy","database"=>"adtopy")),
+        "web"=>array("NAME"=>"web","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"adtopy","password"=>"adtopy","database"=>"adtopy")),
         "es"=>["NAME"=>"MAIN_ES","TYPE"=>"ES","ES"=>["servers"=>["editor.adtopy.com"],"port"=>9200,"index"=>"testIndex"]],
         "cookie"=>array(
             "NAME"=>"cookie",

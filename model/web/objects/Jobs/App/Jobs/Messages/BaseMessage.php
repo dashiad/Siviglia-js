@@ -70,7 +70,13 @@ class BaseMessage
      */
     public function toJson() : String
     {
-        return json_encode($this->message);
+        $encodedMsg = json_encode($this->message);
+        if (!$encodedMsg) {
+            $encodedMsg = json_encode([
+                "error" => json_last_error(). ": " . json_last_error_msg()
+            ]);
+        }
+        return $encodedMsg;
     }
     
 }

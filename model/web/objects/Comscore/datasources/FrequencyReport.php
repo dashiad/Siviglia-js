@@ -91,12 +91,14 @@ class FrequencyReport
         ],
         'PERMISSIONS' => [],
         'SOURCE'      => [
+           'STORAGE' => [
                'COMSCORE' => [
                    'ACTION' => 'report',
                    'TYPE'   => 'Frequency',
                ],
-            ]
-        ];
+           ],
+        ],
+    ];
 }
 
 
