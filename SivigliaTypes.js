@@ -1531,12 +1531,14 @@ Siviglia.Utils.buildClass(
 
             Timestamp:
                 {
-                    inherits: 'DateTime',
+                    inherits: 'BaseType',
                     construct: function (definition, value,relaxed) {
-                        var stdDef={TYPE: 'Timestamp', DEFAULT: 'NOW'};
-                        var fullDef=this.__overrideDefinition(definition,stdDef);
-                        this.DateTime(definition, value,relaxed);
-                        this.flags |= Siviglia.types.BaseType.TYPE_NOT_EDITABLE;
+                        // TODO : Gestionar el NOW aqui
+                        //var stdDef={TYPE: 'Timestamp', DEFAULT: 'NOW'};
+                        this.BaseType('Timestamp',definition, value,relaxed);
+                    },
+                    methods:{
+                        _validate:function(val){return true;}
                     }
                 },
             UUID:
