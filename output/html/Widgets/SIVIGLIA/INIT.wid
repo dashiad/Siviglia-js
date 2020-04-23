@@ -7,6 +7,7 @@
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/globalization/globalize.js[#][#]
         [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/styles/jqx.base.css[#][#]
         [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/styles/jqx.darkblue.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/jQuery/JqxWidgets.css[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Siviglia.js[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/SivigliaStore.js[#][#]
         [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/SivigliaTypes.js[#][#]
