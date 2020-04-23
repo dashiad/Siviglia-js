@@ -4,7 +4,7 @@
 namespace model\ads\AdManager\datasources;
 
 
-class SampleES
+class DomainsES
 {
     static  $definition=array(
         'ROLE'=>'list',
@@ -16,23 +16,13 @@ class SampleES
             ),
             'end'=>array(
                 "TYPE"=>"Timestamp"
-            ),
-            'domain'=>array(
-                "TYPE"=>"String"
             )
         ),
         'FIELDS'=>array(
-            'device'=>array(
-                "LABEL"=>"device",
-                'TYPE'=>'String',
-            ),
+
             'count'=>array(
                 "LABEL"=>"Count",
                 'TYPE'=>"Integer"
-            ),
-            'timestamp'=>array(
-                "LABEL"=>"Time",
-                'TYPE'=>'Timestamp'
             ),
             'domain'=>array(
                 "LABEL"=>"domain",
@@ -45,7 +35,7 @@ class SampleES
                     "DEFINITION"=>[
                         'INDEX'=>"gpt*",
                         'BASE'=>[],
-                        'GROUPBY'=>"domain => device => (3600000)timestamp",
+                        'GROUPBY'=>"domain",
                         'CONDITIONS'=>array(
                             array(
                                 'FILTER'=>array(
@@ -62,14 +52,6 @@ class SampleES
                                     'V'=>'[%/end%]'
                                 ),
                                 'TRIGGER_VAR'=>'end'
-                            ),
-                            array(
-                                'FILTER'=>array(
-                                    'F'=>'domain',
-                                    'OP'=>'=',
-                                    'V'=>'[%/domain%]'
-                                ),
-                                'TRIGGER_VAR'=>'domain'
                             )
                         )
                     ]

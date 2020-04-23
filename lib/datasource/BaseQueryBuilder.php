@@ -75,7 +75,8 @@ abstract class BaseQueryBuilder
             }
             $allSerialized = $this->serializer->serializeToArray($this->data);
             $plainParams=$allSerialized[0];
-
+            foreach($plainParams as $k=>$v)
+                $plainParams[$k]=json_encode($v);
         }
         $stack=new \lib\model\ContextStack();
         $ctx=new \lib\model\BaseObjectContext($plainParams,"/",$stack);

@@ -441,7 +441,7 @@ class ESSerializer extends \lib\storage\StorageSerializer
 
     function buildQuery($queryDef,$params,$pagingParams,$findRows=true)
     {
-        $qB = new QueryBuilder($queryDef, $params,$pagingParams);
+        $qB = new QueryBuilder($this,$queryDef, $params,$pagingParams);
         $qB->findFoundRows($findRows);
         return  $qB->build();
 
@@ -450,11 +450,57 @@ class ESSerializer extends \lib\storage\StorageSerializer
     {
         $q=$this->buildQuery($queryDef,$params,$pagingParams);
         //echo $q."<br>";
-        $data=$this->conn->select($q);
-        $data = $this->conn->selectAll($q, $nRows);
+        $conn=$this->getConnection();
+        $data=$conn->select($q);
+
+        if(isset($data["aggregations"]))
+        {
+            // Convertimos las agregaciones a rows. Para ello, necesitamos hacerlo de forma recursiva, teniendo la query que
+            // hemos ejecutado.
+            $data=$this->recurse_aggregation($q["body"]["aggs"],$data["aggregations"],[]);
+            $nRows=count($data);
+            $matchingRows=$nRows;
+        }
+        else
+        {
+            if(isset($data["hits"]))
+            {
+                if(isset($data["hits"]["total"]))
+                {
+                    $matchingRows=$data["hits"]["total"]["value"];
+                }
+                if(isset($data["hits"]) && isset($data["hits"]["hits"]))
+                    $nRows=count($data["hits"]["hits"]);
+                else
+                    $nRows=0;
+            }
+
+        }
+       // $data = $conn->selectAll($q, $nRows);
         return $data;
     }
 
+    function recurse_aggregation($query,$curRoot,$currentExp)
+    {
+        if($query) {
+            $keys = array_keys($query);
+            // Solo permitimos una key.
+            $curField = $keys[0];
+            $results = [];
+            if (isset($curRoot[$curField]["buckets"])) {
+                for ($k = 0; $k < count($curRoot[$curField]["buckets"]); $k++) {
+                    $bucketVal = $curRoot[$curField]["buckets"][$k]["key"];
+                    $currentExp[$curField] = $bucketVal;
+                    $results = array_merge($results, $this->recurse_aggregation(
+                        io($query[$curField], "aggs", null),
+                        $curRoot[$curField]["buckets"][$k], $currentExp));
+                }
+                return $results;
+            }
+        }
+        $currentExp["count"]=$curRoot["doc_count"];
+        return [$currentExp];
+    }
     function fetchCursor($queryDef, & $data, & $nRows, & $matchingRows, $params,$pagingParams)
     {
         if(isset($queryDef["PRE_QUERIES"]))

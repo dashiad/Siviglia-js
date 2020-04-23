@@ -61,8 +61,16 @@ class MetaDataProvider
     {
         if ($target !== MetaDataProvider::GET_LIST) {
             $ds = \lib\datasource\DataSourceFactory::getDataSource($modelName, $targetName);
-            if($target==MetaDataProvider::GET_DEFINITION || $target==MetaDataProvider::GET_FIELD)
-                return $this->getBaseTypedObjectMeta($ds, $target == MetaDataProvider::GET_DEFINITION ? null : $field, $mode);
+            if($target==MetaDataProvider::GET_DEFINITION || $target==MetaDataProvider::GET_FIELD) {
+                $def=$ds->getOriginalDefinition();
+                if($target==MetaDataProvider::GET_FIELD)
+                {
+                    return $def["FIELDS"][$field];
+                }
+                else
+                    return $def;
+
+            }
             if($target==MetaDataProvider::GET_PARAM_DEFINITION || $target==MetaDataProvider::GET_PARAM) {
                 $params=$ds->getParametersInstance();
                 return $this->getBaseTypedObjectMeta($params, $target == MetaDataProvider::GET_DEFINITION ? null : $field, $mode);

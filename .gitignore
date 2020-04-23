@@ -30,4 +30,7 @@ sites/editor/cache/*
 sites/reflection/cache/*
 sites/backend/html/localConfig.php
 sites/statics/html/backend/bundles/*
+sites/statics/html/reflection/bundles/*
+sites/statics/html/reflection/bundles/bundle_Page.srl
+sites/statics/html/editor/bundles/*
 sites/statics/html/backend/bundles/bundle_Global.srl
