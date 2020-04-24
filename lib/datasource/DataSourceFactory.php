@@ -90,8 +90,12 @@ class DataSourceFactory
                     $options=$mainDef["SOURCE"]["STORAGE"][strtoupper($serType)];
                 }
                 if($options){
-
-                    $dsN = '\\lib\\storage\\' . $uSerType . '\\' . $uSerType . 'DataSource';
+                    // El datasource tiene que vivir en la misma carpeta que el storage engine:
+                    $serializerClass=get_class($serializer);
+                    $parts=explode('\\',$serializerClass);
+                    array_pop($parts);
+                    $dsN='\\'.implode('\\',$parts). '\\'.$uSerType . 'DataSource';
+                    //$dsN = '\\lib\\storage\\' . $uSerType . '\\' . $uSerType . 'DataSource';
                     $mainDs = new $dsN($objName, $dsName, $instance, $serializer, $options);
                     return $mainDs;
                 }

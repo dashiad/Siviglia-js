@@ -3,7 +3,7 @@
 namespace model\web\Comscore\serializers;
 
 require_once(__DIR__.'/storage/Comscore.php');
-require_once(__DIR__.'/../datasources/ComscoreDataSource.php');
+require_once(__DIR__.'/ComscoreDataSource.php');
 
 use lib\php\ParametrizableString;
 use lib\datasource\DataSource;

@@ -288,7 +288,7 @@ class DemographicReport
         'PERMISSIONS' => [],
         'SOURCE'      => [
             'STORAGE' => [
-                'COMSCORE' => [
+                'comscore' => [
                     'NAME'   => 'model\\web\\Comscore',
                     'CLASS'  => 'model\\web\\Comscore\\serializers\\ComscoreSerializer',
                     'ACTION' => 'report',

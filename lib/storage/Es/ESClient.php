@@ -6,7 +6,7 @@
  * Time: 19:05
  */
 
-namespace lib\storage\ES;
+namespace lib\storage\Es;
 
 use ElasticSearch;
 use Elasticsearch\ClientBuilder;

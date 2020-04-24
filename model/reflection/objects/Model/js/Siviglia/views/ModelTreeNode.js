@@ -8,7 +8,7 @@ Siviglia.Utils.buildClass({
                     this.svg=params.svg;
                     this.treeWidget=params.tree;
                     this.data = params.data;
-                    this.name = typeof this.data.name == "undefined" ? this.data.item : this.data.name;
+                    this.name = Siviglia.empty(this.data.name)? this.data.item : this.data.name;
                     this._children=Siviglia.isset(params.data._children);
                     this.children=Siviglia.isset(params.data.children);
                     this.hasChildren=this._children || this.children;

@@ -17,9 +17,10 @@ class CLRequest extends \lib\output\html\HTMLRequest
     private $userId=null;
     function __construct()
     {
+        global $Config;
         $params=$this->parseParameters();
 
-        $this->site=isset($params["site"])?$params["site"]:"default";
+        $this->site=isset($params["site"])?$params["site"]:$Config["DEFAULT_SITE"];
         $this->isSSL=false;
         if(!isset($params["subpath"]))
             $subpath="/";

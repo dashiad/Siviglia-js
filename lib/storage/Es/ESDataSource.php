@@ -1,5 +1,5 @@
 <?php
-namespace lib\storage\ES;
+namespace lib\storage\Es;
 include_once(LIBPATH."/datasource/DataSource.php");
     class ESDataSource extends \lib\datasource\StorageDataSource
     {

@@ -1,5 +1,5 @@
 <?php
-namespace lib\storage\ES;
+namespace lib\storage\Es;
 use Elasticsearch\Serializers\EverythingToJSONSerializer;
 
 class QueryBuilder extends \lib\datasource\BaseQueryBuilder

@@ -1,5 +1,5 @@
 <?php
-namespace model\web\Comscore\datasources;
+namespace model\web\Comscore\serializers;
 
 require_once(__DIR__."/CsvDataSource.php");
 

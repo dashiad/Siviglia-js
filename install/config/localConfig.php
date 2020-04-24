@@ -24,6 +24,7 @@ $Config=[
         "default"=>array("NAME"=>"default","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"127.0.0.1","user"=>"root","password"=>"","database"=>"adtopy")),
         "web"=>array("NAME"=>"web","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"127.0.0.1","user"=>"root","password"=>"","database"=>"adtopy")),
         "es"=>["NAME"=>"MAIN_ES","TYPE"=>"ES","ES"=>["servers"=>["130.61.28.79"],"port"=>9200,"index"=>"gpt*"]],
+        "comscore"=>["NAME"=>"Comscore","MODEL"=>"/model/web/Comscore","CLASS"=>"\\model\\web\\Comscore\\serializers\\ComscoreSerializer"],
         "cookie"=>array(
             "NAME"=>"cookie",
             "TYPE"=>"Cookie",
@@ -40,6 +41,7 @@ $Config=[
 
         )
     ),
+    "DEFAULT_SITE"=>"reflection",
     "DEFAULT_SERIALIZER"=>"default",
     "DEVELOPMENT"=>0,
     "DEFAULT_LANGUAGE"=>"es",

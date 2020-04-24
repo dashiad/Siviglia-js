@@ -315,7 +315,7 @@ class Package
                     {
                         // $class no tiene sentido
                         $class=null;
-                        $path.=('/'.$c["item"].".".$c["extension"]);
+                        $path.=('/*'.$c["extension"]);
                     }
                 }
             }
@@ -480,11 +480,13 @@ class Package
                 "resource"=>Package::JS_FORM,
                 "type"=>"file",
                 "directory"=>"js/Siviglia/forms",
+                "extension"=>".js"
             ],
             [
                 "resource"=>Package::JS_VIEW,
                 "type"=>"file",
                 "directory"=>"js/Siviglia/views",
+                "extension"=>".js"
             ],
             [
                 "resource"=>Package::TYPE,
@@ -499,7 +501,8 @@ class Package
             [
                 "resource"=>Package::JS_TYPE,
                 "type"=>"file",
-                "directory"=>"js/types"
+                "directory"=>"js/types",
+                "extension"=>".js"
             ],
             [
                 "resource"=>Package::DEFINITION,

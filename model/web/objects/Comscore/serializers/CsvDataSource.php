@@ -1,6 +1,6 @@
 <?php
 //namespace lib\datasource;
-namespace  model\web\Comscore\datasources;
+namespace  model\web\Comscore\serializers;
 
 require_once(PROJECTPATH."lib/datasource/TableDataSet.php");
 

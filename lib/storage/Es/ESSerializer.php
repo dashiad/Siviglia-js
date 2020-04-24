@@ -1,6 +1,6 @@
 <?php
 
-namespace lib\storage\ES;
+namespace lib\storage\Es;
 
 use lib\storage\StorageSerializerException;
 

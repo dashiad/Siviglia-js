@@ -27,6 +27,7 @@ $Config=[
          "web"=>array("NAME"=>"web","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"adtopy")),
          "test"=>array("NAME"=>"test","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"test")),
          "modeltests"=>array("NAME"=>"test","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"editor.adtopy.com","user"=>"root","password"=>"","database"=>"modeltests")),
+         "comscore"=>["NAME"=>"Comscore","MODEL"=>"/model/web/Comscore","CLASS"=>"ComscoreSerializer"],
         "es"=>["NAME"=>"MAIN_ES","TYPE"=>"ES","ES"=>["servers"=>["127.0.0.1"],"port"=>9200,"index"=>"testIndex"]],
         "cookie"=>array(
             "NAME"=>"cookie",
@@ -44,6 +45,7 @@ $Config=[
 
         )
     ),
+    "DEFAULT_SITE"=>"reflection",
     "DEFAULT_SERIALIZER"=>"default",
     "DEVELOPMENT"=>1,
     "DEFAULT_LANGUAGE"=>"es",
