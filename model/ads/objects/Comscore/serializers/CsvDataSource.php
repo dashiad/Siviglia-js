@@ -1,6 +1,6 @@
 <?php
 //namespace lib\datasource;
-namespace  model\web\Comscore\serializers;
+namespace  model\ads\Comscore\serializers;
 
 require_once(PROJECTPATH."lib/datasource/TableDataSet.php");
 
@@ -176,6 +176,12 @@ class CsvDataSet extends TableDataSet
     {
         $this->currentIndex=0;
         return $this->getField($varName);
+    }
+
+    function getFullData()
+    {
+        $data = $this->data;
+        return $data;
     }
     
 }

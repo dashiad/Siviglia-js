@@ -268,15 +268,13 @@ const COMSCORE_API_CALL_RESULT = [
     ],
 ];
 
-const COMSCORE_DS_JOB = [
+const COMSCORE_DS_FREQUENCY = [
     'type' => 'job',
-    //'name' => 'comscore_demographics',
     'name' => 'comscore_frequency',
     'max_retries' => 1,
     'task' =>
     [
         'type' => 'task',
-        //'name' => 'comscore_demographics_worker',
         'name' => 'comscore_frequency_worker',
         'args' =>
         [
@@ -284,8 +282,7 @@ const COMSCORE_DS_JOB = [
             'type' => 'None',
             'params' =>
             [
-                'model' => 'model\\web\\Comscore',
-                //'datasource' => 'DemographicReport',
+                'model' => 'model\\ads\\Comscore',
                 'datasource' => 'FrequencyReport',
                 'start_date' => '2019-06-07',
                 'end_date' => '2019-07-07',
@@ -294,6 +291,31 @@ const COMSCORE_DS_JOB = [
         ],
     ],
 ];
+
+const COMSCORE_DS_DEMOGRAPHICS = [
+    'type' => 'job',
+    'name' => 'comscore_demographics',
+    'max_retries' => 1,
+    'task' =>
+    [
+        'type' => 'task',
+        'name' => 'comscore_demographics_worker',
+        'args' =>
+        [
+            'task' => 'model\\web\\Jobs\\App\\Jobs\\Workers\\DataSourceWorker',
+            'type' => 'None',
+            'params' =>
+            [
+                'model' => 'model\\ads\\Comscore',
+                'datasource' => 'DemographicReport',
+                'start_date' => '2019-06-07',
+                'end_date' => '2019-07-07',
+                'campaigns' => ["DIR_25606", "DFP_2552176784"],
+            ],
+        ],
+    ],
+];
+
 
 const SITE_DS_JOB = [
     'type' => 'job',
@@ -501,7 +523,7 @@ function testAction($args = SIMPLE_JOB)
 }
 
 
-function testCreateDsJob($args = COMSCORE_DS_JOB)
+function testCreateDsJob($args = COMSCORE_DS_FREQUENCY)
 {
     return JobManager::createJob($args);
 }
@@ -525,5 +547,6 @@ function testCreateDsJob($args = COMSCORE_DS_JOB)
     echo $job.PHP_EOL;
     testListWorkersDS($job);
 }*/
-testCreateDsJob(PAGE_DS_JOB);
-testCreateDsJob(COMSCORE_JOB);
+//testCreateDsJob(PAGE_DS_JOB);
+testCreateDsJob(COMSCORE_DS_DEMOGRAPHICS);
+testCreateDsJob(COMSCORE_DS_FREQUENCY);

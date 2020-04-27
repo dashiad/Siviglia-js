@@ -14,36 +14,16 @@ class DataSourceWorker extends Worker
     }
     
     protected function runItem($item)
-    {       
+    {   
         $model = $item['model'];
         $dsName = $item['datasource'];
-        
-        /*$serializerService=\Registry::getService("storage");
-        $serializer = $serializerService->getSerializer( [
-            "NAME"   => "Comscore",
-            "MODEL"  => $model,
-            "TYPE"   => "Comscore",
-            "CLASS"  => "ComscoreSerializer",
-            "PARAMS" => [],
-        ]);*/
-	
-        include_once(PROJECTPATH."/model/web/objects/Comscore/serializers/ComscoreSerializer.php");
-        include_once(PROJECTPATH."/model/web/objects/Comscore/serializers/storage/Comscore.php");
-        $serializer = new \model\web\Comscore\serializers\ComscoreSerializer([
-            "NAME"   => "Comscore",
-            "MODEL"  => $model,
-            "TYPE"   => "Comscore",
-            "CLASS"  => "ComscoreSerializer",
-            "PARAMS" => [],
-        ]);
-        
+    
         $serializer = null;
         $ds = \getDataSource($model, $dsName, $serializer);
         $this->loadFields($ds, $item);
         
         $result = $ds->fetchAll();
         return $result->getFullData();
-        //return $ds->getFilename();
     }
     
     protected function loadFields(&$ds, $item) 

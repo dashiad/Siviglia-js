@@ -1,5 +1,5 @@
 <?php
-namespace model\web\Comscore\serializers\Comscore\storage;
+namespace model\ads\Comscore\serializers\Comscore\storage;
 
 require_once(__DIR__.'/QueryBuilder.php');
 

@@ -1,11 +1,11 @@
 <?php
-namespace model\web\Comscore\serializers;
+namespace model\ads\Comscore\serializers;
 
 require_once(__DIR__."/CsvDataSource.php");
 
 //use \lib\datasource\CsvDataSource;
 use \lib\model\BaseTypedObject;
-use model\web\Comscore\serializers\Comscore\storage\Comscore;
+use model\ads\Comscore\serializers\Comscore\storage\Comscore;
 
 class ComscoreDataSource extends CsvDataSource
 {
@@ -31,7 +31,7 @@ class ComscoreDataSource extends CsvDataSource
     public function __construct($objName, $dsName, $definition)
     {       
         parent::__construct($objName, $dsName, $definition::$definition);
-        $this->DSConfig = $this->__objectDef['SOURCE']['STORAGE']['COMSCORE'];
+        $this->DSConfig = $this->__objectDef['SOURCE']['STORAGE']['comscore'];
         $this->columnNames = array_keys($this->__returnedFields);
         $this->numColumns = count($this->columnNames);
         
@@ -47,7 +47,7 @@ class ComscoreDataSource extends CsvDataSource
          * 
          * @var BaseTypedObject $model
          */
-        $model = \getModel("model\web\Comscore");
+        $model = \getModel("model\ads\Comscore");
         
         $this->action = "requestReport";
         $this->params = [

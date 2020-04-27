@@ -1,5 +1,5 @@
 <?php
-namespace model\web;
+namespace model\ads;
 
 use \lib\model\{BaseModel, BaseException};
 

@@ -1,7 +1,7 @@
 <?php
-namespace model\web\Comscore;
+namespace model\ads\Comscore;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Comscore/Definition.php
+ FILENAME:/var/www/adtopy/model/ads/objects/Comscore/Definition.php
  CLASS:Definition
  *
  *

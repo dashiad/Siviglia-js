@@ -1,7 +1,7 @@
 <?php
-namespace model\web\Comscore\datasources;
+namespace model\ads\Comscore\datasources;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Comscore/datasources/FrequencyReport.php
+ FILENAME:/var/www/adtopy/model/ads/objects/Comscore/datasources/FrequencyReport.php
  CLASS:Definition
 *
 *
@@ -37,62 +37,62 @@ class FrequencyReport
         ],
         'FIELDS' => [
             "TimesExposed" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'TimesExposed',
             ],
             "PercentImpressions" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'PercentImpressions',
             ],
             "TotalImpressions" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'TotalImpressions',
             ],
             "PercentUniqueViewers" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'PercentUniqueViewers',
             ],
             "UniqueViewers" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'UniqueViewers',
             ],
             "PercentValidateImpressions" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'PercentValidateImpressions',
             ],
             "ValidateTotalImpressions" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'ValidateTotalImpressions',
             ],
             "PercentValidateUniqueViewers" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'PercentValidateUniqueViewers',
             ],
             "ValidateUniqueViewers" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'ValidateUniqueViewers',
             ],
             "ModifiedAt" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'ModifiedAt',
             ],
             "DataMethodology" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'DataMethodology',
             ],
             "DataThrough" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'DataThrough',
             ],
             "DataStatus" => [
-                'MODEL' => '\model\web\Comscore',
+                'MODEL' => '\model\ads\Comscore',
                 'FIELD' => 'DataStatus',
             ],
         ],
         'PERMISSIONS' => [],
         'SOURCE'      => [
            'STORAGE' => [
-               'COMSCORE' => [
+               'comscore' => [
                    'ACTION' => 'report',
                    'TYPE'   => 'Frequency',
                ],

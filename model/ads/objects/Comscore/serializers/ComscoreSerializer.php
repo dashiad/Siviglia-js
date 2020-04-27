@@ -1,14 +1,14 @@
 <?php
 
-namespace model\web\Comscore\serializers;
+namespace model\ads\Comscore\serializers;
 
 require_once(__DIR__.'/storage/Comscore.php');
 require_once(__DIR__.'/ComscoreDataSource.php');
 
 use lib\php\ParametrizableString;
 use lib\datasource\DataSource;
-use model\web\Comscore\serializers\Comscore\storage\Comscore;
-use model\web\Comscore\datasources\ComscoreDataSource;
+use model\ads\Comscore\serializers\Comscore\storage\Comscore;
+use model\ads\Comscore\datasources\ComscoreDataSource;
 
 class ComscoreSerializerException extends \lib\model\BaseException
 {
@@ -24,7 +24,7 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
     
     function __construct($definition, $useDataSpace=true)
     {
-        $this->conn = new  \model\web\Comscore\serializers\Comscore\storage\Comscore($definition);
+        $this->conn = new  \model\ads\Comscore\serializers\Comscore\storage\Comscore($definition);
         \lib\storage\StorageSerializer::__construct($definition, static::COMSCORE_SERIALIZER_TYPE);         
     }
     
