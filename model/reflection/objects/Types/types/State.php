@@ -20,11 +20,13 @@ parent::__construct( [
                     ]
                 ],
                 "REQUIRED"=>["LABEL"=>"Requerido","TYPE"=>"Boolean","DEFAULT"=>false],
-                "DEFAULT"=>["TYPE"=>"Integer",
+                "DEFAULT"=>["TYPE"=>"String",
                     "LABEL"=>"Valor por defecto",
                     "SOURCE"=>[
-                        "TYPE"=>"PATH",
-                        "PATH"=>"/{keys}"
+                        "TYPE"=>"Path",
+                        "PATH"=>"#../VALUES/[[KEYS]]",
+                        "LABEL"=>"LABEL",
+                        "VALUE"=>"LABEL"
                     ]
                 ],
                 "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],

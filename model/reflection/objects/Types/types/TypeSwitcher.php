@@ -7,7 +7,8 @@ parent::__construct( [
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"TypeSwitcher"],
-                "ALLOWED_TYPES"=>["TYPE"=>"Dictionary",
+                "ALLOWED_TYPES"=>[
+                    "TYPE"=>"Dictionary",
                     "LABEL"=>"Types",
                     "VALUETYPE"=>"/model/reflection/Model/types/BaseType",
                     "REQUIRED"=>true
@@ -15,8 +16,10 @@ parent::__construct( [
                 "IMPLICIT_TYPE"=>["TYPE"=>"String",
                     "LABEL"=>"Tipo por defecto",
                     "SOURCE"=>[
-                        "TYPE"=>"PathSource",
-                        "PATH"=>"/../ALLOWED_TYPES/{keys}"
+                        "TYPE"=>"Path",
+                        "PATH"=>"#../ALLOWED_TYPES/[[KEYS]]",
+                        "LABEL"=>"LABEL",
+                        "VALUE"=>"VALUE"
                     ],
                     "KEEP_KEY_ON_EMPTY"=>false
                     ],

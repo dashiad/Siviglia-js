@@ -31,7 +31,7 @@ class BaseType extends \lib\model\types\TypeSwitcher
             $type = "/model/reflection/Types/types/" . $type;
         }
 
-        $instance=\lib\model\types\TypeFactory::getType($this,$type);
+        $instance=\lib\model\types\TypeFactory::getType($this,$this->allowed_types[$type]);
         $instance->setParent($this,$type);
         return $instance;
     }

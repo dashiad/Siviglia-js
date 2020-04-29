@@ -64,7 +64,7 @@ class ModelList
                     if($filter==null || strpos($normalized,$filter)!==false) {
                         $list[] = ["package" => $pkg->getName(),
                             "smallName" => $normalized,
-                            "fullName" => $model->getClassName(),
+                            "fullName" => str_replace('\\','/',$model->getClassName()),
                             "modelPath" => $model->modelDescriptor->getBaseDir()
                         ];
                     }

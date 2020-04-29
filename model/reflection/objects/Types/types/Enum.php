@@ -20,9 +20,9 @@ parent::__construct( [
                     "LABEL"=>"Valor por defecto",
                     "SOURCE"=>[
                         "TYPE"=>"Path",
-                        "PATH"=>"#../VALUES/[[SOURCE]]",
+                        "PATH"=>"#../VALUES/[[KEYS]]",
                         "LABEL"=>"LABEL",
-                        "VALUE"=>"LABEL"
+                        "VALUE"=>"VALUE"
                     ]
                 ]
             ]

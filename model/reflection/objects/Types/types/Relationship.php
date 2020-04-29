@@ -8,31 +8,44 @@ parent::__construct( [
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Relationship"],
-                "MODEL"=>["TYPE"=>"String",
+                "MODEL"=>[
+                    "LABEL"=>"Model",
+                    "TYPE"=>"String",
                     "REQUIRED"=>true,
                     "SOURCE"=>[
                         "TYPE"=>"DataSource",
                         "MODEL"=>'\model\reflection\Model',
                         "DATASOURCE"=>'ModelList',
-                        "LABEL"=>"[%package%] > [%smallName%]",
+                        "LABEL_EXPRESSION"=>"[%/package%] > [%/smallName%]",
                         "VALUE"=>"fullName"
                     ]],
-                "FIELDS"=>["TYPE"=>"Dictionary",
+                "FIELDS"=>[
+                    "LABEL"=>"Campo local",
+                    "TYPE"=>"Dictionary",
                     "SOURCE"=>[
-                        "TYPE"=>"PathSource",
-                        "PATH"=>"[%../../FIELDS%]"
+                        "TYPE"=>"Path",
+                        // Este path va:
+                        // El primer ".." sale del campo "FIELDS" actual (un par de lineas mas arriba)
+                        // El segundo ".." sale del campo "FIELDS" de este tipo (al principio de la definicion del tipo)
+                        // El tercer ".." sale de este tipo
+                        // El cuarto llega al diccionario padre.
+                        "PATH"=>"#../../../../[[KEYS]]",
+                        "LABEL"=>"LABEL",
+                        "VALUE"=>"LABEL"
+
                     ],
                     "VALUETYPE"=>[
+                        "LABEL"=>"Campo remoto",
                         "TYPE"=>"String",
                         "SOURCE"=>[
                             "TYPE"=>"DataSource",
                             "MODEL"=>'\model\reflection\Model',
                             "DATASOURCE"=>'FieldList',
                             "PARAMS"=>[
-                                "model"=>"[%../MODEL%]"
+                                "model"=>"[%#../../MODEL%]"
                             ],
-                            "LABEL"=>"name",
-                            "VALUE"=>"name"
+                            "LABEL"=>"NAME",
+                            "VALUE"=>"NAME"
                         ]
                     ],
                     "REQUIRED"=>true
