@@ -80,7 +80,7 @@ Siviglia.Utils.buildClass(
                         {
                             var stack=[];
                             var cur=this;
-                            while(cur!==null)
+                            while(!Siviglia.empty(cur))
                             {
                                 var fName=cur.getFieldName();
                                 if(fName!==null && fName!=="")
@@ -390,7 +390,7 @@ Siviglia.Utils.buildClass(
                     {
                         this.__type__="ModelField";
                         this.parent=parent;
-                        Object.defineProperty(this,"parent",{enumerable:false});
+                        Object.defineProperty(this,"parent",{enumerable:false,configurable:true});
                         this.name=name;
 
                         this.type=typeInstance;
@@ -490,7 +490,7 @@ Siviglia.Utils.buildClass(
                         this.fieldName="";
                         this.referencedField=null;
                         this.useRemoteValidation=false;
-                        if (val)
+                        if (!Siviglia.empty(val))
                             this.setValue(val);
                         else
                         {
@@ -545,7 +545,10 @@ Siviglia.Utils.buildClass(
                                 return this.flags;
                             },
                             setValue: function (val) {
-
+                                // TODO : Esto no es correcto hacerlo asi, sin que la clase derivada
+                                // pueda hacer nada.
+                                // Si la clase derivada tiene un proxy, etc,etc, y se le pone el valor nulo,
+                                // debe destruir todo lo que tenia montado.
                                 if (this.isNull(val)) {
                                     this.valueSet = false;
                                     this.value = null;
@@ -553,12 +556,12 @@ Siviglia.Utils.buildClass(
                                     return;
                                 }
                                 try {
-
-                                    if(this.validate(val)) {
+                                    if(!this.isContainer())
+                                        this.validate(val);
                                         this._setValue(val);
                                         this.valueSet = true;
                                         this.onChange()
-                                    }
+
                                 } catch (e) {
                                     this.valueSet=false;
                                     this.value=null;
@@ -864,11 +867,11 @@ Siviglia.Utils.buildClass(
                                 val = '' + val;
 
                                 var c = val.length;
-                               /* if ('MINLENGTH' in this.definition && c < this.definition["MINLENGTH"])
+                                if ('MINLENGTH' in this.definition && c < this.definition["MINLENGTH"])
                                     throw new Siviglia.types.StringException(this.getFullPath(),Siviglia.types.StringException.ERR_TOO_SHORT, {
                                         min: this.definition['MINLENGTH'],
                                         cur: c
-                                    });*/
+                                    });
 
                                 if ('MAXLENGTH' in this.definition && c > this.definition["MAXLENGTH"])
                                     throw new Siviglia.types.StringException(this.getFullPath(),Siviglia.types.StringException.ERR_TOO_LONG, {
@@ -1548,18 +1551,8 @@ Siviglia.Utils.buildClass(
                         this.BaseType('UUID', def, value);
                     }
                 },
-            BaseKeyContainerType: {
-                inherits: 'BaseType',
-                construct: function (name, def, value,relaxed) {
-                    this.factory = new Siviglia.types._TypeFactory();
-                    this.BaseType(name, def, value);
-                },
-                methods: {
-                    isContainer: function () {
-                        return true;
-                    }
-                }
-            },
+
+
             Container: {
                 inherits: 'BaseType',
                 construct: function (def, value,relaxed) {
@@ -1598,7 +1591,8 @@ Siviglia.Utils.buildClass(
                         if (value == null || typeof value == "undefined")
                             value = {};
 
-                        this.innerBaseTypedObject = new Siviglia.model.BaseTypedObject(def, value,relaxed);
+                        // Creamos el BaseTypedObject sin valor..Que se asignara a traves del constructor de BaseType
+                        this.innerBaseTypedObject = new Siviglia.model.BaseTypedObject(def, null,relaxed);
                         this.innerBaseTypedObject.setParent(this);
                         this.BaseType('Container', def, value,relaxed)
                     }
@@ -1707,7 +1701,7 @@ Siviglia.Utils.buildClass(
 
                         Object.defineProperty(value, "[[KEYS]]", {
                             get: function () {
-                                return m.getKeys();
+                                return value.getKeys();
                             },
                             set: function (v) {
                             },
@@ -1743,193 +1737,300 @@ Siviglia.Utils.buildClass(
         context:'Siviglia.types',
         classes:
             {
+                Proxifier:{
+                    construct:function()
+                    {
+                        this.__currentProxy=null;
+                        this.reserved=reserved=["__isProxy__","__ev__","__refcount__","__destroyed__","__disableEvents__","[[KEYS]]","*[[KEYS]]"];;
+
+                    },
+                    destruct:function()
+                    {
+                        this.reset();
+
+                    },
+                    methods:
+                        {
+                            isContainer: function () {
+                                return true;
+                            },
+                            proxify:function(val)
+                            {
+
+                                if(val===null)
+                                {
+                                    if(this.value!==null) {
+                                        this.reset();
+                                    }
+                                    this.value=null;
+                                    return this.value;
+                                }
+
+                                if(val.hasOwnProperty("__isProxy__"))
+                                {
+                                    // Es un array que YA es un proxy. Simplemente, incrementamos el contador de referencias, nos enganchamos a su onChange.
+                                    val.__refcount__++;
+                                    val.__ev__.addListener("CHANGE",this,"onChange");
+                                    this.__currentProxy=val;
+                                    this.value=val;
+
+                                    return val;
+                                }
+
+                                var ev = new Siviglia.Dom.EventManager();
+                                var keysEv = new Siviglia.Dom.EventManager();
+                                // Estamos en setValue, no queremos que se disparen "onChanges" de mas:
+                                this.reset();
+                                var nReferences=0;
+                                var destroyed=false;
+                                var eventsDisabled=false;
+                                var m=this;
+
+                                // Se establecen todas las propiedades de control.
+                                Object.defineProperty(val,"__isProxy__",{
+                                    get:function(){return true},
+                                    set:function(v){}
+                                    ,enumerable:false, configurable: true});
+                                Object.defineProperty(val,"__ev__",{
+                                    get:function(){return ev},
+                                    set:function(v){}
+                                    ,enumerable:false, configurable: true});
+                                Object.defineProperty(val,"__refcount__",{
+                                    get:function(){return nReferences;},
+                                    set:function(v){nReferences=v;
+                                        if(v==0)
+                                        {
+                                            for(var k in val) {
+                                                if(typeof val["*"+k]!=="undefined")
+                                                    val["*" + k].destruct();
+                                            }
+                                            ev.destruct();
+                                            ev=null;
+                                            destroyed=true;
+                                        }
+                                    }
+                                    ,enumerable:false, configurable: true});
+                                Object.defineProperty(val,"__destroyed__",{
+                                    get:function(){return destroyed;},
+                                    set:function(v){destroyed=v;}
+                                    ,enumerable:false, configurable: true});
+                                Object.defineProperty(val,"__disableEvents__",{
+                                    get:function(){return eventsDisabled;},
+                                    set:function(v){eventsDisabled=v;}
+                                    ,enumerable:false, configurable: true});
+
+
+
+                                var keys=[];
+                                // Las funciones de obtencion de keys, se implementan
+                                // tanto en el tipo, como en el objeto.
+                                // Es por eso que guardamos la definicion, y la reutilizamos dos veces.
+
+                                var defKeys={
+                                    get:function(){return keys;},
+                                    set:function(v){
+                                        keys=v;
+                                        //keysEv.fireEvent("CHANGE",{"data":keys})
+                                    }
+                                    ,enumerable:false, configurable: true};
+                                Object.defineProperty(val,"[[KEYS]]",defKeys);
+                                Object.defineProperty(this,"[[KEYS]]",defKeys);
+                                // Incluimos al objeto, uns propiedad que se va a llamar *[[KEYS]],
+                                // // para que asi,
+                                // por "duck typing" , parezca un BaseType.
+                                // Para que lo parezca, hay que implementar 2 cosas: que se devuelva el EventManager,
+                                // y que si alguien hace ["*[[KEYS]]"]->getValue(), se devuelvan las keys.
+                                // Para que eso ocurra, aniadimos una funcion getValue() al eventManager:
+                                ev.getValue=function(){return keys};
+                                var defKeyType={
+                                    get:function(){return ev;},
+                                    set:function(v){
+                                    }
+                                    ,enumerable:false, configurable: true};
+                                Object.defineProperty(val,"*[[KEYS]]",defKeyType);
+                                //Object.defineProperty(this,"*[[KEYS]]",defKeyType);
+
+                                // Incrementamos ya el numero de referencias
+                                val.__refcount__=1;
+                                // La funcion buildProxy es la que hay que sobreescribir en las clases hijas.
+                                this.__currentProxy=this.buildProxy(val);
+                                this.value=this.__currentProxy;
+                                this.disableEvents(true);
+                                ev.addListener("CHANGE",this,"onChange");
+                                this.updateChildren(val);
+                                this.disableEvents(false);
+                                return this.__currentProxy;
+                            },
+                            updateChildren:function(val)
+                            {
+                                throw "Please implement updateChildren";
+                            },
+
+                            reset:function()
+                            {
+                                this.disableEvents(true);
+                                if(this.__currentProxy!==null)
+                                {
+                                    this.__currentProxy.__ev__.removeListeners(this);
+                                    this.__currentProxy.__refcount__--;
+                                    this.__currentProxy=null;
+                                }
+                                this.disableEvents(false);
+                            },
+                            intersect:function(val) {
+                                if (!this.valueSet)
+                                    return val;
+                                if (val.length == 0)
+                                    return val;
+                                var keys = this.getKeys()
+                                return array_compare(val, keys, false);
+                            },
+                            hasSource: function()
+                            {
+                                return Siviglia.isset(this.definition["SOURCE"]);
+                            },
+                            getSource:function(controller,params)
+                            {
+                                var s=new Siviglia.Data.SourceFactory();
+                                return s.getFromSource(this.definition.SOURCE,controller,params);
+                            },
+                            getSourceLabel:function(){return "[[VALUE]]";},
+                            getSourceValue:function(){return "[[VALUE]]";},
+
+                    getKeys:function(val)
+                    {
+                        var res=[];
+                        for (var k in val){
+                            res.push({"LABEL":k,"VALUE":k});
+                        }
+                        return res;
+                    },
+                    __proxyApply:function(val,m){
+                        return function(target, thisArg, argumentsList) {
+                            return target.apply(thisArg, argumentsList);
+                        }
+                    },
+                    __proxyGet:function(val,m) {
+                        return function (target, prop, receiver) {
+                            if (target == "getKeys")
+                                return m.getKeys;
+                            if (reserved.indexOf(prop) >= 0)
+                                return target[prop];
+                            if (prop === Symbol.toStringTag)
+                                return target.toString;
+                            if (prop[0] === "*")
+                                return target[prop];
+                            if (typeof target["*" + prop] === "undefined")
+                                return target[prop];
+                            return target["*" + prop].getValue();
+                        }
+                    },
+                    __proxyDeleteProperty:function(val,m){
+                        return function(target,prop)
+                        {
+                            var ret=val[prop];
+                            delete val[prop];
+                            val["*"+prop].removeListeners(m);
+                            val["*"+prop].destruct();
+                            delete val["*"+prop];
+                            target["[[KEYS]]"] = m.getKeys(val);
+                            target.__ev__.fireEvent("CHANGE", {object: target, value: m.__currentProxy});
+                            return ret;
+                        }
+                    },
+                    __proxySet:function(val,m){
+                    return function(target,prop,value,receiver) {
+
+                        try {
+
+                            if (reserved.indexOf(prop) >= 0) {
+                                target[prop] = value;
+                                return;
+                            }
+                            var isNewProp=false;
+                            if (!target.hasOwnProperty("*" + prop)) {
+                                var instance = m.getValueInstance(prop, value);
+                                Object.defineProperty(target, "*" + prop, {
+                                    get: function () {
+                                        return instance
+                                    },
+                                    set: function (v) {
+                                        instance = v;
+                                        return true;
+                                    }
+                                    , enumerable: false, configurable: true
+                                })
+                                isNewProp=true;
+                            } else {
+                                target["*" + prop].setValue(value)
+                            }
+                            target[prop] = value;
+
+                            // OJO: Solo lanzamos evento si la propiedad es nueva, o sea, no habia una propiedad "*".
+                            if(isNewProp) {
+                                target["[[KEYS]]"] = m.getKeys(val);
+                                if (!m.eventsDisabled()) {
+                                    target.__ev__.fireEvent("CHANGE", {object: target, value: value});
+                                }
+                            }
+
+                            return true;
+                        } catch (e) {
+                            m.fireEvent("ERROR", {})
+                            throw new Siviglia.types.BaseTypeException(m.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {});
+                            return false;
+                        }
+                    }
+                    },
+                    buildProxy:function(val)
+                    {
+                        return new Proxy(val, {
+                            apply: this.__proxyApply(val,this),
+                            get:this.__proxyGet(val,this),
+                            deleteProperty:this.__proxyDeleteProperty(val,this),
+                            set:this.__proxySet(val,this)
+                        });
+                    }
+                        },
+
+                },
             Dictionary:{
-                inherits:'BaseKeyContainerType',
+                inherits:'BaseType,Proxifier',
                 construct:function(def,value,relaxed)
                 {
-                    this.definition=def;
-                    this.sampleType=Siviglia.types.TypeFactory.getType(this,def["VALUETYPE"],null);
-                    this.innerBaseTypedObject=new Siviglia.model.BaseTypedObject({"FIELDS":{}},{},relaxed);
-                    this.innerBaseTypedObject.setParent(this);
-                    this.proxyEv=null;
                     this["[[KEYS]]"]=[];
-/*
-                    Object.defineProperty(this,"[[KEYS]]",{
-                        get:function()
-                        {
-                            return m.getKeys();
-                        },
-                        set:function(v){
-
-                        },
-                        enumerable:false,
-                        configurable:true
-                    });
-  */
-                    if(typeof value==="undefined" || value==null)
-                        this.buildProxy({});
-                    else
-                        this.buildProxy(value);
-                    this.BaseKeyContainerType('Dictionary',def,value,relaxed)
+                    Siviglia.Path.eventize(this,"[[KEYS]]");
+                    this.Proxifier();
+                    this.BaseType('Dictionary',def,value,relaxed)
                 },
-                destruct:function(){
-                   if(this.keysEv)
-                       this.keysEv.destruct();
 
-                },
                 methods:{
-                    ready:function()
-                    {
-                        return this.sampleType.ready();
-                    },
-
                     _validate:function(val)
                     {
-                        for(var k in val)
-                        {
-                            this.sampleType.validate(val);
-                        }
-                        return true;
+                       return true;
                     },
                     copy:function(val)
                     {
                         this.setValue(val);
                     },
-                    getKeys: function () {
-                        var res=[];
-                        for (var k in this.proxy){
-                                res.push({"LABEL":k,"VALUE":k});
-                        }
-                        return res;
-                    },
                     _setValue:function(val)
                     {
-                        if(this.innerBaseTypedObject)
-                            this.innerBaseTypedObject.destruct();
-                        this.innerBaseTypedObject = new Siviglia.model.BaseTypedObject({"FIELDS": {}}, {},this.relaxed);
-                        this.innerBaseTypedObject.setParent(this);
-                        this.buildProxy(val);
-                        this["[[KEYS]]"]=this.getKeys();
+                        this.__currentProxy=this.proxify(val);
+                        //this["[[KEYS]]"]=this.getKeys();
                     },
-                    buildProxy:function(val)
+                    updateChildren:function(val)
                     {
                         var m=this;
-                        var __disableEvents__=false;
-                        if(this.keysEv)
-                            this.keysEv.destruct();
-                        if(this.proxyEv)
-                            this.proxyEv.destruct();
-                        this.keysEv=new Siviglia.Dom.EventManager();
-                        this.proxyEv=new Siviglia.Dom.EventManager();
-                        var ev=this.proxyEv;
 
-                        this.proxy=new Proxy(val,{
-                            getOwnPropertyDescriptor:function(target, prop) {
-                                if(m.innerBaseTypedObject.__fieldExists(prop))
-                                {
-                                    return {configurable:true,enumerable:true}
-                                }
-                                if(prop==="[[KEYS]]" || prop==="*[[KEYS]]")
-                                    return {configurable:true,enumerable:false}
-
-                                if(prop==="__disableEvents__")
-                                    return {configurable:true,enumerable:false}
-
-                            },
-                            get:function(target,prop,receiver)
-                            {
-                                if(prop==="__isProxy__")
-                                    return true;
-                                if(prop==="__ev__")
-                                    return ev;
-                                if(prop==="__disableEvents__")
-                                    return __disableEvents__;
-                                if(prop==="*[[KEYS]]")
-                                    return m.keysEv;
-
-                                if(typeof prop=="symbol")
-                                {
-                                    if(prop===Symbol.toStringTag)
-                                        return target.toString;
-                                }
-
-                                if(m.innerBaseTypedObject.__fieldExists(prop))
-                                    return m.innerBaseTypedObject[prop];
-
-                                return m[prop];
-                            },
-                            set:function(target,prop,value)
-                            {
-
-                                if(prop=="_ev_listeners")
-                                    debugger;
-                                if(prop==="__disableEvents__")
-                                {
-                                    __disableEvents__=value;
-                                    return true;
-                                }
-                                if(!m.innerBaseTypedObject.__fieldExists(prop)) {
-                                    m.innerBaseTypedObject.__addField(prop, m.definition.VALUETYPE, value);
-                                    var cb={
-                                        get:function()
-                                        {
-                                            return m.innerBaseTypedObject[prop];
-                                        },
-                                        set:function(v){m.innerBaseTypedObject[prop]=v;},
-                                        enumerable:true,
-                                        configurable:true
-                                    };
-                                    var cb2={
-                                        get:function()
-                                        {
-                                            return m.innerBaseTypedObject["*"+prop];
-                                        },
-                                        set:function(v){return true;},
-                                        enumerable:false,
-                                        configurable:true
-                                    }
-                                    Object.defineProperty(target,prop,cb);
-                                    Object.defineProperty(target,"*"+prop,cb2);
-                                    Object.defineProperty(m,prop,cb);
-                                    Object.defineProperty(m,"*"+prop,cb2);
-
-                                    m["[[KEYS]]"]=m.getKeys();
-                                    if(__disableEvents__===false) {
-                                        ev.fireEvent("CHANGE", {object: target, value: value});
-                                        m.onChange();
-                                    }
-                                }
-                                else {
-                                    m.innerBaseTypedObject[prop] = value;
-                                    if(__disableEvents__===false) {
-                                        ev.fireEvent("CHANGE", {object: target, value: value});
-                                        m.onChange();
-                                    }
-                                }
-                                return true;
-                            },
-                            deleteProperty:function(target,prop)
-                            {
-                                m.innerBaseTypedObject.__removeField(prop);
-                                delete target[prop];
-                                delete target["*"+prop];
-                                m["[[KEYS]]"]=m.getKeys();
-                                if(__disableEvents__===false) {
-                                    m.onChange();
-                                    ev.fireEvent("CHANGE", {object: target, value: m.proxy});
-
-                                }
-                            }
-                        })
-                        this.proxy.__disableEvents__=true;
-                        for(var k in val)
-                            this.proxy[k]=val[k];
-                        this.proxy.__disableEvents__=false;
-
+                        for (var k in val) {
+                            m.__currentProxy[k]=val[k];
+                        }
+                        if(!this.eventsDisabled())
+                            this.onChange();
                     },
                     getValue:function()
                     {
-                        return this.proxy;
+                        return this.__currentProxy;
                     },
                     getPlainValue:function()
                     {
@@ -1939,13 +2040,13 @@ Siviglia.Utils.buildClass(
                         var res={};
                         var nSet=0;
                         var nFields=0;
-                        for(var k in this.proxy)
+                        for(var k in this.__currentProxy)
                         {
                             nFields++;
-                            if(this.proxy[k]!==null)
+                            if(this.__currentProxy[k]!==null)
                             {
                                 nSet++;
-                                res[k]=this.proxy[k];
+                                res[k]=this.__currentProxy["*"+k].getPlainValue();
                             }
                         }
                         if(nSet!=nFields)
@@ -1960,22 +2061,17 @@ Siviglia.Utils.buildClass(
                         }
                         return res;
                     },
-                    getValueInstance:function(val)
+                    getValueInstance:function(key,val)
                     {
-                        var inst= this.factory.getType(this,this.definition["VALUETYPE"],Siviglia.issetOr(val,null));
-                        return inst.getPlainValue();
+                        var newInstance=Siviglia.types.TypeFactory.getType(this,this.definition["VALUETYPE"],Siviglia.issetOr(val,null));
+                        newInstance.setFieldName(key);
+                        return newInstance;
+
                     },
-                    intersect:function(val) {
-                        if (!this.valueSet)
-                            return val;
-                        if (val.length == 0)
-                            return val;
-                        var keys = this.getKeys()
-                        return array_compare(val, keys, false);
-                    },
-                    addItem:function(key)
+
+                    addItem:function(key,val)
                     {
-                        this.proxy[key]=this.getValueInstance();
+                        this.__currentProxy[key]=Siviglia.issetOr(val,null);
                     },
                     getKeyLabel:function(key)
                     {
@@ -1984,8 +2080,8 @@ Siviglia.Utils.buildClass(
                     save:function()
                     {
                         var err=null;
-                        for(var k in this.proxy) {
-                            var newErr=this.proxy["*" + k].save();
+                        for(var k in this.__currentProxy) {
+                            var newErr=this.__currentProxy["*" + k].save();
                             if(err==null)
                                 err=newErr;
                             else
@@ -2079,7 +2175,7 @@ Siviglia.Utils.buildClass(
                         get:function()
                         {
                             return m.currentType;
-                        }
+                        },enumerable:true,configurable:true
                     };
                     Object.defineProperty(val,this.definition.TYPE_FIELD,def);
 
@@ -2097,13 +2193,15 @@ Siviglia.Utils.buildClass(
                             m.subNode.setValue(v);
                             m.onChange();
                             ev.fireEvent("CHANGE",{value:val});
-                        }
+                        },
+                        configurable:true,enumerable:true
                     };
                     var cb2={
                         get:function()
                         {
                             return m.subNode;
-                        }
+                        },
+                        configurable:true,enumerable:true
                     }
 
                     if(this.definition.CONTENT_FIELD)
@@ -2129,10 +2227,10 @@ Siviglia.Utils.buildClass(
                         this.subNode.setFieldName(this.definition.CONTENT_FIELD);
 
                     //WorkAround para eventize:
-                    Object.defineProperty(val,"__isProxy__",{enumerable:false,get:function(){return true;}})
+                    Object.defineProperty(val,"__isProxy__",{enumerable:false,configurable:true,get:function(){return true;}})
                     // Importante que este objeto devuelva curNode, y no m.subNode. Esto hace que cuando eventize no ataca al BaseType,
                     // sino directamente a su valor, se quede siempre escuchando al valor, y no al basetype.
-                    Object.defineProperty(val,"__ev__",{enumerable:false,get:function(){return ev;}})
+                    Object.defineProperty(val,"__ev__",{enumerable:false,configurable:true,get:function(){return ev;}})
                 },
                 _validate:function(val)
                 {
@@ -2254,14 +2352,13 @@ Siviglia.Utils.buildClass(
             }
         },
         Array: {
-            inherits: 'BaseType',
+            inherits: 'BaseType,Proxifier',
             construct: function (definition, value,relaxed) {
-                var m=this;
                 this["[[KEYS]]"]=[];
-                this.children=[];
+                this.simpleContents=null;
+                Siviglia.Path.eventize(this,"[[KEYS]]");
+                this.Proxifier();
                 this.BaseType("Array", definition, value,relaxed);
-                this.proxy=null;
-                this.proxyEv=null;
             },
             methods: {
                 _validate: function (val){
@@ -2285,155 +2382,103 @@ Siviglia.Utils.buildClass(
                     return true;
                 },
                 _setValue: function (val) {
-                  var m=this;
 
-                  if(this.proxyEv!==null)
-                      this.proxyEv.destruct();
+                    this.__currentProxy=this.proxify(val);
 
-                    var ev = new Siviglia.Dom.EventManager();
-                    this.proxyEv=ev;
-                  // Estamos en setValue, no queremos que se disparen "onChanges" de mas:
+                },
+                // La clase base va a llamar a getKeys cuando se llama
+                // a deleteProperty.Pero en un array,no queremos calcular las keys
+                // ahi, sino cuando se modifica length. Por eso
+                // se crea una funcion dummy, que no hace nada, y otra
+                // alternativa, que se llama al modificar length
 
-                    if(val===null)
+                // Obtener las key-values de un array es algo complicado, cuando el array no tiene un tipo simple.
+
+                getKeys:function(val)
+                {
+                    if(this.simpleContents===null)
+                        this.simpleContents=this.areContentsSimple();
+
+                    if (!val) return [];
+                    var res = [];
+                    for (var k in val)
                     {
-                        this.value=null;
-                        return;
+                        if(k==="length" || Siviglia.empty(val["*"+k]))
+                            continue;
+                        var v=val["*"+k].getValue();
+                        if(this.simpleContents)
+                            res.push({"LABEL":v,"VALUE":v})
+                        else
+                        {
+                            res.push(val["*"+k].getPlainValue());
+                        }
                     }
-                    this.reset();
-                      this.proxy = new Proxy(val, {
-                          apply: function (target, thisArg, argumentsList) {
-                              return target.apply(thisArg, argumentsList);
-                          },
-                          get:function(target,prop,receiver)
-                          {
-                              if(prop==="__isProxy__")
-                                  return true;
-                              if(prop==="__ev__")
-                                  return ev;
-
-                              if(prop=="length")
-                                  return target[prop];
-                              if(prop===Symbol.toStringTag)
-                                  return target.toString;
-                              if(!isNaN(prop)) {
-                                  prop=parseInt(prop);
-                                  return m.children[prop].getValue();
-                              }
-                              return target[prop];
-                          },
-                          deleteProperty:function(target,prop)
-                          {
-                                var ret=val[prop];
-                                delete val[prop];
-                                delete m.children[prop];
-                                delete target["*"+prop];
-                                if(!m.eventsDisabled()) {
+                    return res;
+                },
+                __proxyGet:function(val,m)
+                {
+                    var m=this;
+                    var parentFunc=this.Proxifier$__proxyGet(val,m)
+                    return function(target,prop,receiver) {
+                        if (prop == "length")
+                            return target[prop];
+                        return parentFunc.apply(this,arguments);
+                    }
+                },
+                __proxySet:function(val,m)
+                {
+                    var m=this;
+                    var parentFunc=m.Proxifier$__proxySet(val,m);
+                    return function(target,prop,value,receiver)
+                    {
+                        if(prop=="length")
+                        {
+                            if(val.length!==value ) {
+                                val.length = value;
+                                // La mejor forma de recalcular las keys, es que, o cambie el numero de keys,
+                                // o alguien haya dicho que el objeto esta dirty.
+                                val["[[KEYS]]"] = m.getKeys();
+                                if(!m.eventsDisabled) {
+                                    target.__ev__.fireEvent("CHANGE", {object: target, property: prop, value: undefined});
                                     m.onChange();
-                                    ev.fireEvent("CHANGE", {object: target, value: m.proxy});
                                 }
-                                return ret;
-                          },
-                          set:function(target,prop,value,receiver)
-                          {
+                            }
+                            return true;
+                        }
+                        return parentFunc.apply(this,arguments);
+                    }
 
-                              if(prop=="length")
-                              {
-                                  if(val.length!==value) {
-                                      val.length = value;
-                                      m["[[KEYS]]"] = m.getKeys();
-                                      if(!m.eventsDisabled) {
-                                          ev.fireEvent("CHANGE", {object: target, property: prop, value: undefined});
-                                          m.onChange();
-                                      }
-                                  }
-                                  return true;
-                              }
-                              if(!isNaN(prop)) {
-                                  prop = parseInt(prop);
-                                  try {
-                                      instance = m.getValueInstance(prop);
-                                      instance.setValue(value);
-                                      m.children[prop]=instance;
-                                      target[prop]=value;
-                                      if (typeof target["*"+prop] === "undefined") {
-                                          Object.defineProperty(target,"*"+prop,{
-                                              get:function(){return instance},
-                                              set:function(v){
-                                                  instance=v;
-                                                  return true;}
-                                              ,enumerable:false})
-                                      }
-                                      m["[[KEYS]]"] = m.getKeys();
-                                      if(!m.eventsDisabled()) {
-                                          m.onChange();
-                                          ev.fireEvent("CHANGE", {object: target, value: value});
-                                      }
-
-                                      return true;
-                                  }catch(e)
-                                  {
-                                      m.fireEvent("ERROR",{})
-                                      throw new Siviglia.types.BaseTypeException(this.getFullPath(),Siviglia.types.BaseTypeException.ERR_INVALID,{});
-                                      return false;
-                                  }
-                              }
-
-                          }
-
-                      });
-                      this.value=this.proxy;
-                    this.disableEvents(true);
-                      this.updateChildren(val);
-                    this.disableEvents(false);
-                      this["[[KEYS]]"]=this.getKeys();
                 },
                 updateChildren:function(val)
                 {
                     var m=this;
 
                     for (var k = 0; k < val.length; k++) {
-                        (function(n){
-                        var instance = m.getValueInstance(n);
-                        m.children[n]=instance;
-                        instance.setValue(val[n]);
-                        val[n]=instance.getValue();
-                        Object.defineProperty(val,"*"+n,{
-                                get:function(){return instance},
-                                set:function(v){
-                                    instance=v;
-                                    return true;}
-                                ,enumerable:false})
-                        })(k);
-                        }
+                            this.__currentProxy[k] = val[k];
+
+                    }
 
                         if(!this.eventsDisabled())
                         this.onChange();
                 },
-                reset:function() {
-                    this.disableEvents(true);
-                    for (var k = 0; k < this.children.length; k++) {
-                        this.children[k].destruct();
-                    }
-                    this.children = [];
-                    this.disableEvents(false);
-                },
                 getValue:function()
                 {
-                    return this.proxy;
+                    return this.value;
                 },
                 getPlainValue:function()
                 {
                     this.save();
                     var res=[];
-                    if(this.proxy==null)
+                    if(this.value==null)
                         return null;
-                    for(var k=0;k<this.proxy.length;k++)
+                    for(var k=0;k<this.__currentProxy.length;k++)
                     {
-                        var val=this.proxy["*"+k].getPlainValue();
+                        var val=this.__currentProxy["*"+k].getPlainValue();
                         if(val===null)
                             continue;
+                        res.push(val);
                     }
-                    if(res==0)
+                    if(res.length==0)
                     {
                         if(this.definition["SET_ON_EMPTY"]==true)
                             return []
@@ -2441,30 +2486,13 @@ Siviglia.Utils.buildClass(
                     }
                     return res;
                 },
-                getKeys: function () {
-                    if (!this.value) return [];
-                    var res = [];
-                    for (var k = 0; k < this.proxy.length; k++){
-                        res.push({"LABEL":this.children[k].definition.LABEL,"VALUE":k})
-                    }
-                    return res;
-                },
-                hasSource: function()
-                {
-                    return Siviglia.isset(this.definition["SOURCE"]);
-                },
-                getSource:function(controller,params)
-                {
-                    var s=new Siviglia.Data.SourceFactory();
-                    return s.getFromSource(this.definition.SOURCE,controller,params);
-                },
-                getSourceLabel:function(){return "[[VALUE]]";},
-                getSourceValue:function(){return "[[VALUE]]";},
-                getValueInstance: function (idx) {
 
-                    var t= Siviglia.types.TypeFactory.getType(this,this.definition["ELEMENTS"],null);
+
+                getValueInstance: function (idx,value) {
+
+                    var t= Siviglia.types.TypeFactory.getType(this,this.definition["ELEMENTS"],value);
                     t.setParent(this);
-                    if(this.proxy!==null)
+                    if(this.__currentProxy!==null)
                         t.setFieldName(idx);
                     else
                         t.setFieldName("0");
@@ -2475,20 +2503,18 @@ Siviglia.Utils.buildClass(
                     var n=this.getValueInstance(0);
                     return !n.isContainer();
                 },
-                intersect:function(val)
-                {
-                    if (!this.valueSet)
-                        return val;
-                    if (val.length == 0)
-                        return val;
-                    var keys = this.getKeys();
-                    return array_compare(val, this.value, false);
 
-                },
                 save:function()
                 {
-                    if(this.value!==null)
-                        this.value.map(function(i){i.save()});
+                    var err=null;
+                    for(var k=0;k<this.__currentProxy.length;k++) {
+                        var newErr=this.__currentProxy["*" + k].save();
+                        if(err==null)
+                            err=newErr;
+                        else
+                            err.concat(newErr);
+                    }
+                    return err;
                 }
             }
         },

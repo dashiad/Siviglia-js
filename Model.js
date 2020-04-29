@@ -526,6 +526,8 @@ Siviglia.Utils.buildClass({
                             "end": {"TYPE": "Integer"}
                         }
                     };
+                    if(typeof meta.TYPES !=="undefined")
+                        definition["TYPES"]=meta.TYPES;
                     this.BaseTypedObject(definition,null,true);
 
                     this["*params"]._setValue(params);

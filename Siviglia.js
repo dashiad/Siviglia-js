@@ -272,12 +272,10 @@ Siviglia.Utils.buildClass = function (definition) {
                     //if(h.indexOf("__")>-1 || h.indexOf("destruct")==0)continue;
                     if (h.indexOf("destruct") == 0) continue;
 
-                    if ((definition.classes[k].methods && definition.classes[k].methods[h]) ||
-                        contextObj[k].prototype[h]) {
+                    //if ((definition.classes[k].methods && definition.classes[k].methods[h])) {
                         contextObj[k].prototype[c.object + "$" + h] = curClass.prototype[h];
-                    } else {
                         contextObj[k].prototype[h] = curClass.prototype[h];
-                    }
+
                 }
             }
         }
@@ -402,7 +400,6 @@ Siviglia.Utils.buildClass({
                     Siviglia.Dom.existingListeners[newListener.id] = newListener;
                 },
 
-
                 removeListener: function (evType, object, method, target) {
                     if (!this._ev_listeners) return;
                     if (!this._ev_listeners[evType]) return;
@@ -414,7 +411,6 @@ Siviglia.Utils.buildClass({
                                 if (curL.target != target)
                                     continue;
                             }
-                            console.debug("Removing listener " + curL.id);
                             delete Siviglia.Dom.existingListeners[curL.id];
                             this._ev_listeners[evType].splice(k, 1);
                             return;
@@ -436,53 +432,7 @@ Siviglia.Utils.buildClass({
                     }
                 },
                 _ev_notify: function (evType, data, target) {
-                    if (!this._ev_listeners) return;
-                    if (!this._ev_listeners[evType]) {
-                        return;
-                    }
-                    this._ev_notifying = true;
-                    var k;
-                    var obj;
-                    // Hay que capturar aqui cuantos listeners de este tipo hay, y hacer el bucle sobre
-                    // esos elementos, evitando los listeners de este mismo tipo que se puedan añadir durante
-                    // la ejecución del bucle.
-                    var nListeners = this._ev_listeners[evType].length;
-                    // Iteramos sobre una copia de los listeners.
-                    var copied = Array.from(this._ev_listeners[evType]);
-
-                    try {
-                        for (k = 0; k < nListeners; k++) {
-                            // Si en algun momento los listeners estan a nulo, es que este objeto
-                            // se ha destruido.
-
-                            if (this._ev_listeners == null)
-                                break;
-                            // Pero el listener en si, lo cogemos de la copia.
-                            obj = copied[k];
-                            Siviglia.Dom.eventStack.push(obj);
-                           // console.debug("NOTIFY: " + this._ev_id + " --> " + evType + " : " + obj.id);
-                            if (obj.obj) {
-                                if (typeof obj.obj == "function") {
-                                    obj.obj(evType, data, obj.param, target);
-                                } else {
-                                    if (obj.obj[obj.method])
-                                        obj.obj[obj.method](evType, data, obj.param, target);
-                                }
-                            } else {
-                                obj.method(evType, data, obj.param, target);
-                            }
-                            Siviglia.Dom.eventStack.pop();
-                        }
-                    } catch (e) {
-                        console.log("Error:");
-                        console.dir(e);
-                    }
-                    // The following is a protection code; if marks this object as "notifying",so, if as part of the notification, this object
-                    // is destroyed, it will not destroy the listeners, but set the mustDestroy flag to true.
-                    this._ev_notifying = false;
-                    if (this._ev_mustDestruct) {
-                        this.destroyListeners();
-                    }
+                    
                 },
                 destroyListeners: function () {
                     delete Siviglia.Dom.existingManagers[this._ev_id];
@@ -509,6 +459,9 @@ Siviglia.Utils.buildClass({
                         return;
                     if (!this._ev_listeners) return;
                     if (!this._ev_listeners[event]) return;
+                    var nListeners = this._ev_listeners[event].length;
+                    if(nListeners===0)
+                        return;
 
                     if (data !== null) {
                         if (typeof data != "undefined")
@@ -520,7 +473,39 @@ Siviglia.Utils.buildClass({
                         data.src = this;
                     }
 
-                    this._ev_notify(event, data, target);
+                    this._ev_notifying = true;
+                    var k;
+                    var obj;
+                    // Hay que capturar aqui cuantos listeners de este tipo hay, y hacer el bucle sobre
+                    // esos elementos, evitando los listeners de este mismo tipo que se puedan añadir durante
+                    // la ejecución del bucle.
+                    // Iteramos sobre una copia de los listeners.
+                    var copied = Array.from(this._ev_listeners[event]);
+                        for (k = 0; k < nListeners; k++) {
+                            // Si en algun momento los listeners estan a nulo, es que este objeto
+                            // se ha destruido.
+                            if (this._ev_listeners == null)
+                                break;
+                            // Pero el listener en si, lo cogemos de la copia.
+                            obj = copied[k];
+                            // console.debug("NOTIFY: " + this._ev_id + " --> " + event + " : " + obj.id);
+                            if (obj.obj) {
+                                if (typeof obj.obj == "function") {
+                                    obj.obj(event, data, obj.param, target);
+                                } else {
+                                    if (obj.obj[obj.method])
+                                        obj.obj[obj.method](event, data, obj.param, target);
+                                }
+                            } else {
+                                obj.method(event, data, obj.param, target);
+                            }
+                        }
+                    // The following is a protection code; if marks this object as "notifying",so, if as part of the notification, this object
+                    // is destroyed, it will not destroy the listeners, but set the mustDestroy flag to true.
+                    this._ev_notifying = false;
+                    if (this._ev_mustDestruct) {
+                        this.destroyListeners();
+                    }
                     this._ev_firing = null;
                 }
             }
@@ -637,7 +622,7 @@ Siviglia.Utils.buildClass(
                     moveTo:function(spec)
                     {
 
-                        this.__lastTyped=false;
+                        //this.__lastTyped=false;
                         if(spec===".." && typeof this.pointer.getParent==="function")
                         {
                             cVal=this.pointer.getParent();
@@ -646,9 +631,17 @@ Siviglia.Utils.buildClass(
                                 this.remListeners.push(cVal);
                             }
                             this.pointer=cVal;
+                            this.__lastTyped=true;
                             return cVal.getValue()
                         }
                         else {
+
+
+                            if(this.__lastTyped)
+                            {
+                                this.pointer=this.pointer.getValue();
+                                this.__lastTyped=false;
+                            }
                             var v=this.pointer[spec];
                             if(typeof v==="undefined")
                                 throw "Unknown path "+spec;
@@ -660,7 +653,7 @@ Siviglia.Utils.buildClass(
                                         v.addListener("CHANGE", this, "onChange", "BaseCursor:" + spec);
                                         this.remListeners.push(v);
                                     }
-                                    this.__lastTyped=true;
+
                                 }
                                 else
                                     this.addPathListener(this.pointer, spec);

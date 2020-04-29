@@ -201,10 +201,110 @@
     }
     function runTest(name, cb, expectedResult) {
         testNumber++;
+        if(typeof expectedResult=="undefined")
+            expectedResult=true;
         cbStack.push({name:name,cb:cb,expectedResult:expectedResult,number:testNumber});
         checkTests();
 
     }
+    runTest("Array Reference Counter",function (){
+        var def={
+            "FIELDS": {
+            "f3": {
+                "TYPE": "Integer",
+                    "SOURCE":{
+                    "TYPE":"Path",
+                        "PATH":"#../f4",
+                        "LABEL":"sf1",
+                        "VALUE":"sf2"
+                }
+            },
+            "f4": {
+                "TYPE": "Array",
+                    "ELEMENTS": {
+                    "TYPE": "Container",
+                        "FIELDS": {
+                        "sf1": {"TYPE": "String", "MINLENGTH": 2},
+                        "sf2": {"TYPE": "Integer"}
+                    }
+                }
+            }
+        }
+        };
+        // Se crea una primera instancia, y se le asigna un valor:
+        var t1 = new Siviglia.model.BaseTypedObject(def);
+        var nChanges1=0;
+        t1["*f4"].addListener("CHANGE",function(){nChanges1++});
+        var v=[{sf1:"aa",sf2:5},{sf1:"bb",sf2:15},{sf1:"cc",sf2:25}];
+
+        t1.f4=v;
+
+
+        // Nos aseguramos de que solo se ha producido 1 change
+        var asserts=(nChanges1==1);
+
+        // Ahora v pasa a ser el valor de t1.f4:
+        v=t1.f4;
+        v.push({sf1:"dd",sf2:55});
+        asserts=asserts && (nChanges1==2);
+        // Creamos otra instancia con la misma definicion
+        var nChanges2=0;
+        var t2=new Siviglia.model.BaseTypedObject(def);
+        t2["*f4"].addListener("CHANGE",function(){nChanges2++});
+        t2.f4=v;
+
+        asserts= asserts && (nChanges2==1);
+        // Se comprueba que v ahora tiene 2 referencias:
+        asserts= asserts && (v.__refcount__==2);
+        // Cambiamos el valor de v, y vemos si se han llamado ambos listeners:
+        v.push({sf1:"dd",sf2:55});
+        asserts= asserts && (nChanges1==3 && nChanges2==2);
+        // Destruimos t1, y vemos si se decrementa el contador de referencias:
+        t1.destruct();
+        asserts=asserts && (v.__refcount__==1 && v.__destroyed__==false);
+        // Destruimos t2, y vemos si se decrementa el contador de referencias, y el objeto esta destruido.
+        t2.destruct();
+        asserts=asserts && (v.__refcount__==0 && v.__destroyed__==true);
+        // Finalmente, nos aseguramos que despues de todo esto, el numero de listeners es cero.
+        return asserts && countListeners()==0;
+    });
+    runTest("Array Serialization",function (){
+        var def={
+            "FIELDS": {
+                "f2":{
+                    "TYPE":"Dictionary",
+                    "VALUETYPE":{
+
+                    "TYPE": "Container",
+                    "FIELDS":
+                    {
+                    "f4": {
+                        "TYPE": "Array",
+                        "ELEMENTS": {
+                            "TYPE": "Container",
+                            "FIELDS": {
+                                "sf1": {"TYPE": "String", "MINLENGTH": 2},
+                                "sf2": {"TYPE": "Integer"}
+                            }
+                        }
+                        }
+                    }
+
+                    }
+                }
+            }
+        };
+        // Se crea una primera instancia, y se le asigna un valor:
+        var t1 = new Siviglia.model.BaseTypedObject(def);
+        var v=[{sf1:"aa",sf2:5},{sf1:"bb",sf2:15},{sf1:"cc",sf2:25}];
+        t1.f2={aa:{f4:v}};
+        debugger;
+        var vv=JSON.stringify(t1.getPlainValue());
+        var asserts=(vv==="{\"f2\":{\"aa\":{\"f4\":[{\"sf1\":\"aa\",\"sf2\":5},{\"sf1\":\"bb\",\"sf2\":15},{\"sf1\":\"cc\",\"sf2\":25}]}}}");
+        t1.destruct();
+        return asserts && countListeners()==0;
+    });
+
 
     runTest("String", function () {
         var t1 = new Siviglia.model.BaseTypedObject(def);
@@ -633,8 +733,8 @@
                         "DEFAULT": {
 
                             "uno": {sf3: "Hola", sf4: 1},
-                            "dos": {sf3: "Hola", sf4: 1},
-                            "tres": {sf3: "Hola", sf4: 1},
+                            "dos": {sf3: "Hola2", sf4: 2},
+                            "tres": {sf3: "Hola3", sf4: 3},
 
                         }
 
@@ -644,8 +744,11 @@
 
             }
         );
+
         var path = t1.f3.uno["*sf3"].getFullPath();
-        return path == "/f3/uno/sf3";
+        var status= path == "/f3/uno/sf3";
+        t1.destruct();
+        return status && countListeners()==0;
     }, true);
     runTest("Comprobacion de SET_ON_EMPTY en Dictionary", function () {
         var t1 = new Siviglia.model.BaseTypedObject(
@@ -680,7 +783,9 @@
         t1.f4 = {};
         var r = t1.getPlainValue();
 
-        return typeof r.f3 == "object" && typeof r.f4 == "undefined";
+        var status =  typeof r.f3 == "object" && typeof r.f4 == "undefined";
+        t1.destruct();
+        return status && countListeners()==0;
     }, true);
 
     runTest("Test simple de dictionary", function () {
@@ -717,7 +822,9 @@
         var nKeys = 0;
         for (var k in t1.f3)
             nKeys++;
-        return nKeys == 3 && t1.f3.cinco.sf3 == "a4";
+        var status = nKeys == 3 && t1.f3.cinco.sf3 == "a4";
+        t1.destruct();
+        return status && countListeners()==0;
     }, true);
 
     // Comprobacion de que no se disparan listeners en los objetos que mantienen copias
@@ -763,6 +870,7 @@
         status = status && (nRefChanges==1 && nChanges==3);
 
         delete t1.f3.cuatro;
+        var q=t1.f3.cuatro;
         var ss=t1.f3["[[KEYS]]"];
         status = status && ss.length==1 && (ss[0].LABEL=="cinco") &&
             (typeof t1.f3.cuatro === "undefined") &&
@@ -1075,6 +1183,13 @@
         // Ahora se cambia el valor completamente.Esto no deberia generar eventos en h.q
         t1.f3=["dd","ee","ff"];
         status = status && (nRefChanges==1 && nChanges==3);
+
+        // Scomprobacion de path.
+        var fPath=t1.f3["*0"].getFullPath();
+
+        status=status && t1.f3["*0"].getFullPath()=="/f3/0";
+
+
         t1.destruct();
 
         // Sin embargo, hay que tener en cuenta que el listener de h.q es ahora "anonimo".
@@ -1085,10 +1200,7 @@
         // Se limpian manualmente los listeners.
         Siviglia.Dom.existingListeners=[];
 
-        // Scomprobacion de path.
-        var fPath=t1.f3["*0"].getFullPath();
 
-        status=status && t1.f3["*0"].getFullPath()=="/f3/0";
 
 
         return status && countListeners() == 0;
@@ -1743,7 +1855,7 @@
             {
                 "FIELDS": {
                     "f4":{
-                        "TYPE":"/model/reflection/Types/types/BaseType"
+                        "TYPE":"/model/reflection/Model/types/BaseType"
                     }
                 }
             }

@@ -177,7 +177,7 @@ Siviglia.Utils.buildClass(
                                         re=new RegExp("/"+this.searchString+"/");
                                     for(var k=0;k<source["VALUES"].length;k++) {
                                         if(!re || re.match(source["VALUES"][k]) )
-                                            this.valsArray.push({"VALUE": k, "LABEL": source["VALUES"][k]});
+                                            this.valsArray.push({"VALUE": k, "LABEL": this.getLabel(source["VALUES"][k])});
                                     }
                                     if(typeof source["LABEL"]=="undefined")
                                         source["LABEL"]="LABEL";
