@@ -131,6 +131,29 @@
                     destruct:function()
                     {
                       this.clearErrors();
+                      // Destruccion del jqxInput
+                      var widgetName=this.getJqxWidgetName();
+                      if(this.inputNode) {
+                          this.inputNode[widgetName]('destroy');
+                          var ariaNode=this.inputNode.attr("aria-owns");
+                          if(ariaNode)
+                          {
+                              var R=new RegExp(ariaNode,"i");
+                              var curEvents=$._data(document,"events");
+                              for(var k in curEvents)
+                              {
+                                  var curList=curEvents[k];
+                                  for(var j = 0;j<curList.length;j++)
+                                  {
+                                      if(R.exec(curList[j].namespace))
+                                      {
+                                          jQuery(document).off(curList[j]["type"], curList[j]["namespace*"]);
+                                      }
+                                  }
+                              }
+                          }
+
+                      }
                     },
                     methods: {
                         preInitialize: function (params) {
@@ -477,7 +500,11 @@
 
                 ComboBox: {
                     inherits: 'BaseInput',
-
+                    destruct:function()
+                    {
+                        var s = this.type.getSource();
+                        s.removeListeners(this);
+                    },
                     methods: {
                         preInitialize: function (params) {
                             this.preprocessParams(params);
@@ -886,31 +913,41 @@
                                 },
                                 onLabelClicked:function(node, params)
                                 {
+                                    // Hacemos esto para evitar doble repintado del widget, ya que hay
+                                    // listeners para ambas variables.
                                     this.currentKey=params.key;
                                     this.hasCurrentKey=true;
 
                                 },
                                 getInputFor:function(node,params)
                                 {
+
                                     if(this.currentWidget!=null) {
 
                                         this.currentWidget.destruct();
                                         this.currentWidget = null;
                                         node.html("");
                                     }
-                                    if(params.key==null)
+                                    var key=this.currentKey;
+                                    if(key==null)
                                         return;
 
-                                    this.__getInputFor(params.key).then(function(instance){
+                                    this.__getInputFor(key).then(function(instance){
+                                        if(this.currentWidget!=null) {
+
+                                            this.currentWidget.destruct();
+                                            this.currentWidget = null;
+                                            node.html("");
+                                        }
                                         this.currentWidget=instance;
                                         node.append(this.currentWidget.rootNode);
-                                        var ce=this.currentErrors[params.key]
+                                        var ce=this.currentErrors[key]
                                         if(ce) {
                                             for(var k=0;k<ce.length;k++) {
                                                 instance.addError(ce[k].path, ce[k].error);
                                             }
                                         }
-                                        delete this.currentErrors[params.key];
+                                        delete this.currentErrors[key];
 
 
                                     }.bind(this));
@@ -1066,6 +1103,17 @@
                 Array:
                     {
                         inherits:'BaseInput',
+                        destruct:function()
+                        {
+                            if(this.newItemSelector)
+                                this.newItemSelector.destruct();
+                            if(this.newInstance)
+                                this.newInstance.destruct();
+                            if(this.currentItem)
+                            {
+                                this.currentItem.destruct();
+                            }
+                        },
                         methods:
                             {
                                 preInitialize:function(params)
@@ -1087,15 +1135,16 @@
                                 },
                                 buildNewItemWidget:function(node,params)
                                 {
-                                    if(this.newItemWidget) {
-                                        this.newItemWidget.destruct();
-                                        this.newInstance.destruct();
-                                    }
-                                    this.newItemNode.html("");
+
                                     this.newInstance=this.type.getValueInstance();
                                     var factory=new Siviglia.inputs.jqwidgets.Factory();
 
                                     factory.getInput(this.newInstance,{},this.form).then(function(instance){
+                                        if(this.newItemSelector) {
+                                            this.newItemSelector.destruct();
+                                            this.newInstance.destruct();
+                                        }
+                                        this.newItemNode.html("");
                                       this.newItemSelector =instance;
                                         this.newItemNode.append(this.newItemSelector.rootNode);
                                     }.bind(this));
@@ -1124,7 +1173,6 @@
 
 
                                         }
-                                        this.newItemSelector._setInputValue("");
                                         this.newItemSelector.inputNode.focus();
                                     }
                                     else
@@ -1135,6 +1183,7 @@
                                             this.type.setValue([newInstance]);
                                         else
                                             this.type.getValue().push(newInstance);
+                                        this.setSelected(this.type.getValue().length-1);
                                     }
                                 },
 
@@ -1143,12 +1192,13 @@
                                 },
                                 setSelected:function(idx)
                                 {
-                                    if(this.currentItem) {
-                                        this.currentItem.destruct();
-                                        this.currentItemNode.html("");
-                                    }
+
                                     var factory=new Siviglia.inputs.jqwidgets.Factory();
                                     factory.getInput(this.type.getValue()["*"+idx],{},this.form).then(function(instance){
+                                        if(this.currentItem) {
+                                            this.currentItem.destruct();
+                                            this.currentItemNode.html("");
+                                        }
                                     this.currentItem=instance;
                                     this.currentItemNode.append(this.currentItem.rootNode);
                                     }.bind(this));
@@ -1164,6 +1214,15 @@
                     },
                 TypeSwitcher: {
                     inherits: 'BaseInput',
+                    destruct:function()
+                    {
+                        if(this.typeSelector)
+                            this.typeSelector.destruct();
+                        if(this.typeSelectorWidget)
+                            this.typeSelectorWidget.destruct();
+                        if(this.subNode)
+                            this.subNode.destruct();
+                    },
                     methods:
                         {
                         preInitialize:function(params){
@@ -1192,10 +1251,11 @@
 
                         initialize:function(params)
                         {
-                            this.detach();
+
                             var factory=new Siviglia.inputs.jqwidgets.Factory();
                             factory.getInput(this.typeSelector,{},this.form).then(
                                 function(instance){
+                                    this.detach();
                                     this.typeSelectorWidget =instance;
                                     var m=this;
                                     this.typeSelector.addListener("CHANGE",function(event,params){
@@ -1218,11 +1278,7 @@
                             },
                             buildTypeUI:function()
                             {
-                                if(this.subNode) {
 
-                                    this.fieldContainer.html("");
-                                    this.subNode.destruct();
-                                }
 
                                 var factory=new Siviglia.inputs.jqwidgets.Factory()
 
@@ -1231,6 +1287,10 @@
                                 if(this.curType) {
                                     var curTypeObj=this.type.getCurrentTypeObj();
                                     factory.getInput(curTypeObj, {controller: this.type.controller},this.form).then(function(instance){
+                                        if(this.subNode) {
+                                            this.subNode.destruct();
+                                            this.fieldContainer.html("");
+                                        }
                                         this.fieldContainer.append(instance.rootNode);
                                         this.subNode=instance;
                                     }.bind(this));
@@ -1320,6 +1380,11 @@
                 NewItem:
                     {
                         inherits:"Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
+                        destruct:function(){
+                            if(this.subInput) {
+                                this.subInput.destruct();
+                            }
+                        },
                         methods:
                             {
                                 preInitialize:function(params)
@@ -1339,7 +1404,7 @@
                                 },
                                 initialize:function()
                                 {
-                                    this.type.addListener("CHANGE",this,"paintInput");
+                                    //this.type.addListener("CHANGE",this,"paintInput");
                                     this.paintInput(null);
                                 },
                                 detach:function()
@@ -1365,6 +1430,7 @@
                                 },
                                 onAdd: function () {
                                     this.parent.onAdd(this.subInput.getValue());
+                                    this.subInput.inputNode.val(null);
 
                                 }
                             }
@@ -1740,7 +1806,7 @@
                             </div>
                             <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
                                 <div class="Dictionary-current">
-                                    <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
+                                    <div class="currentWidget" data-sivCall="getInputFor">
                                     </div>
                                 </div>
                             </div>

@@ -299,6 +299,7 @@ Siviglia.Utils.buildClass(
                                             var str = this.source["PATH"];
                                             this.pathController = new Siviglia.Path.PathResolver(this.stack, str);
                                             this.pathController.addListener("CHANGE", this, "onListener");
+                                            this.data=res;
                                             try {
                                                 var res = this.pathController.getPath();
                                                 if (this.pathController.isValid()) {
@@ -308,6 +309,10 @@ Siviglia.Utils.buildClass(
                                             {
                                                 this.onData(null);
                                             }
+                                        }
+                                        else
+                                        {
+                                            this.onData(this.data);
                                         }
                                     },
                                     // Su valor, es el que haya resuelto el listener de la parametrizable string.

@@ -579,7 +579,7 @@ Siviglia.Utils.buildClass(
 
                                 if (!this._validate(val))
                                     return false;
-                                return this.checkSource(val);
+                                return true; //this.checkSource(val);
                             },
                             checkSource:function(val)
                             {
@@ -2410,7 +2410,7 @@ Siviglia.Utils.buildClass(
                             res.push({"LABEL":v,"VALUE":v})
                         else
                         {
-                            res.push(val["*"+k].getPlainValue());
+                            res.push(val["*"+k].getValue());
                         }
                     }
                     return res;
