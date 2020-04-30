@@ -7,6 +7,7 @@ parent::__construct( [
             "LABEL"=>"Enum",
             "TYPE"=>"Container",
             "FIELDS"=>[
+                "LABEL"=>["LABEL"=>"Label","TYPE"=>"String"],
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Enum"],
                 "VALUES"=>[
                     "LABEL"=>"Valores permitidos",

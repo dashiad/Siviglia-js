@@ -45,7 +45,6 @@ class Types
                             "ELEMENTS"=>[
                                 "LABEL"=>"Elementos",
                                 "TYPE"=>"Container",
-                                "REQUIRED"=>true,
                                 "FIELDS"=>[
                                     "Id"=>["TYPE"=>"Integer","LABEL"=>"Id","REQUIRED"=>true],
                                     "Label"=>["TYPE"=>"String","LABEL"=>"Label","REQUIRED"=>true],

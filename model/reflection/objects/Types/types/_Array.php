@@ -22,7 +22,8 @@ parent::__construct( [
                       "KEEP_KEY_ON_EMPTY"=>false
                   ],
                   "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
-                  "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false]
+                  "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
+                  "SOURCE"=>\model\reflection\Types::getSourceMeta()
               ]
           ]);
 
