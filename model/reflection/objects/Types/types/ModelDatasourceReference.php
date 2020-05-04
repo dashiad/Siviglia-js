@@ -24,7 +24,7 @@ parent::__construct( [
                         "TYPE"=>"DataSource",
                         "MODEL"=> "/model/reflection/Model",
                         "DATASOURCE"=> "ModelList",
-                        "LABEL"=> "[%smallName%]",
+                        "LABEL"=> "smallName",
                         "VALUE"=> "smallName"
 
                     ]],
@@ -33,13 +33,21 @@ parent::__construct( [
                     "TYPE"=> "String",
                     "SOURCE"=> [
                         "TYPE"=> "DataSource",
-                        "MODEL"=> "/model/reflection/Model",
+                        "MODEL"=> "/model/reflection/DataSource",
                         "DATASOURCE"=> "DatasourceList",
                         "PARAMS"=> [
-                            "model"=> "[%#../modelSelector%]",
+                            "model"=> "[%#../MODEL%]",
                         ],
-                        "LABEL"=> "[%NAME%]",
-                        "VALUE"=> "NAME"
+                        "LABEL"=> "name",
+                        "VALUE"=> "name"
+                    ]
+                ],
+                "PARAMS"=>[
+                    "LABEL"=>"Parametros extra",
+                    "TYPE"=>"Dictionary",
+                    "VALUETYPE"=>[
+                        "LABEL"=>"Valor",
+                        "TYPE"=>"String"
                     ]
                 ]
             ]

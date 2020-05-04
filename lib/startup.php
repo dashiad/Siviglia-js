@@ -11,7 +11,6 @@ class Startup
     {
         global $Container;
 
-
         if(defined("DEVELOPMENT"))
         {
             error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
@@ -28,9 +27,10 @@ class Startup
         include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
         include_once(PROJECTPATH."/vendor/autoload.php");
         global $Config;
-
+        $configService=new ConfigService($Config);
         $modelService=new ModelService();
         $modelService->initialize();
+        $Container->addService("config",$configService);
         $Container->addService("model",$modelService);
         $Container->addService("router",new \lib\Router());
         $storageService=new \lib\storage\StorageSerializerService();
@@ -84,6 +84,19 @@ class Startup
         $globalPath->addPath("registry",Registry::$registry);*/
     }
 
+}
+
+class ConfigService extends \lib\Service\Service
+{
+    var $config;
+    function __construct($config)
+    {
+        $this->config=$config;
+    }
+    function getConfig()
+    {
+        return $this->config;
+    }
 }
 
 

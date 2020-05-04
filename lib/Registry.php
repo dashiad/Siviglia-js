@@ -4,6 +4,7 @@ class RegistryException extends \lib\model\BaseException
     const ERR_NO_SUCH_SERVICE=1;
     const TXT_NO_SUCH_SERVICE="El servicio [%serviceName%] no existe.";
 }
+
 class Registry
 {
     public static $registry = null;
@@ -33,6 +34,8 @@ class Registry
         }
         Registry::$registry["user"] = $oCurrentUser;
         Registry::$registry[Registry::SERVICE_CONTAINER]->addService("user",$oCurrentUser);
+
+
 
         \Registry::$registry["session"] = $session->getId();
         \Registry::$registry["cookies"] = & $_COOKIE;

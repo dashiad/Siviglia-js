@@ -3,7 +3,7 @@ namespace lib\metadata;
 
 
 use lib\model\types\BaseTypeException;
-
+use lib\model\Package;
 class MetaDataProvider
 {
     const META_MODEL=1;

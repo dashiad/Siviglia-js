@@ -7,6 +7,7 @@ parent::__construct( [
             "LABEL"=>"Enum",
             "TYPE"=>"Container",
             "FIELDS"=>[
+                "LABEL"=>["LABEL"=>"Label","TYPE"=>"String"],
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Enum"],
                 "VALUES"=>[
                     "LABEL"=>"Valores permitidos",
@@ -20,9 +21,9 @@ parent::__construct( [
                     "LABEL"=>"Valor por defecto",
                     "SOURCE"=>[
                         "TYPE"=>"Path",
-                        "PATH"=>"#../VALUES/[[SOURCE]]",
+                        "PATH"=>"#../VALUES/[[KEYS]]",
                         "LABEL"=>"LABEL",
-                        "VALUE"=>"LABEL"
+                        "VALUE"=>"VALUE"
                     ]
                 ]
             ]

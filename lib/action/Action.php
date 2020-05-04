@@ -75,18 +75,17 @@ class Action extends \lib\model\BaseTypedObject
         }
 
 	    if ($actionResult->isOk()) {
-	        $unserializing=false;
+
 	        if (!$this->destModel)
 	        {
 	            // Se carga el modelo, y se asignan campos.
-                if ($def["MODEL"]) {
+                if (isset($def["MODEL"])) {
                     $s=\Registry::getService("model");
                     $this->destModel = $s->getModel($def["MODEL"]);
                     }
                 else
                 {
                     $this->destModel=$this;
-                    $unserializing=true;
                 }
 
 	        }
@@ -123,9 +122,13 @@ class Action extends \lib\model\BaseTypedObject
                     }break;
                     default:
                     {
-                        $val=$this->__transferFields($def["MODEL"]);
-                        $this->destModel->loadFromArray($val, false, false, $actionResult);
-                        $actionResult->setModel($this->destModel);
+                        if(isset($def["MODEL"])) {
+                            $val = $this->__transferFields($def["MODEL"]);
+                            $this->destModel->loadFromArray($val, false, false, $actionResult);
+                            $actionResult->setModel($this->destModel);
+                        }
+                        else
+                            $actionResult->setModel(null);
                         if($actionResult->isOk())
                             $this->onSaved($this->destModel);
                     }

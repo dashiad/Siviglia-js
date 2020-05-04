@@ -73,10 +73,7 @@ class Add extends \lib\action\Action
 	 */
 	 function validate ( $actionResult )
 	{
-
-
 	/* Insert the validation code here */
-
 			return $actionResult->isOk();
 
 	}
@@ -99,7 +96,7 @@ class Add extends \lib\action\Action
 	 */
 	 function onSuccess( $model, $user)
 	{
-
+		file_put_contents(__DIR__."/".$this->file,json_encode($this->definition));
 
 	/* Insert callback code here */
 

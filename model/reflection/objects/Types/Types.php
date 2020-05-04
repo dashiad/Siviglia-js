@@ -12,21 +12,22 @@ class Types
     static function geCommonMeta()
     {
         return [
-            "FIXED"=>["TYPE"=>"String"],
-            "DEFAULT"=>["TYPE"=>"String"]
+            "FIXED"=>["LABEL"=>"Fijo","TYPE"=>"String"],
+            "DEFAULT"=>["LABEL"=>"Valor por defect","TYPE"=>"String"]
         ];
     }
     static function getSourceMeta()
     {
         $datasourceReference=new ModelDatasourceReference();
         $dsMeta=$datasourceReference->getDefinition();
-        $dsMeta["PARAMS"]=[
+        /*$dsMeta["PARAMS"]=[
             "LABEL"=>"Parameters",
             "TYPE"=>"DICTIONARY",
             "VALUETYPE"=>[
+                "LABEL"=>"Valor",
                 "TYPE"=>"String"
             ]
-        ];
+        ];*/
 
         return [
             "LABEL"=>"Source",
@@ -34,30 +35,34 @@ class Types
             "TYPE_FIELD"=>"TYPE",
             "ALLOWED_TYPES"=>[
                 "Array"=>[
+                    "LABEL"=>"Array",
                     "TYPE"=>"Container",
                     "FIELDS"=>[
-                        "TYPE"=>["TYPE"=>"String","FIXED"=>"Array"],
-                        "DATA"=>["TYPE"=>"Array",
+                        "TYPE"=>["LABEL"=>"Tipo","TYPE"=>"String","FIXED"=>"Array"],
+                        "DATA"=>[
+                            "LABEL"=>"Data",
+                            "TYPE"=>"Array",
                             "ELEMENTS"=>[
-                                "TYPE"=>"CONTAINER",
-                                "REQUIRED"=>true,
+                                "LABEL"=>"Elementos",
+                                "TYPE"=>"Container",
                                 "FIELDS"=>[
-                                    "Id"=>["TYPE"=>"Integer"],
-                                    "Label"=>["TYPE"=>"String"],
-                                    "Extra"=>["TYPE"=>"String"]
+                                    "Id"=>["TYPE"=>"Integer","LABEL"=>"Id","REQUIRED"=>true],
+                                    "Label"=>["TYPE"=>"String","LABEL"=>"Label","REQUIRED"=>true],
+                                    "Extra"=>["TYPE"=>"String","LABEL"=>"Extra"]
                                 ]
                             ],
-                            "PATH"=>["TYPE"=>"String"]
+                            "PATH"=>["LABEL"=>"Path","TYPE"=>"String"]
                         ]
                     ]
                 ],
                 "DataSource"=>[
+                    "LABEL"=>"Datasource",
                     "TYPE"=>"Container",
-                    "FIELDS"=>$dsMeta
+                    "FIELDS"=>$dsMeta["FIELDS"]
                 ],
                 "Path"=>[
-                    "TYPE"=>"String",
-                    "REQUIRED"=>true
+                    "LABEL"=>"Path",
+                    "TYPE"=>"String"
                 ]
             ]
 
