@@ -2,8 +2,9 @@
 
 namespace model\ads\Comscore\serializers;
 
-require_once(__DIR__.'/storage/Comscore.php');
 require_once(__DIR__.'/ComscoreDataSource.php');
+require_once(__DIR__.'/storage/Comscore.php');
+require_once(__DIR__.'/storage/QueryBuilder.php');
 
 use lib\php\ParametrizableString;
 use lib\datasource\DataSource;
@@ -17,10 +18,13 @@ class ComscoreSerializerException extends \lib\model\BaseException
 
 class ComscoreSerializer extends \lib\storage\StorageSerializer
 {
+ 
+    const COMSCORE_SERIALIZER_TYPE = "Comscore";
+    const POLL_PAUSE   = 10;     // TODO: definir en configuración segundos entre llamadas
+    const MAX_ATTEMPTS = 6*60*8; // TODO: definir en configuración reintentos máximos
+    const BASE_DIR = '/vagrant/data/csv/'; // TODO: definir en configuración ruta base para los archivos
     
     protected $conn;
-    
-    const COMSCORE_SERIALIZER_TYPE = "Comscore";
     
     function __construct($definition, $useDataSpace=true)
     {
@@ -113,26 +117,63 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
         return ComscoreDataSource::class;
     }
     
-    function buildQuery($queryDef,$params,$pagingParams,$findRows=true)
+    function buildQuery($queryDef, $params, $pagingParams, $findRows=true)
     {
-        $qB = new QueryBuilder($this,$queryDef, $params,$pagingParams);
+        $qB = new  \model\ads\Comscore\serializers\Comscore\storage\QueryBuilder($this, $queryDef, $params, $pagingParams);
         $qB->findFoundRows($findRows);
-        return  $qB->build();
+        return  $qB->build($queryDef["BASE"]);
     }
     
-    function fetchAll($queryDef, &$data, &$nRows, & $matchingRows, $params, $pagingParams)
+    function fetchAll($queryDef, &$data, &$nRows, &$matchingRows, $params, $pagingParams)
     {
-        if(isset($queryDef["PRE_QUERIES"]))
+        /*if(isset($queryDef["PRE_QUERIES"]))
         {
             foreach($queryDef["PRE_QUERIES"] as $cq)
                 $this->conn->doQ($cq);
-        }
-        $q=$this->buildQuery($queryDef,$params,$pagingParams);
-        //echo $q."<br>";
-        $data = $this->conn->selectAll($q, $nRows);
+        }*/
+            
+        $q = $this->buildQuery($queryDef, $params, $pagingParams);
+        $result = $this->conn->request($q, "");
         
-        $frows = $this->conn->select("SELECT FOUND_ROWS() AS NROWS");
-        $matchingRows = $frows[0]["NROWS"];
+        $comscoreJob = json_decode($result);
+        
+        if (isset($comscoreJob->error)) {
+            $comscoreJobId = $comscoreJob->error->details[0]->conflictedRecordId;
+        } else {
+            $comscoreJobId = $comscoreJob->data->id;
+        }
+        
+        $dataReady = false;
+        $attemps = 0;
+        
+        while(!$dataReady && $attemps<static::MAX_ATTEMPTS) {
+            
+            $attemps++;
+            $waitQuery = ['BASE' => "ON Comscore CALL checkReport WITH (report_id='$comscoreJobId', region='[%region%]')"];
+            
+            $q = $this->buildQuery($waitQuery, $params, $pagingParams);
+            $result = $this->conn->request($q, "");
+            
+            $comscoreJobStatus = (json_decode($result)->data->status=="COMPLETED");
+            $dataReady = $comscoreJobStatus;
+            if (!$dataReady) sleep(static::POLL_PAUSE);
+        }
+        
+        $getQuery = ['BASE' => "ON Comscore CALL getReport WITH (report_id='$comscoreJobId', region='[%region%]')"];
+        $q = $this->buildQuery($getQuery, $params, $pagingParams);
+        $this->data = $data = $this->conn->request($q, "");
+        
+        $this->filename = static::BASE_DIR."comscore_report_".time().".csv";
+        $file = fopen($this->filename, "w+");
+        $this->nRows = fwrite($file, $data);
+        $this->__returnedFields = $this->definition['FIELDS'];
+        fclose($file);
+        
+        // TO-DO: revisar
+        $this->iterator=new \lib\model\types\DataSet(["FIELDS"=>$this->__returnedFields], $this->data,$this->nRows, $this->matchingRows, $this, $this->mapField);
+        $this->__loaded=true;
+        return $this->iterator;
+        
     }
     
     function fetchCursor($queryDef, & $data, & $nRows, & $matchingRows, $params, $pagingParams)
@@ -147,6 +188,11 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
         $this->currentCursor =  $this->conn->cursor($q);
         $nRows=0;
         $matchingRows=0;
+    }
+    
+    public function getPagingParameters()
+    {
+        return [];
     }
     
     function next()

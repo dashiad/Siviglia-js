@@ -1,7 +1,10 @@
 <?php 
-namespace model\ads\Comscore\serializers\Comscore\storage;;
+namespace model\ads\Comscore\serializers\Comscore\storage;
 
 use \lib\php\ParametrizableString;
+use \model\ads\ApiCallParser;
+use lib\datasource\BaseQueryBuilder;
+
 
 class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 {
@@ -32,12 +35,25 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
     
     protected $queryReady;
     
-    function build(?Array $q=null, $onlyConditions=false)
+    protected $parser;
+    
+    public function __construct($serializer, $definition, $params, $pagingParams)
     {
-        $this->action = $q['action'];
-        $this->params = $q['params'];
-        $this->type = $q['type'];
-        $this->region = $this->params['region'];
+        parent::__construct($serializer, $definition, $params, $pagingParams);
+        $this->parser = new ApiCallParser();
+    }
+    
+    function build(?String $query=null, $onlyConditions=false)
+    {
+        $query = ParametrizableString::getParametrizedString($query, $this->data);
+        
+        $this->params = $this->parser->parse($query);
+        //$this->action = $this->params['call']
+        
+        $this->action = $this->params['call'];
+        $this->type   = $this->params['params']['type']['value'];
+        $this->region = $this->params['params']['region']['value'];
+       
         $this->queryReady = false;
         
         switch ($this->action) {
@@ -45,10 +61,10 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 $this->queryReady = $this->requestReport();
                 break;
             case 'checkReport':
-                $this->queryReady = $this->checkReport($this->params['report_id']);
+                $this->queryReady = $this->checkReport($this->params['params']['report_id']);
                 break;
             case 'getReport':
-                $this->queryReady = $this->getReport($this->params['report_id']);
+                $this->queryReady = $this->getReport($this->params['params']['report_id']);
                 break;
             default:
                 throw new ComscoreException(ComscoreException::ERR_INVALID_ACTION);
@@ -99,12 +115,12 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         $params = [
             "responseMediaType" => "text/csv",
             "includeMobile"     => true,
-            "campaignIds"       => $this->params['campaigns'],
+            "campaignIds"       => $this->params['params']['campaigns']['value'],
             "clientId"          => $this->getAuthData("client_id"),
             "populationId"      => "724",
             "viewByType"        => "Total", // TODO: parametrizar?
-            "startDate"         => date("m-d-Y", strtotime($this->params['start_date'])),
-            "endDate"           => date("m-d-Y", strtotime($this->params['end_date'])),
+            "startDate"         => date("m-d-Y", strtotime($this->params['params']['start_date']['value'])),
+            "endDate"           => date("m-d-Y", strtotime($this->params['params']['end_date']['value'])),
         ];
         $this->body = json_encode($params);
         return true;
@@ -116,7 +132,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         $urlParams = [
             'base_url' => $this->getBaseUrl(),
             'client_id' => $this->getAuthData("client_id"),
-            'report_id' => $report_id,
+            'report_id' => $report_id['value'],
         ];
         $this->url = ParametrizableString::getParametrizedString($urlPattern, $urlParams);
         $this->method = "GET";
@@ -132,7 +148,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         $urlParams = [
             'base_url' => $this->getBaseUrl(),
             'client_id' => $this->getAuthData("client_id"),
-            'report_id' => $report_id,
+            'report_id' => $report_id['value'],
         ];
         $this->url = ParametrizableString::getParametrizedString($urlPattern, $urlParams);
         $this->method = "GET";

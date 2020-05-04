@@ -2,20 +2,23 @@
 namespace model\ads\Comscore\serializers;
 
 require_once(__DIR__."/CsvDataSource.php");
+require_once(__DIR__."/ComscoreSerializer.php");
 
-//use \lib\datasource\CsvDataSource;
 use \lib\model\BaseTypedObject;
 use model\ads\Comscore\serializers\Comscore\storage\Comscore;
+use lib\storage\Comscore\ComscoreSerializer;
 
 class ComscoreDataSource extends CsvDataSource
 {
     protected $numRows      = null;
     protected $numColumns   = null;
+    protected $matchingRows;
     protected $data = null;
     protected $hasHeaderRow = true;
     protected $readFromFile = true;
     protected $columnNames;   
     
+    protected $serializer;
     protected $iterator;
     protected $metadata = null;
     
@@ -24,20 +27,15 @@ class ComscoreDataSource extends CsvDataSource
     protected $type;
     protected $filename;
     protected $params = [];
-    
-    const POLL_PAUSE = 10;
-    const BASE_DIR = '/vagrant/data/csv/'; // TODO: definir en configuración ruta base para los archivos
+    protected $definition;
+    protected $serializerDefinition;
     
     public function __construct($objName, $dsName, $definition)
-    {       
+    {   
         parent::__construct($objName, $dsName, $definition::$definition);
-        $this->DSConfig = $this->__objectDef['SOURCE']['STORAGE']['comscore'];
-        $this->columnNames = array_keys($this->__returnedFields);
-        $this->numColumns = count($this->columnNames);
-        
-        $this->action = $this->DSConfig['ACTION'];
-        $this->type = $this->DSConfig['TYPE'];        
-        
+        $this->definition=$definition;
+        $this->serializerDefinition = $definition::$definition["SOURCE"]["STORAGE"]["comscore"]["DEFINITION"];
+        $this->serializer = new \model\ads\Comscore\serializers\ComscoreSerializer($this->serializerDefinition);
     }
     
     public function fetchAll()
@@ -45,66 +43,17 @@ class ComscoreDataSource extends CsvDataSource
 
         /**
          * 
-         * @var BaseTypedObject $model
+         * @var \lib\model\BaseTypedObject $model
          */
         $model = \getModel("model\ads\Comscore");
-        
-        $this->action = "requestReport";
-        $this->params = [
-            'action' => $this->action,
-            'type' => $this->type,
-            'params' => [
-                'region' => "spain", // $this->region, // TODO: coger etiqueta desde valor numérico del enum
-                'start_date' => $this->start_date,
-                'end_date' => $this->end_date,
-                'campaigns' => $this->campaigns,
-            ],
+        $params = [
+            'region' => $this->region,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
+            'campaigns' => json_encode($this->campaigns),
         ];
-        
-        $st = new Comscore($model->getDefinition());
-        $comscoreJob = json_decode($st->request($this->params));
-        
-        if (isset($comscoreJob->error)) {
-            $comscoreJobId = $comscoreJob->error->details[0]->conflictedRecordId;
-        } else {
-            $comscoreJobId = $comscoreJob->data->id;
-        }
-        
-        $dataReady = false;
-        
-        while(!$dataReady) {
-            $this->action = "checkReport";
-            $this->params = [
-                'action' => $this->action,
-                'params' => [
-                    'region' => "spain", // $this->region, // TODO: coger etiqueta desde valor numérico del enum
-                    'report_id' => $comscoreJobId,
-                ],
-            ];
-            $comscoreJobStatus = (json_decode($st->request($this->params))->data->status=="COMPLETED");
-            $dataReady = $comscoreJobStatus;
-            if (!$dataReady) sleep(static::POLL_PAUSE);
-        }
-        
-        $this->action = "getReport";
-        $this->params = [
-            'action' => $this->action,
-            'params' => [
-                'region' => "spain", // $this->region, // TODO: coger etiqueta desde valor numérico del enum
-                'report_id' => $comscoreJobId,
-            ],
-        ];
-        $report = $st->request($this->params);
-        
-        $this->filename = static::BASE_DIR."comscore_report_".time().".csv";
-        $file = fopen($this->filename, "w+");
-        fwrite($file, $report);
-        fclose($file);
-                
-        parent::fetchAll();
-        
-        return $this->getIterator();
-
+        // REVISAR DATASET DEVUELTO
+        return $this->serializer->fetchAll($this->serializerDefinition, $this->data, $this->numRows, $this->matchingRows, $params, null);
     }
     
        

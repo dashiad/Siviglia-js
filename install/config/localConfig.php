@@ -24,7 +24,14 @@ $Config=[
         "default"=>array("NAME"=>"default","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"127.0.0.1","user"=>"root","password"=>"","database"=>"adtopy")),
         "web"=>array("NAME"=>"web","TYPE"=>"Mysql","ADDRESS"=>array("host"=>"127.0.0.1","user"=>"root","password"=>"","database"=>"adtopy")),
         "es"=>["NAME"=>"MAIN_ES","TYPE"=>"ES","ES"=>["servers"=>["130.61.28.79"],"port"=>9200,"index"=>"gpt*"]],
-        "comscore"=>["NAME"=>"Comscore","MODEL"=>"/model/ads/Comscore","CLASS"=>"\\model\\ads\\Comscore\\serializers\\ComscoreSerializer"],
+	"comscore"=>[
+		"NAME"             => "Comscore",
+		"MODEL"            =>"/model/ads/Comscore",
+		"CLASS"            =>"\\model\\ads\\Comscore\\serializers\\ComscoreSerializer",
+		"API_WAIT_TIMEOUT" => 10,
+		"API_MAX_ATTEMPTS" => 6*60*8,
+		"DATA_ROOT_DIR"    => "/vagrant/data/comscore",
+	],
         "cookie"=>array(
             "NAME"=>"cookie",
             "TYPE"=>"Cookie",

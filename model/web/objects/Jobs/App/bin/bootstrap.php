@@ -1,4 +1,5 @@
 <?php
+set_include_path(get_include_path() . PATH_SEPARATOR . '/vagrant/');
 require_once('localConfig.php');
 require_once(LIBPATH."/startup.php");
 
