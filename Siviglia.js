@@ -816,6 +816,7 @@ Siviglia.Utils.buildClass(
                     },
                     getPath:function()
                     {
+
                         if(this.firing)
                             return;
                         var p=this.path[0];
@@ -1286,6 +1287,7 @@ Siviglia.Path.Proxify=function(obj,ev)
     }
 
     var isArray=(obj.constructor.toString().indexOf("rray")>0);
+    var referenceCounter=1;
     var __disableEvents__=false;
     var objProxy = new Proxy(obj,{
         get:function(target,prop)
@@ -1296,6 +1298,27 @@ Siviglia.Path.Proxify=function(obj,ev)
                 return __disableEvents__;
             if(prop===Symbol.toStringTag)
                 return target.toString;
+            if(prop==="[[KEYS]]")
+            {
+                var result=[];
+                if(Siviglia.typeof(curVal)==="object")
+                {
+                    for(var k in curVal)
+                    {
+                        result.push({"LABEL":k,"VALUE":k});
+                    }
+                    return result;
+                }
+                if(Siviglia.typeof(curVal)==="array")
+                {
+                    for(var k=0;k<curVal.length;k++)
+                    {
+                        result.push({"LABEL":k,"VALUE":k});
+                    }
+                    return result;
+                }
+                throw "Pedidas keys en objeto sin keys";
+            }
             return curVal[prop];
         },
         apply:function(target,thisArg,list)

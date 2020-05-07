@@ -60,6 +60,8 @@ Siviglia.Utils.buildClass(
                             this.valid=false;
                             this.searchString=null;
                             this.EventManager();
+                            this.lastData=null;
+                            this.lastPString=null;
 
                         },
                         destruct:function()
@@ -100,6 +102,10 @@ Siviglia.Utils.buildClass(
                                 {
                                     this.valid=(data!==null);
                                     this.data=data;
+                                    //var encoded=JSON.stringify(data);
+                                    //if(encoded===this.lastData)
+                                    //    return;
+                                    ///this.lastData=encoded;
                                     this.fireEvent(Siviglia.Data.BaseDataSource.EVENT_LOADED,{value:data,valid:this.valid});
                                     this.fireEvent(Siviglia.Data.BaseDataSource.CHANGE,{value:data,valid:this.valid});
                                 },
@@ -135,8 +141,11 @@ Siviglia.Utils.buildClass(
                                 },
                                 contains:function(value)
                                 {
-                                    if(this.data===null)
-                                        return false;
+                                    if(Siviglia.empty(this.data)) {
+                                        this.fetch();
+                                        if(Siviglia.empty(this.data))
+                                            return false;
+                                    }
                                     var valField=this.getValueField();
                                     for(var k=0;k<this.data.length;k++)
                                     {
@@ -167,6 +176,7 @@ Siviglia.Utils.buildClass(
 
                             this.BaseDataSource(source,controller,stack);
                             this.lastWasValid=true;
+
                             if(typeof source["DATA"] != "undefined")
                                 this._initializeValues(source["DATA"]);
                             else {
@@ -177,7 +187,7 @@ Siviglia.Utils.buildClass(
                                         re=new RegExp("/"+this.searchString+"/");
                                     for(var k=0;k<source["VALUES"].length;k++) {
                                         if(!re || re.match(source["VALUES"][k]) )
-                                            this.valsArray.push({"VALUE": k, "LABEL": this.getLabel(source["VALUES"][k])});
+                                            this.valsArray.push({"VALUE": k, "LABEL": source["VALUES"][k]});
                                     }
                                     if(typeof source["LABEL"]=="undefined")
                                         source["LABEL"]="LABEL";
@@ -208,7 +218,7 @@ Siviglia.Utils.buildClass(
                                 },
                                 onChanged:function(evName,data)
                                 {
-                                    console.log("---SOURCE-CHANGED: ---"+this.source["PATH"]);
+
                                     if(data.valid==false)
                                     {
                                         if(this.lastWasValid==false)
@@ -412,14 +422,17 @@ Siviglia.Utils.buildClass(
 
                                         if(this.searchString===null)
                                             m.onData(data);
-
-                                        var re=new RegExp("/"+this.searchString+"/");
-                                        var filtered=[];
-                                        for(var k=0;k<data.length;k++) {
-                                            if(re.match(data[k][this.getLabelField()]) )
+                                    if(this.searchString===null)
+                                        filtered=data;
+                                    else {
+                                        var re = new RegExp("/" + this.searchString + "/");
+                                        var filtered = [];
+                                        for (var k = 0; k < data.length; k++) {
+                                            if (re.match(data[k][this.getLabelField()]))
                                                 filtered.push(data[k]);
                                         }
-                                        this.onData(filtered);
+                                    }
+                                    this.onData(filtered);
                                     }.bind(this));
                                 }catch(e)
                                 {

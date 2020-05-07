@@ -521,7 +521,7 @@
                             this.inputNode[this.getJqxWidgetName()]('theme', 'light');
                             var m = this;
                             this.inputNode.on("select", function (ev) {
-                                if(!m.dataBinding) {
+                                if(!m.dataBinding && !m.changing) {
                                     if (ev.args) {
                                         m.changing = true;
                                         var newVal = ev.args.item.value;
@@ -1278,8 +1278,6 @@
                             },
                             buildTypeUI:function()
                             {
-
-
                                 var factory=new Siviglia.inputs.jqwidgets.Factory()
 
                                 this.curType=this.type.getCurrentType();
@@ -1516,7 +1514,16 @@
                                     delete this.__erroredInputs[path];
                             },
                             submit: function (instance,actionName) {
-                                var errors = this.__bto.__save();
+                                var errors=null;
+                                try {
+                                    this.__bto.__save();
+                                }catch(e)
+                                {
+                                    if(e.code===Siviglia.types.BaseTypeException.ERR_SAVE_ERROR)
+                                        errors=e.params;
+                                    else
+                                        throw e;
+                                }
                                 if (errors !== null) {
                                     for (var k=0;k<errors.length;k++) {
                                         if(!errors[k].path)
@@ -1913,9 +1920,11 @@
             <div class="panel-body">
 
                 <div class="typeChanger">
-                    <div data-sivId="typeSwitchSelector">
-                    </div>
+                    <span>Seleccionar Tipo:</span>
+                    <span data-sivId="typeSwitchSelector">
+                    </span>
                 </div>
+
                 <div data-sivId="fieldContainer"></div>
             </div>
 

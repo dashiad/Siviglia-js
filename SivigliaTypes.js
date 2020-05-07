@@ -123,6 +123,7 @@ Siviglia.Utils.buildClass(
                 inherits:'Siviglia.Dom.EventManager,Siviglia.types.PathAble',
                 construct:function(defOrUrl,value,relaxed)
                 {
+
                     this.EventManager();
                     this.PathAble();
                     this.__type__="BaseTypedObject";
@@ -380,7 +381,7 @@ Siviglia.Utils.buildClass(
                             return null;
                         if(errors.length==0)
                             return null;
-                        return errors;
+                        throw new Siviglia.types.BaseTypeException("/",Siviglia.types.BaseTypeException.ERR_SAVE_ERROR,errors);
                     }
                 }
             },
@@ -452,7 +453,8 @@ Siviglia.Utils.buildClass(
                             ERR_INCOMPLETE_TYPE: 4,
                             ERR_REQUIRED: 5,
                             ERR_SERIALIZER_NOT_FOUND: 7,
-                            ERR_TYPE_NOT_EDITABLE: 8
+                            ERR_TYPE_NOT_EDITABLE: 8,
+                            ERR_SAVE_ERROR:9
                         },
                     construct: function (path,code, params) {
                         this.path=path;
@@ -579,18 +581,20 @@ Siviglia.Utils.buildClass(
 
                                 if (!this._validate(val))
                                     return false;
-                                return true; //this.checkSource(val);
+                                return true;
                             },
                             checkSource:function(val)
                             {
                                 if(this.hasSource())
                                 {
                                     var s=this.getSource();
+
+
                                     // TODO: PARCHE GIGANTESCO AQUI: SI ES UN SOURCE
                                     // ASINCRONO (REMOTO), NO SE VALIDA!!
-                                    if(!s.isAsync()) {
-                                        s.fetch();
+                                    if(s.source["TYPE"]!=="DataSource"){
                                         if (!s.contains(val)) {
+                                            this.setValue(null);
                                             throw new Siviglia.types.BaseTypeException(this.getFullPath(),Siviglia.types.BaseTypeException.ERR_INVALID, {value: val});
                                         }
                                     }
@@ -762,8 +766,10 @@ Siviglia.Utils.buildClass(
                             },
                             save:function()
                             {
+
                                 if(this.definition.REQUIRED && (!this.valueSet || this.value===""))
                                     throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED);
+                                this.checkSource(this.value);
                                 return null;
                             },
                             setReferencedField:function(ref)
@@ -2079,13 +2085,16 @@ Siviglia.Utils.buildClass(
                     },
                     save:function()
                     {
-                        var err=null;
-                        for(var k in this.__currentProxy) {
-                            var newErr=this.__currentProxy["*" + k].save();
-                            if(err==null)
-                                err=newErr;
-                            else
-                                err.concat(newErr);
+                        if(!Siviglia.empty(this.__currentProxy)) {
+                            var err = null;
+                            for (var k in this.__currentProxy) {
+                                var newErr = this.__currentProxy["*" + k].save();
+                                if (err == null)
+                                    err = newErr;
+                                else
+                                    err.concat(newErr);
+                            }
+                            this.checkSource(this.__currentProxy);
                         }
                         return err;
                     }
@@ -2111,22 +2120,18 @@ Siviglia.Utils.buildClass(
             construct: function (definition, value,relaxed) {
                 this.subNode = null;
                 this.currentType = null;
-                this.intermediateObject=null;
-                // Workaround para eventize:
-                this.valueEventManager=null;
+
+                this.forceType=null;
                 this.BaseType("TypeSwitcher", definition, value);
+
+                Object.defineProperty(this,"*value",{enumerable:false,configurable:true,get:function(){
+                    return this.subNode;
+                },set:function(val){}});
+                Object.defineProperty(this,"value",{enumerable:false,configurable:true,get:function(){
+                        return this.subNode.getValue();
+                    },set:function(val){}});
             },
             destruct: function () {
-
-                if(this.intermediateObject) {
-                    this.intermediateObject["*" + this.definition.CONTENT_FIELD].destruct();
-                }
-                if(this.valueEventManager)
-                {
-                    this.valueEventManager.destruct();
-                }
-                this.intermediateObject=null;
-                this.valueEventManager=null;
                 this.reset();
             },
             methods: {
@@ -2135,169 +2140,232 @@ Siviglia.Utils.buildClass(
                     if(this.subNode)
                         this.subNode.destruct();
                     this.subNode=null;
-
-
                 },
                 _setValue: function (val) {
-                    this.receivedValue = val;
+
                     this.reset();
-                    this.currentType = this.getTypeFromValue(val);
-                    var m=this;
-                    // Se resetea el event manager para el valor.
-                    if(this.valueEventManager!=null)
-                    {
-                        this.valueEventManager.destruct();
-
-                    }
-                    this.valueEventManager=new Siviglia.Dom.EventManager();
-                    var ev=this.valueEventManager;
-
-                    var def={
-                        set:function(value)
-                        {
-                            var curType;
-                            var target=value;
-                            if(value==null)
-                                target=m.definition.IMPLICIT_TYPE;
-                            curType=Siviglia.types.TypeFactory.getType(m,m.getTypeDefinition(target), null)
-                            if(m.subNode!==null)
-                                m.subNode.destruct();
-                            m.subNode=curType;
-                            m.currentType=target;
-                            m.disableEvents(true);
-                            if(!m.definition.CONTENT_FIELD)
-                                m.value=m.subNode;
-
-                            m.disableEvents(false);
-                            m.onChange();
-                            ev.fireEvent("CHANGE",{value:val})
-                        },
-                        get:function()
-                        {
-                            return m.currentType;
-                        },enumerable:true,configurable:true
-                    };
-                    Object.defineProperty(val,this.definition.TYPE_FIELD,def);
-
-
-                    this.value=val;
-                    var target=val;
-                    var cb1={
-                        get:function()
-                        {
-                            return m.subNode.getValue();
-
-                        },
-                        set:function(v)
-                        {
-                            m.subNode.setValue(v);
-                            m.onChange();
-                            ev.fireEvent("CHANGE",{value:val});
-                        },
-                        configurable:true,enumerable:true
-                    };
-                    var cb2={
-                        get:function()
-                        {
-                            return m.subNode;
-                        },
-                        configurable:true,enumerable:true
-                    }
-
-                    if(this.definition.CONTENT_FIELD)
-                    {
-                        target=val[this.definition.CONTENT_FIELD];
-                        this.intermediateObject=val;
-                        Object.defineProperty(val,this.definition.CONTENT_FIELD,cb1);
-                        Object.defineProperty(val,"*"+this.definition.CONTENT_FIELD,cb2);
-
-                    }
-                    else
-                    {
-                        target=val;
-                    }
-
-
-
-                    var typeDefinition=this.getTypeDefinition(this.currentType);
-                    var curNode=Siviglia.types.TypeFactory.getType(this,typeDefinition, target);
-                    this.subNode=curNode;
+                    var typeInfo = this.getTypeFromValue(val);
+                    this.currentType=typeInfo["name"];
+                    this.subNode=Siviglia.types.TypeFactory.getType(this,typeInfo["def"], this.forceType==null?val:null);
+                    // Cuando cambie el subNodo, debe cambiar
                     this.subNode.setParent(this);
-                    if(typeof this.definition.CONTENT_FIELD!=="undefined")
-                        this.subNode.setFieldName(this.definition.CONTENT_FIELD);
-
+                    this.value=this.subNode;
+                    // Solo necesitamos eventizar si el cambio de tipo se produce por un cambio de un TYPE_FIELD
+                    if(typeof this.definition.TYPE_FIELD !== "undefined")
+                        this._eventize(val);
+                },
+                _eventize:function(val)
+                {
+                    var m=this;
+                    var tmpObject={};
                     //WorkAround para eventize:
                     Object.defineProperty(val,"__isProxy__",{enumerable:false,configurable:true,get:function(){return true;}})
-                    // Importante que este objeto devuelva curNode, y no m.subNode. Esto hace que cuando eventize no ataca al BaseType,
-                    // sino directamente a su valor, se quede siempre escuchando al valor, y no al basetype.
-                    Object.defineProperty(val,"__ev__",{enumerable:false,configurable:true,get:function(){return ev;}})
+                    Object.defineProperty(val,"__ev__",{enumerable:false,configurable:true,get:function(){return m;}})
+                    var defBuilder=function(fieldName) {
+                        var def = {
+                            set: function (value) {
+                                var curType;
+                                var target = value;
+                                if (value == null)
+                                    target = m.definition.IMPLICIT_TYPE;
+                                if (target !== m.currentType) {
+                                    var tmpDef={};
+                                    tmpDef[fieldName]=value;
+                                    var typeInfo=m.getTypeFromValue(tmpDef);
+
+                                    curType = Siviglia.types.TypeFactory.getType(m, typeInfo["def"], tmpDef);
+
+                                    if (m.subNode !== null)
+                                        m.subNode.destruct();
+                                    m.subNode = curType;
+                                    m.currentType=typeInfo["name"];
+                                    tmpObject[fieldName]=value;
+                                    m._eventize(tmpDef);
+                                }
+                                m.disableEvents(true);
+                                if (!m.definition.CONTENT_FIELD)
+                                    m.value = m.subNode;
+                                m.disableEvents(false);
+                                m.onChange();
+                            },
+                            get:function()
+                            {
+                                return tmpObject[fieldName];
+                            },
+                            enumerable: true, configurable: true
+                        };
+                        // Hacemos una copia del valor del campo en tmpObject.
+                        tmpObject[fieldName]=val[fieldName]
+                        // Vemos si en el tipo actual, existe ese campo, o si es un campo que debe estar "oculto", ya
+                        // que igual no existe en el tipo actual, y sólo está ahi por si se quiere cambiar el valor del tipo.
+                        // Esto solo tiene sentido si el subNodo es un container
+                        if(m.subNode.isContainer() && !Siviglia.isset(m.subNode.definition.FIELDS[fieldName]))
+                            def.enumerable=false;
+                        Object.defineProperty(val, fieldName, def);
+                    }
+                    //var byType=Siviglia.issetOr(this.definition["TYPE_FIELD"],null)
+
+                    //if(byType) {
+                        var fieldName=this.definition.TYPE_FIELD;
+                        // Se hace una copia de los campos, de forma que
+                        tmpObject[this.definition.TYPE_FIELD]=val[this.definition.TYPE_FIELD];
+                        defBuilder(this.definition.TYPE_FIELD);
+                    /*}
+                    else
+                    {
+                        byType=Siviglia.issetOr(this.definition["ON"],null);
+                        if(byType) {
+                            var included=[];
+                            for (var k = 0; k < this.definition["ON"].length; k++) {
+                                var cur=this.definition["ON"][k];
+                                if(Siviglia.isset(cur["FIELD"])){
+                                    var f=cur["FIELD"];
+                                    if (included.indexOf(f) >= 0)
+                                        continue;
+                                    defBuilder(f);
+                                }
+
+                            }
+                        }
+                    }*/
                 },
                 _validate:function(val)
                 {
-                    var cType=Siviglia.issetOr(val[this.definition.TYPE_FIELD],null);
-                    if(cType==null) {
-                        if(typeof this.definition.IMPLICIT_TYPE!=="undefined")
-                            cType=this.definition.IMPLICIT_TYPE;
-                        else
-                            throw new Siviglia.types.TypeSwitcherException(this.getFullPath(),Siviglia.types.TypeSwitcherException.ERR_INVALID_TYPE);
-                    }
-                    if(!this.isValidType(cType))
-                        throw new Siviglia.types.TypeSwitcherException(this.getFullPath(),Siviglia.types.TypeSwitcherException.ERR_INVALID_TYPE);
-                    // Se obtiene ahora el valor interno.
-                    var target=val;
+                    // Si este validate se esta llamando desde un setValue desde setCurrentType, retornamos true.
+                    if(this.forceType!==null)
+                        return true;
 
-                    if(typeof this.definition.CONTENT_FIELD!=="undefined")
-                    {
-                        if(typeof val[this.definition.CONTENT_FIELD]=="undefined")
-                            return true;
-                    }
-                    var def=this.getTypeDefinition(cType);
-                    var instance=Siviglia.types.TypeFactory.getType(this,def, null);
-                    var result=instance.validate(target);
+                    // Si el valor no es correcto, ya se lanza la excepcion en getTypeFromValue
+                    var typeInfo= this.getTypeFromValue(val);
+                    var instance=Siviglia.types.TypeFactory.getType(this,typeInfo["def"], null);
+                    var result=instance.validate(val);
                     instance.destruct();
                     return result;
                 },
+
                 getTypeDefinition:function(typeName)
                 {
                     var allowedTypes=this.getAllowedTypes();
                     return allowedTypes[typeName];
                 },
+
                 getTypeFromValue:function(val)
                 {
-                    var typeField = Siviglia.issetOr(this.definition.TYPE_FIELD,null);
-                    if(typeField!=null && typeof val[typeField]!=="undefined")
-                        return val[typeField];
-                    if(this.definition.IMPLICIT_TYPE)
-                        return this.definition.IMPLICIT_TYPE;
-                    throw new Siviglia.types.TypeSwitcherException(this.getFullPath(),Siviglia.types.TypeSwitcherException.ERR_INVALID_TYPE);
+                    var byType=Siviglia.issetOr(this.definition["TYPE_FIELD"],null)
+                    if(byType) {
+                        var typeField = byType;
+                        var curType=null;
+                        if (typeField != null && typeof val[typeField] !== "undefined") {
+                            curType=val[typeField];
+                        }
+                        else
+                        {
+                            if (Siviglia.isset(this.definition.IMPLICIT_TYPE)) {
+                                curType=this.definition.IMPLICIT_TYPE;
+                            }
+                            else
+                                throw new Siviglia.types.TypeSwitcherException(this.getFullPath(), Siviglia.types.TypeSwitcherException.ERR_INVALID_TYPE);
+                        }
+
+
+                            var t=this.definition.ALLOWED_TYPES[curType];
+                            if(!Siviglia.isset(this.definition.CONTENT_FIELD)) {
+                                return {name:curType,def:t};
+                            }
+                            else
+                            {
+                                var baseDef={"TYPE":"Container","FIELDS":{}};
+                                baseDef["FIELDS"][this.definition.TYPE_FIELD]={"TYPE":"String"};
+                                baseDef["FIELDS"][this.definition.CONTENT_FIELD]=t;
+                                return {name:curType,def:baseDef};
+                            }
+
+                    }
+                    byType=Siviglia.issetOr(this.definition["ON"],null);
+
+                    if(byType)
+                    {
+                        if(this.forceType!==null) {
+                            var curType=this.forceType;
+                            this.forceType=null;
+                            return {name:curType,def:this.definition.ALLOWED_TYPES[curType]};
+                        }
+                        else
+                        {
+                            for (var k = 0; k < this.definition["ON"].length; k++) {
+                                var cur = this.definition["ON"][k];
+                                var f = null;
+                                var v = null;
+                                var cond = false;
+                                if (Siviglia.isset(cur["FIELD"])) {
+                                    f = cur["FIELD"];
+                                    cond = Siviglia.isset(val[f])
+                                    if (cond)
+                                        v = val[f];
+                                } else {
+                                    cond = true;
+                                    v = val;
+                                }
+
+
+                                var op = cur["IS"];
+                                var then = cur["THEN"];
+                                switch (op) {
+                                    case "String": {
+                                        if (!cond)
+                                            continue;
+                                        if (v.__proto__.constructor.toString().indexOf("String") >= 0)
+                                            return {name: then, def: this.definition.ALLOWED_TYPES[then]};
+                                    }
+                                        break;
+                                    case "Array": {
+                                        if (!cond)
+                                            continue;
+                                        if (v.__proto__.constructor.toString().indexOf("Array") >= 0)
+                                            return {name: then, def: this.definition.ALLOWED_TYPES[then]};
+                                    }
+                                        break;
+                                    case "Object": {
+                                        if (!cond)
+                                            continue;
+                                        if (v.__proto__.constructor.toString().indexOf("Object") >= 0)
+                                            return {name: then, def: this.definition.ALLOWED_TYPES[then]};
+                                    }
+                                        break;
+                                    case "Present": {
+                                        if (!cond)
+                                            continue;
+                                        return {name: then, def: this.definition.ALLOWED_TYPES[then]};
+                                    }
+                                        break;
+                                    case "Not Present": {
+                                        if (!cond)
+                                            return {name: then, def: this.definition.ALLOWED_TYPES[then]};
+                                        continue;
+                                    }
+                                        break;
+                                }
+                            }
+                            if (this.definition.IMPLICIT_TYPE)
+                                return {
+                                    name: this.definition.IMPLICIT_TYPE,
+                                    def: this.definition.ALLOWED_TYPES[this.definition.IMPLICIT_TYPE]
+                                };
+                        }
+
+
+
+                    }
+                    throw new Siviglia.types.TypeSwitcherException(this.getFullPath(), Siviglia.types.TypeSwitcherException.ERR_INVALID_TYPE);
+
                 },
                 getValue: function () {
                     if(!this.valueSet)
                         return null;
-                    return this.value;
+                    return this.subNode.getValue();
                 },
                 getPlainValue: function () {
-                    this.save();
-                    var res={};
-                    if(this.subNode==null || this.subNode.isEmpty())
-                    {
-                        if(this.definition["SET_ON_EMPTY"]!=true)
-                            return null;
-                    }
-                    if(!(this.definition["IMPLICIT_TYPE"] &&
-                        this.value[this.definition.TYPE_FIELD]==this.definition["IMPLICIT_TYPE"]
-                    ))
-                        res[this.definition.TYPE_FIELD]=this.value[this.definition.TYPE_FIELD];
-
-                    if(this.definition["CONTENT_FIELD"])
-                        res[this.definition["CONTENT_FIELD"]]=this.subNode.getPlainValue();
-                    else
-                    {
-                        var val=this.subNode.getPlainValue();
-                        for(var k in val)
-                            res[k]=val[k];
-                    }
-                    return res;
+                    return this.subNode.getPlainValue();
                 },
 
                 isValidType:function(v)
@@ -2340,14 +2408,49 @@ Siviglia.Utils.buildClass(
                 },
                 setCurrentType:function(type)
                 {
-                    var newObj={};
-                    newObj[this.definition.TYPE_FIELD]=type;
+                    // Este metodo es problematico.
+                    // En caso de que exista un TYPE_FIELD, es tan simple como asignar un objeto vacio, con
+                    // solo el campo tipo puesto:
+                    if(Siviglia.isset(this.definition.TYPE_FIELD))
+                    {
+                        var newObj={};
+                        newObj[this.definition.TYPE_FIELD]=type;
                         this.setValue(newObj);
+                    }
+                    else
+                    {
+                        // Aqui empieza lo complicado.
+                        // Es complicado porque las reglas de decision de tipo, basada en el valor, son faciles
+                        // de chequear, cuando YA existe un valor.
+                        // Este método, fuerza un tipo en el TypeSwitcher, SIN QUE HAYA UN VALOR.
+                        // Por ejemplo, si existe un "ON" "FIELD"=>"X", IS=>"String", THEN=>"TYPEX", aqui sabemos
+                        // que queremos asignar "TYPEX", pero no hay forma de crear un objeto que contenga un "X" valido
+                        // Qué string tiene que ser? Qué requisitos debe cumplir?
+                        // Y si en vez de una string es un objeto, qué objeto debe ser?
+                        // Y si la condicion es que algo *no esté presente" o "esté presente"?
+                        // La unica forma es "forzar" a que se ponga un tipo, independientemente del valor.
+                        // Por otro lado, es una caracteristica de los TypeSwitchers basados en "ON", que el cambio
+                        // del *valor* de los datos, no provoca un cambio en el tipo de dato del TypeSwitcher,
+                        // como pasa en los TypeSwitchers basados en "TYPE_FIELD".
+                        // Es por eso que no necesitamos eventize, por lo que no corremos el riesgo de inventarnos
+                        // un valor ahora, que se vaya a "eventizar" en setValue.No es necesario eventizarlo, porque
+                        // *una vez decidido el tipo, los cambios de los valores no importan*
+                        // Es por eso, que vamos a usar un "truco".
+                        // Vamos a pasar a setValue un objeto vacio, {}, pero vamos a forzar que getTypeFromValue, devuelva
+                        // el tipo que queremos, en vez de pasar los tests de "ON", y luego establezca su valor a null
+                        this.forceType=type;
+                        this.setValue({});
+                    }
+
+
                 },
                 save:function()
                 {
-                    if(this.subNode!=null)
+
+                    if(!Siviglia.empty(this.subNode)) {
                         this.subNode.save();
+                        this.checkSource(this.subNode);
+                    }
                 }
             }
         },
@@ -2506,13 +2609,17 @@ Siviglia.Utils.buildClass(
 
                 save:function()
                 {
+
                     var err=null;
-                    for(var k=0;k<this.__currentProxy.length;k++) {
-                        var newErr=this.__currentProxy["*" + k].save();
-                        if(err==null)
-                            err=newErr;
-                        else
-                            err.concat(newErr);
+                    if(!Siviglia.empty(this.__currentProxy)) {
+                        for (var k = 0; k < this.__currentProxy.length; k++) {
+                            var newErr = this.__currentProxy["*" + k].save();
+                            if (err == null)
+                                err = newErr;
+                            else
+                                err.concat(newErr);
+                        }
+                        this.checkSource(this.__currentProxy);
                     }
                     return err;
                 }

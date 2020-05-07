@@ -30,93 +30,7 @@
         };
         Siviglia.Model.initialize(Siviglia.config);
     </script>
-    <script>
-        var def = {
-            "FIELDS": {
-                "f1": {
-                    "TYPE": "Array",
-                    "VALUETYPE": {
 
-                        "TYPE": "String"
-                    }
-                },
-                "f2": {
-                    "TYPE": "TypeSwitcher",
-                    "TYPE_FIELD": "TYPE",
-                    "ALLOWED_TYPES": {
-                        "TIPO1": {
-                            "TYPE": "Container",
-                            "FIELDS": {
-                                "f3": {"TYPE": "String", "MINLENGTH": 2},
-                                "f4": {"TYPE": "Integer"}
-                            }
-                        },
-                        "TIPO2": {
-                            "TYPE": "Container",
-                            "FIELDS": {
-                                "f1": {"TYPE": "String", "MINLENGTH": 2},
-                                "f2": {"TYPE": "Integer"}
-                            }
-                        }
-                    }
-                },
-                "f3": {
-                    "TYPE": "TypeSwitcher",
-                    "TYPE_FIELD": "TYPE",
-                    "IMPLICIT_TYPE": "TIPO3",
-                    "ALLOWED_TYPES": {
-                        "TIPO3": {
-                            "TYPE": "Container",
-                            "FIELDS": {
-                                "f3": {"TYPE": "String", "MINLENGTH": 2},
-                                "f4": {"TYPE": "Integer"}
-                            }
-                        },
-                        "TIPO4": {
-                            "TYPE": "Container",
-                            "FIELDS": {
-                                "f1": {"TYPE": "String", "MINLENGTH": 2},
-                                "f2": {"TYPE": "Integer"}
-                            }
-                        }
-                    }
-                },
-                "f4": {
-                    "TYPE": "TypeSwitcher",
-                    "TYPE_FIELD": "TYPE",
-                    "CONTENT_FIELD": "value",
-                    "IMPLICIT_TYPE": "TIPO6",
-                    "ALLOWED_TYPES": {
-                        "TIPO6": {
-                            "TYPE": "Container",
-                            "FIELDS": {
-                                "f3": {"TYPE": "String", "MINLENGTH": 2},
-                                "f4": {"TYPE": "Integer"}
-                            }
-                        },
-                        "TIPO7": {
-                            "TYPE": "Container",
-                            "FIELDS": {
-                                "f1": {"TYPE": "String", "MINLENGTH": 2},
-                                "f2": {"TYPE": "Integer"}
-                            }
-                        }
-                    }
-                },
-                s1: {
-                    "TYPE": "String",
-                    "MINLENGTH": 3,
-                    "MAXLENGTH": 4
-                },
-                s2: {
-                    "TYPE": "String",
-                    "REGEXP": "/aa/"
-                }
-            }
-        };
-        var typeTest = new Siviglia.model.BaseTypedObject(def);
-
-    </script>
     <style type="text/css">
         .resultError {
             background-color: red;
@@ -139,6 +53,89 @@
 <div id="result"></div>
 
 <script>
+    var def = {
+        "FIELDS": {
+            "f1": {
+                "TYPE": "Array",
+                "VALUETYPE": {
+
+                    "TYPE": "String"
+                }
+            },
+            "f2": {
+                "TYPE": "TypeSwitcher",
+                "TYPE_FIELD": "TYPE",
+                "ALLOWED_TYPES": {
+                    "TIPO1": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "f3": {"TYPE": "String", "MINLENGTH": 2},
+                            "f4": {"TYPE": "Integer"}
+                        }
+                    },
+                    "TIPO2": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "f1": {"TYPE": "String", "MINLENGTH": 2},
+                            "f2": {"TYPE": "Integer"}
+                        }
+                    }
+                }
+            },
+            "f3": {
+                "TYPE": "TypeSwitcher",
+                "TYPE_FIELD": "TYPE",
+                "IMPLICIT_TYPE": "TIPO3",
+                "ALLOWED_TYPES": {
+                    "TIPO3": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "f3": {"TYPE": "String", "MINLENGTH": 2},
+                            "f4": {"TYPE": "Integer"}
+                        }
+                    },
+                    "TIPO4": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "f1": {"TYPE": "String", "MINLENGTH": 2},
+                            "f2": {"TYPE": "Integer"}
+                        }
+                    }
+                }
+            },
+            "f4": {
+                "TYPE": "TypeSwitcher",
+                "TYPE_FIELD": "TYPE",
+                "CONTENT_FIELD": "value",
+                "IMPLICIT_TYPE": "TIPO6",
+                "ALLOWED_TYPES": {
+                    "TIPO6": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "f3": {"TYPE": "String", "MINLENGTH": 2},
+                            "f4": {"TYPE": "Integer"}
+                        }
+                    },
+                    "TIPO7": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "f1": {"TYPE": "String", "MINLENGTH": 2},
+                            "f2": {"TYPE": "Integer"}
+                        }
+                    }
+                }
+            },
+            s1: {
+                "TYPE": "String",
+                "MINLENGTH": 3,
+                "MAXLENGTH": 4
+            },
+            s2: {
+                "TYPE": "String",
+                "REGEXP": "/aa/"
+            }
+        }
+    };
     var testNumber = 0;
     var runningTests=false;
     var cbStack=[];
@@ -205,8 +202,165 @@
             expectedResult=true;
         cbStack.push({name:name,cb:cb,expectedResult:expectedResult,number:testNumber});
         checkTests();
-
     }
+    runTest("Typeswitcher extended 1",function (){
+        var def={
+            "FIELDS":{
+                "f1":{
+                    "TYPE":"TypeSwitcher",
+                    // Array Object Exists Not exists
+                    "ON":[{
+                        "FIELD":"ft",
+                        "IS":"Array",
+                        "THEN":"TYPE1"
+                    },
+                    {
+                        "FIELD":"ft",
+                        "IS":"Object",
+                        "THEN":"TYPE2"
+                    }],
+                    "ALLOWED_TYPES":{
+                        "TYPE1":{
+                            "TYPE":"Container",
+                            "FIELDS":{
+                                "ft": {
+                                    "TYPE": "Array",
+                                    "ELEMENTS":{"TYPE": "String"}
+                                },
+                                "f2":{
+                                    "TYPE":"Boolean"
+                                }
+                            }
+                        },
+                        "TYPE2":{
+                            "TYPE":"Container",
+                            "FIELDS":{
+                                "ft": {
+                                    "TYPE": "Container",
+                                    "FIELDS":{
+                                        "s1":{"TYPE":"Integer"},
+                                        "s2":{"TYPE":"Integer"},
+
+                                    }
+                                },
+                                "f2":{
+                                    "TYPE":"String"
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        };
+        var t1 = new Siviglia.model.BaseTypedObject(def);
+
+        t1.setValue({"f1":{ft:["a","b","c"],"f2":true}});
+        var st1=(JSON.stringify(t1.getPlainValue())=='{"f1":{"ft":["a","b","c"],"f2":true}}');
+        t1.f1={"ft":{"s1":1,"s2":2}};
+        st1=st1 && JSON.stringify(t1["*f1"].subNode.definition)=='{"TYPE":"Container","FIELDS":{"ft":{"TYPE":"Container","FIELDS":{"s1":{"TYPE":"Integer"},"s2":{"TYPE":"Integer"}}},"f2":{"TYPE":"String"}}}';
+        t1.f1.f2="Cambiado?";
+        return st1;
+    });
+    runTest("Typeswitcher extended 2",function (){
+        var def={
+            "FIELDS":{
+                "f1":{
+                    "TYPE":"TypeSwitcher",
+                    // Array Object Exists Not exists
+                    "ON":[{
+                        "FIELD":"ft",
+                        "IS":"Array",
+                        "THEN":"TYPE1"
+                    },
+                        {
+                            "FIELD":"aa",
+                            "IS":"Present",
+                            "THEN":"TYPE2"
+                        }],
+                    "ALLOWED_TYPES":{
+                        "TYPE1":{
+                            "TYPE":"Container",
+                            "FIELDS":{
+                                "ft": {
+                                    "TYPE": "Array",
+                                    "ELEMENTS":{"TYPE": "String"}
+                                },
+                                "f2":{
+                                    "TYPE":"Boolean"
+                                }
+                            }
+                        },
+                        "TYPE2":{
+                            "TYPE":"Container",
+                            "FIELDS":{
+                                "aa": {
+                                    "TYPE": "Integer",
+                                },
+                                "f2":{
+                                    "TYPE":"String"
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        };
+        var t1 = new Siviglia.model.BaseTypedObject(def);
+
+        t1.setValue({"f1":{ft:["a","b","c"],"f2":true}});
+        var st1=(JSON.stringify(t1.getPlainValue())=='{"f1":{"ft":["a","b","c"],"f2":true}}');
+        t1.f1={aa:1};
+        st1=st1 && JSON.stringify(t1["*f1"].subNode.definition)=='{"TYPE":"Container","FIELDS":{"aa":{"TYPE":"Integer"},"f2":{"TYPE":"String"}}}';
+        return st1;
+    });
+    runTest("Typeswitcher extended 3",function (){
+        var def={
+            "FIELDS":{
+                "f1":{
+                    "TYPE":"TypeSwitcher",
+                    // Array Object Exists Not exists
+                    "ON":[{
+                        "IS":"Array",
+                        "THEN":"TYPE1"
+                    },
+                        {
+                            "IS":"String",
+                            "THEN":"TYPE2"
+                        }],
+                    "ALLOWED_TYPES":{
+                        "TYPE1":{
+                            "TYPE":"Array",
+                            "ELEMENTS":{
+                                "TYPE": "String"
+                            }
+                        },
+                        "TYPE2":{
+                            "TYPE":"String"
+                        }
+                    }
+
+                }
+            }
+
+        };
+        var t1 = new Siviglia.model.BaseTypedObject(def);
+
+        t1.setValue({"f1":"Hola?"});
+        var st1=(JSON.stringify(t1.getPlainValue())=='{"f1":"Hola?"}');
+
+        t1.setValue({"f1":["a","b","c"]});
+        st1=st1 && JSON.stringify(t1["*f1"].subNode.definition)=='{"TYPE":"Array","ELEMENTS":{"TYPE":"String"}}';
+        t1.destruct();
+        st1=st1 && countListeners()==0;
+        return st1;
+    });
+
+
+
     runTest("Array Reference Counter",function (){
         var def={
             "FIELDS": {
@@ -298,7 +452,7 @@
         var t1 = new Siviglia.model.BaseTypedObject(def);
         var v=[{sf1:"aa",sf2:5},{sf1:"bb",sf2:15},{sf1:"cc",sf2:25}];
         t1.f2={aa:{f4:v}};
-        debugger;
+
         var vv=JSON.stringify(t1.getPlainValue());
         var asserts=(vv==="{\"f2\":{\"aa\":{\"f4\":[{\"sf1\":\"aa\",\"sf2\":5},{\"sf1\":\"bb\",\"sf2\":15},{\"sf1\":\"cc\",\"sf2\":25}]}}}");
         t1.destruct();
@@ -421,7 +575,7 @@
             flag++;
             console.log("fire1")
         }, "Listener t4");
-        t1.f4["*value"].addListener("CHANGE", null, function () {
+        t1["*f4"]["*value"].addListener("CHANGE", null, function () {
             flag++;
             console.log("fire2")
         }, "Listener value")
@@ -436,59 +590,6 @@
         var n2 = countListeners();
         return flag == 2 && n2 == 0 && n == 3;
     }, true);
-
-    // Comprobacion de objetos copia. Ver tests de Array mas abajo.
-    runTest("Comprobacion Listener TS 4", function () {
-
-        var t1 = new Siviglia.model.BaseTypedObject(def);
-        t1.f4 = {value: {f3: "hola", f4: 25}};
-        var flag = 0;
-        t1["*f4"].addListener("CHANGE", null, function () {
-            flag++;
-            console.log("fire1")
-        }, "Listener t4");
-        t1.f4["*value"].addListener("CHANGE", null, function () {
-            flag++;
-            console.log("fire2")
-        }, "Listener value")
-        var n = countListeners();
-
-        // Se crea un objeto que va a contener la copia:
-        var h={};
-        h.q=t1["*f4"].getValue();
-        Siviglia.Path.eventize(h,"q");
-        var nRefChanges=0;
-        // El objeto "copia", monta un listener para contar los cambios que él ve.
-        h["*q"].addListener("CHANGE",function(){nRefChanges++;});
-
-        // Cambiar un campo interno, no dispara ningun evento sobre el typeSwitcher
-        t1.f4.value.f3="adios";
-        var status=nRefChanges==0 && flag==0;
-
-        // Aqui, se cambia el tipo, desde el typeSwitcher, lo cual debe generar un evento
-        // que se puede leer desde la copia.
-        t1.f4.TYPE = "TIPO7";
-        // Al haberse leido desde la copia, nRefChanges debe ser 1,  y flag, 1
-        var status=status && nRefChanges==1 && flag==1;
-
-        // Hacemos 1 cambio, desde la copia:
-        h.q.TYPE="TIPO6";
-        // Este cambio debe haberse leido desde los dos listeners:
-        status=status && nRefChanges==2 && flag==2;
-
-        // Ahora, se CAMBIA el valor completo del Typeswitcher. La copia
-        // debe seguir escuchando al objeto antiguo, por lo que cualquier cambio
-        // a partir de entonces, solo dispara el listener del typeswitcher, no de la copia.
-        t1.f4={"TYPE":"TIPO7","value":{"f1":"aaa"}};
-        status = status && nRefChanges==2 && flag==3;
-
-        t1.destruct();
-        // Y ese objeto copia, aun tiene el listener, porque no se puede destruir (aun)
-        var n2 = countListeners();
-        // Limpiamos los listeners para que no influyan en los siguientes tests
-        Siviglia.Dom.existingListeners=[];
-        return flag == 3 && n2 == 1 && n == 2;
-    }, true);
     runTest("Comprobacion save() en BaseTypedObject", function () {
         var t2 = new Siviglia.model.BaseTypedObject({
             "FIELDS": {
@@ -498,12 +599,16 @@
         });
         t2.f2 = "Lala";
         var e1 = 0;
+        var errors=null;
         try {
-            var errors=t2.__save();
-            if(errors && errors.length>0)
-                e1 = 1;
-        } catch (e) {
+            t2.__save();
 
+        } catch (e) {
+            if(e.code && e.code==Siviglia.types.BaseTypeException.ERR_SAVE_ERROR)
+            {
+                if(e.params && e.params.length > 0)
+                    e1 = 1;
+            }
         }
         t2.f1 = "qqq";
         try {
@@ -698,15 +803,20 @@
         });
         t2.f2 = "hola";
         var nExcp = 0;
+        var errors=null;
         try {
-            var errors=t2.__save();
-            if(errors && errors.length > 0 && errors[0]["path"]=="/f1" &&
-                errors[0]["type"]=="BaseTypeException" &&
-                errors[0]["code"]==5
-            )
-                nExcp=1;
-        } catch (e) {
-
+            t2.__save();
+        }
+        catch(e)
+        {
+          if(e.code && e.code==Siviglia.types.BaseTypeException.ERR_SAVE_ERROR) {
+            errors=e.params;
+              if (errors && errors.length > 0 && errors[0]["path"] == "/f1" &&
+                  errors[0]["type"] == "BaseTypeException" &&
+                  errors[0]["code"] == 5
+              )
+                  nExcp = 1;
+          }
         }
         t2.f1 = 20;
         t2.__save();
@@ -1045,9 +1155,7 @@
         var firstStatus = (t1.f3 === null);
         var nErrors = 0;
         var nChanges = 0;
-        t1["*f3"].addListener("ERROR", null, function () {
-            nErrors++
-        });
+
         t1["*f3"].addListener("CHANGE", null, function () {
             nChanges++
         });
@@ -1057,9 +1165,9 @@
         } catch (e) {
             nExcp++;
         }
-        var secondStatus = (t1.f3 === null && nErrors == 1 && nChanges == 0 && nExcp == 1);
+        var secondStatus = (t1.f3 === null && nChanges == 0 && nExcp == 1);
         t1.f3 = ["uu"];
-        var thirdStatus = (t1.f3.length == 1 && nErrors == 1 && t1.f3[0] == "uu" && nChanges == 1);
+        var thirdStatus = (t1.f3.length == 1 && t1.f3[0] == "uu" && nChanges == 1);
         t1.destruct();
         return firstStatus && secondStatus && thirdStatus && countListeners() == 0;
     }, true);
@@ -1078,9 +1186,7 @@
         var firstStatus = (t1.f3 === null);
         var nErrors = 0;
         var nChanges = 0;
-        t1["*f3"].addListener("ERROR", null, function () {
-            nErrors++
-        });
+
         t1["*f3"].addListener("CHANGE", null, function () {
             nChanges++
         });
@@ -1091,11 +1197,11 @@
         } catch (e) {
             nExcp++;
         }
-        var secondStatus = (t1.f3.length == 0 && nErrors == 1 && nChanges == 1 && nExcp == 1);
+        var secondStatus = (t1.f3.length == 0 && nChanges == 1 && nExcp == 1);
         t1.f3.push("aaa");
-        var thirdStatus = (t1.f3.length == 1 && nErrors == 1 && nChanges == 2 && nExcp == 1);
+        var thirdStatus = (t1.f3.length == 1 && nChanges == 2 && nExcp == 1);
         t1.f3.shift();
-        var fourthStatus = (t1.f3.length == 0 && nErrors == 1 && nChanges == 3);
+        var fourthStatus = (t1.f3.length == 0 && nChanges == 3);
         t1.destruct();
         return firstStatus && secondStatus && thirdStatus && fourthStatus && countListeners() == 0;
     }, true);
@@ -1120,9 +1226,7 @@
 
         var nErrors = 0;
         var nChanges = 0;
-        t1["*f3"].addListener("ERROR", null, function () {
-            nErrors++
-        });
+
         t1["*f3"].addListener("CHANGE", null, function () {
             nChanges++
         });
@@ -1132,9 +1236,9 @@
         } catch (e) {
             nExcp++;
         }
-        var secondStatus = (t1.f3 == null && nErrors == 1 && nChanges == 0 && nExcp == 1);
+        var secondStatus = (t1.f3 == null && nChanges == 0 && nExcp == 1);
         t1.f3 = [{sf1: "aaa", sf2: 20}];
-        var thirdStatus = (t1.f3.length == 1 && nErrors == 1 && nChanges == 1 && nExcp == 1);
+        var thirdStatus = (t1.f3.length == 1 && nChanges == 1 && nExcp == 1);
         var curPath = t1.f3[0]["*sf1"].getFullPath();
         var fourthStatus = (curPath == "/f3/0/sf1");
         t1.destruct();
@@ -1161,9 +1265,7 @@
 
         var nErrors = 0;
         var nChanges = 0;
-        t1["*f3"].addListener("ERROR", null, function () {
-            nErrors++
-        });
+
         t1["*f3"].addListener("CHANGE", null, function () {
             nChanges++
         });
@@ -1486,12 +1588,16 @@
         });
         var nExcp = 0;
         try {
-            t1.f3 = "Value4";
+            t1.f3="Value4";
+            t1.__save();
+
         } catch (e) {
             nExcp++;
         }
-        var status = t1.f3 === null && nExcp === 1;
-        t1.f3 = "Value3";
+        var status = nExcp === 1;
+
+        t1.f3="Value3";
+        t1.__save();
         status = status && t1.f3 === "Value3" && changed == 1;
         t1.destruct();
         return status && countListeners() == 0;
@@ -1569,24 +1675,28 @@
             curData = data.value;
         });
         try {
+
             btype.f3=155;
+            btype.__save();
 
         } catch (e) {
            nExcp++;
         }
         // Aqui no puede haber aun valor.
-        var status = (btype.f3===null && nExcp===1 && nChanges===1 && nValids===0 && curData===null);
+        var status = (nExcp===1 && nChanges===1 && nValids===0 && curData===null);
 
         // Cambiamos uno de los valores
         btype.f1 = "a";
         // Aun no se puede establecer el valor de f3
         try {
+
             btype.f3=155;
+            btype.__save();
 
         } catch (e) {
             nExcp++;
         }
-        status = status && (btype.f3===null && nExcp===2 && nChanges===1 && nValids===0 && curData===null);
+        status = status && (nExcp===2 && nChanges===1 && nValids===0 && curData===null);
 
         btype.f2 = "b";
         // En cuanto se establece el valor de f2, tiene que haberse cargado los datos del source de f3
@@ -1594,7 +1704,9 @@
 
         // No se puede establecer el valor de f3 a 2, solo a 1:
         try {
+
             btype.f3=155;
+            btype.__save();
 
         } catch (e) {
             nExcp++;
@@ -1602,15 +1714,18 @@
         status = status && (nExcp==3);
 
         btype.f3=1;
+        btype.__save();
 
         // Prueba dos : el fetch deberia devolver null, porque la combinacion f1=d y f2=b no esta soportada:
 
         btype.f1 = "d";
+
         status = status && (nChanges===3 && nValids===1 && curData==null);
 
 
         // Se cambia f2 a "c":
         btype.f2 = "c";
+
         status = status && (nChanges===4 && nValids===2 && curData!==null && curData.length==2 && curData[0].Id==3);
 
         btype.destruct();
@@ -1653,7 +1768,10 @@
         var nExcp = 0;
 
         try{
+            // Ojo, la siguiente linea va a disparar un onChange, porque el source se chequea a posteriori
             t1.f3="aa";
+            // Y con el save, como va a dar una excepcion, t1.f3 se volvera nulo, y disparará otro onChange
+            t1.__save();
         }catch(e)
         {
             nExcp++;
@@ -1663,13 +1781,16 @@
            nSources++;
         });
         t1.f4={"aa":"uno","bb":"dos"};
-        var status=(nChanges4==1 && nChanges3==0 && nSources==1);
+        var status=(nChanges4==1 && nChanges3==2 && nSources==1 && t1.f3==null);
         t1.f3="aa";
-        status = status && (nChanges3==1 && t1.f3=="aa");
+        t1.__save();
+        status = status && (nChanges3==3 && t1.f3=="aa");
         t1.f4["cc"]="tres";
         status=status && (nChanges4==2 && nSources==2);
+
         t1.f3="cc";
-        status=status && (nChanges3==2 && t1.f3=="cc");
+        t1.__save();
+        status=status && (nChanges3==4 && t1.f3=="cc");
         t1.destruct();
         status = status && countListeners()===0;
         return status;
@@ -1712,7 +1833,10 @@
         var nExcp = 0;
 
         try{
+            // La linea siguiente provoca un onChange, aunque el source no sea correcto.
             t1.f3=1;
+            // La siguiente linea, chequea el source, ve que que no es valido, y cambia t1.f3 a null, lo que provoca otro onChange
+            t1.__save();
         }catch(e)
         {
             nExcp++;
@@ -1722,22 +1846,30 @@
             nSources++;
         });
         t1.f4=[{"sf1":"AA",sf2:1},{sf1:"BB",sf2:2}];
-        var status=(nChanges4==1 && nChanges3==0 && nSources==1);
+        var status=(nChanges4==1 && nChanges3==2 && nSources==1 && t1.f3===null);
+
         t1.f3=2;
-        status = status && (nChanges3==1 && t1.f3==2);
+        t1.__save();
+        status = status && (nChanges3==3 && t1.f3==2);
         t1.f4.push({sf1:"cc",sf2:3});
         status=status && (nChanges4==2 && nSources==2);
+
         t1.f3=3;
-        status=status && (nChanges3==2 && t1.f3==3);
+        t1.__save();
+        status=status && (nChanges3==4 && t1.f3==3);
 
         try{
-        t1.f3=10;
+
+            // Un onChange() de f3 (a 10)
+            t1.f3=10;
+            // Y otro onChange() de f3 (a null)
+            t1.__save();
         }catch(e)
         {
             nExcp++;
         }
 
-        status=status && (nChanges3==2 && t1.f3==null && nExcp==2);
+        status=status && (nChanges3==6 && t1.f3==null && nExcp==2);
         t1.destruct();
         status = status && countListeners()===0;
         return status;

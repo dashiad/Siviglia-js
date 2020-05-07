@@ -281,6 +281,24 @@ Siviglia.Utils.buildClass({
                         }
                         return null;
                     },
+                    getDatasourceMeta:function(model,name)
+                    {
+                        var descriptor=new Siviglia.Model.ModelDescriptor(model);
+                        var dsMetaUrl=descriptor.getDataSourceMetaDataUrl(name);
+
+                        var cached=Siviglia.globals.Cache.get("DataSourceMeta",dsMetaUrl);
+                        if(cached)
+                        {
+                            return cached;
+                        }
+                        var transport = new Siviglia.Model.Transport();
+                        var metaResponse=transport.doSyncGet(dsMetaUrl);
+                        var meta=metaResponse.data;
+                        Siviglia.globals.Cache.add("DataSourceMeta", dsMetaUrl, meta);
+                        return meta;
+
+
+                    },
 
                     getModel: function (model, id, datasource) {
 
@@ -472,12 +490,7 @@ Siviglia.Utils.buildClass({
                     this.__params=params;
                     if(typeof response=="undefined" || response==null)
                     {
-                        var descriptor=new Siviglia.Model.ModelDescriptor(model);
-                        var dsMetaUrl=descriptor.getDataSourceMetaDataUrl(name);
-                        var transport = new Siviglia.Model.Transport();
-                        var metaResponse=transport.doSyncGet(dsMetaUrl);
-                        var meta=metaResponse.data;
-
+                        meta=Siviglia.Model.loader.getDatasourceMeta(model,name);
                     }
                     else
                         meta = response.definition;
