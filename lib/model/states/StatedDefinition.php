@@ -294,12 +294,12 @@ class StatedDefinition
             $res=$this->existsFieldInStateDefinition($stateName,$fieldName,"EDITABLE",true);
             return $res;
         }
-        function isFixedInState($fieldName,$stateName)
+        /*function isFixedInState($fieldName,$stateName)
         {
             if(!$this->hasState)
                 return true;
             return $this->existsFieldInStateDefinition($stateName,$fieldName,"FIXED");
-        }
+        }*/
 
         // Dependiendo de si el $group existe o no, querriamos que la funcion devolviera una cosa u otra.
         // Por ejemplo, si preguntamos si un cierto campo es REQUIRED dentro de un estado, y ese estado no define

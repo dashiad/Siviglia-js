@@ -29,7 +29,7 @@ class Types
             ]
         ];*/
 
-        return [
+        $baseDef= [
             "LABEL"=>"Source",
             "TYPE"=>"TypeSwitcher",
             "TYPE_FIELD"=>"TYPE",
@@ -51,8 +51,13 @@ class Types
                                     "Extra"=>["TYPE"=>"String","LABEL"=>"Extra"]
                                 ]
                             ],
-                            "PATH"=>["LABEL"=>"Path","TYPE"=>"String"]
-                        ]
+
+                            "PATH"=>[
+                                "LABEL"=>"Path",
+                                "TYPE"=>"String"]
+                        ],
+                        "LABEL"=>["LABEL"=>"Campo Label","TYPE"=>"String"],
+                        "VALUE"=>["LABEL"=>"Campo Value","TYPE"=>"String"]
                     ]
                 ],
                 "DataSource"=>[
@@ -62,10 +67,19 @@ class Types
                 ],
                 "Path"=>[
                     "LABEL"=>"Path",
-                    "TYPE"=>"String"
+                    "TYPE"=>"Container",
+                    "FIELDS"=>[
+                        "TYPE"=>["LABEL"=>"Tipo","TYPE"=>"String","FIXED"=>"Path"],
+                        "PATH"=>["LABEL"=>"Path","TYPE"=>"String"],
+                        "LABEL"=>["LABEL"=>"Campo Label","TYPE"=>"String"],
+                        "VALUE"=>["LABEL"=>"Campo Value","TYPE"=>"String"]
+                    ]
                 ]
             ]
 
         ];
+        $baseDef["ALLOWED_TYPES"]["DataSource"]["FIELDS"]["LABEL"]=["LABEL"=>"Campo Label","TYPE"=>"String"];
+        $baseDef["ALLOWED_TYPES"]["DataSource"]["FIELDS"]["VALUE"]=["LABEL"=>"Campo Value","TYPE"=>"String"];
+        return $baseDef;
     }
 }

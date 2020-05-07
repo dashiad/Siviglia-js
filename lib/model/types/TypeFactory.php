@@ -1,4 +1,6 @@
 <?php namespace lib\model\types;
+use model\reflection\Model\Type;
+
 include_once(LIBPATH."/model/types/BaseType.php");
   class TypeFactory
   {
@@ -95,7 +97,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
                     }
                     return $newType;
                 }
-                throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def),null);
+                throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE);
             }
 
             $type=$def["TYPE"];

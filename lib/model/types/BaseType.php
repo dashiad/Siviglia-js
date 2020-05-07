@@ -22,7 +22,7 @@
       const TYPE_REQUIRES_UPDATE_ON_NEW=0x40;
 
       var $fieldName;
-      function __construct($def)
+      function __construct($def,$value=null)
       {
           $this->parent=null;
           $this->definition=$def;
@@ -31,11 +31,14 @@
           $this->validating=false;
           if(isset($def["SET_ON_EMPTY"]) && $def["SET_ON_EMPTY"]==true)
               $this->setOnEmpty=true;
-          if($this->hasDefaultValue() && !isset($definition["DISABLE_DEFAULT"]))
+          if($value===null && $this->hasDefaultValue() && !isset($definition["DISABLE_DEFAULT"]))
               $this->__rawSet($this->getDefaultValue());
           if(isset($def["FIXED"])) {
               $this->__rawSet($def["FIXED"]);
               $this->flags|=BaseType::TYPE_NOT_EDITABLE;
+          }
+          else {
+              $this->setValue($value);
           }
 
       }

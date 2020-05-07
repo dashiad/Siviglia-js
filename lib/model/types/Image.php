@@ -11,11 +11,11 @@ include_once(LIBPATH."/model/types/File.php");
 
 class Image extends File
 {
-    function __construct($def,$neutralValue=null)
+    function __construct($def,$value=null)
     {
         if(!$def["EXTENSIONS"])
            $def["EXTENSIONS"]=array("jpg","gif","png");
-        parent::__construct($def,$neutralValue);
+        parent::__construct($def,$value);
     }
     function validateImportedFile($value)
     {

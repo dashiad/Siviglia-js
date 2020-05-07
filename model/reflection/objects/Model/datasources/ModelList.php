@@ -59,7 +59,7 @@ class ModelList
             $filter=$ds->smallName;
         \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $list,$filter){
             $pkg->iterateOnModels(function($model) use ($pkg,& $list,$filter){
-                if($pkg->getName()!=="reflection") {
+                //if($pkg->getName()!=="reflection") {
                     $normalized=str_replace('\\', '/', $model->getClassName());
                     if($filter==null || strpos($normalized,$filter)!==false) {
                         $list[] = ["package" => $pkg->getName(),
@@ -68,7 +68,7 @@ class ModelList
                             "modelPath" => $model->modelDescriptor->getBaseDir()
                         ];
                     }
-                }
+                //}
             });
         });
         return $list;

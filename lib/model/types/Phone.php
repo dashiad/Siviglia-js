@@ -1,6 +1,6 @@
 <?php namespace lib\model\types;
 class Phone extends _String {
-    function __construct(& $definition,$value)
+    function __construct(& $definition,$value=null)
     {
 		$definition['MINLENGTH']=7;
 		$definition['MAXLENGTH']=12;

@@ -12,10 +12,7 @@
   }
   class _String extends BaseType
   {
-      function __construct($def,$neutralValue=null)
-      {
-            BaseType::__construct($def,$neutralValue);
-      }
+
       function _setValue($val)
       {
           if(isset($this->definition["TRIM"]) && $this->definition["TRIM"]==true)

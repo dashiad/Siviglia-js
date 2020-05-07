@@ -34,10 +34,7 @@
   {
       const DATE_FORMAT="Y-m-d H:i:s";
       const DATE_FORMAT_EU="d/m/Y H:i:s";
-      function __construct($definition,$value=false)
-      {
-          BaseType::__construct($definition,$value);
-      }
+
        function _getValue()
       {
           return $this->value;

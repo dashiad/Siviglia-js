@@ -154,8 +154,68 @@ class TypeSwitcherTest extends TestCase
         $val=$tp->getValue();
         $this->assertEquals(5,$val["DATA"]["MINLENGTH"]);
         $d=$tp->TYPE;
-        $e=$tp->MINLENGTH;
+        $e=$tp["*DATA"]->MINLENGTH;
         $this->assertEquals("String",$d);
         $this->assertEquals(5,$e);
+    }
+    function testTypeByType()
+    {
+        $ts=new \lib\model\types\TypeSwitcher([
+            "TYPE"=>"TypeSwitcher",
+            "ON"=>[
+                ["FIELD"=>"f1","IS"=>"Present","THEN"=>"TYPE1"],
+                ["FIELD"=>"f2","IS"=>"String","THEN"=>"TYPE2"],
+            ],
+            "ALLOWED_TYPES"=>[
+                "TYPE1"=>[
+                    "TYPE"=>"Container",
+                    "FIELDS"=>[
+                        "f1"=>["TYPE"=>"Integer"],
+                        "f3"=>["TYPE"=>"String"]
+                    ]
+                ],
+                "TYPE2"=>[
+                    "TYPE"=>"Container",
+                    "FIELDS"=>[
+                        "f2"=>["TYPE"=>"String"],
+                        "f4"=>["TYPE"=>"Integer"]
+                    ]
+                ]
+            ]
+        ]);
+        $ts->setValue(["f1"=>10,"f3"=>"pepito"]);
+        $this->assertEquals("pepito",$ts->f3);
+        // Si hago esto, deberia cambiar el tipo por debajo.
+        $ts->f2="manolito";
+        $this->assertEquals(true,isset($ts->subNode->__fields["f4"]));
+        $this->assertEquals(false,isset($ts->subNode->__fields["f3"]));
+        $this->assertEquals(null,$ts->f4);
+    }
+    function testTypeByTypeSimple()
+    {
+        $ts=new \lib\model\types\TypeSwitcher([
+            "TYPE"=>"TypeSwitcher",
+            "ON"=>[
+                ["IS"=>"String","THEN"=>"TYPE1"],
+                ["IS"=>"Object","THEN"=>"TYPE2"],
+            ],
+            "ALLOWED_TYPES"=>[
+                "TYPE1"=>[
+                    "TYPE"=>"String",
+                ],
+                "TYPE2"=>[
+                    "TYPE"=>"Container",
+                    "FIELDS"=>[
+                        "f2"=>["TYPE"=>"String"],
+                        "f4"=>["TYPE"=>"Integer"]
+                    ]
+                ]
+            ]
+        ]);
+        $ts->setValue("pepito");
+        $this->assertEquals($ts->getValue(),"pepito");
+        // Si hago esto, deberia cambiar el tipo por debajo.
+        $ts->setValue(["f2"=>"Lala","f4"=>3]);
+        $this->assertEquals("Lala",$ts->f2);
     }
 }

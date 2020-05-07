@@ -1,7 +1,7 @@
 <?php namespace lib\model\types;
   class Name extends _String
   {
-      function __construct($def,$value=false)
+      function __construct($def,$value=null)
       {
           parent::__construct(array("TYPE"=>"Name","MAXLENGTH"=>100),$value);
       }

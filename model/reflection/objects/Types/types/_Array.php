@@ -12,7 +12,7 @@ parent::__construct( [
                   "LABEL"=>["TYPE"=>"String","LABEL"=>"Label"],
                   "ELEMENTS"=>[
                       "LABEL"=>"Elementos",
-                      "TYPE"=>"/model/reflection/Model/types/BaseType",
+                      "TYPE"=>"/model/reflection/Model/types/TypeReference",
                       "REQUIRED"=>true
                   ],
                   "REQUIRED"=>[

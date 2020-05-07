@@ -11,6 +11,7 @@ class BaseType extends \lib\model\types\TypeSwitcher
             "REQUIRED"=>true,
             "TYPE"=>"TypeSwitcher",
             "TYPE_FIELD"=>"TYPE",
+            "IMPLICIT_TYPE"=>"ModelField",
             "ALLOWED_TYPES"=>BaseType::getAllTypeClasses()
         ]);
     }
@@ -46,14 +47,18 @@ class BaseType extends \lib\model\types\TypeSwitcher
         for($k=0;$k<count($src);$k++)
         {
             $cur=basename($src[$k]);
-            if($cur!=="BaseType.php")
-            {
+            //if($cur!=="BaseType.php")
+           // {
                 $p=explode(".",$cur);
                 $curClass="/model/reflection/Types/types/".$p[0];
                 $short=$p[0];
+                if($short=="_Array")
+                    $short="Array";
+                if($short=="_String")
+                    $short="String";
                 $result[$short]=$curClass;
                 //$result[$curClass]=$curClass;
-            }
+            //}
         }
         // Se escanean los paquetes existentes, obteniendo los tipos que haya.
         \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $result){

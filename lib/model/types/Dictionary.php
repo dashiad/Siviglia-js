@@ -7,13 +7,9 @@ class DictionaryException extends \lib\model\types\BaseTypeException
     const TXT_INVALID_VALUE="This dictionary doesnt accept values of type [%type%]";
     const TXT_INVALID_KEY="Invalid key:[%key%]";
 }
-class Dictionary extends \lib\model\types\BaseContainer
+class Dictionary extends \lib\model\types\BaseContainer implements \ArrayAccess
 {
-    function __construct($def,$neutralValue=null)
-    {
-        parent::__construct($def,null);
-        $this->value=null;
-    }
+
     function _setValue($val)
     {
         $this->valueSet = false;
@@ -256,5 +252,23 @@ class Dictionary extends \lib\model\types\BaseContainer
     {
         include_once(PROJECTPATH."/model/reflection/objects/Types/Dictionary.php");
         return '\model\reflection\Types\meta\Dictionary';
+    }
+
+    public function offsetExists ( $offset ){
+        return $this->valueSet && isset($this->value[$offset]);
+    }
+    public function offsetGet ( $offset )
+    {
+
+        return $this->__get($offset);
+    }
+    public function offsetSet ( $offset , $value )
+    {
+        if(!$this->subNode)
+            return null;
+        return $this->__set($offset,$value);
+    }
+    public function offsetUnset ( $offset ) {
+        $this->remove($offset);
     }
 }

@@ -3,7 +3,7 @@
   {
       const DEFAULT_COST=12;
       var $encoded;
-      function __construct($def=array(),$value=false)
+      function __construct($def=array(),$value=null)
       {
           $def["TYPE"]="Password";
           $def["MINLENGTH"]=io($def,"MINLENGTH",6);

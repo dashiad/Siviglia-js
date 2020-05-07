@@ -1,7 +1,7 @@
 <?php namespace lib\model\types;
   class Login extends _String
   {
-      function __construct($def,$value = -1)
+      function __construct($def,$value = null)
       {
           $def=array(
             "TYPE"=>"Login",

@@ -9,17 +9,13 @@ class ContainerException extends \lib\model\types\BaseTypeException
     const TXT_NOT_A_FIELD="Field [%field%] does not exist";
     const TXT_INVALID_TYPE_FOR_FIELD="Invalid type [%type%] for field [%field%]";
 }
-class Container extends BaseContainer
+class Container extends BaseContainer implements \ArrayAccess
 {
     var $__fields;
-    function __construct($def,$neutralValue=null)
+    function __construct($def,$value=null)
     {
-        parent::__construct($def,null);
         $this->__fields=[];
-        if(isset($this->definition["DEFAULT"]))
-        {
-            $this->setValue($this->definition["DEFAULT"]);
-        }
+        parent::__construct($def,$value);
 
     }
     function _setValue($val)
@@ -263,4 +259,19 @@ class Container extends BaseContainer
         $type=$this->{"*".$field};
         return $type->getTypeFromPath($path);
     }
+
+    public function offsetExists ( $offset ){
+        return $this->value && isset($this->__fields[$offset]);
+    }
+    public function offsetGet ( $offset )
+    {
+        return $this->__get($offset);
+    }
+    public function offsetSet ( $offset , $value )
+    {
+        if(!$this->value || !isset($this->__fields[$offset]))
+            return;
+        return $this->__fields[$offset]->setValue($value);
+    }
+    public function offsetUnset ( $offset ) {}
 }

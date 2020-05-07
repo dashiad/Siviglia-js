@@ -18,9 +18,10 @@ class BaseTypedObject extends \lib\model\types\Container
                 "FIELDS"=>[
                     "LABEL"=>"Campos",
                     "TYPE"=>"Dictionary",
-                    "VALUETYPE"=>"/model/reflection/Model/types/BaseType"
+                    "VALUETYPE"=>"/model/reflection/Model/types/TypeReference"
                 ]
             ]
         ]);
     }
 }
+

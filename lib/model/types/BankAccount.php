@@ -8,7 +8,7 @@ class BankAccountException extends \lib\model\BaseTypedException
 }
 class BankAccount extends _String
 {
-    function __construct($def,$value=false)
+    function __construct($def,$value=null)
     {
         parent::__construct(array("TYPE"=>"BankAccount","MAXLENGTH"=>10),$value);
     }

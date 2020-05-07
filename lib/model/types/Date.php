@@ -29,10 +29,7 @@
   class Date extends BaseType
   {
       const DATE_FORMAT="Y-m-d";
-      function __construct($definition,$value=false)
-      {
-          BaseType::__construct($definition,$value);
-      }
+
       function _getValue()
       {
 

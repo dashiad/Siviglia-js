@@ -11,7 +11,7 @@ class TypeSwitcherException extends \lib\model\types\BaseTypeException
     const TXT_INVALID_TYPE="Type [%type%] is not allowed";
     const TXT_MISSING_CONTENT_FIELD="Content field [%field%] is missing";
 }
-class TypeSwitcher extends BaseContainer
+class TypeSwitcher extends BaseContainer implements \ArrayAccess
 {
 
     var $currentType;
@@ -19,35 +19,21 @@ class TypeSwitcher extends BaseContainer
     var $type_field;
     var $implicit_type;
     var $content_field;
+    var $subNode;
 
-    function __construct($def,$neutralValue=null)
+    function __construct($def,$value=null)
     {
-        parent::__construct($def,null);
+
 
         $this->currentType=null;
         $this->allowed_types=$def["ALLOWED_TYPES"];
-        $this->type_field=$def["TYPE_FIELD"];
         $this->implicit_type=isset($def["IMPLICIT_TYPE"])?$def["IMPLICIT_TYPE"]:null;
         $this->content_field=isset($def["CONTENT_FIELD"])?$def["CONTENT_FIELD"]:null;
-        if(isset($this->definition["DEFAULT"]))
-        {
-            $this->setValue($this->definition["DEFAULT"]);
-        }
+        parent::__construct($def,$value);
     }
 
     function _setValue($val)
     {
-        if(isset($val[$this->type_field]))
-            $type=$val[$this->type_field];
-        else
-        {
-            if($this->implicit_type===null)
-                throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD,null,$this);
-            $type=$this->implicit_type;
-        }
-        if(!$this->isAllowedType($type))
-            throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$type],$this);
-
         // Ahora hay que resolver si hay una subkey para el contenido, o no.
         // Si no lo hay, el propio tipo tiene que tener el campo "type_field".
         // Es decir, un caso tipico son las clases derivadas de BaseType. Se editan
@@ -55,60 +41,122 @@ class TypeSwitcher extends BaseContainer
         // Por lo tanto, los diferentes tipos son los que tienen que tener el campo "TYPE".
         // El typeswitcher tiene un valor cuando si que hay un "content_field", es el caso de
         // estructuras del tipo: ["type"=>"..", "content"=>"...."]
-        $instance=$this->getTypeInstance($type);
-        if($this->content_field==null)
-            $instance->setValue($val);
-        else
-            $instance->setValue($val[$this->content_field]);
-        $this->currentType=$type;
+        $typeInfo=$this->getTypeFromValue($val);
+        $instance=\lib\model\types\TypeFactory::getType(null,$typeInfo["def"],$val);
+        $this->currentType=$typeInfo["name"];
         if($instance->hasOwnValue()) {
             $this->valueSet = true;
             $this->value=$instance;
+            $this->subNode=$instance;
         }
-        else
-            $this->valueSet=false;
+        else {
+            $this->valueSet = false;
+            $this->subNode=null;
+        }
+    }
+    function getTypeFromValue($val)
+    {
+        $byType=io($this->definition,"TYPE_FIELD",null);
+        if($byType) {
+            $typeField = $byType;
+            $curType=null;
+            if ($typeField != null && isset($val[$typeField])) {
+                $curType=$val[$typeField];
+            }
+            else {
+                $curType = io($this->definition, "IMPLICIT_TYPE", null);
+                if (!$curType)
+                    throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD);
+            }
+            $t=$this->definition["ALLOWED_TYPES"][$curType];
+            if(!isset($this->definition["CONTENT_FIELD"]))
+            {
+                return ["name"=>$curType,"def"=>$t];
+            }
+            else
+                {
+                    $baseDef=["TYPE"=>"Container","FIELDS"=>[]];
+                    $baseDef["FIELDS"][$this->definition["TYPE_FIELD"]]=["TYPE"=>"String"];
+                    $baseDef["FIELDS"][$this->definition["CONTENT_FIELD"]]=$t;
+                    return ["name"=>$curType,"def"=>$baseDef];
+                }
+        }
+        $byType=io($this->definition,"ON",null);
+        if($byType)
+        {
+            for($k=0;$k<count($this->definition["ON"]);$k++)
+            {
+                $cur=$this->definition["ON"][$k];
+                $f=io($cur,"FIELD",null);
+                $op=$cur["IS"];
+                $then=$cur["THEN"];
+                $cnd=false;
+                $v=null;
+                if($f===null) {
+
+                    $cnd=true;
+                    $v = $val;
+                }
+                else {
+                    $cnd = isset($val[$f]) ? true : false;
+                    if($cnd)
+                        $v=$val[$f];
+                }
+                $arrayCheck=null;
+                switch($op)
+                {
+                    case "String":{
+                        if(!$cnd)
+                            break;
+                        if(is_string($v))
+                            return ["name"=>$then,"def"=>$this->definition["ALLOWED_TYPES"][$then]];
+                    }break;
+                    case "Array":{
+                        if(!$cnd)
+                            break;
+                        if($arrayCheck===null)
+                            $arrayCheck=\lib\php\ArrayTools::isAssociative($v);
+                        if(is_array($v) && !$arrayCheck)
+                            return ["name"=>$then,"def"=>$this->definition["ALLOWED_TYPES"][$then]];
+                    }break;
+                    case "Object":{
+                        if(!$cnd)
+                            break;
+                        if($arrayCheck===null)
+                            $arrayCheck=\lib\php\ArrayTools::isAssociative($v);
+                        if(is_array($v) && $arrayCheck)
+                            return ["name"=>$then,"def"=>$this->definition["ALLOWED_TYPES"][$then]];
+                    }break;
+                    case "Present":{
+                        if(!$cnd)
+                            break;
+                        return ["name"=>$then,"def"=>$this->definition["ALLOWED_TYPES"][$then]];
+                    }break;
+                    case "Not Present":{
+                        if(!$cnd)
+                            return ["name"=>$then,"def"=>$this->definition["ALLOWED_TYPES"][$then]];
+                    }break;
+                }
+            }
+            if ($this->definition["IMPLICIT_TYPE"])
+                return ["name"=>$this->definition["IMPLICIT_TYPE"],
+                    "def"=>$this->definition["ALLOWED_TYPES"][$this->definition["IMPLICIT_TYPE"]]];
+        }
+        throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD);
     }
 
     function _validate($val)
     {
-        if(isset($val[$this->type_field]))
-            $type=$val[$this->type_field];
-        else
-        {
-            if($this->implicit_type===null)
-                throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD,$this);
-            $type=$this->implicit_type;
-        }
-        if(!$this->isAllowedType($type))
-            throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$type],$this);
-
-        // Ahora hay que resolver si hay una subkey para el contenido, o no.
-        // Si no lo hay, el propio tipo tiene que tener el campo "type_field".
-        // Es decir, un caso tipico son las clases derivadas de BaseType. Se editan
-        // con un typeswitcher, pero el typeswitcher es transparente.El no tiene ningun valor.
-        // Por lo tanto, los diferentes tipos son los que tienen que tener el campo "TYPE".
-        // El typeswitcher tiene un valor cuando si que hay un "content_field", es el caso de
-        // estructuras del tipo: ["type"=>"..", "content"=>"...."]
-        $typeInstance=$this->getTypeInstance($type);
-        if($this->content_field!==null)
-        {
-            if(!isset($val[$this->content_field]))
-                throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_CONTENT_FIELD,["field"=>$this->content_field],$this);
-            return $typeInstance->validate($val[$this->content_field]);
-        }
-        return $typeInstance->validate($val);
+        $typeInfo=$this->getTypeFromValue($val);
+        $instance=\lib\model\types\TypeFactory::getType(null,$typeInfo["def"],$val);
+        return $instance->validate($val);
     }
 
     function _getValue()
     {
-        if($this->currentType==null)
+        if($this->subNode==null)
                 return null;
-        if($this->content_field==null)
-            return $this->value->getValue();
-        $result=[];
-        $result[$this->type_field]=$this->currentType;
-        $result[$this->content_field]=$this->value->getValue();
-        return $result;
+        return $this->subNode->getValue();
     }
 
     function hasValue()
@@ -121,13 +169,7 @@ class TypeSwitcher extends BaseContainer
     }
     function _equals($value)
     {
-        if($value[$this->type_field]!==$this->currentType)
-            return false;
-        if($this->content_field==null)
-            return $this->value->equals($value);
-        else
-            return $this->value->equals($value[$this->content_field]);
-
+        return $this->subNode->equals($value);
     }
 
 
@@ -142,11 +184,14 @@ class TypeSwitcher extends BaseContainer
         $this->value=null;
 
         $this->currentType=null;
+        $this->subNode->null;
     }
 
     function __toString()
     {
-        return json_encode($this->getValue());
+        if($this->subNode===null)
+            return "null";
+        return json_encode($this->subNode->getValue());
     }
 
 
@@ -160,65 +205,36 @@ class TypeSwitcher extends BaseContainer
     }
     function __set($fieldName,$value)
     {
-        if($fieldName==$this->type_field)
-        {
-            if(!$this->isAllowedType($value))
-                throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$value],$this);
-            if($value==$this->currentType)
-                return;
-            $this->currentType=$value;
-            $this->value=$this->getTypeInstance($value);
-            $this->valueSet=true;
+        $mustCheck=false;
+        $typeField=io($this->definition,"TYPE_FIELD",null);
+
+        if($typeField && $fieldName===$typeField)
+            $mustCheck=true;
+        else {
+            for($k=0;$k<count($this->definition["ON"]);$k++) {
+                if($this->definition["ON"][$k]["FIELD"]==$fieldName)
+                    $mustCheck=true;
+            }
+        }
+        if($mustCheck==true) {
+            $val=[$fieldName=>$value];
+            $typeInfo=$this->getTypeFromValue($val);
+            if($typeInfo["name"]!==$this->currentType)
+                $this->setValue($val);
         }
         else
         {
-            if($this->currentType===null)
-            {
-                if($this->implicit_type===null)
-                    throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>"implicit"],$this);
-                $this->currentType=$this->implicit_type;
-                $this->value=$this->getTypeInstance($this->currentType);
-                $this->valueSet=true;
-            }
-
-            if($this->content_field==$fieldName)
-            {
-                $this->value->setValue($value);
-                $this->valueSet=$this->value->hasOwnValue();
-                return;
-            }
-
-            if(is_a($this->value,'\lib\model\BaseContainer')) {
-                $this->value->{$fieldName} = $value;
-                $this->valueSet=$this->value->hasOwnValue();
-            }
+            if($this->subNode===null)
+                throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD);
+            $this->subNode->{$fieldName}=$value;
         }
 
     }
     function __get($fieldName)
     {
-        $returnType=false;
-        $original=$fieldName;
-        if($fieldName[0]=="*") {
-            $fieldName = substr($fieldName, 1);
-            $returnType = true;
-        }
-        if($fieldName==$this->type_field)
-            return $this->currentType;
-
-        if($this->value==null)
-            return null;
-        if($fieldName===$this->content_field)
-        {
-            if($returnType==true)
-                return $this->value;
-            else
-                return $this->value->getValue();
-        }
-        else
-        {
-            return $this->value->{$original};
-        }
+        if($this->subNode===null)
+            throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD);
+        return $this->subNode->$fieldName;
     }
     function isAllowedType($type)
     {
@@ -258,4 +274,20 @@ class TypeSwitcher extends BaseContainer
         $type = $this->getTypeInstance($field);
         return $type->getTypeFromPath($path);
     }
+    public function offsetExists ( $offset ){
+        return $this->subNode && is_a($this->subNode,'\ArrayAccess') && $this->subNode->offsetExists($offset);
+    }
+    public function offsetGet ( $offset )
+    {
+        if(!$this->subNode || !is_a($this->subNode,'\ArrayAccess'))
+            return null;
+        return $this->subNode[$offset];
+    }
+    public function offsetSet ( $offset , $value )
+    {
+        if(!$this->subNode || !is_a($this->subNode,'\ArrayAccess'))
+            return null;
+        return $this->subNode[$offset]=$value;
+    }
+    public function offsetUnset ( $offset ) {}
 }

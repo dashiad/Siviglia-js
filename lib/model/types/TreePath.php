@@ -2,9 +2,9 @@
 namespace lib\model\types;
 class TreePath extends _String
 {
-   function __construct($def,$neutralValue=null)
+   function __construct($def,$value=null)
    {
-            parent::__construct(array("MAXLENGTH"=>255),$neutralValue);
+            parent::__construct(array("MAXLENGTH"=>255),$value);
    }
    function getMetaClassName()
    {

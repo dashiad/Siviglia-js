@@ -27,9 +27,9 @@
       var $mustCopy=false;
       var $srcFile=null;
       var $isUpload=false;
-      function __construct($def,$neutralValue=null)
+      function __construct($def,$value=null)
       {
-        parent::__construct($def,$neutralValue);
+        parent::__construct($def,$value);
 
         $this->setFlags(BaseType::TYPE_IS_FILE | BaseType::TYPE_REQUIRES_UPDATE_ON_NEW | BaseType::TYPE_REQUIRES_SAVE | BaseType::TYPE_NOT_MODIFIED_ON_NULL);
       }

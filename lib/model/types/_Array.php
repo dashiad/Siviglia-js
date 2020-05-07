@@ -14,13 +14,13 @@
       var $subObjects;
       var $remoteTypeName;
 
-      function __construct($def)
+      function __construct($def,$value=null)
       {
           $this->subTypeDef=$def["ELEMENTS"];
           $this->subObjects=null;
           $ins=$this->getSubtypeInstance(0);
           $this->remoteTypeName=get_class($ins);
-          parent::__construct($def);
+          parent::__construct($def,$value);
       }
       function getSubTypeDef()
       {

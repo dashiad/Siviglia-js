@@ -11,10 +11,7 @@
   }
   class Integer extends BaseType
   {
-      function __construct($def,$value=null)
-      {
-          BaseType::__construct($def,$value);
-      }
+
       function _setValue($val)
       {
           $this->value=intval($val);

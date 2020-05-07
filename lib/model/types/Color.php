@@ -1,7 +1,7 @@
 <?php namespace lib\model\types;
   class Color extends _String
   {
-      function __construct($def,$value=false)
+      function __construct($def,$value=null)
       {
           parent::__construct(array("TYPE"=>"Color","MAXLENGTH"=>10),$value);
       }

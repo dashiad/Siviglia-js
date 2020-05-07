@@ -13,7 +13,7 @@ parent::__construct( [
                 "FIELDS"=>[
                     "LABEL"=>"Campos",
                     "TYPE"=>"Dictionary",
-                    "VALUETYPE"=>"/model/reflection/Model/types/BaseType",
+                    "VALUETYPE"=>"/model/reflection/Model/types/TypeReference",
                 ],
                 "SET_ON_EMPTY"=>["LABEL"=>"Permitir claves nulas","TYPE" => "Boolean", "DEFAULT" => false],
                 "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
