@@ -1,9 +1,42 @@
-<div data-sivWidget="Siviglia.model.reflection.MetaDefinition.forms.Add" data-widgetCode="Siviglia.model.reflection.MetaDefinition.forms.Add">
-    <div><div>Destination file:</div>
-        <div data-sivCall="getInputFor" data-sivParams='{"key":"file"}'></div>
+<div class="widget-content" data-sivWidget="Siviglia.model.reflection.MetaDefinition.forms.Add" data-widgetCode="Siviglia.model.reflection.MetaDefinition.forms.Add">
+
+  <!-- menu tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link" href="#inicio" role="tab" data-toggle="tab"><i class="bx bx-home"></i> Inicio</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#add" role="tab" data-toggle="tab"><i class="bx bx-edit"></i> Añadir</a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Acciones</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">Ejecutar</a>
+        <a class="dropdown-item" href="#">Parar</a>
+        <a class="dropdown-item" href="#">Eliminar</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">acción extra</a>
+      </div>
+    </li>
+  </ul>
+
+
+  <!-- Tabs content -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-panel fade" id="inicio">contenido tab 1 (inicio)</div>
+    <div role="tabpanel" class="tab-panel fade" id="add">
+      
+      <div><div class="widget-title">Destination file:</div>
+          <div data-sivCall="getInputFor" data-sivParams='{"key":"file"}'></div>
+      </div>
+      
+      <div><div class="widget-title">Definition:</div>
+          <div data-sivCall="getInputFor" data-sivParams='{"key":"definition"}'></div>
+      </div>
+      <div><input class="form-button" type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar"></div>
+
     </div>
-    <div><div>Definition:</div>
-        <div data-sivCall="getInputFor" data-sivParams='{"key":"definition"}'></div>
-    </div>
-    <div><input type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar"></div>
-</div>
+  </div>
+
+
+</div><!-- ./data-sivWidget -->
