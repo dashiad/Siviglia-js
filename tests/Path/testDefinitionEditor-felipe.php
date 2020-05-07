@@ -55,11 +55,10 @@
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets-felipe.html"); ?>
 
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->
-<div class="widget" data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Edit" data-sivParams='{"id_page":2}'></div>
+<div class="widget" data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Add" data-sivParams='{"id_page":2}'></div>
 
 <!-- forms edit metadefinition -->
-<!-- <div data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Edit" data-sivParams='{"id_page":2}'></div> -->
-
+<!-- <div class="widget" data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Edit" data-sivParams='{"id_page":2}'></div> -->
 
 <script>
     var parser=new Siviglia.UI.HTMLParser();
