@@ -14,9 +14,8 @@ class FrequencyReport
         'DATAFORMAT' => 'Table',
         'PARAMS' => [
             'region' => [
-                'TYPE' => 'Enum',
+                'TYPE' => 'String',
                 'LABEL' => 'Región',
-                'VALUES' => ['spain', 'latam'],
                 'DEFAULT' => 'spain',
             ],
             'start_date' => [
@@ -91,12 +90,33 @@ class FrequencyReport
         ],
         'PERMISSIONS' => [],
         'SOURCE'      => [
-           'STORAGE' => [
-               'comscore' => [
-                   'ACTION' => 'report',
-                   'TYPE'   => 'Frequency',
-               ],
-           ],
+            'STORAGE' => [
+                'comscore' => [
+                    'NAME'   => 'model\\ads\\Comscore',
+                    'CLASS'  => 'model\\ads\\Comscore\\serializers\\ComscoreSerializer',
+                    'DEFINITION' => [
+                        'BASE'   => "ON Comscore CALL requestReport WITH (type='Frequency', region='[%region%]', start_date='[%start_date%]', end_date='[%end_date%]', campaigns='[%campaigns%]') RETURN *",
+                        'CONDITIONS' => [
+                            [
+                                'FILTER' => '[%region%]',
+                                'TRIGGER_VAR'=> 'region',
+                            ],
+                            [
+                                'FILTER' => '[%start_date%]',
+                                'TRIGGER_VAR'=> 'start_date',
+                            ],
+                            [
+                                'FILTER' => '[%end_date%]',
+                                'TRIGGER_VAR'=> 'end_date',
+                            ],
+                            [
+                                'FILTER' => '[%campaigns%]',
+                                'TRIGGER_VAR'=> 'campaigns',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
     ];
 }

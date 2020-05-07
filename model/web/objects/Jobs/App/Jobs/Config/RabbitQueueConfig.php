@@ -5,9 +5,11 @@ class RabbitQueueConfig extends BaseConfig
 {
     const CONFIG = [
         'class'              => JOBS_NAMESPACE.'QueueManagers\\RabbitQueueManager',
-	'host'               => 'services.net1.hadoop.oraclevcn.com',
+//	'host'               => 'services.net1.hadoop.oraclevcn.com',
+	'host' => 'localhost',
         'user'               => 'jobs',
-        'pass'               => 'oeb~ie9Eh3keequ7',
+	//        'pass'               => 'oeb~ie9Eh3keequ7',
+	'pass' => 'jobs',
         'port'               => 5672,
         'vhost'              => 'jobs',
 	'control'            => 'control',

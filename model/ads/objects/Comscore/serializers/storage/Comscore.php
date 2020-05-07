@@ -6,6 +6,7 @@ require_once(__DIR__.'/QueryBuilder.php');
 use \lib\php\ParametrizableString;
 use \GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ConnectException;
 
 class ComscoreException extends \lib\model\BaseException
 {
@@ -16,6 +17,7 @@ class ComscoreException extends \lib\model\BaseException
     const ERR_AUTH_FAILURE       = 5;
     const ERR_INVALID_ACTION     = 6;
     const ERR_REQUEST_EXISTS     = 7;
+    const ERR_NETWORK_ERROR      = 8;
 }
 
 class Comscore
@@ -35,8 +37,7 @@ class Comscore
     public function __construct(?Array $definition)
     {
         $this->definition = $definition;
-        $this->queryBuilder = new QueryBuilder(null, $definition);
-       
+        //$this->queryBuilder = new QueryBuilder(null, $definition, $this->params, []);  
     }
     
     
@@ -107,16 +108,20 @@ class Comscore
     
     public function request($q="", $field="")
     {
-        $options = $this->queryBuilder->build($q);
+        $options = $q;
+        
         $url = $options['url'];
         $method = $options['method'];
         unset($options['url']);
-        unset($options['method']);
+        unset($options['method']);        
+        
         $client = new Client();
         
         try {
             $response = $client->request($method, $url, $options);
             $result = $response->getBody()->getContents();
+        } catch (ConnectException $e) {
+            throw new ComscoreException(ComscoreException::ERR_NETWORK_ERROR);
         } catch (RequestException $e) {
             switch ($e->getCode()) {
                 case 3:
