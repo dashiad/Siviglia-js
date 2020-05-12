@@ -29,7 +29,7 @@ class Container extends BaseContainer implements \ArrayAccess
             $this->__fields[$key] = \lib\model\types\TypeFactory::getType($key,$value,$this,null,$validationMode);
             $wasEmpty=true;
             if(isset($val[$key])) {
-                $this->__fields[$key]->apply($val[$key]);
+                $this->__fields[$key]->apply($val[$key],$validationMode);
                 if($this->__fields[$key]->hasValue())
                     $wasEmpty=false;
             }
@@ -230,7 +230,7 @@ class Container extends BaseContainer implements \ArrayAccess
     }
     function _copy($ins)
     {
-        $ins->setParent($this->parent);
+        $ins->setParent($this->parent,$this->fieldName);
         $ins->setValidationMode($this->validationMode);
         $this->apply($ins->getValue());
     }

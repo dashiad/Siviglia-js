@@ -107,7 +107,7 @@ class PackageTest extends TestCase
     {
         $info=\lib\model\Package::getInfo("web","Site",null,\lib\model\Package::DATASOURCE,"*");
         $this->assertEquals(6,count($info));
-        $info=\lib\model\Package::getInfo("reflection","Model",null,"types","*");
+        $info=\lib\model\Package::getInfo("reflection","Model",null,\lib\model\Package::TYPE,"*");
 
     }
 

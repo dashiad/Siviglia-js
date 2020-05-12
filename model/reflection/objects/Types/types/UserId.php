@@ -15,7 +15,7 @@ parent::__construct($name, [
                 "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","KEEP_KEY_ON_EMPTY"=>false],
                 "SOURCE"=>\model\reflection\Types::getSourceMeta()
             ]
-        ,$parentType,$value,$validationMode]);
+        ],$parentType,$value,$validationMode);
 
     }
 

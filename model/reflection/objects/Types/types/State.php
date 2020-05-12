@@ -32,7 +32,7 @@ parent::__construct($name, [
                 "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
                 "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false]
             ]
-        ,$parentType,$value,$validationMode]);
+        ],$parentType,$value,$validationMode);
 
     }
 

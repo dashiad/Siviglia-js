@@ -13,7 +13,7 @@ parent::__construct($name, [
                 "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","KEEP_KEY_ON_EMPTY"=>false],
                 "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","KEEP_KEY_ON_EMPTY"=>false]
             ]
-        ,$parentType,$value,$validationMode]);
+        ],$parentType,$value,$validationMode);
 
     }
 

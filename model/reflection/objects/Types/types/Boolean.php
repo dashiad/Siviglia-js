@@ -14,7 +14,7 @@ parent::__construct($name, [
                 "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","KEEP_KEY_ON_EMPTY"=>false],
                 "SOURCE"=>\model\reflection\Types::getSourceMeta(),
             ]
-        ,$parentType,$value,$validationMode]);
+        ],$parentType,$value,$validationMode);
 
     }
 

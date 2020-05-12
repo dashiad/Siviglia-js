@@ -180,7 +180,7 @@ class ModelField
         }
 
 
-        $this->type->apply($val);
+        $this->type->setValue($val);
         $this->setDirty();
         $this->model->__setRaw($this->name,$this->type->getValue());
         $this->notifyListeners();

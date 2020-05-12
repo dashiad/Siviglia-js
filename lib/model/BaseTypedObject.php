@@ -1165,7 +1165,7 @@ class BaseTypedObject extends PathObject
                                     $localField->getType()->validate($fieldValue);
                                  else
                                  {
-                                     $relType=$localField->getType("",$localField->getDefinition(),null,null,$validationMode);
+                                     $relType=\lib\model\types\TypeFactory::getType("",$localField->getDefinition(),null,null,$validationMode);
                                      $relType->setParent($this,$fieldName);
                                      $relType->validate($fieldValue);
                                  }

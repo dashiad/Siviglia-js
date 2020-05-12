@@ -18,7 +18,7 @@ class Types
     }
     static function getSourceMeta()
     {
-        $datasourceReference=new ModelDatasourceReference();
+        $datasourceReference=new ModelDatasourceReference("");
         $dsMeta=$datasourceReference->getDefinition();
         /*$dsMeta["PARAMS"]=[
             "LABEL"=>"Parameters",

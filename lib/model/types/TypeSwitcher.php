@@ -159,9 +159,10 @@ class TypeSwitcher extends BaseContainer implements \ArrayAccess
 
     function _validate($val)
     {
-        $typeInfo=$this->getTypeFromValue($val);
-        $instance=\lib\model\types\TypeFactory::getType($this->fieldName,$typeInfo["def"],$this->parent,null,$this->validationMode);
-        return $instance->validate($val,$this->validationMode);
+        if($this->subNode)
+            return $this->subNode->validate($val,$this->validationMode);
+        return true;
+
     }
 
     function _getValue()

@@ -21,7 +21,7 @@
                   "SOURCE"=>\model\reflection\Types::getSourceMeta()
 
               ]
-          ,$parentType,$value,$validationMode]);
+          ],$parentType,$value,$validationMode);
 
       }
   }

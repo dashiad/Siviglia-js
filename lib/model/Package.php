@@ -356,7 +356,8 @@ class Package
     static $packageResourcesByType=[];
     static function getResourceById($resourceId)
     {
-        $res=array_filter(Package::getResourceMetaData(),function($item) use ($resourceId){return $item["resource"]==$resourceId;});
+        $meta=Package::getResourceMetaData();
+        $res=array_filter($meta,function($item) use ($resourceId){return $item["resource"]==$resourceId;});
         if(count($res)==0)
             throw new PackageException(PackageException::ERR_UNKNOWN_RESOURCE_TYPE,["type"=>$resourceId]);
         return array_shift($res);

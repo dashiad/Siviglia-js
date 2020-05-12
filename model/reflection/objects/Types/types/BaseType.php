@@ -13,7 +13,7 @@ class BaseType extends \lib\model\types\TypeSwitcher
             "TYPE_FIELD"=>"TYPE",
             "IMPLICIT_TYPE"=>"ModelField",
             "ALLOWED_TYPES"=>BaseType::getAllTypeClasses()
-        ,$parentType,$value,$validationMode]);
+        ],$parentType,$value,$validationMode);
     }
     function isAllowedType($type)
     {

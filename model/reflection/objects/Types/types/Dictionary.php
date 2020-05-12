@@ -14,7 +14,7 @@ parent::__construct($name, [
                 "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
                 "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","KEEP_KEY_ON_EMPTY"=>false]
             ]
-        ,$parentType,$value,$validationMode]);
+        ],$parentType,$value,$validationMode);
 
     }
 

@@ -21,7 +21,7 @@ class TypeSwitcherTest extends TestCase
 
     function getDefinition1()
     {
-        return new \lib\model\types\TypeSwitcher([
+        return new \lib\model\types\TypeSwitcher("",[
             "TYPE"=>"TypeSwitcher",
             "TYPE_FIELD"=>"TYPE",
             "ALLOWED_TYPES"=>[
@@ -47,7 +47,7 @@ class TypeSwitcherTest extends TestCase
     }
     function getDefinition2()
     {
-        return new \lib\model\types\TypeSwitcher([
+        return new \lib\model\types\TypeSwitcher("",[
             "TYPE"=>"TypeSwitcher",
             "TYPE_FIELD"=>"TYPE",
             "IMPLICIT_TYPE"=>"ModelReference",
@@ -81,7 +81,7 @@ class TypeSwitcherTest extends TestCase
     }
     function getDefinition3()
     {
-        return new \lib\model\types\TypeSwitcher([
+        return new \lib\model\types\TypeSwitcher("",[
             "TYPE"=>"TypeSwitcher",
             "TYPE_FIELD"=>"TYPE",
             "CONTENT_FIELD"=>"DATA",
@@ -160,7 +160,7 @@ class TypeSwitcherTest extends TestCase
     }
     function testTypeByType()
     {
-        $ts=new \lib\model\types\TypeSwitcher([
+        $ts=new \lib\model\types\TypeSwitcher("",[
             "TYPE"=>"TypeSwitcher",
             "ON"=>[
                 ["FIELD"=>"f1","IS"=>"Present","THEN"=>"TYPE1"],
@@ -193,7 +193,7 @@ class TypeSwitcherTest extends TestCase
     }
     function testTypeByTypeSimple()
     {
-        $ts=new \lib\model\types\TypeSwitcher([
+        $ts=new \lib\model\types\TypeSwitcher("",[
             "TYPE"=>"TypeSwitcher",
             "ON"=>[
                 ["IS"=>"String","THEN"=>"TYPE1"],

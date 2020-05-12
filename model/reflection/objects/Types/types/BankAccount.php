@@ -15,7 +15,7 @@ parent::__construct($name, [
                 "SOURCE"=>\model\reflection\Types::getSourceMeta(),
                 "REQUIRED"=>["LABEL"=>"Requerido","TYPE"=>"Boolean","DEFAULT"=>false]
             ]
-        ,$parentType,$value,$validationMode]);
+        ],$parentType,$value,$validationMode);
 
     }
 

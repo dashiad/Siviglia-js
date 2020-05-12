@@ -25,7 +25,7 @@ class ModelTypes extends TestCase
         $info=\lib\model\Package::getInfo("reflection","Model",null,\lib\model\Package::TYPE,"BaseTypedObject");
         include_once($info["file"]);
         $class=$info["class"];
-        $instance=new $class();
+        $instance=new $class("");
         // Se va a cargar un modelo, y se va a asignar el valor de la definicion, a la instancia de BaseTypedObject
         $info2=\lib\model\Package::getInfo("web","Site",null,\lib\model\Package::DEFINITION,null);
         include_once($info2["file"]);

@@ -51,7 +51,7 @@ parent::__construct($name, [
                     ]
                 ]
             ]
-        ,$parentType,$value,$validationMode]);
+        ],$parentType,$value,$validationMode);
 
     }
 }

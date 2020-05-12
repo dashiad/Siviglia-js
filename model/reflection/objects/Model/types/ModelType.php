@@ -10,6 +10,7 @@ class ModelType extends \lib\model\types\Container
         parent::__construct($name,[
             "TYPE"=>"Container",
             "FIELDS" => [
+                "MODEL"=>["LABEL"=>"Path completo del modelo","TYPE"=>"String"],
                 "ROLE" => [
                     "LABEL" => "Role",
                     "TYPE" => "String",
@@ -212,7 +213,7 @@ class ModelType extends \lib\model\types\Container
                                                // El segundo ".." sale del campo "FIELDS" de este tipo (al principio de la definicion del tipo)
                                                // El tercer ".." sale de este tipo
                                                // El cuarto llega al diccionario padre.
-                                               "PATH" => "#../../../../FIELDS/[[KEYS]]",
+                                               "PATH" => "#../../../FIELDS/[[KEYS]]",
                                                "LABEL" => "LABEL",
                                                "VALUE" => "LABEL"
 
@@ -225,7 +226,7 @@ class ModelType extends \lib\model\types\Container
                                                    "MODEL" => '/model/reflection/Model',
                                                    "DATASOURCE" => 'FieldList',
                                                    "PARAMS" => [
-                                                       "model" => "[%#../../../MODEL%]"
+                                                       "model" => "[%#../MODEL%]"
                                                    ],
                                                    "LABEL" => "NAME",
                                                    "VALUE" => "NAME"
@@ -262,10 +263,10 @@ class ModelType extends \lib\model\types\Container
                             "VALUETYPE"=>[
                                 "TYPE"=>"PHPVariable"
                             ],
-                            "SOURCE" => [
+                           /* "SOURCE" => [
                                 "TYPE" => "Datasource",
                                 "MODEL" => "/model/reflection/Storage/SerializerTypes"
-                            ]
+                            ]*/
                         ]
                     ]
                 ],

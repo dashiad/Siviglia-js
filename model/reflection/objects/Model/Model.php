@@ -21,8 +21,12 @@ class Model extends \lib\model\BaseTypedModel
     function loadFromFields()
     {
         $instance=\lib\model\ModelService::getModel($this->__targetModelName);
-        $this->definition=$instance->getDefinition();
-        $this->MODEL=$this->__normalizedModelName;
+        $def=$instance->getDefinition();
+        $def["MODEL"]=$this->__normalizedModelName;
+
+
+        $this->definition=$def;
+
     }
     function getModelDescriptor()
     {

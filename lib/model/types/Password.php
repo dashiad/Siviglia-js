@@ -5,7 +5,7 @@
       var $encoded;
       function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
-          $def=[];
+
           $def["TYPE"]="Password";
           $def["MINLENGTH"]=io($def,"MINLENGTH",6);
           $def["MAXLENGTH"]=io($def,"MAXLENGTH",16);

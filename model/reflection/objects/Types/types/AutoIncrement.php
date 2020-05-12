@@ -11,7 +11,7 @@ parent::__construct($name, [
                   "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"AutoIncrement"],
                   "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
               ]
-          ,$parentType,$value,$validationMode]);
+          ],$parentType,$value,$validationMode);
 
       }
   }

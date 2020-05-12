@@ -25,7 +25,7 @@ parent::__construct($name, [
                   "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
                   "SOURCE"=>\model\reflection\Types::getSourceMeta()
               ]
-          ,$parentType,$value,$validationMode]);
+          ],$parentType,$value,$validationMode);
 
       }
   }

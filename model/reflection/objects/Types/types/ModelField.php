@@ -32,7 +32,7 @@ class ModelField extends \lib\model\types\Container
                     ]
                 ]
             ]
-        ,$parentType,$value,$validationMode]);
+        ],$parentType,$value,$validationMode);
 
     }
 }

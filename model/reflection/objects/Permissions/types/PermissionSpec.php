@@ -6,9 +6,9 @@ namespace model\reflection\Permissions\types;
 
 class PermissionSpec extends \lib\model\types\_Array
 {
-    function __construct()
+    function __construct($name, $parent=null, $value=null, $validationMode=null)
     {
-        parent::__construct([
+        parent::__construct($name,[
             "LABEL" => "Permisos",
             "TYPE" => "Array",
             "ELEMENTS" => [
@@ -134,6 +134,6 @@ class PermissionSpec extends \lib\model\types\_Array
                     ]
                 ]
             ]
-        ]);
+        ],$parent, $value,$validationMode);
     }
 }

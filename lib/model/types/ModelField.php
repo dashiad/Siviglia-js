@@ -43,7 +43,7 @@ class ModelField extends Container{
                     "MODEL"=>'\model\reflection\Model',
                     "DATASOURCE"=>'FieldList',
                     "PARAMS"=>[
-                        "model"=>"[%MODEL%]"
+                        "model"=>"[%#MODEL%]"
                     ],
                     "VALUE"=>"NAME"
                 ]
