@@ -1,106 +1,98 @@
-<?php namespace model\reflection\Types\types;
+<?php namespace model\reflection\Model\types;
 
-include_once(PROJECTPATH."/model/reflection/objects/Meta/Meta.php");
-include_once(__DIR__."/ModelDatasourceReference.php");
+
 class BaseType extends \lib\model\types\TypeSwitcher
 {
-    var $typeName;
-    var $curVal=null;
-    var $definition=null;
-    var $typeInstance=null;
-    static $typeCache=null;
-    function __construct($definition=null)
+    static $typeCache;
+    function __construct()
     {
-        parent::__construct($this->getMeta());
+        parent::__construct([
+            "LABEL"=>"Type",
+            "REQUIRED"=>true,
+            "TYPE"=>"TypeSwitcher",
+            "TYPE_FIELD"=>"TYPE",
+            "IMPLICIT_TYPE"=>"ModelField",
+            "ALLOWED_TYPES"=>BaseType::getAllTypeClasses()
+        ]);
     }
-    function getDefinition()
+    function isAllowedType($type)
     {
-        if($this->typeInstance)
-            return $this->typeInstance->getValue();
-        return null;
+        if($type=="Array" || $type=="String")
+            $type="_".$type;
+        if(parent::isAllowedType($type))
+            return true;
+        return isset($this->allowed_types["/model/reflection/Types/types/".$type]);
     }
-    function setTypeName($name)
+    function getTypeInstance($type)
     {
-        $this->typeName=$name;
-    }
-    static function geCommonMeta()
-    {
-        return [
-            "FIXED"=>["TYPE"=>"String","LABEL"=>"Valor Fijo","KEEP_ON_EMPTY"=>false],
-            "DEFAULT"=>["TYPE"=>"String"]
-        ];
-    }
-    static function getSourceMeta()
-    {
-        $datasourceReference=new ModelDatasourceReference();
-        $dsMeta=$datasourceReference->getMeta();
-        $dsMeta["PARAMS"]=[
-            "TYPE"=>"DICTIONARY",
-            "VALUETYPE"=>[
-                "TYPE"=>"String"
-            ]
-        ];
+        if($type=="Array" || $type=="String")
+            $type="_".$type;
+        if(!isset($this->allowed_types[$type])) {
 
-        return [
-                "TYPE"=>"TypeSwitcher",
-                "TYPE_FIELD"=>"TYPE",
-                "ALLOWED_TYPES"=>[
-                    "Array"=>[
-                        "TYPE"=>"Container",
-                        "FIELDS"=>[
-                            "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Array"],
-                            "DATA"=>["TYPE"=>"Array",
-                                     "ELEMENTS"=>[
-                                         "TYPE"=>"CONTAINER",
-                                         "REQUIRED"=>true,
-                                         "FIELDS"=>[
-                                             "Id"=>["TYPE"=>"Integer"],
-                                             "LABEL"=>["LABEL"=>"Label","TYPE"=>"String"],
-                                             "Extra"=>["TYPE"=>"String"]
-                                         ]
-                                     ],
-                                "PATH"=>["TYPE"=>"String"]
-                            ]
-                        ]
-                    ],
-                    "DataSource"=>[
-                        "TYPE"=>"Container",
-                        "FIELDS"=>$dsMeta
-                    ],
-                    "Path"=>[
-                        "TYPE"=>"String",
-                        "REQUIRED"=>true
-                    ]
-                ]
+            $type = "/model/reflection/Types/types/" . $type;
+        }
 
-        ];
+        $instance=\lib\model\types\TypeFactory::getType($this,$this->allowed_types[$type]);
+        $instance->setParent($this,$type);
+        return $instance;
     }
 
-    function getMeta()
+    static function getAllTypeClasses()
     {
-        return [
-            "TYPE"=>"Container",
-            "FIELDS"=>[
-                "TYPE"=>[
-                    "LABEL"=>"Type",
-                    "REQUIRED"=>true,
-                    "TYPE"=>"TypeSwitcher",
-                    "TYPE_FIELD"=>"TYPE",
-                    "ALLOWED_TYPES"=>BaseType::getAllTypeClasses()
-                ],
-                "LABEL"=>["LABEL"=>"Label","TYPE"=>"String"],
-                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","KEEP_KEY_ON_EMPTY"=>false],
-                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
-                "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
-                "FIXED"=>["TYPE"=>"String","LABEL"=>"Valor Fijo","KEEP_ON_EMPTY"=>false],
-                "DEFAULT"=>["TYPE"=>"String"]
-            ]
-        ];
-    }
-    function getDerivedTypeMeta($typeName)
-    {
-        $baseMeta=$this->getMeta();
-        $baseMeta["FIELDS"]["TYPE"]=["LABEL"=>"Tipo","TYPE"=>"String","FIXED"=>"$typeName"];
-    }
+        if(BaseType::$typeCache!==null)
+            return BaseType::$typeCache;
 
+        $src=glob(PROJECTPATH."/model/reflection/objects/Types/types/*.php");
+        $result=[];
+        for($k=0;$k<count($src);$k++)
+        {
+            $cur=basename($src[$k]);
+            //if($cur!=="BaseType.php")
+           // {
+                $p=explode(".",$cur);
+                $curClass="/model/reflection/Types/types/".$p[0];
+                $short=$p[0];
+                if($short=="_Array")
+                    $short="Array";
+                if($short=="_String")
+                    $short="String";
+                $result[$short]=$curClass;
+                //$result[$curClass]=$curClass;
+            //}
+        }
+        // Se escanean los paquetes existentes, obteniendo los tipos que haya.
+        \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $result){
+                if($pkg->getName()=="reflection")
+                    return;
+                $pkg->iterateOnModels(function($model) use ($pkg,& $result){
+                    $d=$model->getModelDescriptor();
+                    if($d->isPrivate())
+                    {
+                        $modelname=$d->getNamespaceModel();
+                        $submodel=$d->getClassName();
+                    }
+                    else
+                    {
+                        $modelname=$d->getClassName();
+                        $submodel=null;
+                    }
+                    $typeList=\lib\model\Package::getInfo(
+                        $pkg->getName(),
+                        $modelname,
+                        $submodel,
+                        \lib\model\Package::TYPE,
+                        "*");
+                    if($typeList!==null){
+                        for($k=0;$k<count($typeList);$k++)
+                        {
+                            $cName=str_replace('\\',"/",$typeList[$k]["class"]);
+
+                            $short=str_replace("/model/reflection/Types/types/","",$cName);
+                            $result[$short]=$cName;
+                        }
+                    }
+                });
+        });
+        return $result;
+    }
 }
