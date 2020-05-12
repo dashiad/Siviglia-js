@@ -11,12 +11,12 @@ namespace lib\model\types;
 
 class Percentage extends Decimal
 {
-    function __construct($definition,$value=null)
+    function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
-        $definition['NINTEGERS']=1;
-        $definition['NDECIMALS']=10;
+        $def['NINTEGERS']=1;
+        $def['NDECIMALS']=10;
         // Deberia aniadirse currency en la definicion.
-        Decimal::__construct($definition,$value);
+        Decimal::__construct($name,$def,$parentType, $value,$validationMode);
     }
     function _validate($value)
     {

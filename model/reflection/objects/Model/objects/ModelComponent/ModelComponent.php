@@ -31,6 +31,8 @@ class ModelComponent
         $notRequiredFlags=\lib\model\types\BaseType::TYPE_SET_ON_SAVE |
             \lib\model\types\BaseType::TYPE_REQUIRES_SAVE;
 
+
+
         $curType=\lib\model\types\TypeFactory::getType($this->parentModel,$this->definition);
 
         if($curType->flags & $notRequiredFlags && $curType->isEditable())

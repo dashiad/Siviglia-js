@@ -14,6 +14,7 @@ class SerializerList
         'DATAFORMAT'=>'Table',
         'IS_ADMIN'=>1,
         'PARAMS'=>array(
+            "name"=>["TYPE"=>'String']
         ),
         'FIELDS'=>array(
             'name'=>array(
@@ -45,10 +46,11 @@ class SerializerList
         $conf=$configService->getConfig();
         $storage=$conf["SERIALIZERS"];
         $list=[];
-
+        $nameParam=$ds->name;
         foreach($storage as $k=>$v)
         {
-            $list[]=["name"=>$v["NAME"],"type"=>$v["TYPE"]];
+            if($nameParam==null || $nameParam==$v["NAME"])
+                $list[]=["name"=>$v["NAME"],"type"=>$v["TYPE"]];
         }
         return $list;
     }

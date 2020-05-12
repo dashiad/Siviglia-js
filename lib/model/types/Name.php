@@ -1,9 +1,9 @@
 <?php namespace lib\model\types;
   class Name extends _String
   {
-      function __construct($def,$value=null)
+      function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
-          parent::__construct(array("TYPE"=>"Name","MAXLENGTH"=>100),$value);
+          parent::__construct($name,array("TYPE"=>"Name","MAXLENGTH"=>100),$parentType,$value,$validationMode);
       }
       static function normalize($cad)
       {

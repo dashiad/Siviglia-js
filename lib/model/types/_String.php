@@ -13,7 +13,7 @@
   class _String extends BaseType
   {
 
-      function _setValue($val)
+      function _setValue($val,$validationMode=null)
       {
           if(isset($this->definition["TRIM"]) && $this->definition["TRIM"]==true)
           {
@@ -35,7 +35,7 @@
           return $this->value===$val;
       }
       function _copy($val){
-          $this->setValue($val->getValue());
+          $this->apply($val->getValue());
       }
       function getMetaClassName()
       {

@@ -1,7 +1,7 @@
 <?php namespace lib\model\types;
   class Login extends _String
   {
-      function __construct($def,$value = null)
+      function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
           $def=array(
             "TYPE"=>"Login",
@@ -11,7 +11,7 @@
             "ALLOWHTML"=>false,
             "TRIM"=>true
           );
-          parent::__construct($def,$value);
+          parent::__construct($name,$def,$parentType, $value,$validationMode);
       }
 
       function getMetaClassName()

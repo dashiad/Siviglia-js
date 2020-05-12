@@ -18,7 +18,7 @@ class DateTest extends TestCase
 
     function testDefinition1()
     {
-        $ins=new \lib\model\types\Date([
+        $ins=new \lib\model\types\Date("",[
             "TYPE"=>"Date",
             "DEFAULT"=>"NOW"
         ]);
@@ -28,7 +28,7 @@ class DateTest extends TestCase
     }
     function testDefinition2()
     {
-        $ins=new \lib\model\types\Date([
+        $ins=new \lib\model\types\Date("",[
             "TYPE"=>"Date"
         ]);
         $ins->setValue("2019-01-01");
@@ -37,7 +37,7 @@ class DateTest extends TestCase
     }
     function testDefinition3()
     {
-        $ins=new \lib\model\types\Date([
+        $ins=new \lib\model\types\Date("",[
             "TYPE"=>"Date",
             "STARTYEAR"=>"2019"
         ]);
@@ -48,7 +48,7 @@ class DateTest extends TestCase
     }
     function testDefinition4()
     {
-        $ins=new \lib\model\types\Date([
+        $ins=new \lib\model\types\Date("",[
             "TYPE"=>"Date",
             "ENDYEAR"=>"2019"
         ]);
@@ -59,7 +59,7 @@ class DateTest extends TestCase
     }
     function testDefinition5()
     {
-        $ins=new \lib\model\types\Date([
+        $ins=new \lib\model\types\Date("",[
             "TYPE"=>"Date",
             "STRICTLYPAST"=>true
         ]);
@@ -69,7 +69,7 @@ class DateTest extends TestCase
     }
     function testDefinition6()
     {
-        $ins=new \lib\model\types\Date([
+        $ins=new \lib\model\types\Date("",[
             "TYPE"=>"Date",
             "STRICTLYFUTURE"=>true
         ]);
@@ -79,7 +79,7 @@ class DateTest extends TestCase
     }
     function testValue1()
     {
-        $ins=new \lib\model\types\Date([
+        $ins=new \lib\model\types\Date("",[
             "TYPE"=>"Date"
         ]);
         $this->expectException('\lib\model\types\BaseTypeException');
@@ -88,7 +88,7 @@ class DateTest extends TestCase
     }
     function testValue2()
     {
-        $ins=new \lib\model\types\Date([
+        $ins=new \lib\model\types\Date("",[
             "TYPE"=>"Date"
         ]);
 

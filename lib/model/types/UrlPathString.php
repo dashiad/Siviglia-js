@@ -6,11 +6,12 @@ namespace lib\model\types;
 
 class UrlPathString extends _String
 {
-    function __construct($def,$value=null)
+    function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
         parent::__construct(
-            array("ALLOWHTML"=>false,"TRIM"=>true,"MINLENGTH"=>1,"MAXLENGTH"=>100),
-            $value);
+            $name,
+            array("TYPE"=>"UrlPathString","ALLOWHTML"=>false,"TRIM"=>true,"MINLENGTH"=>1,"MAXLENGTH"=>100),
+            $parentType, $value,$validationMode);
 
     }
     function getMetaClassName()

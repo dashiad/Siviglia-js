@@ -25,6 +25,7 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     protected $serializerData=array();
     protected $relationValues;
     protected $normalizedName;
+    protected $validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE;
 	function __construct($name,& $model, & $definition, $value=null)
 	{
         $this->name=$name;
@@ -54,6 +55,14 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
 	function getModel()
     {
         return $this->model;
+    }
+    function setValidationMode($mode)
+    {
+        $this->validationMode=$mode;
+    }
+    function getValidationMode()
+    {
+        return $this->validationMode;
     }
 
     abstract function createRelationValues();
@@ -466,27 +475,25 @@ class RelationFields
         {
             $fields=array($this->relObject->getName()=>$fields[0]);
         }
+        $modelClassName=$relObject->getRemoteObject();
         foreach($fields as $key=>$value)
         {
             $this->fieldKey=$key;
             $this->nFields++;
-            if(isset($definition["REMOTEDEF"]))
-            {
-                $this->types[$key]=\lib\model\types\TypeFactory::getType($relObject->getModel(),$definition["REMOTEDEF"]["FIELDS"][$value]);
-                $this->types[$key]->setParent($this->relObject->getModel(),$key);
-            }
-            else
-            {
-                $this->types[$key]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($this->relObject->getRemoteObject(),$value);
-            }
+
+            $this->types[$key]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance(
+                    $modelClassName,
+                    $value,
+                    $this->relObject->getModel(),
+                    null,
+                    $relObject->getValidationMode());
+
             if(isset($definition["DEFAULT"]))
             {
-                $this->types[$key]->setDefaultValue($definition["DEFAULT"]);
+                $this->types[$key]->apply($definition["DEFAULT"]);
             }
 
         }
-
-
         $this->definition["FIELDS"]=$fields;
         $this->state=ModelBaseRelation::UN_SET;
 
@@ -556,33 +563,12 @@ class RelationFields
         $k=0;
         foreach($this->types as $key=>$value)
         {
+            // Al deserializar una relacion, lo hacemos con validaciones segun especifique el modelo padre:
 
-            if(is_subclass_of($value,'\lib\model\types\Composite'))
-              {
-                $normName=$this->relObject->normalizedName;
-
-                $prefix=$this->normalizedName."_";
-                $prefixLen=strlen($prefix);
-                $setVal=null;
-
-                foreach($rawModelData as $key2=>$value2)
-                {
-                    if(strpos($key2,$prefix)===0)
-                        $setVal[substr($key2,$prefixLen)]=$value2;
-                }
-                if(!$setVal)
-                {
-                    return;
-                }
-                $value->setValue($setVal);
-              }
+            if($rawModelData[$key])
+                $value->apply($rawModelData[$key],$this->relObject->getModel()->getValidationMode());
             else
-              {
-                if($rawModelData[$key])
-                    $value->setValue($rawModelData[$key]);
-                else
-                    return;
-              }
+                continue;
             if($k==0)
                 $this->rawVal=$rawModelData[$key];
             $k++;
@@ -600,7 +586,7 @@ class RelationFields
         {
              if(!$this->types[$field]->equals($targetType->getValue()))
              {
-                $this->types[$field]->setValue($targetType->getValue());
+                $this->types[$field]->apply($targetType->getValue());
              }
         }
         else
@@ -685,6 +671,7 @@ class RelationFields
 
                 if($conds!="")
                 {
+                    // TODO : ELIMINAR ESTO DE AQUI!!! UTILIZAR EL SERIALIZER!!
                     $q="DELETE FROM ".$remoteObject->__getTableName().$conds;
                     $serializer->getConnection()->insert($q);
                 }
@@ -693,7 +680,7 @@ class RelationFields
             $this->state=ModelBaseRelation::SET;
         }
 
-        $typeField->setValue($newVal);
+        $typeField->apply($newVal);
     }
     function is_set()
     {

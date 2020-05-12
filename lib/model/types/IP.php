@@ -1,13 +1,13 @@
 <?php namespace lib\model\types;
   class IP extends _String
   {
-      function __construct($def,$value=null)
+      function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
-          parent::__construct(array("TYPE"=>"IP","MAXLENGTH"=>15),$value);
+          parent::__construct($name,array("TYPE"=>"IP","MAXLENGTH"=>15),$parentType,$value,$validationMode);
       }
       function setToCurrent()
       {
-          $this->setValue(IP::getCurrentIp());
+          $this->apply(IP::getCurrentIp());
       }
       static function getCurrentIp()
       {

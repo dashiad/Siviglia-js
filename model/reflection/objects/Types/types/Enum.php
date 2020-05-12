@@ -2,8 +2,8 @@
 
 class Enum extends \lib\model\types\Container
 {
-    function __construct(){
-parent::__construct( [
+    function __construct($name,$parentType=null, $value=null,$validationMode=null){
+parent::__construct($name, [
             "LABEL"=>"Enum",
             "TYPE"=>"Container",
             "FIELDS"=>[
@@ -27,7 +27,7 @@ parent::__construct( [
                     ]
                 ]
             ]
-        ]);
+        ,$parentType,$value,$validationMode]);
 
     }
 }

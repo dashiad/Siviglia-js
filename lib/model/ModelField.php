@@ -14,12 +14,11 @@ class ModelField
     protected $state;
     protected $listeners;
     protected $isAlias;
-    protected $isComposite;
-    protected $compositeFields;
     protected $normalizedName;
     protected $name;
     protected $isMultiple=false;
-    function __construct($name,& $model, $definition,$value=false)
+    protected $validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE;
+    function __construct($name,& $model, $definition,$value=null)
     {
 
           $this->name=$name;
@@ -33,17 +32,10 @@ class ModelField
 
           $this->definition=$definition;
           $this->listeners=[];
-          $this->type=types\TypeFactory::getType($this->model,$definition);
-          $this->type->setParent($this->model,$this->name);
-
-          if(is_a($this->type,'\lib\model\types\Composite'))
-          {
-              $this->isComposite=true;
-              $this->compositeFields=$this->type->getFields();
-          }
+          $this->type=types\TypeFactory::getType($this->name,$definition,$this->model,null,$this->model->getValidationMode());
 
           $this->isAlias=false;
-          if($value!==false)
+          if($value!==null)
           {
               $this->set($value);
               $this->state=ModelField::SET;
@@ -51,7 +43,7 @@ class ModelField
           else
               $this->state=ModelField::UN_SET;
     }
-    static function getModelField($name,$model, $definition,$value=false)
+    static function getModelField($name,$model, $definition,$value=null)
     {
         $type=\io($definition,"TYPE","");
         switch($type)
@@ -59,7 +51,7 @@ class ModelField
 
         case 'TreeAlias':
             {
-                return new TreeAlias($name,$model,$definition);
+                $instance=new TreeAlias($name,$model,$definition);
             }break;
         case 'Relationship':
             {
@@ -67,24 +59,24 @@ class ModelField
                 {
                 case "M:N":
                     {
-                        return new RelationMxN($name,$model,$definition,$value);
+                        $instance=new RelationMxN($name,$model,$definition,$value);
                     }break;
                 case "1:1":
                 case "1:N":
                 default:
                     {
-                        return new Relation1x1($name,$model,$definition,$value);
+                        $instance=new Relation1x1($name,$model,$definition,$value);
                     }
                 }
             }break;
         case 'RelationMxN':
             {
-                 return new RelationMxN($name,$model,$definition,$value);
+                $instance=new RelationMxN($name,$model,$definition,$value);
             }break;
         case 'InverseRelation':
             {
-                $obj=new InverseRelation1x1($name,$model,$definition,$value);
-                return $obj;
+                $instance=new InverseRelation1x1($name,$model,$definition,$value);
+
             }break;
         case 'State':
             {
@@ -99,15 +91,21 @@ class ModelField
 
                 if(!$originalDefinition["DEFAULT"])
                     $originalDefinition["DEFAULT"]=$model->getStateDef()->getDefaultState();
-                return new ModelField($name,$model,$originalDefinition,$value);
+                $instance=new ModelField($name,$model,$originalDefinition,$value);
             }break;
         default:
             {
-                return new ModelField($name,$model,$definition,$value);
+                $instance=new ModelField($name,$model,$definition,$value);
             }break;
         }
+        $instance->setValidationMode($model->getValidationMode());
+        return $instance;
     }
-
+    function setValidationMode($mode)
+    {
+        $this->validationMode=$mode;
+        $this->type->setValidationMode($mode);
+    }
     function getStateDefinition($model,$originalDefinition)
     {
 
@@ -145,12 +143,8 @@ class ModelField
     {
         if(is_object($value))
         {
-            $h=new \ReflectionClass($value);
-            $parent=$h->getParentClass();
-
             if(is_a($value,'lib\model\types\BaseType'))
             {
-
                 $typeObj=$value;
             }
             else
@@ -162,7 +156,6 @@ class ModelField
 
             if($typeObj)
             {
-                //$val=$typeObj;
                 $val=$typeObj->getValue();
             }
             else
@@ -182,11 +175,12 @@ class ModelField
         }
         if($this->type->equals($value))
         {
+
             return;
         }
 
 
-        $this->type->setValue($val);
+        $this->type->apply($val);
         $this->setDirty();
         $this->model->__setRaw($this->name,$this->type->getValue());
         $this->notifyListeners();
@@ -331,11 +325,8 @@ class ModelField
                 throw new BaseModelException(BaseModelException::ERR_INVALID_SERIALIZER,array("fieldName"=>$this->name,"model"=>$this->model->__getObjectName(),"serializer"=>$serializer));
             }
 
-            if(!$this->isComposite)
-            {
-                return $data[$this->name];
-            }
-            return $data;
+            return $data[$this->name];
+
 
     }
     function unserialize($data,$unserializer=null)

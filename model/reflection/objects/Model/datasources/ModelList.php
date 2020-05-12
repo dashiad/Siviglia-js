@@ -17,6 +17,9 @@ class ModelList
             'smallName'=>[
                 "TYPE"=>"String",
                 "PARAMTYPE"=>"DYNAMIC"
+            ],
+            'fullName'=>[
+                "TYPE"=>"String"
             ]
         ),
         'FIELDS'=>array(
@@ -55,17 +58,31 @@ class ModelList
     {
         $list=[];
         $filter=null;
+        $filterField=null;
         if($ds->smallName!==null)
+        {
             $filter=$ds->smallName;
+            $filterField="smallName";
+        }
+
+        else
+        {
+            if($ds->fullName!==null)
+            {
+                $filter=$ds->fullName;
+                $filterField="fullName";
+            }
+        }
+        $filter=str_replace('\\', '/', $filter);
         \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $list,$filter){
-            $pkg->iterateOnModels(function($model) use ($pkg,& $list,$filter){
+            $pkg->iterateOnModelTree(function($model) use ($pkg,& $list,$filter){
                 //if($pkg->getName()!=="reflection") {
                     $normalized=str_replace('\\', '/', $model->getClassName());
-                    if($filter==null || strpos($normalized,$filter)!==false) {
+                    if($filter==null || $normalized==$filter) {
                         $list[] = ["package" => $pkg->getName(),
                             "smallName" => $normalized,
                             "fullName" => str_replace('\\','/',$model->getClassName()),
-                            "modelPath" => $model->modelDescriptor->getBaseDir()
+                            "modelPath" => $model->getReflectedModel()->__getModelDescriptor()->getBaseDir()
                         ];
                     }
                 //}

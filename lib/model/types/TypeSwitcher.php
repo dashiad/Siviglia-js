@@ -21,7 +21,7 @@ class TypeSwitcher extends BaseContainer implements \ArrayAccess
     var $content_field;
     var $subNode;
 
-    function __construct($def,$value=null)
+    function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
 
 
@@ -29,10 +29,16 @@ class TypeSwitcher extends BaseContainer implements \ArrayAccess
         $this->allowed_types=$def["ALLOWED_TYPES"];
         $this->implicit_type=isset($def["IMPLICIT_TYPE"])?$def["IMPLICIT_TYPE"]:null;
         $this->content_field=isset($def["CONTENT_FIELD"])?$def["CONTENT_FIELD"]:null;
-        parent::__construct($def,$value);
+        parent::__construct($name,$def,$parentType, $value,$validationMode);
+    }
+    function setValidationMode($mode)
+    {
+        $this->validationMode=$mode;
+        if($this->currentType!==null)
+            $this->currentType->setValidationMode($this->validationMode);
     }
 
-    function _setValue($val)
+    function _setValue($val,$validationMode=null)
     {
         // Ahora hay que resolver si hay una subkey para el contenido, o no.
         // Si no lo hay, el propio tipo tiene que tener el campo "type_field".
@@ -41,11 +47,17 @@ class TypeSwitcher extends BaseContainer implements \ArrayAccess
         // Por lo tanto, los diferentes tipos son los que tienen que tener el campo "TYPE".
         // El typeswitcher tiene un valor cuando si que hay un "content_field", es el caso de
         // estructuras del tipo: ["type"=>"..", "content"=>"...."]
+        if($validationMode===null)
+            $validationMode=$this->validationMode;
         $typeInfo=$this->getTypeFromValue($val);
-        $instance=\lib\model\types\TypeFactory::getType(null,$typeInfo["def"],$val);
+        if($typeInfo["def"]===null)
+            throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$typeInfo["name"]]);
+        $instance=\lib\model\types\TypeFactory::getType($this->fieldName,$typeInfo["def"],$this->parent,$val,$this->validationMode);
+
         $this->currentType=$typeInfo["name"];
         if($instance->hasOwnValue()) {
             $this->valueSet = true;
+            $instance->apply($val,$validationMode);
             $this->value=$instance;
             $this->subNode=$instance;
         }
@@ -148,8 +160,8 @@ class TypeSwitcher extends BaseContainer implements \ArrayAccess
     function _validate($val)
     {
         $typeInfo=$this->getTypeFromValue($val);
-        $instance=\lib\model\types\TypeFactory::getType(null,$typeInfo["def"],$val);
-        return $instance->validate($val);
+        $instance=\lib\model\types\TypeFactory::getType($this->fieldName,$typeInfo["def"],$this->parent,null,$this->validationMode);
+        return $instance->validate($val,$this->validationMode);
     }
 
     function _getValue()
@@ -220,7 +232,7 @@ class TypeSwitcher extends BaseContainer implements \ArrayAccess
             $val=[$fieldName=>$value];
             $typeInfo=$this->getTypeFromValue($val);
             if($typeInfo["name"]!==$this->currentType)
-                $this->setValue($val);
+                $this->apply($val);
         }
         else
         {
@@ -243,9 +255,7 @@ class TypeSwitcher extends BaseContainer implements \ArrayAccess
     function getTypeInstance($type)
     {
         $def=$this->allowed_types[$type];
-        $instance=\lib\model\types\TypeFactory::getType($this,$def);
-        $instance->setParent($this,$type);
-        return $instance;
+        return \lib\model\types\TypeFactory::getType($type,$def,$this,null,$this->validationMode);
     }
     function _copy($ins)
     {

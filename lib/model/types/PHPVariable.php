@@ -12,7 +12,7 @@ class PHPVariableException extends BaseTypeException {
 
 class PHPVariable extends \lib\model\types\BaseType {
 
-    function _setValue($val)
+    function _setValue($val,$validationMode=null)
     {
         $this->value=$val;
         $this->valueSet=true;

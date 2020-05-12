@@ -1,48 +1,45 @@
 <?php
 
 namespace lib\model;
-
-class BaseTypedModel extends MultipleModel
+/*
+ * Esta clase sirve para representar objeto que existen dentro de la jerarquia de /model/, pero que no son
+ * serializables.
+ */
+class BaseTypedModel extends BaseTypedObject
 {
-    protected $typeField;
-    protected $typeInstance;
-    function __construct($serializer = null, $definition = null)
-    {
-        parent::__construct($serializer,$definition);
-        $this->typeField=$this->__objectDef["TYPEFIELD"];
-        $this->__fieldDef[$this->typeField]["REQUIRED"]=true;
 
+    protected $__objName;
+    protected $__def;
+
+    function __construct($definition = null,$validationMode=null)
+    {
+        $this->__objName = \lib\model\ModelService::getModelDescriptor('\\'.get_class($this));
+        if (!$definition)
+            $this->__def=BaseModelDefinition::loadDefinition($this);
+        else
+            $this->__def=BaseModelDefinition::fromArray($definition);
+
+        BaseTypedObject::__construct($this->__def->getDefinition(),$validationMode);
     }
-    function __getRelatedModel()
+    function __getObjectName()
     {
-        if($this->relatedModel)
-            return $this->relatedModel;
-
-        $field=BaseModel::__getField($this->typeField);
-        if(!$field->is_set())
-            throw new BaseModelException(BaseModelException::ERR_CANT_LOAD_EMPTY_OBJECT);
-        $value=$field->getType()->getLabel();
-        // TODO: Lanzar excepciones.
-        $this->__setRelatedModelName($value);
-        return parent::__getRelatedModel();
+        return $this->__objName->className;
     }
-    function setModelType($type)
+    function __getObjectNameObj()
     {
-        $this->{$this->typeField}=$type;
+        return $this->__objName;
     }
-    function & __getFieldDefinition($fieldName)
+    function __getModelDescriptor()
     {
-            if(isset($this->__fieldDef[$fieldName]))
-                return $this->__fieldDef[$fieldName];
-            else
-            {
-                if ($this->__aliasDef && isset($this->__aliasDef[$fieldName]))
-                    return $this->__aliasDef[$fieldName];
-            }
-            include_once(PROJECTPATH."/lib/model/BaseModel.php");
-            throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
-   }
-
-
+        return $this->__objName;
+    }
+    function __getFullObjectName()
+    {
+        return $this->__objName->getNamespaced();
+    }
+    function __getObjectDefinition()
+    {
+        return $this->__objectDef;
+    }
 }
 

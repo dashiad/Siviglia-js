@@ -1,12 +1,12 @@
 <?php namespace lib\model\types;
 class Phone extends _String {
-    function __construct(& $definition,$value=null)
+    function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
-		$definition['MINLENGTH']=7;
-		$definition['MAXLENGTH']=12;
-		$definition['REGEXP']='/[0-9\\-]{7,12}/';
+		$def['MINLENGTH']=7;
+		$def['MAXLENGTH']=12;
+		$def['REGEXP']='/[0-9\\-]{7,12}/';
 
-        parent::__construct($definition,$value);
+        parent::__construct($name,$def,$parentType, $value,$validationMode);
     }
 
     function getMetaClassName()

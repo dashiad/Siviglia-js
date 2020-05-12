@@ -29,37 +29,37 @@ class Package
     const MODEL             ="Model";
     const ACTION            ="Action";
     const DATASOURCE        ="Datasource";
-    const TYPE              ="TYPE";
-    const TYPE_METADATA     ="Type Metadata";
+    const TYPE              ="Type";
+    const TYPE_METADATA     ="TypeMetadata";
     const DEFINITION        ="Definition";
     const CONFIG            ="Config";
     const WIDGET            ="Widget";
     const WORKER            ="Worker";
-    const HTML_FORM          ="Html Form";
-    const HTML_FORM_TEMPLATE ="Html Form Template";
-    const HTML_VIEW          ="Html View";
-    const JS_TYPE           ="Js Type";
-    const JS_MODEL           ="Js Model";
-    const JS_FORM           ="Js Form";
-    const JS_VIEW           ="Js View";
+    const HTML_FORM          ="HtmlForm";
+    const HTML_FORM_TEMPLATE ="HtmlFormTemplate";
+    const HTML_VIEW          ="HtmlView";
+    const JS_TYPE           ="JsType";
+    const JS_MODEL           ="JsModel";
+    const JS_FORM           ="JsForm";
+    const JS_VIEW           ="JsView";
 
     static $resourceMetadata=[
-        Package::MODEL=>["plural"=>"Models"],
-        Package::ACTION=>["plural"=>"Actions"],
-        Package::DATASOURCE=>["plural"=>"Models"],
-        Package::TYPE=>["plural"=>"Types"],
-        Package::TYPE_METADATA=>["plural"=>"Types Metadata"],
-        Package::DEFINITION=>["plural"=>"Definition"],
-        Package::CONFIG=>["plural"=>"Config"],
-        Package::WIDGET=>["plural"=>"Widgets"],
-        Package::WORKER=>["plural"=>"Workers"],
-        Package::HTML_FORM=>["plural"=>"Html Forms"],
-        Package::HTML_FORM_TEMPLATE=>["plural"=>"Html Form Templates"],
-        Package::HTML_VIEW=>["plural"=>"Html Views"],
-        Package::JS_TYPE=>["plural"=>"Js Types"],
-        Package::JS_MODEL=>["plural"=>"Js Model"],
-        Package::JS_FORM=>["plural"=>"Js Forms"],
-        Package::JS_VIEW=>["plural"=>"Js Views"]
+        Package::MODEL=>["plural"=>"Models","label"=>"Model"],
+        Package::ACTION=>["plural"=>"Actions","label"=>"Action"],
+        Package::DATASOURCE=>["plural"=>"Models","label"=>"Model"],
+        Package::TYPE=>["plural"=>"Types","label"=>"Type"],
+        Package::TYPE_METADATA=>["plural"=>"Types Metadata","label"=>"Type Metadata"],
+        Package::DEFINITION=>["plural"=>"Definitions","label"=>"Definition"],
+        Package::CONFIG=>["plural"=>"Configs","label"=>"Config"],
+        Package::WIDGET=>["plural"=>"Widgets","label"=>"Widget"],
+        Package::WORKER=>["plural"=>"Workers","label"=>"Worker"],
+        Package::HTML_FORM=>["plural"=>"Html Forms","label"=>"Html Form"],
+        Package::HTML_FORM_TEMPLATE=>["plural"=>"Html Form Templates","label"=>"Html Form Template"],
+        Package::HTML_VIEW=>["plural"=>"Html Views","label"=>"Html View"],
+        Package::JS_TYPE=>["plural"=>"Js Types","label"=>"Js Type"],
+        Package::JS_MODEL=>["plural"=>"Js Model","label"=>"Js Model"],
+        Package::JS_FORM=>["plural"=>"Js Forms","label"=>"Js Form"],
+        Package::JS_VIEW=>["plural"=>"Js Views","label"=>"Js View"]
     ];
 
     static $packages=array();

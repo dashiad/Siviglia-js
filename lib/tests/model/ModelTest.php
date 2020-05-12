@@ -311,6 +311,7 @@ class ModelTest extends TestCase
     {
         $this->init();
         $ins = new \model\tests\Post();
+        $ins->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_STRICT);
         $result = $ins->__validateArray(
             ["title" => "hola",
                 "content" => "adios",

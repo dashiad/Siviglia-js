@@ -9,7 +9,7 @@
 namespace lib\model\types;
 class Link extends _String
 {
-    function __construct($def,$value = -1)
+    function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
         $def=array(
             "TYPE"=>"Link",
@@ -18,7 +18,7 @@ class Link extends _String
             "ALLOWHTML"=>false,
             "TRIM"=>true
         );
-        String::__construct($def,$value);
+        _String::__construct($name,$def,$parentType,$value,$validationMode);
     }
     static function linkify($str)
     {

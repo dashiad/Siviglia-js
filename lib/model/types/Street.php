@@ -1,10 +1,10 @@
 <?php namespace lib\model\types;
 class Street extends _String {
-    function __construct(& $definition,$value=null)
+    function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
-		$definition['MINLENGTH']=2;
-		$definition['MAXLENGTH']=200;
-        parent::__construct($definition,$value);
+		$def['MINLENGTH']=2;
+		$def['MAXLENGTH']=200;
+        parent::__construct($name,$def,$parentType, $value,$validationMode);
     }
     static function normalize($cad)
     {

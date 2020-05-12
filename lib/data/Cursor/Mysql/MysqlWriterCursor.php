@@ -100,8 +100,8 @@ class MysqlWriterCursor extends \lib\data\Cursor\Cursor
             $result=[];
             foreach($this->params["types"] as $key=>$value)
             {
-                $t=\lib\model\types\TypeFactory::getType(null,$value);
-                $s=\lib\model\types\TypeFactory::getSerializer($t,\lib\model\types\TypeFactory::SERIALIZER_MYSQL);
+                $t=\lib\model\types\TypeFactory::getType($key,$value,null,null,\lib\model\types\BaseType::VALIDATION_MODE_NONE);
+                $s=\lib\model\types\TypeFactory::getSerializer($t,\lib\storage\Mysql\MysqlSerializer::MYSQL_SERIALIZER_TYPE);
                 $result[$key]=["type"=>$t,"serializer"=>$s];
             }
             return $result;
@@ -119,7 +119,7 @@ class MysqlWriterCursor extends \lib\data\Cursor\Cursor
         }
         if($tableExists)
         {
-            if($params[])
+            //if($params[])
         }
     }
 }

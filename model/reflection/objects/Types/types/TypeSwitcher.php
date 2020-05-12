@@ -2,8 +2,8 @@
 
 class TypeSwitcher extends \lib\model\types\Container
 {
-    function __construct(){
-        parent::__construct(
+    function __construct($name,$parentType=null, $value=null,$validationMode=null){
+        parent::__construct($name,
             [
                 "LABEL"=>"TypeSwitcher",
                 "TYPE"=>"TypeSwitcher",
@@ -101,14 +101,14 @@ class TypeSwitcher extends \lib\model\types\Container
             ]
 
         );
-parent::__construct( [
+parent::__construct($name, [
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"TypeSwitcher"],
                 "ALLOWED_TYPES"=>[
                     "TYPE"=>"Dictionary",
                     "LABEL"=>"Types",
-                    "VALUETYPE"=>"/model/reflection/Model/types/BaseType",
+                    "VALUETYPE"=>"/model/reflection/Types/types/BaseType",
                     "REQUIRED"=>true
                     ],
                 "IMPLICIT_TYPE"=>["TYPE"=>"String",
@@ -137,7 +137,7 @@ parent::__construct( [
                 "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","KEEP_KEY_ON_EMPTY"=>false]
 
             ]
-        ]);
+        ,$parentType,$value,$validationMode]);
 
     }
 }

@@ -26,14 +26,14 @@ class Composite
 
     function getSQLDefinition($name,$definition,$serializer)
     {
-        $type=\lib\model\types\TypeFactory::getType(null,$definition);
+        $type=\lib\model\types\TypeFactory::getType($name,$definition,null);
 
         $definition=$type->getDefinition();
         $results=array();
 
         foreach($definition["FIELDS"] as $key=>$value)
         {
-            $type=\lib\model\types\TypeFactory::getType(null,$value);
+            $type=\lib\model\types\TypeFactory::getType($key,$value,null);
             $typeSerializer=$serializer->getTypeSerializer($type);
             $subDefinitions=$typeSerializer->getSQLDefinition($key,$value,$serializer);
 

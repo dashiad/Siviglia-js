@@ -29,7 +29,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'ISLABEL'=>'true'
             ),
             'id_user'=>array(
-                'DEFAULT'=>'',
+
                 'FIELDS'=>array('id_user'=>'id'),
                 'MODEL'=>'\model\tests\User',
                 'LABEL'=>'id_user',
@@ -41,7 +41,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'DESCRIPTIVE'=>'true'
             ),
             'id_role'=>array(
-                'DEFAULT'=>'',
+
                 'FIELDS'=>array('id_role'=>'id_role'),
                 'MODEL'=>'\model\tests\User\Roles',
                 'LABEL'=>'id_role',

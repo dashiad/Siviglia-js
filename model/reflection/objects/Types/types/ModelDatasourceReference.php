@@ -13,8 +13,8 @@ include_once(__DIR__ . "/BaseType.php");
 
 class ModelDatasourceReference extends  \lib\model\types\Container
 {
-    function __construct(){
-parent::__construct( [
+    function __construct($name,$parentType=null, $value=null,$validationMode=null){
+parent::__construct($name, [
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "MODEL"=>[
@@ -51,7 +51,7 @@ parent::__construct( [
                     ]
                 ]
             ]
-        ]);
+        ,$parentType,$value,$validationMode]);
 
     }
 }

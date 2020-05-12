@@ -27,9 +27,9 @@
       var $mustCopy=false;
       var $srcFile=null;
       var $isUpload=false;
-      function __construct($def,$value=null)
+      function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
-        parent::__construct($def,$value);
+        parent::__construct($name,$def,$parentType, $value,$validationMode);
 
         $this->setFlags(BaseType::TYPE_IS_FILE | BaseType::TYPE_REQUIRES_UPDATE_ON_NEW | BaseType::TYPE_REQUIRES_SAVE | BaseType::TYPE_NOT_MODIFIED_ON_NULL);
       }
@@ -61,7 +61,7 @@
           $this->importFile($fileName,true);
       }
 
-      function _setValue($val)
+      function _setValue($val,$validationMode=null)
       {
           // Ojo..En caso de que estemos en un upload de HTML, este val es el fichero temporal PHP.Esto es asi, porque este tipo de dato,
           // usa el contexto para decidir el nombre y el path de fichero.Y ese contexto no estara listo hasta que se haya hecho save() del

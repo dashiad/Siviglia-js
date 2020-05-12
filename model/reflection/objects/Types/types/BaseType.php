@@ -1,19 +1,19 @@
-<?php namespace model\reflection\Model\types;
+<?php namespace model\reflection\Types\types;
 
 
 class BaseType extends \lib\model\types\TypeSwitcher
 {
     static $typeCache;
-    function __construct()
+    function __construct($name,$parentType=null, $value=null,$validationMode=null)
     {
-        parent::__construct([
+        parent::__construct($name,[
             "LABEL"=>"Type",
             "REQUIRED"=>true,
             "TYPE"=>"TypeSwitcher",
             "TYPE_FIELD"=>"TYPE",
             "IMPLICIT_TYPE"=>"ModelField",
             "ALLOWED_TYPES"=>BaseType::getAllTypeClasses()
-        ]);
+        ,$parentType,$value,$validationMode]);
     }
     function isAllowedType($type)
     {
@@ -64,7 +64,7 @@ class BaseType extends \lib\model\types\TypeSwitcher
         \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $result){
                 if($pkg->getName()=="reflection")
                     return;
-                $pkg->iterateOnModels(function($model) use ($pkg,& $result){
+                $pkg->iterateOnModelTree(function($model) use ($pkg,& $result){
                     $d=$model->getModelDescriptor();
                     if($d->isPrivate())
                     {

@@ -18,7 +18,7 @@ class IntegerTest extends TestCase
 
     function testDefinition1()
     {
-        $ins=new \lib\model\types\Integer([
+        $ins=new \lib\model\types\Integer("",[
             "TYPE"=>"Integer",
             "MIN"=>3
         ]);
@@ -30,7 +30,7 @@ class IntegerTest extends TestCase
     }
     function testDefinition2()
     {
-        $ins=new \lib\model\types\Integer([
+        $ins=new \lib\model\types\Integer("",[
             "TYPE"=>"Integer",
             "MAX"=>3
         ]);
@@ -42,7 +42,7 @@ class IntegerTest extends TestCase
     }
     function testDefinition3()
     {
-        $ins=new \lib\model\types\Integer([
+        $ins=new \lib\model\types\Integer("",[
             "TYPE"=>"Integer"
         ]);
         $this->expectException('\lib\model\types\IntegerException');
@@ -53,7 +53,7 @@ class IntegerTest extends TestCase
 
     function testDefinition6()
     {
-        $ins=new \lib\model\types\Integer([
+        $ins=new \lib\model\types\Integer("",[
             "TYPE"=>"Integer",
             "FIXED"=>8
         ]);
@@ -67,7 +67,7 @@ class IntegerTest extends TestCase
 
     function testDefinition8()
     {
-        $ins=new \lib\model\types\Integer([
+        $ins=new \lib\model\types\Integer("",[
             "TYPE"=>"Integer",
             "DEFAULT"=>"122"
         ]);
@@ -77,10 +77,10 @@ class IntegerTest extends TestCase
 
     function testDefinition11()
     {
-        $ins=new \lib\model\types\Integer([
+        $ins=new \lib\model\types\Integer("",[
             "TYPE"=>"Integer"
         ]);
-        $ins2=new \lib\model\types\Integer([
+        $ins2=new \lib\model\types\Integer("",[
             "TYPE"=>"Integer"
         ]);
         $ins->setValue(4);
@@ -89,7 +89,7 @@ class IntegerTest extends TestCase
     }
     function testDefinition12()
     {
-        $ins=new \lib\model\types\Integer([
+        $ins=new \lib\model\types\Integer("",[
             "TYPE"=>"Integer",
             "MIN"=>5
 
@@ -99,7 +99,7 @@ class IntegerTest extends TestCase
     }
     function testDefinition13()
     {
-        $ins=new \lib\model\types\Integer([
+        $ins=new \lib\model\types\Integer("",[
             "TYPE"=>"Integer"
         ]);
         $ins->setValue(8);
@@ -107,7 +107,7 @@ class IntegerTest extends TestCase
     }
     function testSource()
     {
-        $ins=new \lib\model\types\Integer([
+        $ins=new \lib\model\types\Integer("",[
             "TYPE"=>"Integer",
             "SOURCE"=>[
                 "TYPE"=>"Array",

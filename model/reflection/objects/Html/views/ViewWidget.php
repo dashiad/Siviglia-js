@@ -66,7 +66,8 @@ WIDGET;
         $contents="";
         foreach($metadata as $fName=>$fDef)
         {
-            $type=\lib\model\types\TypeFactory::getType($this->parentModel,$fDef);
+            $def=\lib\model\types\TypeFactory::getObjectField($this->parentModel,$fName);
+            $type=\lib\model\types\TypeFactory::getType($fName,$def,null);
             $typeDef=$type->getDefinition();
             $typeClass=get_class($type);
             $pos=strrpos($typeClass,"\\");

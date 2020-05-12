@@ -17,7 +17,7 @@ class ContainerTest extends TestCase
 {
     function getDefinition1()
     {
-        return new \lib\model\types\Container([
+        return new \lib\model\types\Container("",[
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "one"=>["TYPE"=>"String","MINLENGTH"=>2,"MAXLENGTH"=>10],
@@ -27,7 +27,7 @@ class ContainerTest extends TestCase
     }
     function getDefinition2()
     {
-        return new \lib\model\types\Container([
+        return new \lib\model\types\Container("",[
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "one"=>["TYPE"=>"String","MINLENGTH"=>2,"MAXLENGTH"=>10],
@@ -39,7 +39,7 @@ class ContainerTest extends TestCase
     }
     function getDefinition3()
     {
-        return new \lib\model\types\Container([
+        return new \lib\model\types\Container("",[
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "one"=>["TYPE"=>"String","MINLENGTH"=>2,"MAXLENGTH"=>10],
@@ -49,7 +49,7 @@ class ContainerTest extends TestCase
     }
     function getDefinition4()
     {
-        return new \lib\model\types\Container([
+        return new \lib\model\types\Container("",[
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "one"=>["TYPE"=>"String","MINLENGTH"=>2,"MAXLENGTH"=>10,"KEEP_KEY_ON_EMPTY"=>true],
@@ -59,7 +59,7 @@ class ContainerTest extends TestCase
     }
     function getDefinition5()
     {
-        return new \lib\model\types\Container([
+        return new \lib\model\types\Container("",[
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "one"=>["TYPE"=>"String","MINLENGTH"=>2,"MAXLENGTH"=>10,"KEEP_KEY_ON_EMPTY"=>true],
@@ -73,7 +73,7 @@ class ContainerTest extends TestCase
     }
     function getDefinition6()
     {
-        $instance=new \lib\model\types\Container([
+        $instance=new \lib\model\types\Container("",[
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "one"=>[
@@ -272,7 +272,7 @@ class ContainerTest extends TestCase
 
     function testCheckSource()
     {
-        $instance=new \lib\model\types\Container([
+        $instance=new \lib\model\types\Container("",[
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "VALUES"=>[
@@ -295,7 +295,7 @@ class ContainerTest extends TestCase
                 ]
             ]
         ]);
-        $instance->validate([
+        $instance->setValue([
             "VALUES"=>[
                 ["VALUE"=>1,"LABEL"=>"Pepito"],
                 ["VALUE"=>2,"LABEL"=>"Juanito"]

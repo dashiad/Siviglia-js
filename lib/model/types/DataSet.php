@@ -92,7 +92,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
     {
         return $this->parentDs;
     }
-    function _setValue($value)
+    function _setValue($value,$validationMode=null)
     {
         if(!is_array($value))
         {

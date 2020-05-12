@@ -35,7 +35,7 @@
 
             return $this->value;
       }
-      function _setValue($v)
+      function _setValue($v,$validationMode=null)
       {
           if($v=="NOW")
               $this->setAsNow();
@@ -48,7 +48,7 @@
 
       function setAsNow()
       {
-          $this->setValue(Date::getValueFromTimestamp());
+          $this->apply(Date::getValueFromTimestamp());
       }
       function __rawSet($val)
       {

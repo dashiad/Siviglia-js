@@ -34,7 +34,7 @@ class Field extends \model\reflection\Model\ModelComponent
         }
         static function isFieldARelation($definition)
         {
-            $type=\lib\model\types\TypeFactory::getType(null,$definition);
+            $type=\lib\model\types\TypeFactory::getType(null,$definition,null);
             return is_a($type,'\lib\model\types\Relationship');
         }
         function isRelation($definition=null)

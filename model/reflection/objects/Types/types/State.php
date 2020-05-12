@@ -2,8 +2,8 @@
 
 class State extends \lib\model\types\Container
 {
-    function __construct(){
-parent::__construct( [
+    function __construct($name,$parentType=null, $value=null,$validationMode=null){
+parent::__construct($name, [
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"State"],
@@ -32,7 +32,7 @@ parent::__construct( [
                 "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
                 "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false]
             ]
-        ]);
+        ,$parentType,$value,$validationMode]);
 
     }
 

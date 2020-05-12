@@ -2,11 +2,11 @@
 namespace lib\model\types;
 class Timestamp extends BaseType
 {
-        function __construct($definition,$value=false)
+        function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
         {
-                $definition["TYPE"]="Timestamp";
-                $definition["DEFAULT"]="NOW";
-                BaseType::__construct($definition,$value);
+                $def["TYPE"]="Timestamp";
+                $def["DEFAULT"]="NOW";
+                BaseType::__construct($name,$def,$parentType, $value,$validationMode);
                 //$this->flags |= BaseType::TYPE_NOT_EDITABLE;
                 $this->flags |= BaseType::TYPE_SET_ON_ACCESS;
         }
@@ -14,7 +14,7 @@ class Timestamp extends BaseType
         {
             return true;
         }
-        function _setValue($v)
+        function _setValue($v,$validationMode=null)
         {
             if($v==="NOW")
                 $this->value=time();
@@ -39,6 +39,6 @@ class Timestamp extends BaseType
         }
         function _copy($type)
         {
-            $this->setValue($type->getValue());
+            $this->apply($type->getValue());
         }
 }

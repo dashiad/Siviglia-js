@@ -9,7 +9,7 @@ class Enum extends BaseType
         {
             if(!in_array($val,$this->definition["VALUES"]))
             {
-                throw new BaseTypeException(BaseTypeException::ERR_INVALID,["val"=>$val],$this);
+                throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$val],$this);
             }
 
             $val=array_search($val,$this->definition["VALUES"]);
@@ -21,7 +21,7 @@ class Enum extends BaseType
         return true;
     }
 
-    function _setValue($val)
+    function _setValue($val,$validationMode=null)
     {
         $this->valueSet=true;
         if(!is_numeric($val))

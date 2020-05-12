@@ -47,7 +47,7 @@ class MysqlDataSourceTest extends TestCase
             $conn=new \lib\storage\Mysql\Mysql($Config["SERIALIZERS"]["modeltests"]["ADDRESS"]);
             $conn->connect();
             $conn->importDump(LIBPATH . "/tests/model/stubs/samplemodel.sql");
-            $serializer=$serService->getSerializerByName("web");
+            $serializer=$serService->getSerializerByName("modeltests");
             $this->serializer=$serializer;
             $this->testResolverIncluded=true;
         }

@@ -335,7 +335,7 @@ class ESSerializer extends \lib\storage\StorageSerializer
 
             $newInstance=$s->getModel($objectName);
             $newInstance->__setSerializer($this);
-            $newInstance->loadFromArray($results[$k],true);
+            $newInstance->loadFromArray($results[$k],true,\lib\model\types\BaseType::VALIDATION_MODE_NONE);
             $normalized=\lib\model\ModelCache::store($newInstance);
             $models[] = $normalized;
         }
@@ -379,11 +379,10 @@ class ESSerializer extends \lib\storage\StorageSerializer
 
         $conn=$this->getConnection($model,$index);
 
-
         include_once(LIBPATH . "/php/ArrayTools.php");
         foreach ($fields as $key => $value)
         {
-            $typeValue=\lib\model\types\TypeFactory::getType(null,$value);
+            $typeValue=\lib\model\types\TypeFactory::getType($key,$value,null);
 
                 $typeSerializer = $this->getTypeSerializer($typeValue);
 

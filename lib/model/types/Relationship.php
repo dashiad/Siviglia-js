@@ -21,14 +21,14 @@ class Relationship extends BaseType {
           $subTypes=array();
           for($k=0;$k<count($flist);$k++)
               {
-                $subTypes[$flist[$k]]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($obj,$flist[$k]);
+                $subTypes[$flist[$k]]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($obj,$flist[$k],$this->parent);
               }
 
           if(count($subTypes)>1)
               return $subTypes;
           return $subTypes[$flist[0]];
       }
-      function _setValue($val)
+      function _setValue($val,$validationMode=null)
       {
           $this->value=$val;
           $this->valueSet=true;

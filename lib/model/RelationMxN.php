@@ -42,7 +42,7 @@
         }
         $indexes=$rMD["INDEXFIELDS"];
         $this->relationModelIndexes=$indexes;
-        $this->relationIndexType=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($this->relationModelName,$indexes[0]);
+        $this->relationIndexType=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($this->relationModelName,$indexes[0],$model);
         parent::__construct($name,$model,$definition,$value);
 
     }
@@ -302,7 +302,10 @@ class MultipleRelationValues extends RelationValues
         $serializer=$relInstance->__getSerializer();
         $def=$relInstance->getDefinition();
         $index=$def["INDEXFIELDS"][0];
-        $type=\lib\model\types\TypeFactory::getType($relInstance,$def["FIELDS"][$index]);
+        $type=\lib\model\types\TypeFactory::getType($index,
+                                                    $def["FIELDS"][$index],
+                                                    null
+            );
         $type->setParent($this,$index);
 
         // se obtiene el valor serializado de esta relacion.Este valor va a ser siempre fijo.
@@ -321,7 +324,7 @@ class MultipleRelationValues extends RelationValues
         $remoteName=$this->relField->getRemoteModelName();
         foreach($remoteMapping as $key=>$value)
         {
-            $types[$value]=\lib\model\types\TypeFactory::getFieldTypeInstance($remoteName,$key);
+            $types[$value]=\lib\model\types\TypeFactory::getFieldTypeInstance($remoteName,$key,$this->relField->model);
             $serializers[$value]=\lib\model\types\TypeFactory::getSerializer($types[$value],$serType);
         }
         $relationName=$this->relField->getRelationModelName();
@@ -341,7 +344,7 @@ class MultipleRelationValues extends RelationValues
             }
             foreach($serRow as $key=>$value)
             {
-                $types[$key]=\lib\model\types\TypeFactory::getFieldTypeInstance($relationName,$key);
+                $types[$key]=\lib\model\types\TypeFactory::getFieldTypeInstance($relationName,$key,$this->relField->model);
                 $serializers[$key]=\lib\model\types\TypeFactory::getSerializer($types[$key],$serType);
             }
             // Si es asociativo, lo serializamos ahora.

@@ -5,9 +5,9 @@ namespace model\reflection\Model\types;
 
 class ModelType extends \lib\model\types\Container
 {
-    function __construct()
+    function __construct($name,$parentType=null, $value=null,$validationMode=null)
     {
-        parent::__construct([
+        parent::__construct($name,[
             "TYPE"=>"Container",
             "FIELDS" => [
                 "ROLE" => [
@@ -58,13 +58,14 @@ class ModelType extends \lib\model\types\Container
                            "LABEL" => "Campos indice",
                            "TYPE" => "Array",
                            "HELP" => "Lista de campos indice (normalmente, sólo uno)",
-                           "ELEMENTS" => ["TYPE" => "String"],
-                           "SOURCE" => [
-                               "TYPE" => "Path",
-                               "PATH" => "#../FIELDS/[[KEYS]]",
-                               "LABEL" => "LABEL",
-                               "VALUE" => "VALUE"
-                           ]
+                           "ELEMENTS" => ["TYPE" => "String",
+                                    "SOURCE" => [
+                                        "TYPE" => "Path",
+                                        "PATH" => "#../../FIELDS/[[KEYS]]",
+                                        "LABEL" => "LABEL",
+                                        "VALUE" => "VALUE"
+                                    ]
+                               ]
                        ],
                        "TABLE" => [
                            "LABEL" => "Tabla",
@@ -92,18 +93,9 @@ class ModelType extends \lib\model\types\Container
                        "CARDINALITY_TYPE" =>
                            [
                                "LABEL" => "Tipo de cardinalidad",
-                               "TYPE" => "Integer",
+                               "TYPE" => "Enum",
                                "HELP" => "Estimacion de si el numero de lineas de este objeto es variable.",
-                               "SOURCE" => [
-                                   "TYPE" => "Array",
-                                   "DATA" => [
-                                       ["Id"=>0,"Label" => "FIXED", "VALUE" => "FIXED"],
-                                       ["Id"=>1,"Label" => "PROPERTY", "VALUE" => "PROPERTY"],
-
-                                   ],
-                                   "LABEL" => "Label",
-                                   "VALUE" => "Label"
-                               ],
+                               "VALUES" => ["FIXED","VARIABLE"],
                                "DEFAULT" => "FIXED"
                            ],
 
@@ -149,7 +141,7 @@ class ModelType extends \lib\model\types\Container
                                                // El segundo ".." sale del campo "FIELDS" de este tipo (al principio de la definicion del tipo)
                                                // El tercer ".." sale de este tipo
                                                // El cuarto llega al diccionario padre.
-                                               "PATH" => "#../../../../FIELDS/[[KEYS]]",
+                                               "PATH" => "#../../../FIELDS/[[KEYS]]",
                                                "LABEL" => "LABEL",
                                                "VALUE" => "LABEL"
 
@@ -162,7 +154,7 @@ class ModelType extends \lib\model\types\Container
                                                    "MODEL" => '/model/reflection/Model',
                                                    "DATASOURCE" => 'FieldList',
                                                    "PARAMS" => [
-                                                       "model" => "[%#../../MODEL%]"
+                                                       "model" => "[%#../MODEL%]"
                                                    ],
                                                    "LABEL" => "NAME",
                                                    "VALUE" => "NAME"
@@ -171,7 +163,7 @@ class ModelType extends \lib\model\types\Container
                                            "REQUIRED" => true
 
                                        ],
-                                       "MULTIPLICITY" => ["LABEL" => "Multiplicidad", "TYPE" => "Enum", "VALUES" => ["N:1", "N:0-1", "M:N"]],
+                                       "MULTIPLICITY" => ["LABEL" => "Multiplicidad", "TYPE" => "Enum", "VALUES" => ["1:N", "0-1:N", "M:N"]],
                                        "HELP" => ["LABEL" => "Ayuda", "TYPE" => "Text", "KEEP_KEY_ON_EMPTY" => false],
                                        "CARDINALITY" => ["LABEL" => "Cardinalidad", "TYPE" => "Integer", "HELP" => "Numero aproximado de elementos del modelo remoto que apuntan a 1 elemento del modelo actual."],
                                        "KEEP_KEY_ON_EMPTY" => ["LABEL" => "Permitir valor vacío", "TYPE" => "Boolean", "KEEP_KEY_ON_EMPTY" => false],
@@ -179,7 +171,7 @@ class ModelType extends \lib\model\types\Container
                                        "DEFAULT" => ["TYPE" => "String", "LABEL" => "Valor por defecto", "KEEP_KEY_ON_EMPTY" => false]
                                        ]
                                    ],
-                                   "MultipleRelation" => [
+                                   "RelationMxN" => [
                                        "LABEL" => "Relacion Multiple",
                                        "HELP" => "Una relación múltiple requiere que exita un modelo intermedio, con  ROLE tipo MULTIPLE_RELATIONSHIP, que almacena los campos relacionados.",
                                        "TYPE"=>"Container",
@@ -233,7 +225,7 @@ class ModelType extends \lib\model\types\Container
                                                    "MODEL" => '/model/reflection/Model',
                                                    "DATASOURCE" => 'FieldList',
                                                    "PARAMS" => [
-                                                       "model" => "[%#../../MODEL%]"
+                                                       "model" => "[%#../../../MODEL%]"
                                                    ],
                                                    "LABEL" => "NAME",
                                                    "VALUE" => "NAME"
@@ -267,6 +259,9 @@ class ModelType extends \lib\model\types\Container
                             "LABEL" => "Storage",
                             "HELP" => "Opciones para el almacenamiento en StorageEngines",
                             "TYPE" => "Dictionary",
+                            "VALUETYPE"=>[
+                                "TYPE"=>"PHPVariable"
+                            ],
                             "SOURCE" => [
                                 "TYPE" => "Datasource",
                                 "MODEL" => "/model/reflection/Storage/SerializerTypes"
@@ -291,7 +286,7 @@ class ModelType extends \lib\model\types\Container
                     "DEFAULT" => true
                 ]
             ]
-        ]);
+        ],$parentType, $value,$validationMode);
     }
 
 }

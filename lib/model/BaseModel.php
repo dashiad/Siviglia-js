@@ -24,36 +24,21 @@ class BaseModelException extends \lib\model\BaseException
 }
 
 
-class BaseModel extends BaseTypedObject
+class BaseModel extends BaseTypedModel
 {
 
     protected $__aliasDef;
-    protected $__filterConditions;
-
-    protected $__inherits;
-    protected $__inheritedModel;
-    //protected $__nextState;
-    protected $__getConditions;
     protected $serializer;
-    protected $__objName;
     protected $__new = true;
     protected $__filters = array();
     protected $__relayAllowed=true;
     protected $__writeSerializer;
     protected $__saving;
-    protected $__def;
-    function __construct($serializer = null, $definition = null)
+
+    function __construct($serializer = null, $definition = null,$validationMode=null)
     {
-        $this->__objName = \lib\model\ModelService::getModelDescriptor('\\'.get_class($this));
-        if (!$definition)
-            $this->__def=BaseModelDefinition::loadDefinition($this);
-        else
-            $this->__def=BaseModelDefinition::fromArray($definition);
-
-        BaseTypedObject::__construct($this->__def->getDefinition());
-
+        BaseTypedModel::__construct($definition,$validationMode);
         $this->__aliasDef = & $this->__objectDef["ALIASES"];
-
         if ($serializer)
         {
             $this->__serializer = $serializer;
@@ -143,22 +128,7 @@ class BaseModel extends BaseTypedObject
             throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
    }
 
-    function __getObjectName()
-    {
-        return $this->__objName->className;
-    }
-    function __getObjectNameObj()
-    {
-        return $this->__objName;
-    }
-    function __getModelDescriptor()
-    {
-        return $this->__objName;
-    }
-    function __getFullObjectName()
-    {
-        return $this->__objName->getNamespaced();
-    }
+
 
     function __isNew()
     {
@@ -178,10 +148,7 @@ class BaseModel extends BaseTypedObject
         return $this->__objName;
     }
 
-    function __getObjectDefinition()
-    {
-        return $this->__objectDef;
-    }
+
     function __get($varName)
     {
         try{
@@ -266,7 +233,10 @@ class BaseModel extends BaseTypedObject
         }
         try
         {
+            $oldValidationMode=$this->getValidationMode();
+            $this->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_NONE);
             $this->__serializer->unserialize($this, array("CONDITIONS" => $filters));
+            $this->setValidationMode($oldValidationMode);
         }
         catch(\Exception $e)
         {

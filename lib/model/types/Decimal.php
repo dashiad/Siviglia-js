@@ -1,7 +1,7 @@
 <?php namespace lib\model\types;
 class Decimal extends BaseType
 {
-    function _setValue($val)
+    function _setValue($val,$validationMode=null)
     {
         $this->value=$val;
         $this->valueSet=true;

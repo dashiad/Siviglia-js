@@ -37,12 +37,6 @@
                     foreach($def["FIELDS"] as $keyR=>$valueR)
                     {                        
                         $newFields[$valueR]=$keyR;
-                        if(!is_object($model->{"*".$valueR}))
-                        {
-                            echo $valueR;
-                            $h=20;
-
-                        }
                         if($model->{"*".$valueR}->hasOwnValue())
                             $cValue=$model->{$valueR};
                     }

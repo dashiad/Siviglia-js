@@ -36,7 +36,7 @@ class ModelFieldTest extends TestCase
     function testDefinition1()
     {
         $this->init();
-        $ins=new \lib\model\types\ModelField();
+        $ins=new \lib\model\types\ModelField("",null);
         $ins->setValue(["MODEL"=>'\model\tests\User',"FIELD"=>'Name']);
         $this->assertEquals(true,$ins->hasOwnValue());
         $field=$ins->FIELD;
@@ -45,7 +45,7 @@ class ModelFieldTest extends TestCase
     function testDefinition2()
     {
         $this->init();
-        $ins=new \lib\model\types\ModelField();
+        $ins=new \lib\model\types\ModelField("",null);
         $this->expectException('\lib\model\types\BaseTypeException');
         $this->expectExceptionCode(\lib\model\types\BaseTypeException::ERR_INVALID);
         $ins->setValue(["MODEL"=>'\model\tests\User',"FIELD"=>'Named']);
@@ -53,7 +53,7 @@ class ModelFieldTest extends TestCase
     function testDefinition3()
     {
         $this->init();
-        $ins=new \lib\model\types\ModelField();
+        $ins=new \lib\model\types\ModelField("",null);
         $this->expectException('\lib\model\types\BaseTypeException');
         $this->expectExceptionCode(\lib\model\types\BaseTypeException::ERR_INVALID);
         $ins->setValue(["MODEL"=>'\model\tests\User2',"FIELD"=>'Name']);
@@ -61,10 +61,10 @@ class ModelFieldTest extends TestCase
     function testDefinition4()
     {
         $this->init();
-        $ins=new \lib\model\types\ModelField();
+        $ins=new \lib\model\types\ModelField("",null);
         $ins->setValue(["MODEL"=>'\model\tests\User',"FIELD"=>'Name']);
 
-        $ins2=new \lib\model\types\ModelField();
+        $ins2=new \lib\model\types\ModelField("",null);
         $ins2->copy($ins);
         $field=$ins2->FIELD;
         $this->assertEquals(true,$ins2->hasOwnValue());

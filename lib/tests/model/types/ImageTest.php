@@ -36,7 +36,7 @@ class ImageTest extends TestCase
     function testDefinition1()
     {
         $this->initialize();
-        $ins=new \lib\model\types\File([
+        $ins=new \lib\model\types\File("",[
             "TYPE"=>"Image",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile"
@@ -51,7 +51,7 @@ class ImageTest extends TestCase
     function testDefinition2()
     {
         $this->initialize();
-        $ins=new \lib\model\types\Image([
+        $ins=new \lib\model\types\Image("",[
             "TYPE"=>"File",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",
@@ -64,7 +64,7 @@ class ImageTest extends TestCase
     function testDefinition3()
     {
         $this->initialize();
-        $ins=new \lib\model\types\Image([
+        $ins=new \lib\model\types\Image("",[
             "TYPE"=>"Image",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",
@@ -77,7 +77,7 @@ class ImageTest extends TestCase
     function testDefinition4()
     {
         $this->initialize();
-        $ins=new \lib\model\types\Image([
+        $ins=new \lib\model\types\Image("",[
             "TYPE"=>"Image",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",
@@ -90,7 +90,7 @@ class ImageTest extends TestCase
     function testDefinition5()
     {
         $this->initialize();
-        $ins=new \lib\model\types\Image([
+        $ins=new \lib\model\types\Image("",[
             "TYPE"=>"Image",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",
@@ -103,7 +103,7 @@ class ImageTest extends TestCase
     function testDefinition6()
     {
         $this->initialize();
-        $ins=new \lib\model\types\Image([
+        $ins=new \lib\model\types\Image("",[
             "TYPE"=>"Image",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",
@@ -116,7 +116,7 @@ class ImageTest extends TestCase
     function testThumbnail()
     {
         $this->initialize();
-        $ins=new \lib\model\types\Image([
+        $ins=new \lib\model\types\Image("",[
             "TYPE"=>"Image",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",

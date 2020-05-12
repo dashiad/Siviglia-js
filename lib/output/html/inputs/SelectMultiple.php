@@ -64,7 +64,7 @@ class SelectMultiple extends DefaultInput
             for($k=0;$k<$nFields;$k++)
             {
                 $curField=$valueFields[$k];
-                $type=\lib\model\types\TypeFactory::getType(null,$this->definition[$curField]);
+                $type=\lib\model\types\TypeFactory::getType($curField,$this->definition[$curField],null);
                 $types[$k]=$type;
                 $serializers[$k]=\lib\model\types\TypeFactory::getSerializer($type,"HTML");
             }

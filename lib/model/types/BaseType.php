@@ -5,9 +5,9 @@
   abstract class BaseType
   {
       var $valueSet=false;
-      var $validatingValue=null;
       var $value=null;
       var $definition;
+      var $validationMode;
       var $flags=0;
       var $parent;
       var $setOnEmpty;
@@ -21,30 +21,41 @@
       const TYPE_NOT_MODIFIED_ON_NULL=0x20;
       const TYPE_REQUIRES_UPDATE_ON_NEW=0x40;
 
+      const VALIDATION_MODE_NONE=0;  // Sin validacion alguna.
+      const VALIDATION_MODE_SIMPLE=1; // Validaciones simples de tipo (__validate())
+      const VALIDATION_MODE_COMPLETE=2; // Validacion de tipo y source.
+      const VALIDATION_MODE_STRICT=3; // Validacion de tipo, source y REQUIRED
+
       var $fieldName;
-      function __construct($def,$value=null)
+      function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
-          $this->parent=null;
+          // Parent es el padre de este tipo, que puede ser otro tipo, o un bto.
+          $this->parent=$parentType;
+          $this->fieldName=$name;
+          $this->validationMode= ($validationMode==null?BaseType::VALIDATION_MODE_STRICT:$validationMode);
+          // Controller es siempre el bto original,
           $this->definition=$def;
           $this->flags=0;
           $this->setOnEmpty=false;
           $this->validating=false;
           if(isset($def["SET_ON_EMPTY"]) && $def["SET_ON_EMPTY"]==true)
               $this->setOnEmpty=true;
-          if($value===null && $this->hasDefaultValue() && !isset($definition["DISABLE_DEFAULT"]))
-              $this->__rawSet($this->getDefaultValue());
-          if(isset($def["FIXED"])) {
+          if (isset($def["FIXED"])) {
               $this->__rawSet($def["FIXED"]);
-              $this->flags|=BaseType::TYPE_NOT_EDITABLE;
+              $this->flags |= BaseType::TYPE_NOT_EDITABLE;
           }
           else {
-              $this->setValue($value);
+              if ($value === null) {
+                  if ($this->hasDefaultValue() && !isset($definition["DISABLE_DEFAULT"]))
+                      $this->__rawSet($this->getDefaultValue());
+              } else {
+                  $this->apply($value);
+              }
           }
-
       }
-      function applyDefault()
+      function setValidationMode($mode)
       {
-
+          $this->validationMode=$mode;
       }
       function setParent($parent,$fieldName)
       {
@@ -84,9 +95,9 @@
       {
           return isset($this->definition["SOURCE"]);
       }
-      function getSource($validating=false)
+      function getSource()
       {
-          return \lib\model\types\sources\SourceFactory::getSource($this,$this->definition["SOURCE"],$validating);
+          return \lib\model\types\sources\SourceFactory::getSource($this,$this->definition["SOURCE"]);
       }
 
       function setFlags($flags)
@@ -97,9 +108,16 @@
       {
           return $this->flags;
       }
-
-      final function setValue($val)
+      function setValue($val)
       {
+           $this->apply($val,BaseType::VALIDATION_MODE_NONE);
+           $this->validate($val,$this->validationMode);
+      }
+
+      function apply($val,$validationMode=null)
+      {
+          if($validationMode===null)
+              $validationMode=$this->validationMode;
           if($val===$this->getEmptyValue())
           {
               if($this->setOnEmpty==false)
@@ -111,12 +129,13 @@
               $this->clear();
           }
           else {
+
               if($this->flags & BaseType::TYPE_NOT_EDITABLE)
                   return;
-              if ($this->validate($val))
-                  $this->_setValue($val);
+              $this->_setValue($val,$validationMode);
+              if ($validationMode!==BaseType::VALIDATION_MODE_NONE)
+                    $this->validate($val,$validationMode);
           }
-
       }
       function getEmptyValue()
       {
@@ -126,31 +145,39 @@
       {
           return $val===null || $val==="";
       }
-      abstract function _setValue($val);
+      abstract function _setValue($val,$validationMode=null);
 
-      final function validate($value)
+      function validate($value,$validationMode=null)
       {
-            $this->validating=true;
+          if(!$validationMode)
+              $validationMode=$this->validationMode;
+
             if($value===null)
                 return true;
-            $this->validatingValue=$value;
             $res=$this->_validate($value);
 
-            if(!$this->checkSource($value))
+            if(($validationMode==BaseType::VALIDATION_MODE_COMPLETE ||
+                $validationMode==BaseType::VALIDATION_MODE_STRICT))
+            {
+                if(!$this->checkSource($value))
                 throw new BaseTypeException(BaseTypeException::ERR_INVALID,["value"=>$value],$this);
-            $this->validatingValue=null;
+            }
+
+            if($validationMode==BaseType::VALIDATION_MODE_STRICT)
+            {
+                $req=io($this->definition,"REQUIRED",false);
+                if($req && $this->isEmptyValue($value))
+                    throw new BaseTypeException(BaseTypeException::ERR_REQUIRED,["field"=>$this->fieldPath]);
+            }
+
             $this->validating=false;
             return $res;
-      }
-      function getValidatingValue()
-      {
-          return $this->validatingValue;
       }
       function checkSource($value)
       {
           if(!$this->hasSource())
               return true;
-          $s=$this->getSource(true);
+          $s=$this->getSource();
           return $s->contains($value);
       }
       function postValidate($value)

@@ -96,9 +96,9 @@ class StateSpec extends \lib\model\types\Container
                )
             );
      */
-    function __construct()
+    function __construct($name,$parentType=null, $value=null,$validationMode=null)
     {
-        parent::__construct([
+        parent::__construct($name,[
             "LABEL"=>"Definicion de estados",
             "TYPE"=>"Container",
             "FIELDS"=>[
@@ -290,7 +290,7 @@ class StateSpec extends \lib\model\types\Container
                 ]
             ]
 
-        ]);
+        ],$parentType, $value,$validationMode);
     }
 }
 /*

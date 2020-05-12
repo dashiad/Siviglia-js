@@ -3,8 +3,8 @@
 
 class UUID extends \lib\model\types\Container
 {
-    function __construct(){
-parent::__construct( [
+    function __construct($name,$parentType=null, $value=null,$validationMode=null){
+parent::__construct($name, [
             "LABEL"=>"UUID",
             "TYPE"=>"Container",
             "FIELDS"=>[
@@ -16,7 +16,7 @@ parent::__construct( [
                 "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","KEEP_KEY_ON_EMPTY"=>false],
                 "SOURCE"=>\model\reflection\Types::getSourceMeta()
             ]
-        ]);
+        ,$parentType,$value,$validationMode]);
 
     }
 

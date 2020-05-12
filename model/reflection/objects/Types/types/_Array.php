@@ -3,8 +3,8 @@
 
   class _Array extends \lib\model\types\Container
   {
-      function __construct(){
-parent::__construct( [
+      function __construct($name,$parentType=null, $value=null,$validationMode=null){
+parent::__construct($name, [
               "LABEL"=>"Array",
               "TYPE"=>"Container",
               "FIELDS"=>[
@@ -25,7 +25,7 @@ parent::__construct( [
                   "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
                   "SOURCE"=>\model\reflection\Types::getSourceMeta()
               ]
-          ]);
+          ,$parentType,$value,$validationMode]);
 
       }
   }

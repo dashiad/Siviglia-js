@@ -105,7 +105,7 @@ class MetaDataProvider
     function getType($target,$modelName,$targetName,$field,$mode)
     {
         if($target!==MetaDataProvider::GET_LIST){
-            $targetType=\lib\model\types\TypeFactory::getType(null,$targetName);
+            $targetType=\lib\model\types\TypeFactory::getType(null,$targetName,null);
             if(!is_a($targetType,'\lib\model\types\BaseType'))
                 return null;
             return $targetType->getDefinition();
@@ -136,7 +136,7 @@ class MetaDataProvider
                     {
                         return ["type"=>"class","content"=>file_get_contents($target)];
                     }
-                    $instance=\lib\model\types\TypeFactory::getType(null,$field);
+                    $instance=\lib\model\types\TypeFactory::getType(null,$field,null);
                     if($instance)
                     {
                         $meta=$instance->getDefinition();
@@ -189,7 +189,7 @@ class MetaDataProvider
         {
             case MetaDataProvider::META_FORM:{
                 $formField=$this->getForm(MetaDataProvider::GET_FIELD,$modelName,$targetName,$field,MetaDataProvider::MODE_RESOLVED);
-                $type=\lib\model\types\TypeFactory::getType(null,$formField);
+                $type=\lib\model\types\TypeFactory::getType(null,$formField,null);
                 if($path!="")
                     $type=$type->getTypeFromPath($path);
                 $type->validate($value);

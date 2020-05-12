@@ -35,7 +35,7 @@ class FileTest extends TestCase
     function testDefinition1()
     {
         $this->initialize();
-        $ins=new \lib\model\types\File([
+        $ins=new \lib\model\types\File("",[
             "TYPE"=>"File",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile"
@@ -49,7 +49,7 @@ class FileTest extends TestCase
     function testDefinition2()
     {
         $this->initialize();
-        $ins=new \lib\model\types\File([
+        $ins=new \lib\model\types\File("",[
             "TYPE"=>"File",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",
@@ -61,7 +61,7 @@ class FileTest extends TestCase
     function testDefinition3()
     {
         $this->initialize();
-        $ins=new \lib\model\types\File([
+        $ins=new \lib\model\types\File("",[
             "TYPE"=>"File",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",
@@ -74,7 +74,7 @@ class FileTest extends TestCase
     function testDefinition4()
     {
         $this->initialize();
-        $ins=new \lib\model\types\File([
+        $ins=new \lib\model\types\File("",[
             "TYPE"=>"File",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",
@@ -88,7 +88,7 @@ class FileTest extends TestCase
     {
 
         $this->initialize();
-        $ins=new \lib\model\types\File([
+        $ins=new \lib\model\types\File("",[
             "TYPE"=>"File",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",
@@ -101,7 +101,7 @@ class FileTest extends TestCase
     function testDefinition6()
     {
         $this->initialize();
-        $ins=new \lib\model\types\File([
+        $ins=new \lib\model\types\File("",[
             "TYPE"=>"File",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile",
@@ -120,7 +120,7 @@ class FileTest extends TestCase
     {
 
         $this->initialize();
-        $ins=new \lib\model\types\File([
+        $ins=new \lib\model\types\File("",[
             "TYPE"=>"File",
             "TARGET_FILEPATH"=>__DIR__."/res/tmp",
             "TARGET_FILENAME"=>"destFile"
@@ -147,7 +147,7 @@ class FileTest extends TestCase
     }
     function testContainer()
     {
-        $c=new \lib\model\types\Container([
+        $c=new \lib\model\types\Container("",[
             "FIELDS"=>[
                 "id1"=>["TYPE"=>"String"],
                 "id2"=>["TYPE"=>"String"],
@@ -160,7 +160,7 @@ class FileTest extends TestCase
         ]);
         $c->id1="aa";
         $c->id2="bb";
-        $c->{"*file"}->importFile(__DIR__."/res/test.png");
+        $c->{"*file"}->importFile(__DIR__."/res/img.png");
         $c->{"*file"}->save();
         $ex=is_file(__DIR__."/res/tmpaa/destFile_bb.png");
         $this->assertEquals(true,$ex);

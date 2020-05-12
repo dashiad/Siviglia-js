@@ -29,14 +29,14 @@ class DictionaryTest extends TestCase
 
     function getDefinition1()
     {
-        return new \lib\model\types\Dictionary([
+        return new \lib\model\types\Dictionary("",[
             "TYPE"=>"Dictionary",
             "VALUETYPE"=>$this->getContainerDefinition()
         ]);
     }
     function getContainerInstance()
     {
-        return new \lib\model\types\Container($this->getContainerDefinition());
+        return new \lib\model\types\Container("",$this->getContainerDefinition());
     }
 
     function testSimple()

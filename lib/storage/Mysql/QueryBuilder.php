@@ -130,7 +130,8 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                         $n = $type->count();
                         $def = $type->getDefinition();
                         $elementType = $def["ELEMENTS"];
-                        $subtype = \lib\model\types\TypeFactory::getType($this, $elementType);
+
+                        $subtype = \lib\model\types\TypeFactory::getType($key, $elementType,null,null,\lib\model\types\BaseType::VALIDATION_MODE_NONE);
                         $subVals = [];
                         for ($s = 0; $s < $n; $s++) {
                             $subtype->setValue($type[$s]->getValue());

@@ -11,12 +11,12 @@ namespace lib\model\types;
 
 
 class NIF extends _String{
-    function __construct(& $definition,$value)
+    function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
         $definition['TYPE']='NIF';
         $definition['MINLENGTH']=9;
         $definition['MAXLENGTH']=9;
-        String::__construct($definition,$value);
+        _String::__construct($name,$def,$parentType,$value,$validationMode);
     }
 
     function _validate($val)

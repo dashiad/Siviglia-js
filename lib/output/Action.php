@@ -56,7 +56,10 @@ abstract class Action
                     $keyVals[$keyNames[$k]]=$this->form->{$keyNames[$k]};
                 }
             }
+
+            $this->form->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_NONE);
             $this->form->load($keyVals);
+            $this->form->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE);
         }
         return $this->form;
     }

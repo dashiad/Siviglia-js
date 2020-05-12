@@ -18,7 +18,7 @@ class ArrayTest extends TestCase
 {
     function getDefinition1()
     {
-        return new \lib\model\types\_Array([
+        return new \lib\model\types\_Array("",[
             "TYPE"=>"Array",
             "ELEMENTS"=>[
                   "TYPE"=>"String"

@@ -257,7 +257,8 @@ function selectIndexed($q,$field="")
         $res=mysqli_query($this->conn,$q);
         if(!$res)
         {
-            throw new MysqlException(MysqlException::ERR_QUERY_ERROR,array("message"=>mysqli_error($this->conn),"query"=>$q));
+            $error=mysqli_error($this->conn);
+            throw new MysqlException(MysqlException::ERR_QUERY_ERROR,array("message"=>$error,"query"=>$q));
         }
         $nRows=0;
         while($arr=mysqli_fetch_assoc($res))
@@ -425,8 +426,8 @@ function selectIndexed($q,$field="")
         {
             $sqlStr.=$k>0?',':'';
             $curFieldName=$fieldNames[$k];
-
-            $type=\lib\model\types\TypeFactory::getType($modelName,$fields[$curFieldName]);
+            $definition=\lib\model\types\TypeFactory::getObjectField($modelName,$curFieldName);
+            $type=\lib\model\types\TypeFactory::getType($curFieldName,$definition,null);
             $sqlStr.=$type->getSQLDefinition();
         }
         $sqlStr.=")";

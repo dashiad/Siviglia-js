@@ -7,9 +7,9 @@ class UUID extends BaseType
       var $definition;
       var $name;
 
-      function __construct($definition,$value=null)
+      function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
-          BaseType::__construct($definition,$value);
+          BaseType::__construct($name,$def,$parentType, $value,$validationMode);
           $this->setFlags(BaseType::TYPE_SET_ON_ACCESS);
       }
 
@@ -25,7 +25,7 @@ class UUID extends BaseType
       {
           return true;
       }
-      function _setValue($v)
+      function _setValue($v,$validationMode=null)
       {
           $this->value=$v;
           $this->valueSet=true;

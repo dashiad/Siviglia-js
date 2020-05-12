@@ -18,7 +18,7 @@ class EnumTest extends TestCase
 
     function testDefinition1()
     {
-        $ins=new \lib\model\types\Enum([
+        $ins=new \lib\model\types\Enum("",[
             "TYPE"=>"Enum",
             "VALUES"=>["Uno","Dos","Tres","Cuatro"],
             "DEFAULT"=>"Uno"

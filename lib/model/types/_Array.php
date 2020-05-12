@@ -14,26 +14,36 @@
       var $subObjects;
       var $remoteTypeName;
 
-      function __construct($def,$value=null)
+      function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
           $this->subTypeDef=$def["ELEMENTS"];
           $this->subObjects=null;
           $ins=$this->getSubtypeInstance(0);
           $this->remoteTypeName=get_class($ins);
-          parent::__construct($def,$value);
+          parent::__construct($name,$def,$parentType, $value,$validationMode);
       }
       function getSubTypeDef()
       {
           return $this->subTypeDef;
       }
+      function setValidationMode($mode)
+      {
+          $this->validationMode=$mode;
+          if($this->subObjects!==null)
+          {
+              for($k=0;$k<count($this->subObjects);$k++)
+                  $this->subObjects[$k]->setValidationMode($mode);
+          }
+      }
       function getSubtypeInstance($fieldName)
       {
-         $instance= TypeFactory::getType(null,$this->subTypeDef,null);
-         $instance->setParent($this,$fieldName);
-         return $instance;
+         return TypeFactory::getType($fieldName,$this->subTypeDef,$this,null,$this->validationMode);
       }
-      function _setValue($val)
+
+      function _setValue($val,$validationMode=null)
       {
+          if($validationMode===null)
+              $validationMode=$this->validationMode;
           $this->valueSet=false;
           $className=$this->remoteTypeName;
           $this->subObjects=[];
@@ -44,6 +54,8 @@
               {
                 if(is_a($v,$className))
                 {
+                    $v->setParent($this,$k);
+                    $v->setValidationMode($this->validationMode);
                     $this->subObjects[]=$v;
                 }
                 else
@@ -52,7 +64,7 @@
               else
               {
                   $ninst=$this->getSubtypeInstance($k);
-                  $ninst->__rawSet($v);
+                  $ninst->apply($v,$validationMode);
                   $this->subObjects[]=$ninst;
               }
           }
@@ -152,7 +164,9 @@
       }
       function __set($index,$value)
       {
-          $this->subObjects[$index]->setValue($value);
+          if(!isset($this->subObjects[$index]))
+              $this->subObjects[$index]=$this->getSubtypeInstance($index);
+          $this->subObjects[$index]->apply($value);
       }
       function offsetGet($index)
       {
@@ -163,7 +177,8 @@
       }
       function offsetUnset($index)
       {
-
+            $this->subObjects[$index]->destruct();
+            unset($this->subObjects[$index]);
       }
       function getApplicableErrors()
       {

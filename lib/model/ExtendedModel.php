@@ -10,13 +10,14 @@ class ExtendedModel extends MultipleModel
         protected $mainIndex;
         protected $relatedModel;
 
-        function __construct($serializer=null,$definition=null)
+        function __construct($serializer=null,$definition=null,$validationMode=null)
         {
 
-                BaseModel::__construct($serializer,$definition);
+                BaseModel::__construct($serializer,$definition,$validationMode);
                 $this->parentModelName=$this->__objectDef["EXTENDS"];
                 $this->__setRelatedModelName($this->__objectDef["EXTENDS"]);
         }
+
 
     function loadFromFields()
     {
@@ -40,10 +41,6 @@ class ExtendedModel extends MultipleModel
             {
                 $keys=$this->__key->getKeyNames();
                 $this->relatedModel=$this->{$keys[0]}[0];
-                if(is_a($this->relatedModel,'\lib\model\BaseTypedModel'))
-                {
-                    $this->relatedModel->setModelType($this->__objName->className);
-                }
                 $this->relatedModel->__allowRelay(false);
             }
             return $this->relatedModel;

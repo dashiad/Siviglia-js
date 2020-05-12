@@ -12,7 +12,7 @@
   class Integer extends BaseType
   {
 
-      function _setValue($val)
+      function _setValue($val,$validationMode=null)
       {
           $this->value=intval($val);
           $this->valueSet=true;

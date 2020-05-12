@@ -15,7 +15,7 @@ class Definition extends \lib\model\BaseModelDefinition
         'CARDINALITY_TYPE'=>'FIXED',
         'FIELDS'=>array(
             'id_user'=>array(
-                'DEFAULT'=>'NULL',
+
                 'FIELDS'=>array('id_user'=>'id'),
                 'MODEL'=> '\model\tests\User',
                 'LABEL'=>'User id',

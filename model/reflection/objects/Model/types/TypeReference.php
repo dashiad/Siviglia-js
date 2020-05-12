@@ -6,9 +6,9 @@ namespace model\reflection\Model\types;
 
 class TypeReference extends \lib\model\types\TypeSwitcher
 {
-    function __construct($value=null)
+    function __construct($name,$parentType=null, $value=null,$validationMode=null)
     {
-        parent::__construct([
+        parent::__construct($name,[
            "LABEL"=>"Tipo",
            "TYPE"=>"TypeSwitcher",
            "ON"=>[
@@ -28,9 +28,9 @@ class TypeReference extends \lib\model\types\TypeSwitcher
                 ]],
                 "INLINE_TYPE"=>[
                     "LABEL"=>"Definicion de tipo",
-                    "TYPE"=>"/model/reflection/Model/types/BaseType"
+                    "TYPE"=>"/model/reflection/Types/types/BaseType"
                 ]
             ]
-        ]);
+        ],$parentType, $value,$validationMode);
     }
 }

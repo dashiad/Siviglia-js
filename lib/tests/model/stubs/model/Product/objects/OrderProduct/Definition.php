@@ -41,7 +41,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'NINTEGERS'=>5
             ],
             'id_product'=>array(
-                'DEFAULT'=>'',
+
                 'FIELDS'=>array('id_product'=>'id'),
                 'MODEL'=>'\model\tests\Product',
                 'LABEL'=>'id_product',
@@ -53,7 +53,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'DESCRIPTIVE'=>'true'
             ),
             'id_order'=>array(
-                'DEFAULT'=>'',
+
                 'FIELDS'=>array('id_order'=>'id'),
                 'MODEL'=>'\model\tests\Product\Order',
                 'LABEL'=>'id_order',

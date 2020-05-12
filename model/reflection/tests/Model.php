@@ -22,8 +22,14 @@ class Model extends TestCase
             \Registry::getService("model")->addPackage(new \model\tests\Package());
         }
     }
-
-    function testLoad()
+    function test1()
+    {
+        $this->initialize();
+        $newModel=new \model\reflection\Model('\model\tests\User');
+        $newModel->loadFromFields();
+        $h=11;
+    }
+/*    function testLoad()
     {
         $this->initialize();
         $user = new \model\reflection\Model('\model\tests\User');
@@ -51,7 +57,7 @@ class Model extends TestCase
         $this->assertEquals(false, $def["FIELDS"]["Name"]['NORMALIZE']);
         $this->assertEquals(false, $def["FIELDS"]["Name"]['REQUIRED']);
 
-        /*'NORMALIZE' => false,*/
+
 
         $this->assertEquals('InverseRelation', $def["ALIASES"]["posts"]['TYPE']);
         $this->assertEquals('\\model\\tests\\Post', $def["ALIASES"]["posts"]['MODEL']);
@@ -100,4 +106,5 @@ class Model extends TestCase
         $role->initialize();
         $role->initializeAliases();
     }
+*/
 }

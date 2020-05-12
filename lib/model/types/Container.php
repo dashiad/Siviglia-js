@@ -12,24 +12,24 @@ class ContainerException extends \lib\model\types\BaseTypeException
 class Container extends BaseContainer implements \ArrayAccess
 {
     var $__fields;
-    function __construct($def,$value=null)
+    function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
         $this->__fields=[];
-        parent::__construct($def,$value);
+        parent::__construct($name,$def,$parentType,$value,$validationMode);
 
     }
-    function _setValue($val)
+    function _setValue($val,$validationMode=null)
     {
+        if($validationMode===null)
+            $validationMode=$this->validationMode;
+
         $curDef=$this->definition["FIELDS"];
         $nSet=0;
-        foreach($curDef as $key=>$value)
-        {
-            $this->__fields[$key]=\lib\model\types\TypeFactory::getType($this,$value);
-            $this->__fields[$key]->setParent($this,$key);
-
+        foreach($curDef as $key=>$value) {
+            $this->__fields[$key] = \lib\model\types\TypeFactory::getType($key,$value,$this,null,$validationMode);
             $wasEmpty=true;
             if(isset($val[$key])) {
-                $this->__fields[$key]->__rawSet($val[$key]);
+                $this->__fields[$key]->apply($val[$key]);
                 if($this->__fields[$key]->hasValue())
                     $wasEmpty=false;
             }
@@ -57,22 +57,26 @@ class Container extends BaseContainer implements \ArrayAccess
             }
         }
     }
+    function setValidationMode($mode)
+    {
+        $this->validationMode=$mode;
+        foreach($this->__fields as $k=>$v)
+            $v->setValidationMode($mode);
+    }
 
     function _validate($value)
     {
         foreach($this->definition["FIELDS"] as $key=>$type)
         {
             $curDef=$this->definition["FIELDS"][$key];
-            $tempType=\lib\model\types\TypeFactory::getType($this,$curDef);
-            $tempType->setParent($this,$key);
-            if(!isset($value[$key]) && isset($curDef["REQUIRED"]) && $curDef["REQUIRED"]!=false)
-                throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key),$this);
-            if(isset($value[$key])) {
-                if (!$tempType->validate($value[$key]))
-                    return false;
-                $tempType->__rawSet($value[$key]);
+            if(!isset($this->__fields[$key]))
+            {
+                $this->__fields[$key] = \lib\model\types\TypeFactory::getType($key,$type,$this,null,$this->validationMode);
             }
-            if($curDef["REQUIRED"] && $tempType->hasValue()===false)
+            if(!isset($this->__fields[$key]) && isset($curDef["REQUIRED"]) && $curDef["REQUIRED"]!=false)
+                throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key),$this);
+            $this->__fields[$key]->validate($value[$key]);
+            if($curDef["REQUIRED"] && $this->__fields[$key]->hasValue()===false)
                 throw new ContainerException(ContainerException::ERR_REQUIRED_FIELD,array("field"=>$key),$this);
         }
         return true;
@@ -135,9 +139,12 @@ class Container extends BaseContainer implements \ArrayAccess
             if(!isset($value[$key]) && $this->__fields[$key]->hasOwnValue())
                 return false;
             $curDef = $this->definition["FIELDS"][$key];
-            $tempType=\lib\model\types\TypeFactory::getType($this,$curDef);
-            $tempType->setParent($this,$key);
-            $tempType->__rawSet($value[$key]);
+            $tempType=\lib\model\types\TypeFactory::getType(
+                $key,
+                $curDef,
+                $this,
+                $value[$key],
+                \lib\model\types\BaseType::VALIDATION_MODE_NONE);
             if(!$tempType->equals($this->__fields[$key]->getValue()))
                 return false;
         }
@@ -177,8 +184,8 @@ class Container extends BaseContainer implements \ArrayAccess
     {
         if(!isset($this->definition["FIELDS"][$fieldName]))
             throw new BaseTypeException(\lib\model\types\ContainerException::ERR_NOT_A_FIELD,array("field"=>$fieldName),$this);
-        $instance=\lib\model\types\TypeFactory::getType($this,$this->definition["FIELDS"][$fieldName]);
-        $instance->setParent($this,$fieldName);
+        $instance=\lib\model\types\TypeFactory::getType($fieldName,$this->definition["FIELDS"][$fieldName],$this,null,$this->validationMode);
+
         if(is_object($value))
         {
             if(get_class($value)!=get_class($instance))
@@ -189,7 +196,7 @@ class Container extends BaseContainer implements \ArrayAccess
         }
         else
         {
-            $instance->setValue($value);
+            $instance->apply($value);
             $this->__fields[$fieldName]=$instance;
         }
         if($this->__fields[$fieldName]->hasOwnValue())
@@ -206,24 +213,16 @@ class Container extends BaseContainer implements \ArrayAccess
             $returnType=true;
             $fieldName = substr($fieldName, 1);
         }
-        if($this->validating==true)
-        {
-            // Si estoy validando, creo un campo temporal,
-            $target=\lib\model\types\TypeFactory::getType($this, $this->definition["FIELDS"][$fieldName]);
-            if(isset($this->validatingValue[$fieldName]))
-                $target->setValue($this->validatingValue[$fieldName]);
-        }
-        else {
+
             if (!isset($this->__fields[$fieldName])) {
                 if (!isset($this->definition["FIELDS"][$fieldName]))
                     throw new ContainerException(ContainerException::ERR_NOT_A_FIELD, ["field" => $fieldName], $this);
-                else {
-                    $this->__fields[$fieldName] = \lib\model\types\TypeFactory::getType($this, $this->definition["FIELDS"][$fieldName]);
-                    $this->__fields[$fieldName]->setParent($this, $fieldName);
-                }
+                else
+                    $this->__fields[$fieldName] = \lib\model\types\TypeFactory::getType($fieldName, $this->definition["FIELDS"][$fieldName],$this,null,$this->validationMode);
+
             }
             $target=$this->__fields[$fieldName];
-        }
+
             if($returnType)
                 return $target;
 
@@ -231,8 +230,9 @@ class Container extends BaseContainer implements \ArrayAccess
     }
     function _copy($ins)
     {
-        $this->setValue($ins->getValue());
-        $this->valueSet=$ins->valueSet;
+        $ins->setParent($this->parent);
+        $ins->setValidationMode($this->validationMode);
+        $this->apply($ins->getValue());
     }
     function getMetaClassName()
     {
@@ -271,7 +271,7 @@ class Container extends BaseContainer implements \ArrayAccess
     {
         if(!$this->value || !isset($this->__fields[$offset]))
             return;
-        return $this->__fields[$offset]->setValue($value);
+        return $this->__fields[$offset]->apply($value);
     }
     public function offsetUnset ( $offset ) {}
 }

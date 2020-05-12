@@ -66,6 +66,11 @@ class MethodDataSource extends \lib\datasource\ArrayDataSource
                 $this->data[$k][$fieldName] = $data[$k][$fieldName];
             }
         }
+        if(!$this->data)
+        {
+            $this->nRows=0;
+            return null;
+        }
         $this->nRows = count($this->data);
 
         $this->iterator=new \lib\model\types\DataSet(array("FIELDS"=>$def['FIELDS']),$this->data,$this->nRows,$this->nRows,$this,array());

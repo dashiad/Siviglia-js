@@ -1,11 +1,11 @@
 <?php namespace lib\model\types;
 class Money extends Decimal {
-    function __construct($definition,$value=null)
+    function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
-		$definition['NINTEGERS']=20;
-		$definition['NDECIMALS']=3;
+		$def['NINTEGERS']=20;
+		$def['NDECIMALS']=3;
         // Deberia aniadirse currency en la definicion.
-        Decimal::__construct($definition,$value);
+        Decimal::__construct($name,$def,$parentType, $value,$validationMode);
     }
     static function getFormatted($value)
     {

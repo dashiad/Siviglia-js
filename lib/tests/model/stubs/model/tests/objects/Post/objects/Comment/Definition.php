@@ -32,7 +32,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'ISLABEL'=>'false'
             ),
             'id_user'=>array(
-                'DEFAULT'=>'NULL',
+
                 'FIELDS'=>array('id_user'=>'id'),
                 'MODEL'=> '\model\tests\User',
                 'LABEL'=>'Creator',
@@ -43,7 +43,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'CARDINALITY'=>1
             ),
             'id_post'=>array(
-                'DEFAULT'=>'NULL',
+
                 'FIELDS'=>array('id_post'=>'id'),
                 'MODEL'=> '\model\tests\Post',
                 'LABEL'=>'Post',

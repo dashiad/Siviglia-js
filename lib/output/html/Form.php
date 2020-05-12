@@ -97,7 +97,9 @@ class Form extends \lib\model\BaseTypedObject
             {
                 $instance->{$k}=$v;
             }
+            $instance->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_NONE);
             $instance->loadFromFields();
+            $instance->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE);
         }
         $curValue=[];
         foreach($this->__fieldDef as $key=>$value)

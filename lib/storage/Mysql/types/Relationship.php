@@ -23,7 +23,7 @@
       }
       function getSQLDefinition($name,$definition,$serializer)
       {
-          $type=\lib\model\types\TypeFactory::getType(null,$definition);
+          $type=\lib\model\types\TypeFactory::getType($name,$definition,null);
           $remoteType=$type->getRelationshipType();
           $typeSerializer=$serializer->getTypeSerializer($remoteType);
 

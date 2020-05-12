@@ -1,9 +1,9 @@
 <?php namespace lib\model\types;
   class Color extends _String
   {
-      function __construct($def,$value=null)
+      function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
-          parent::__construct(array("TYPE"=>"Color","MAXLENGTH"=>10),$value);
+          parent::__construct($name,array("TYPE"=>"Color","MAXLENGTH"=>10),$parentType,$value,$validationMode);
       }
       function getMetaClassName()
       {

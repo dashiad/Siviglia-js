@@ -11,6 +11,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
       static function includeType($type,$suffix="")
       {
 
+
           $parts=explode('\\',$type);
           $n=count($parts);
           if($n>1)
@@ -53,17 +54,23 @@ include_once(LIBPATH."/model/types/BaseType.php");
             TypeFactory::$installedTypes[$name]=$def;
       }
 
-      static function getType($object,$def,$value=null)
+      static function getType($name,$def,$parentType,$value=null,$validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE)
       {
-          try
-          {
+
               if(is_string($def))
               {
+                  $replaced=str_replace('\\','/',$def);
+                  if(!strchr($replaced,'/'))
+                  {
+                      // Si es una cadena, y no pertenece a ninguna clase, es que es de reflection.
+                      $def='\model\reflection\Types\types\\'.$def;
+                  }
                   // Se mira si el tipo ha sido instalado previamente por algun BaseTypedObject
                   if(isset(TypeFactory::$installedTypes[$def]))
                   {
-                      return TypeFactory::getType($object,TypeFactory::$installedTypes[$def],$value);
+                      return TypeFactory::getType($name,TypeFactory::$installedTypes[$def],$parentType,$value,$validationMode);
                   }
+
                   $info = \lib\model\Package::getInfoFromClass($def);
                   if($info==null)
                       throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def),null);
@@ -71,24 +78,15 @@ include_once(LIBPATH."/model/types/BaseType.php");
                       throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("def"=>$def),null);
                   include_once($info["file"]);
                   $class=$info["class"];
-                  $instance=new $class();
-                  if($value!==null)
-                      $instance->setValue($value);
-                  return $instance;
+                  return new $class($name,$parentType,$value,$validationMode);
               }
 
             if(!isset($def["TYPE"]))
             {
-                if(isset($def["REFERENCES"]))
-                {
-                    // Important: The object parameter keeps pointing to the original
-                    // object.
-                    return TypeFactory::getType($object,$def["REFERENCES"],$value);
-                }
                 if(isset($def["MODEL"]))
                 {
 
-                    $newType=TypeFactory::getType(null,TypeFactory::getObjectField($def["MODEL"],$def["FIELD"]),$value);
+                    $newType=TypeFactory::getType($name,TypeFactory::getObjectField($def["MODEL"],$def["FIELD"]),$parentType,$value,$validationMode);
                     //$newType->setTypeReference($def["MODEL"],$def["FIELD"]);
                     // En caso de que la referencia defina un DEFAULT, sobreescribe al que llega de la definicion de tipo.
                     if(isset($def["DEFAULT"]) && !empty($def["DEFAULT"]))
@@ -97,15 +95,15 @@ include_once(LIBPATH."/model/types/BaseType.php");
                     }
                     return $newType;
                 }
-                throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE);
+                throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_TYPE_NOT_FOUND,["type"=>$def["TYPE"]]);
             }
 
-            $type=$def["TYPE"];
+            $type=str_replace('/','\\',$def["TYPE"]);
+
             if($type[0]!=='\\') {
                 //$type=ucfirst(strtolower($type));
                 $targetType = TypeFactory::includeType($type);
-                $t = new $targetType($def, $value);
-                return $t;
+                return new $targetType($name,$def,$parentType, $value,$validationMode);
             }
             else
             {
@@ -113,29 +111,21 @@ include_once(LIBPATH."/model/types/BaseType.php");
                 // \model\site\types\typeName
                 // Este codigo quita las dos ultimas partes, y busca el modelDescriptor para ese tipo.
 
-                $parts=explode('\\',$type);
-                array_shift($parts);
-                $typeName=array_pop($parts);
-                if(array_pop($parts)=="types")
-                {
-
-                    $s=\Registry::getService("model");
-                    $md=$s->getModelDescriptor('\\'.implode('\\',$parts));
-                    if($md)
+                $info = \lib\model\Package::getInfoFromClass($type);
+                if($info)
                     {
-                        $instance=$md->getType($typeName,$def,$value);
-                        if($instance==null)
+                        include_once($info["file"]);
+                        return new $info["class"]($name,$parentType,$value,$validationMode);
                             throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type),null);
                         return $instance;
                     }
-                }
+
                 throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type),null);
             }
-          }
-          catch(\Exception $e)
-          {
-              if($object==null)
-                  throw($e);
+
+      }
+/*
+
 
               if(is_string($object))
               {
@@ -148,8 +138,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
               else
                   throw($e);
           }
-      }
-
+ */
 
       static function getObjectField($objectName,$fieldName)
       {
@@ -179,15 +168,15 @@ include_once(LIBPATH."/model/types/BaseType.php");
           return $def["ALIAS"][$fieldName];
       }
 
-      static function getFieldTypeInstance($objectName,$fieldName)
+      static function getFieldTypeInstance($objectName,$fieldName,$model,$value=null,$validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE)
       {
           $definition=\lib\model\types\TypeFactory::getObjectField($objectName,$fieldName);
-          return TypeFactory::getType(null,$definition);
+          return TypeFactory::getType($fieldName,$definition,$model,null,$model->getValidationMode());
       }
 
-      static function getRelationFieldTypeInstance($objectName,$fieldName)
+      static function getRelationFieldTypeInstance($objectName,$fieldName,$model,$value=null,$validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE)
       {
-          $type=\lib\model\types\TypeFactory::getFieldTypeInstance($objectName,$fieldName);
+          $type=\lib\model\types\TypeFactory::getFieldTypeInstance($objectName,$fieldName,$model,$value,null);
           return $type->getRelationshipType();
       }
 
@@ -218,7 +207,7 @@ include_once(LIBPATH."/model/types/BaseType.php");
       {
           if(is_array($mixedType))
           {
-              $mixedType=TypeFactory::getType(null,$mixedType);
+              $mixedType=TypeFactory::getType(null,$mixedType,null);
           }
            $className=get_class($mixedType);
           $typeList=array_values(class_parents($className));

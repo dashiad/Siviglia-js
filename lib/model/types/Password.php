@@ -3,15 +3,16 @@
   {
       const DEFAULT_COST=12;
       var $encoded;
-      function __construct($def=array(),$value=null)
+      function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
+          $def=[];
           $def["TYPE"]="Password";
           $def["MINLENGTH"]=io($def,"MINLENGTH",6);
           $def["MAXLENGTH"]=io($def,"MAXLENGTH",16);
           $def["REGEXP"]=io($def,"REGEXP",'/^[a-zA-Z0-9\d_]{'.$def["MINLENGTH"].','.$def["MAXLENGTH"].'}$/i');
           $def["TRIM"]=true;
           $this->encoded=false;
-          parent::__construct($def,$value);
+          parent::__construct($name,$def,$parentType, $value,$validationMode);
       }
       function _validate($val)
       {
@@ -21,7 +22,7 @@
               return true;
           return parent::_validate($val);
       }
-      function _setValue($val)
+      function _setValue($val,$validationMode=null)
       {
           $this->value=$val;
           // Los sistemas de encriptacion ponen como primer caracter el $. Como $ no es valido
@@ -77,7 +78,7 @@
           $str = 'abcdefghijkmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
           for ($i = 0, $passwd = ''; $i < $length; $i++)
                   $passwd .= substr($str, mt_rand(0, strlen($str) - 1), 1);
-          $this->setValue($passwd);
+          $this->apply($passwd);
           return $passwd;
       }
 

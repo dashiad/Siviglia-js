@@ -79,7 +79,7 @@ class TypeList
         \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $result){
             if($pkg->getName()=="reflection")
                 return;
-            $pkg->iterateOnModels(function($model) use ($pkg,& $result){
+            $pkg->iterateOnModelTree(function($model) use ($pkg,& $result){
                 $d=$model->getModelDescriptor();
                 $curType["package"]=$pkg->getName();
                 if($d->isPrivate())

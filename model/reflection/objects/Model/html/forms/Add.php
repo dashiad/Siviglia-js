@@ -1,35 +1,29 @@
 <?php
 namespace model\reflection\Model\html\forms;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Site//html/forms/EditAction.php
-  CLASS:EditAction
+ FILENAME:/var/www/adtopy/model/web/objects/Site//html/forms/AddAction.php
+  CLASS:AddAction
 *
 *
 **/
 
-class Edit extends \lib\output\html\Form
+class Add extends \lib\output\html\Form
 {
 	 static  $definition=array(
-               'NAME'=>'Edit',
+               'NAME'=>'Add',
                'MODEL'=>'\model\reflection\Model',
                'ACTION'=>array(
                      'MODEL'=>'\model\reflection\Model',
-                     'ACTION'=>'Edit',
+                     'ACTION'=>'Add',
                      'INHERIT'=>1
                      ),
-               'ROLE'=>'Edit',
+               'ROLE'=>'Add',
                'REDIRECT'=>array(
                      'ON_SUCCESS'=>'',
                      'ON_ERROR'=>''
                      ),
                'INPUTS'=>array(),
-               'INDEXFIELDS'=>array(
-                     'modelName'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'id_site',
-                           'MODEL'=>'\model\reflection\Model'
-                           )
-                     )
+               'INDEXFIELDS'=>array()
                );
 
 
@@ -37,7 +31,7 @@ class Edit extends \lib\output\html\Form
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for EditAction
+	 * DESCRIPTION: Constructor for AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -48,7 +42,7 @@ class Edit extends \lib\output\html\Form
 	 function __construct( $actionResult=null)
 	{
 
-			parent::__construct(Edit::$definition,$actionResult);
+			parent::__construct(Add::$definition,$actionResult);
 
 	}
 
@@ -58,7 +52,7 @@ class Edit extends \lib\output\html\Form
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this form had success.EditAction
+	 * DESCRIPTION: Callback executed when this form had success.AddAction
 	 *
 	 * PARAMS:
 	 *
@@ -82,7 +76,7 @@ class Edit extends \lib\output\html\Form
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorEditAction
+	 * DESCRIPTION: Callback executed when this action had an errorAddAction
 	 *
 	 * PARAMS:
 	 *

@@ -11,7 +11,7 @@ class Definition extends \lib\model\BaseModelDefinition
             "definition"=>[
                 "LABEL"=>"definition",
                 "TYPE"=>"Dictionary",
-                "VALUETYPE"=>"/model/reflection/Model/types/BaseType"
+                "VALUETYPE"=>"/model/reflection/Types/types/BaseType"
             ]
         ]
     );

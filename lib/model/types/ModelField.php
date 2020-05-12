@@ -20,8 +20,10 @@ class ModelField extends Container{
     var $resolvedModel;
     var $resolvedField;
     var $contentType;
-    function __construct($val=null)
+
+    function __construct($name,$definition,$parentType=null, $value=null,$validationMode=null)
     {
+        $definition=[];
         $definition["TYPE"]="ModelField";
         $definition["FIELDS"]=[
             "TYPE"=>["TYPE"=>"String","FIXED"=>"ModelField"],
@@ -47,6 +49,6 @@ class ModelField extends Container{
                 ]
             ]
         ];
-        parent::__construct($definition,$val);
+        parent::__construct($name,$definition,$parentType, $value,$validationMode);
     }
 }

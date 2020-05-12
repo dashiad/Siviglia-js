@@ -507,11 +507,14 @@ class BaseTypedObject extends PathObject
         protected $__changingState=false;
         protected $__pendingRequired=[];
         protected $__allowRead=false;
+        protected $__validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE;
 
-
-        function __construct($definition)
+        function __construct($definition,$validationMode=null)
         {
                 $this->__objectDef=$definition;
+                if($validationMode!==null)
+                    $this->__validationMode=$validationMode;
+
                 if(isset($definition["TYPES"]))
                 {
                     foreach($definition["TYPES"] as $key=>$value)
@@ -525,6 +528,18 @@ class BaseTypedObject extends PathObject
                     $this->__key = new ModelKey($this, $this->__objectDef);
 
 
+        }
+        function setValidationMode($mode)
+        {
+            $this->__validationMode=$mode;
+            if($this->__fields!==null) {
+                foreach ($this->__fields as $key => $value)
+                    $value->setValidationMode($mode);
+            }
+        }
+        function getValidationMode()
+        {
+            return $this->__validationMode;
         }
         function getFieldsKey()
         {
@@ -602,14 +617,18 @@ class BaseTypedObject extends PathObject
         {
             $this->__serializer=$serializer;
         }
+        protected $__savedValidationMode;
         function beginUnserialize()
         {
             $this->disableStateChecks();
+            $this->__savedValidationMode=$this->__validationMode;
+            $this->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_NONE);
         }
         function endUnserialize()
         {
             $this->enableStateChecks();
             $this->__loaded=true;
+            $this->setValidationMode($this->__savedValidationMode);
             $this->cleanDirtyFields();
         }
 
@@ -626,7 +645,6 @@ class BaseTypedObject extends PathObject
             }
             else
                 $data=$dataOrObj;
-            $keys=array_keys($data);
             $localFields=[];
             $relationships=[];
             $relationshipPaths=[];
@@ -900,7 +918,6 @@ class BaseTypedObject extends PathObject
                         $this->__allowRead=false;
                         throw new BaseTypedException(BaseTypedException::ERR_INVALID_VALUE, array("field" => $varName, "value" => $value));
                     }
-
                 }
 
                 $processName="process_".$varName;
@@ -1089,9 +1106,10 @@ class BaseTypedObject extends PathObject
 
              for($k=0;$k<count($reqs);$k++)
                 $requiredFields[$reqs[$k]]=1;
+             $validationMode=$this->getValidationMode();
 
              $this->prioritizeChanges($fieldArray,function($fieldType,$fieldName,$fieldValue,$fieldDefinition)
-             use (&$nextState,$stateFieldName,&$result,$targetModel,$fromArray,&$requiredFields,$oldState)
+             use (&$nextState,$stateFieldName,&$result,$targetModel,$fromArray,&$requiredFields,$oldState,$validationMode)
              {
                  switch ($fieldType) {
                      case 1:
@@ -1147,7 +1165,7 @@ class BaseTypedObject extends PathObject
                                     $localField->getType()->validate($fieldValue);
                                  else
                                  {
-                                     $relType=\lib\model\types\TypeFactory::getType($targetModel,$localField->getDefinition());
+                                     $relType=$localField->getType("",$localField->getDefinition(),null,null,$validationMode);
                                      $relType->setParent($this,$fieldName);
                                      $relType->validate($fieldValue);
                                  }

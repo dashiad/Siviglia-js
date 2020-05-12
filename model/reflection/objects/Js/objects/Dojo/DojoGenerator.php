@@ -659,7 +659,7 @@ TEMPLATE;
     }
     function typeIsFiltrable($def)
     {
-        $type=\lib\model\types\TypeFactory::getType(null,$def);
+        $type=\lib\model\types\TypeFactory::getType(null,$def,null);
         $definition=$type->getDefinition();
         if($definition["TYPE"]=="Text")
             return false;
@@ -668,7 +668,7 @@ TEMPLATE;
 
     function getDataSourceFormInput($name,$def)
     {
-        $type=\lib\model\types\TypeFactory::getType(null,$def);
+        $type=\lib\model\types\TypeFactory::getType(null,$def,null);
         $definition=$type->getDefinition();
         $label=isset($definition["LABEL"])?$definition["LABEL"]:$name;
         $paramData="";

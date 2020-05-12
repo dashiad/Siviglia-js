@@ -1,23 +1,23 @@
 <?php
 namespace model\reflection\Model\html\forms;
 /**
- FILENAME:/var/www/adtopy/model/web/objects/Site//html/forms/EditAction.php
-  CLASS:EditAction
+ FILENAME:/var/www/adtopy/model/web/objects/Site//html/forms/DeleteAction.php
+  CLASS:DeleteAction
 *
 *
 **/
 
-class Edit extends \lib\output\html\Form
+class Delete extends \lib\output\html\Form
 {
 	 static  $definition=array(
-               'NAME'=>'Edit',
+               'NAME'=>'Delete',
                'MODEL'=>'\model\reflection\Model',
                'ACTION'=>array(
                      'MODEL'=>'\model\reflection\Model',
-                     'ACTION'=>'Edit',
+                     'ACTION'=>'Delete',
                      'INHERIT'=>1
                      ),
-               'ROLE'=>'Edit',
+               'ROLE'=>'Delete',
                'REDIRECT'=>array(
                      'ON_SUCCESS'=>'',
                      'ON_ERROR'=>''
@@ -26,10 +26,11 @@ class Edit extends \lib\output\html\Form
                'INDEXFIELDS'=>array(
                      'modelName'=>array(
                            'REQUIRED'=>1,
-                           'FIELD'=>'id_site',
+                           'FIELD'=>'modelName',
                            'MODEL'=>'\model\reflection\Model'
                            )
-                     )
+                     ),
+               'NOFORM'=>1
                );
 
 
@@ -37,7 +38,7 @@ class Edit extends \lib\output\html\Form
 	 *
 	 * NAME:__construct
 	 *
-	 * DESCRIPTION: Constructor for EditAction
+	 * DESCRIPTION: Constructor for DeleteAction
 	 *
 	 * PARAMS:
 	 *
@@ -48,7 +49,7 @@ class Edit extends \lib\output\html\Form
 	 function __construct( $actionResult=null)
 	{
 
-			parent::__construct(Edit::$definition,$actionResult);
+			parent::__construct(Delete::$definition,$actionResult);
 
 	}
 
@@ -58,7 +59,7 @@ class Edit extends \lib\output\html\Form
 	 *
 	 * NAME:onSuccess
 	 *
-	 * DESCRIPTION: Callback executed when this form had success.EditAction
+	 * DESCRIPTION: Callback executed when this form had success.DeleteAction
 	 *
 	 * PARAMS:
 	 *
@@ -82,7 +83,7 @@ class Edit extends \lib\output\html\Form
 	 *
 	 * NAME:onError
 	 *
-	 * DESCRIPTION: Callback executed when this action had an errorEditAction
+	 * DESCRIPTION: Callback executed when this action had an errorDeleteAction
 	 *
 	 * PARAMS:
 	 *

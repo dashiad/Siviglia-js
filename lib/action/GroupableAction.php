@@ -78,8 +78,7 @@ class GroupableAction extends \lib\action\Action
                     'MODEL'=>'data_group\data_group_member',
                     'FIELD'=>'params'
                 );
-                $paramsType = \lib\model\types\TypeFactory::getType(null, $paramsDef);
-                $paramsType->setValue($params);
+                $paramsType = \lib\model\types\TypeFactory::getType(null, $paramsDef,null,$params);
                 $params = $paramsType->getUnserializedValue();
                 $ds = $this->getDataSource($this->scope, $gOptions, $dt['id_group_member'], $dt['datasource'], $params);
                 $this->executeStuff($ds, $gOptions);
@@ -111,8 +110,7 @@ class GroupableAction extends \lib\action\Action
             $it=$dsDgm->fetchAll();
             $dgm = $it[0];
             $dgmDef = $dgm->getDefinition();
-            $objectType = \lib\model\types\TypeFactory::getType(null, $dgmDef['FIELDS']['object']);
-            $objectType->setValue($dgm->object);
+            $objectType = \lib\model\types\TypeFactory::getType(null, $dgmDef['FIELDS']['object'],null,$dgm->object);
             $object = $objectType->getLabel();
             $dsParams = $dgm->params;
 

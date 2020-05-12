@@ -16,6 +16,10 @@ class FieldList
             "model"=>[
                 "TYPE"=>"String",
                 "REQUIRED"=>true
+            ],
+            "NAME"=>[
+                "TYPE"=>"String"
+
             ]
         ],
         'FIELDS'=>array(
@@ -49,12 +53,15 @@ class FieldList
         $ins=$srv->getModel($ds->model);
         $def=$ins->getDefinition();
         $res=[];
+        $name=$ds->NAME;
         foreach($def["FIELDS"] as $k=>$v)
         {
-            $res[]=[
-                "NAME"=>$k,
-                "TYPE"=>$v["TYPE"]
-            ];
+            if(!$name || $name==$k) {
+                $res[] = [
+                    "NAME" => $k,
+                    "TYPE" => $v["TYPE"]
+                ];
+            }
         }
         return $res;
     }

@@ -1,5 +1,5 @@
 <?php
-namespace model\reflection\MetaDefinition\actions;
+namespace model\reflection\Model\actions;
 /**
  FILENAME:/var/www/adtopy/model/web/objects/Page/actions/AddAction.php
   CLASS:AddAction
@@ -7,20 +7,21 @@ namespace model\reflection\MetaDefinition\actions;
 *
 **/
 
-class Add extends \lib\action\Action
+class Edit extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'\model\reflection\MetaDefinition',
-               'ROLE'=>'Add',
+               'MODEL'=>'\model\reflection\Model',
+               'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
                      array(
                            'MODEL'=>'\model\reflection\MetaDefinition',
                            'PERMISSION'=>'create'
                            )
                      ),
+		 		'INDEXFIELDS'=>array("modelName"),
                'IS_ADMIN'=>false,
                'FIELDS'=>array(
-				   'file'=>array(
+				   'modelName'=>array(
 					   "LABEL"=>"Destination file",
 					   "TYPE"=>"String",
 					   "REQUIRED"=>true

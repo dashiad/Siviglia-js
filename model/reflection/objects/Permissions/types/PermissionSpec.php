@@ -4,7 +4,7 @@
 namespace model\reflection\Permissions\types;
 
 
-class PermissionSpec extends \lib\model\types\Container
+class PermissionSpec extends \lib\model\types\_Array
 {
     function __construct()
     {

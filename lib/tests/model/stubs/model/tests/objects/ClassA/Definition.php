@@ -49,7 +49,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'ISLABEL'=>'true'
             ),
             'namespace'=>array(
-                'DEFAULT'=>'',
+
                 'MINLENGTH'=>'4',
                 'LABEL'=>'namespace',
                 'SHORTLABEL'=>'namespace',
@@ -59,7 +59,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'ISLABEL'=>'true'
             ),
             'websiteName'=>array(
-                'DEFAULT'=>'',
+
                 'MINLENGTH'=>'4',
                 'LABEL'=>'name',
                 'SHORTLABEL'=>'name',

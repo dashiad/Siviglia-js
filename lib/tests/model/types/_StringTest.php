@@ -18,7 +18,7 @@ class _StringTest extends TestCase
 
     function testDefinition1()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "MINLENGTH"=>3
         ]);
@@ -30,7 +30,7 @@ class _StringTest extends TestCase
     }
     function testDefinition2()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "MAXLENGTH"=>4
         ]);
@@ -42,7 +42,7 @@ class _StringTest extends TestCase
     }
     function testDefinition3()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "REGEXP"=>"%aaa%"
         ]);
@@ -54,7 +54,7 @@ class _StringTest extends TestCase
     }
     function testDefinition4()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "SET_ON_EMPTY"=>false
         ]);
@@ -64,7 +64,7 @@ class _StringTest extends TestCase
     }
     function testDefinition5()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "SET_ON_EMPTY"=>true
         ]);
@@ -74,7 +74,7 @@ class _StringTest extends TestCase
     }
     function testDefinition6()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "FIXED"=>"Hola"
         ]);
@@ -87,7 +87,7 @@ class _StringTest extends TestCase
     }
     function testDefinition7()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "EXCLUDE"=>["Hola"]
         ]);
@@ -99,7 +99,7 @@ class _StringTest extends TestCase
     }
     function testDefinition8()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "DEFAULT"=>"NOne"
         ]);
@@ -108,7 +108,7 @@ class _StringTest extends TestCase
     }
     function testDefinition9()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "TRIM"=>true
         ]);
@@ -117,7 +117,7 @@ class _StringTest extends TestCase
     }
     function testDefinition10()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "NORMALIZE"=>true
         ]);
@@ -126,10 +126,10 @@ class _StringTest extends TestCase
     }
     function testDefinition11()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String"
         ]);
-        $ins2=new \lib\model\types\_String([
+        $ins2=new \lib\model\types\_String("",[
             "TYPE"=>"String"
         ]);
         $ins->setValue("hola");
@@ -138,7 +138,7 @@ class _StringTest extends TestCase
     }
     function testDefinition12()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "MINLENGTH"=>5
 
@@ -148,7 +148,7 @@ class _StringTest extends TestCase
     }
     function testDefinition13()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String"
         ]);
         $ins->setValue("hola");
@@ -156,7 +156,7 @@ class _StringTest extends TestCase
     }
     function testSource()
     {
-        $ins=new \lib\model\types\_String([
+        $ins=new \lib\model\types\_String("",[
             "TYPE"=>"String",
             "SOURCE"=>[
                 "TYPE"=>"Array",

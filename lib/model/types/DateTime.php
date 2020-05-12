@@ -39,7 +39,7 @@
       {
           return $this->value;
       }
-      function _setValue($v)
+      function _setValue($v,$validationMode=null)
       {
           if($v=="NOW")
               $this->setAsNow();
@@ -50,7 +50,7 @@
 
       function setAsNow()
       {
-          $this->setValue(DateTime::getValueFromTimestamp());
+          $this->apply(DateTime::getValueFromTimestamp());
       }
 
       function _validate($value)

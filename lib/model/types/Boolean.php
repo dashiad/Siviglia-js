@@ -2,7 +2,7 @@
   class Boolean extends BaseType
   {
 
-      function _setValue($val)
+      function _setValue($val,$validationMode=null)
       {
           $this->valueSet=true;
           $this->value=($val!=0)?true:false;

@@ -24,7 +24,7 @@ class DataSource extends BaseSource
         $f=$this->getValueField();
         $datasource->{$f}=$value;
         $it=$datasource->fetchAll();
-        if($it->count()==1)
+        if($it && $it->count()==1)
             return true;
         return false;
 
@@ -34,18 +34,26 @@ class DataSource extends BaseSource
         $actualParams=[];
         if(isset($this->definition["PARAMS"]))
         {
+
+            $ctxStack = new \lib\model\ContextStack();
+            // $this->parent apunta al tipo de dato al que pertenece el source.
+            // $this->parent->parent apunta al container que contiene al tipo al que pertenece el source.
+            $ctx = new \lib\model\BaseObjectContext($this->parent->parent, "#", $ctxStack);
+
             foreach($this->definition["PARAMS"] as $k=>$v)
             {
-                // $this->parent apunta al tipo de dato al que pertenece el source.
-                // $this->parent->parent apunta al container que contiene al tipo al que pertenece el source.
-                if($this->useValidatingData)
-                    $source=$this->parent->parent->getValidatingValue();
-                else
-                    $source=$this->parent->parent;
-                $actualParams[$k]=\lib\php\ParametrizableString::getParametrizedString(
-                    $v,
-                    $source
-                );
+
+
+                //$source=$this->parent->parent;
+                try {
+                    $actualParams[$k] = \lib\php\ParametrizableString::getParametrizedString(
+                        $v,
+                        $ctxStack
+                    );
+                }catch(\Exception $e)
+                {
+                    throw new \lib\model\types\sources\SourceException(SourceException::ERR_INVALID_SOURCE,["source"=>$v]);
+                }
             }
         }
         $ser=null;

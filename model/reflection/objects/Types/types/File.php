@@ -5,8 +5,8 @@ namespace model\reflection\Types\types;
 
 class File extends \lib\model\types\Container
 {
-    function __construct(){
-parent::__construct( [
+    function __construct($name,$parentType=null, $value=null,$validationMode=null){
+parent::__construct($name, [
             "LABEL"=>"File",
             "TYPE" => "Container",
             "FIELDS" => [
@@ -22,7 +22,7 @@ parent::__construct( [
                 "KEEP_KEY_ON_EMPTY" => ["LABEL" => "Permitir valor vacío", "TYPE" => "Boolean", "KEEP_KEY_ON_EMPTY" => false],
                 "REQUIRED" => ["TYPE" => "Boolean", "DEFAULT" => false, "LABEL" => "Requerido", "KEEP_KEY_ON_EMPTY" => false]
             ]
-        ]);
+        ,$parentType,$value,$validationMode]);
 
     }
 
