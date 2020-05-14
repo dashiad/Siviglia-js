@@ -438,7 +438,7 @@ Siviglia.Utils.buildClass(
         }
     }
 );
-
+top.validations=0;
 Siviglia.Utils.buildClass(
     {
         context: 'Siviglia.types',
@@ -490,6 +490,8 @@ Siviglia.Utils.buildClass(
                         this.source = null;
                         this.sourceFactory = null;
                         this.fieldName="";
+                        this.lastValidated=null;
+                        this.lastValidation=null;
                         this.referencedField=null;
                         this.useRemoteValidation=false;
                         if (!Siviglia.empty(val))
@@ -574,14 +576,23 @@ Siviglia.Utils.buildClass(
                                 this.value = v;
                             },
                             validate: function (val) {
-                                if(this.relaxed)
-                                    return true;
-                                if(this.isNull(val))
-                                    return true;
+                                if(val==this.lastValidated)
+                                    return this.lastValidation;
+                                this.lastValidated=val;
 
-                                if (!this._validate(val))
-                                    return false;
-                                return true;
+                                top.validations++;
+                                if(this.relaxed)
+                                {
+                                    this.lastValidation=true;
+
+                                }
+                                else {
+                                    if (this.isNull(val))
+                                        this.lastValidation=true;
+                                    else
+                                        this.lastValidation=this._validate(val);
+                                }
+                                return this.lastValidation;
                             },
                             checkSource:function(val)
                             {

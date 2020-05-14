@@ -35,9 +35,7 @@
 <?php include_once("../jQuery/JqxWidgets.html"); ?>
 <div style="display:none">
     <div data-sivWidget="Siviglia.model.reflection.MetaDefinition.forms.Add" data-widgetCode="Siviglia.model.reflection.MetaDefinition.forms.Add">
-        <div><div>Destination file:</div>
-            <div data-sivCall="getInputFor" data-sivParams='{"key":"file"}'></div>
-        </div>
+
         <div><div>Definition:</div>
             <div data-sivCall="getInputFor" data-sivParams='{"key":"definition"}'></div>
         </div>
@@ -66,13 +64,9 @@
                         };
                         var bto=new Siviglia.model.BaseTypedObject({
                             "FIELDS":{
-                                "file":{"LABEL":"File","TYPE":"String"},
-                                "definition":{"LABEL":"Definition","TYPE":"/model/reflection/Types/types/BaseTypedObject"}
+                                "definition":{"LABEL":"Definition","TYPE":"/model/reflection/Model/types/ModelType"}
                             }
                         })
-                        var t=Siviglia.types.TypeFactory.getType(null,"/model/reflection/Model/types/ModelType",null);
-                        bto.file="Test";
-                        bto.definition=t.definition;
                         //var t=Siviglia.types.TypeFactory.getType(null,"/model/reflection/Model/ModelType",null);
                         return this.Form$preInitialize({bto:bto});
                     }
