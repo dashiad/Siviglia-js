@@ -40,7 +40,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'ISLABEL'=>true
             ),
             'id_page'=>array(
-                'DEFAULT'=>'NULL',
+
                 'FIELDS'=>array('id_page'=>'id_page'),
                 'MODEL'=>'\model\web\Page',
                 'LABEL'=>'id_route',

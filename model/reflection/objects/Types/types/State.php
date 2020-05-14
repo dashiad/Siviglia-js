@@ -1,11 +1,11 @@
 <?php namespace model\reflection\Types\types;
 
-class State extends \lib\model\types\Container
+include_once(__DIR__."/../BaseReflectedType.php");
+class State extends \model\reflection\types\BaseReflectedType
 {
     function __construct($name,$parentType=null, $value=null,$validationMode=null){
-parent::__construct($name, [
-            "TYPE"=>"Container",
-            "FIELDS"=>[
+parent::__construct($name, "State",[
+
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"State"],
                 "VALUES"=>[
                     "LABEL"=>"Lista de estados",
@@ -19,7 +19,6 @@ parent::__construct($name, [
                         ]
                     ]
                 ],
-                "REQUIRED"=>["LABEL"=>"Requerido","TYPE"=>"Boolean","DEFAULT"=>false],
                 "DEFAULT"=>["TYPE"=>"String",
                     "LABEL"=>"Valor por defecto",
                     "SOURCE"=>[
@@ -28,11 +27,8 @@ parent::__construct($name, [
                         "LABEL"=>"LABEL",
                         "VALUE"=>"LABEL"
                     ]
-                ],
-                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
-                "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false]
-            ]
-        ],$parentType,$value,$validationMode);
+                ]
+            ],$parentType,$value,$validationMode);
 
     }
 

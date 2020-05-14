@@ -1,0 +1,76 @@
+<?php
+namespace model\web\Permissions\datasources;
+/**
+ FILENAME:/var/www/adtopy/model/web/objects/Site/datasources/FullList.php
+  CLASS:FullList
+*
+*
+**/
+
+class ListItems
+{
+	 static  $definition=array(
+               'ROLE'=>'list',
+               'DATAFORMAT'=>'Table',
+               'PARAMS'=>array(
+                     'item_type'=>array(
+                           'TYPE'=>"Integer",
+                           'TRIGGER_VAR'=>'item_type'
+                           ),
+                     'item_value'=>array(
+                           'TYPE'=>'String',
+                           'TRIGGER_VAR'=>'item_value'
+                           )
+                     ),
+               'IS_ADMIN'=>0,
+               'FIELDS'=>array(
+                     'id'=>array(
+                           'TYPE'=>'Integer'
+                           ),
+                     'item_type'=>array(
+                           'TYPE'=>'Integer'
+                           ),
+                     'item_name'=>array(
+                           'TYPE'=>'String'
+                           ),
+                     'item_value'=>array(
+                           'TYPE'=>'String'
+                           )
+                     ),
+               'PERMISSIONS'=>array(["TYPE"=>"Public"]),
+               'SOURCE'=>[
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'DEFINITION'=>array(
+                                 'TABLE'=>'_permission_items',
+                                 'BASE'=>array(
+                                       '*'
+                                       ),
+                                 'CONDITIONS'=>array(
+                                       array(
+                                             'FILTER'=>array(
+                                                   'F'=>'item_type',
+                                                   'OP'=>'=',
+                                                   'V'=>'[%item_type%]'
+                                                   ),
+                                             'TRIGGER_VAR'=>'item_type',
+                                             'DISABLE_IF'=>'0',
+                                             'FILTERREF'=>'item_type'
+                                             ),
+                                       array(
+                                             'FILTER'=>array(
+                                                   'F'=>'item_value',
+                                                   'OP'=>'=',
+                                                   'V'=>'[%item_value%]'
+                                                   ),
+                                             'TRIGGER_VAR'=>'item_value',
+                                             'DISABLE_IF'=>'0',
+                                             'FILTERREF'=>'item_value'
+                                             )
+                                       )
+                                 )
+                           )
+                     )
+                   ]
+               );
+}

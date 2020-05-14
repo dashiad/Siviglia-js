@@ -36,7 +36,7 @@ class Definition extends \lib\model\BaseModelDefinition
                           'DESCRIPTIVE'=>true
                       ),
                      'id_page'=>array(
-                           'DEFAULT'=>'NULL',
+
                            'FIELDS'=>array('id_page'=>'id_page'),
                            'MODEL'=>'\model\web\Page',
                            'LABEL'=>'Page id',
@@ -57,7 +57,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'ISLABEL'=>'false'
                            ),
                      'date_add'=>array(
-                           'DEFAULT'=>'NULL',
+
                            'SHORTLABEL'=>'date_add',
                            'TYPE'=>'DateTime',
                            'LABEL'=>'date_add',
@@ -65,7 +65,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'ISLABEL'=>'false'
                            ),
                      'date_modified'=>array(
-                           'DEFAULT'=>'NULL',
+
                            'SHORTLABEL'=>'date_modified',
                            'TYPE'=>'DateTime',
                            'LABEL'=>'date_modified',

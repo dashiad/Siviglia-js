@@ -14,13 +14,18 @@ class PathSource extends BaseSource
         // Si lo que se ha devuelto es un array simple, se construye uno por defecto.
         if(is_scalar($raw[0]))
         {
-            $result=[];
+            $data=[];
             for($k=0;$k<count($raw);$k++)
             {
-                $result[]=["VALUE"=>$raw[$k],"INDEX"=>$k,"LABEL"=>$raw[$k]];
+                $data[]=["VALUE"=>$raw[$k],"INDEX"=>$k,"LABEL"=>$raw[$k]];
             }
-            return $result;
         }
-        return $raw;
+        else
+            $data=$raw;
+        if(isset($this->definition["PREPEND"]))
+            $data=array_merge($this->definition["PREPEND"],$data);
+        if(isset($this->definition["APPEND"]))
+            $data=array_merge($data,$this->definition["APPEND"]);
+        return $data;
     }
 }

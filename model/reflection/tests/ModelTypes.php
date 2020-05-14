@@ -40,4 +40,5 @@ class ModelTypes extends TestCase
         $val=$instance->getValue();
         $h=11;
     }
+
 }

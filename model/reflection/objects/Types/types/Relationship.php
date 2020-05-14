@@ -1,12 +1,11 @@
 <?php namespace model\reflection\Types\types;
 
 
-class Relationship extends \lib\model\types\Container
+include_once(__DIR__."/../BaseReflectedType.php");
+class Relationship extends \model\reflection\types\BaseReflectedType
 {
     function __construct($name,$parentType=null, $value=null,$validationMode=null){
-parent::__construct($name, [
-            "TYPE"=>"Container",
-            "FIELDS"=>[
+parent::__construct($name, "Relationship",[
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Relationship"],
                 "MODEL"=>[
                     "LABEL"=>"Model",
@@ -51,14 +50,8 @@ parent::__construct($name, [
                     "REQUIRED"=>true
 
                     ],
-                "MULTIPLICITY"=>["LABEL"=>"Multiplicidad","TYPE"=>"Enum","VALUES"=>["1:1","1:N","M:N"]],
-                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
-                "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
-                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","KEEP_KEY_ON_EMPTY"=>false],
-                "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","KEEP_KEY_ON_EMPTY"=>false],
-                "SOURCE"=>\model\reflection\Types::getSourceMeta()
-            ]
-        ],$parentType,$value,$validationMode);
+                "MULTIPLICITY"=>["LABEL"=>"Multiplicidad","TYPE"=>"Enum","VALUES"=>["1:1","1:N","M:N"]]
+            ],$parentType,$value,$validationMode);
 
     }
 }

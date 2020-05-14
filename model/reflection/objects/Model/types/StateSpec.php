@@ -6,6 +6,7 @@ namespace model\reflection\Model\types;
 
 class StateSpec extends \lib\model\types\Container
 {
+
     /*
      * * array(
                'STATES' => array(
@@ -61,7 +62,7 @@ class StateSpec extends \lib\model\types\Container
                 )
             ),
     ps_order_state::STATE_ORDER_CANCELLED=>array(
-        'IS_FINAL'=>1,
+        'FINAL'=>1,
         'ALLOW_FROM'=>array(ps_order_state::STATE_ORDER_PAID,ps_order_state::STATE_ORDER_PICKED,
             ps_order_state::STATE_ORDER_PROCESSED,ps_order_state::STATE_ORDER_WAITING_PAYMENT,
             ps_order_state::STATE_PAYMENT_ERROR,ps_order_state::STATE_ORDER_PAYMENT_AMOUNT_ERROR,
@@ -98,6 +99,59 @@ class StateSpec extends \lib\model\types\Container
      */
     function __construct($name,$parentType=null, $value=null,$validationMode=null)
     {
+        $callbackDef=[
+            "LABEL"=>"Callbacks de entrada al estado",
+            "TYPE"=>"TypeSwitcher",
+            "ON"=>[
+                "FIELD"=>"STATES",
+                "IS"=>"Present",
+                "THEN"=>"ByState"
+            ],
+            "IMPLICIT_TYPE"=>"Always",
+            "ALLOWED_TYPES"=>[
+                "Always"=>[
+                    "LABEL"=>"Callbacks",
+                    "TYPE"=>"Array",
+                    "HELP"=>"Callbacks llamados independientemente del estado anterior/próximo",
+                    "ELEMENTS"=>[
+                        "LABEL"=>"Listeners",
+                        "TYPE"=>"String",
+                        "SOURCE"=>[
+                            "TYPE"=>"Path",
+                            "PATH"=> "#../../../../../LISTENER_TAGS/[[KEYS]]"
+                        ]
+                    ]
+                ],
+                "ByState"=>[
+                    "LABEL"=>"Callbacks según estado",
+                    "TYPE"=>"Dictionary",
+                    "HELP"=>"Callbacks llamados dependiendo del estado anterior/próximo",
+                    "VALUETYPE"=>[
+                        "LABEL"=>"Listeners",
+                        "TYPE"=>"String",
+                        "SOURCE"=>[
+                            "TYPE"=>"Path",
+                            "PATH"=> "#../../../../../LISTENER_TAGS/[[KEYS]]"
+                        ]
+                    ],
+                    "SOURCE"=>[
+                        "TYPE"=>"Path",
+                        "PATH"=>"#../../../../[[KEYS]]"
+                    ]
+                ]
+            ]
+        ];
+
+        $testCallbacks=$callbackDef;
+        $leaveCallbacks=$callbackDef;
+        $testCallbacks["LABEL"]="Callbacks de test de estado";
+        $testCallbacks["HELP"]="Callbacks a ejecutar antes de permitir el cambio de estado";
+        $leaveCallbacks["LABEL"]="Callbacks de salida de estado";
+        $leaveCallbacks["HELP"]="Callbacks a ejecutar al salir de este estado";
+        $rejectToCallbacks=$callbackDef;
+        $rejectToCallbacks["LABEL"]="Callbacks de rechazo";
+        $rejectToCallbacks["HELP"]="Callbacks llamados al intentar transicionar a un estado no valido";
+
         parent::__construct($name,[
             "LABEL"=>"Definicion de estados",
             "TYPE"=>"Container",
@@ -108,7 +162,16 @@ class StateSpec extends \lib\model\types\Container
                     "SOURCE"=>[
                         // Nota : el source "se sale" de este tipo..La fuente para este campo son los campos del modelo en que está
                         "TYPE"=>"Path",
-                        "PATH"=>"#../../../FIELDS/[[KEYS]]"
+                        "PATH"=>"#../../FIELDS/[[KEYS]]"
+                    ]
+                ],
+                "DEFAULT"=>[
+                    "LABEL"=>"Estado por defecto",
+                    "TYPE"=>"String",
+                    "REQUIRED"=>true,
+                    "SOURCE"=>[
+                        "TYPE"=>"Path",
+                        "PATH"=>"#../STATES/[[KEYS]]"
                     ]
                 ],
                 "LISTENER_TAGS"=>[
@@ -118,21 +181,32 @@ class StateSpec extends \lib\model\types\Container
                     "KEEP_KEY_ON_EMPTY"=>"FALSE",
                     "VALUETYPE"=>[
                         "LABEL"=>"Callback",
-                        "TYPE"=>"Container",
-                        "FIELDS"=>[
-                            "METHOD"=>[
-                                "LABEL"=>"Metodo",
-                                "TYPE"=>"String"
-                            ],
-                            "PARAMS"=>[
-                                "LABEL"=>"Parametros",
-                                "TYPE"=>"Array",
-                                "ELEMENTS"=>[
-                                    "LABEL"=>"Valor",
-                                    "TYPE"=>"String"
+                        "TYPE"=>"TypeSwitcher",
+                        "ON"=>[
+                            ["IS"=>"String", "THEN"=>"Method"],
+                            ["IS"=>"Object", "THEN"=>"ParametrizedMethod"]
+                        ],
+                        "ALLOWED_TYPES"=>[
+                            "Method"=>["LABEL"=>"Metodo","TYPE"=>"String"],
+                            "ParametrizedMethod"=>[
+                                "LABEL"=>"Metodo con parametros",
+                                "TYPE"=>"Container",
+                                "FIELDS"=>[
+                                    "METHOD"=>[
+                                        "LABEL"=>"Metodo",
+                                        "TYPE"=>"String"
+                                    ],
+                                    "PARAMS"=>[
+                                        "LABEL"=>"Parametros",
+                                        "TYPE"=>"Array",
+                                        "ELEMENTS"=>[
+                                            "LABEL"=>"Valor",
+                                            "TYPE"=>"String"
+                                        ]
+                                    ]
+                                ]
                                 ]
                             ]
-                        ]
                     ]
                 ],
                 "STATES"=>[
@@ -146,42 +220,9 @@ class StateSpec extends \lib\model\types\Container
                                 "LABEL"=>"Listeners",
                                 "TYPE"=>"Container",
                                 "FIELDS"=>[
-                                    "TEST"=>[
-                                        "LABEL"=>"Callbacks de Test",
-                                        "TYPE"=>"Array",
-                                        "ELEMENTS"=>[
-                                            "LABEL"=>"Listeners",
-                                            "TYPE"=>"String",
-                                            "SOURCE"=>[
-                                                "TYPE"=>"Path",
-                                                "PATH"=> "#../../../../../LISTENER_TAGS/[[KEYS]]"
-                                                ]
-                                        ]
-                                    ],
-                                    "ON_ENTER"=>[
-                                        "LABEL"=>"Callbacks de entrada al estado",
-                                        "TYPE"=>"Array",
-                                        "ELEMENTS"=>[
-                                            "LABEL"=>"Listeners",
-                                            "TYPE"=>"String",
-                                            "SOURCE"=>[
-                                                "TYPE"=>"Path",
-                                                "PATH"=> "#../../../../../LISTENER_TAGS/[[KEYS]]"
-                                            ]
-                                        ]
-                                    ],
-                                    "ON_EXIT"=>[
-                                        "LABEL"=>"Callbacks de salida del estado",
-                                        "TYPE"=>"Array",
-                                        "ELEMENTS"=>[
-                                            "LABEL"=>"Listeners",
-                                            "TYPE"=>"String",
-                                            "SOURCE"=>[
-                                                "TYPE"=>"Path",
-                                                "PATH"=> "#../../../../../LISTENER_TAGS/[[KEYS]]"
-                                            ]
-                                        ]
-                                    ]
+                                    "TEST"=>$testCallbacks,
+                                    "ON_ENTER"=>$callbackDef,
+                                    "ON_EXIT"=>$leaveCallbacks
                                 ]
                             ],
                             "ALLOW_FROM"=>[
@@ -209,8 +250,8 @@ class StateSpec extends \lib\model\types\Container
                                             "SOURCE"=>[
                                                 "TYPE"=>"Path",
                                                 // De nuevo, esto hace referencia a los campos del modelo padre.
-                                                "PATH"=>"#../../../../FIELDS/[[KEYS]]",
-                                                "PREPEND"=>["LABEL"=>"*","VALUE"=>"*"]
+                                                "PATH"=>"#../../../../../../FIELDS/[[KEYS]]",
+                                                "PREPEND"=>[["LABEL"=>"*","VALUE"=>"*"]]
                                             ]
                                         ]
                                     ],
@@ -223,8 +264,8 @@ class StateSpec extends \lib\model\types\Container
                                             "SOURCE"=>[
                                                 "TYPE"=>"Path",
                                                 // De nuevo, esto hace referencia a los campos del modelo padre.
-                                                "PATH"=>"#../../../../FIELDS/[[KEYS]]",
-                                                "PREPEND"=>["LABEL"=>"*","VALUE"=>"*"]
+                                                "PATH"=>"#../../../../../../FIELDS/[[KEYS]]",
+                                                "PREPEND"=>[["LABEL"=>"*","VALUE"=>"*"]]
                                             ]
                                         ]
                                     ]
@@ -236,54 +277,27 @@ class StateSpec extends \lib\model\types\Container
                                 "FIELDS"=>[
                                     "ADD"=>[
                                         "LABEL"=>"Permisos para Añadir",
-                                        "TYPE"=>"Array",
-                                        "ELEMENTS"=>"/model/reflection/Permissions/types/PermissionSpec"
+                                        "TYPE"=>"/model/reflection/Permissions/types/PermissionSpec"
                                     ],
                                     "EDIT"=>[
                                         "LABEL"=>"Permisos para Editar",
-                                        "TYPE"=>"Array",
-                                        "ELEMENTS"=>"/model/reflection/Permissions/types/PermissionSpec"
+                                        "TYPE"=>"/model/reflection/Permissions/types/PermissionSpec"
                                     ],
                                     "VIEW"=>[
                                         "LABEL"=>"Permisos para Ver",
-                                        "TYPE"=>"Array",
-                                        "ELEMENTS"=>"/model/reflection/Permissions/types/PermissionSpec"
+                                        "TYPE"=>"/model/reflection/Permissions/types/PermissionSpec"
                                     ],
                                     "DELETE"=>[
                                         "LABEL"=>"Permisos para Eliminar",
-                                        "TYPE"=>"Array",
-                                        "ELEMENTS"=>"/model/reflection/Permissions/types/PermissionSpec"
-                                    ],
+                                        "TYPE"=>"/model/reflection/Permissions/types/PermissionSpec"
+                                    ]
                                 ]
                             ],
-                            "IS_FINAL"=>[
+                            "FINAL"=>[
                                 "LABEL"=>"Es estado terminal",
                                 "TYPE"=>"Boolean"
                             ],
-                            "REJECT_TO"=>[
-                                "LABEL"=>"Callbacks de rechazo",
-                                "HELP"=>"Cuando se intenta transicionar de un estado a éste, y esa transición no está permitida, se ejecutan los callbacks especificados.",
-                                "TYPE"=>"Container",
-                                "FIELDS"=>[
-                                    "STATES"=>[
-                                        "LABEL"=>"Estados",
-                                        "TYPE"=>"Dictionary",
-                                        "VALUETYPE"=>[
-                                            "LABEL"=>"Callbacks de entrada al estado",
-                                            "TYPE"=>"Array",
-                                            "ELEMENTS"=>[
-                                                "LABEL"=>"Listeners",
-                                                "TYPE"=>"String",
-                                                "SOURCE"=>[
-                                                    "TYPE"=>"Path",
-                                                    "PATH"=> "#../../../../../LISTENER_TAGS/[[KEYS]]"
-                                                ]
-                                            ]
-                                        ]
-                                    ]
-                                ]
-
-                            ]
+                            "REJECT_TO"=>$rejectToCallbacks
                         ]
 
                     ]
@@ -291,6 +305,9 @@ class StateSpec extends \lib\model\types\Container
             ]
 
         ],$parentType, $value,$validationMode);
+
+
+
     }
 }
 /*

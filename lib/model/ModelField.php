@@ -89,8 +89,11 @@ class ModelField
                 else
                     $originalDefinition=$definition;
 
-                if(!$originalDefinition["DEFAULT"])
-                    $originalDefinition["DEFAULT"]=$model->getStateDef()->getDefaultState();
+                if(!isset($originalDefinition["DEFAULT"])) {
+                    $modelDef=$model->getDefinition();
+                    if(isset($modelDef["STATES"]["DEFAULT"]))
+                        $originalDefinition["DEFAULT"] = $modelDef["STATES"]["DEFAULT"];
+                }
                 $instance=new ModelField($name,$model,$originalDefinition,$value);
             }break;
         default:
@@ -173,16 +176,11 @@ class ModelField
             echo "SIN OBJETO::".$this->type;
 
         }
-        if($this->type->equals($value))
-        {
-
-            return;
-        }
 
 
         $this->type->setValue($val);
         $this->setDirty();
-        $this->model->__setRaw($this->name,$this->type->getValue());
+        //$this->model->__setRaw($this->name,$this->type->getValue());
         $this->notifyListeners();
     }
     function __rawSet($value)

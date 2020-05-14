@@ -1,15 +1,12 @@
 <?php namespace model\reflection\Types\types;
 
-class TreePath extends \lib\model\types\Container
+include_once(__DIR__."/../BaseReflectedType.php");
+class TreePath extends \model\reflection\types\BaseReflectedType
 {
     function __construct($name,$parentType=null, $value=null,$validationMode=null){
-parent::__construct($name, [
-            "TYPE"=>"Container",
-            "FIELDS"=>[
-                "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"TreePath"],
-                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false]
-            ]
-        ],$parentType,$value,$validationMode);
+parent::__construct($name, "TreePath",[
+                "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"TreePath"]
+            ],$parentType,$value,$validationMode);
 
     }
 

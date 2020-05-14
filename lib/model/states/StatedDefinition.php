@@ -434,9 +434,10 @@ class StatedDefinition
     {
         if (!$this->hasState)
             return null;
+        $curStateDef=$this->definition["STATES"]["STATES"][$this->getStateLabel($stateId)];
 
-        if(isset( $this->definition["STATES"]["STATES"][$this->getStateLabel($stateId)]["ALLOW_FROM"])) {
-            $allowed=$this->definition["STATES"]["STATES"][$this->getStateLabel($stateId)]["ALLOW_FROM"];
+        if(isset( $curStateDef["ALLOW_FROM"])) {
+            $allowed=$curStateDef["ALLOW_FROM"];
             $result=[];
             foreach($allowed as $k=>$v)
             {

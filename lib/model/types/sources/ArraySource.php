@@ -40,9 +40,15 @@ class ArraySource extends BaseSource
             $ctx=new \lib\model\BaseObjectContext($this->definition["DATA"],"/",$ctxStack);
             $ctx=new \lib\model\BaseObjectContext($this->parent,"#",$ctxStack);
             $path=new \lib\model\PathResolver($ctxStack,$this->definition["PATH"]);
-            return $path->getPath();
+            $data=$path->getPath();
         }
+        else
+            $data=$this->source;
+        if(isset($this->definition["PREPEND"]))
+            $data=array_merge($this->definition["PREPEND"],$data);
+        if(isset($this->definition["APPEND"]))
+            $data=array_merge($data,$this->definition["APPEND"]);
+        return $data;
 
-        return $this->source;
     }
 }

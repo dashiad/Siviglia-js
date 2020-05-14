@@ -1,21 +1,14 @@
 <?php namespace model\reflection\Types\types;
 
 
-class BankAccount extends \lib\model\types\Container
+include_once(__DIR__."/../BaseReflectedType.php");
+class BankAccount extends \model\reflection\types\BaseReflectedType
 {
     function __construct($name,$parentType=null, $value=null,$validationMode=null){
-parent::__construct($name, [
-            "LABEL"=>"BankAccount",
-            "TYPE"=>"Container",
-            "FIELDS"=>[
+parent::__construct($name, "BankAccount",[
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"BankAccount"],
-                "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","KEEP_ON_EMPTY"=>false],
-                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
-                "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
-                "SOURCE"=>\model\reflection\Types::getSourceMeta(),
-                "REQUIRED"=>["LABEL"=>"Requerido","TYPE"=>"Boolean","DEFAULT"=>false]
-            ]
-        ],$parentType,$value,$validationMode);
+                "DEFAULT"=>["LABEL"=>"Valor por defecto","TYPE"=>"String","KEEP_ON_EMPTY"=>false]
+            ],$parentType,$value,$validationMode);
 
     }
 

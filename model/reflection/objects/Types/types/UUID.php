@@ -1,22 +1,14 @@
 <?php namespace model\reflection\Types\types;
 
 
-class UUID extends \lib\model\types\Container
+include_once(__DIR__."/../BaseReflectedType.php");
+class UUID extends \model\reflection\types\BaseReflectedType
 {
     function __construct($name,$parentType=null, $value=null,$validationMode=null){
-parent::__construct($name, [
-            "LABEL"=>"UUID",
-            "TYPE"=>"Container",
-            "FIELDS"=>[
+parent::__construct($name, "UUID",[
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"UUID"],
-                "LEVEL"=>["TYPE"=>"Enum","LABEL"=>"Level","VALUES"=>[1,3,4,5],"DEFAULT"=>1],
-                "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
-                "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
-                "REQUIRED"=>["TYPE"=>"Boolean","DEFAULT"=>false,"LABEL"=>"Requerido","KEEP_KEY_ON_EMPTY"=>false],
-                "DEFAULT"=>["TYPE"=>"String","LABEL"=>"Valor por defecto","KEEP_KEY_ON_EMPTY"=>false],
-                "SOURCE"=>\model\reflection\Types::getSourceMeta()
-            ]
-        ],$parentType,$value,$validationMode);
+                "LEVEL"=>["TYPE"=>"Enum","LABEL"=>"Level","VALUES"=>[1,3,4,5],"DEFAULT"=>1]
+            ],$parentType,$value,$validationMode);
 
     }
 

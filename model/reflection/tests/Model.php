@@ -27,7 +27,40 @@ class Model extends TestCase
         $this->initialize();
         $newModel=new \model\reflection\Model('\model\tests\User');
         $newModel->loadFromFields();
-        $h=11;
+        $shortlabel=$newModel->{"*definition"}->{"*FIELDS"}->{"*id"}->SHORTLABEL;
+        $this->assertEquals("Id",$shortlabel);
+        $def=$newModel->{"*definition"}->{"*ALIASES"}->{"*comments"}->{"*FIELDS"}->id;
+        $this->assertEquals($def,"id_user");
+        $indexes=$newModel->{"*definition"}->INDEXFIELDS;
+        $this->assertEquals("id",$indexes[0]);
+    }
+    function testPermissions()
+    {
+        $def=[
+            "FIELDS"=>[
+                "perms"=>["TYPE"=>"/model/reflection/Permissions/types/PermissionSpec"]
+            ]
+        ];
+        $obj=new \lib\model\BaseTypedObject($def);
+        $obj->perms=[["TYPE"=>"ACL",
+            "REQUIRES"=>["ITEM"=>\lib\model\permissions\PermissionsManager::PERMS_VIEW],
+            "ON"=>"/model/tests/ClassA"]];
+        $obj->perms=[[
+            "TYPE"=> \lib\model\permissions\PermissionsManager::PERMISSIONSPEC_ROLE,
+            "ROLE"=>"/AllUsers/Sys/God"
+        ]];
+
+        $obj->perms=[["TYPE"=>"Public"]];
+        $obj->perms=[["TYPE"=>"Owner"]];
+        $obj->perms=[["TYPE"=>"Logged"]];
+    }
+    function testStates()
+    {
+        $this->initialize();
+        $newModel=new \model\reflection\Model('\model\tests\ClassA');
+        $newModel->loadFromFields();
+        $val=$newModel->{"*definition"}->{"*STATES"}->STATES;
+        $s=11;
     }
 /*    function testLoad()
     {

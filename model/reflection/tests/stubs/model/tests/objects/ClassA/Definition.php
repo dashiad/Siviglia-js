@@ -2,91 +2,100 @@
 namespace model\tests\ClassA;
 class Definition extends \lib\model\BaseModelDefinition
 {
-    static  $definition=array(
+    static  $definition=[
         'ROLE'=>'ENTITY',
         'DEFAULT_SERIALIZER'=>'web',
         'DEFAULT_WRITE_SERIALIZER'=>'web',
-        'INDEXFIELDS'=>array('id_site'),
-        'TABLE'=>'Websites',
-        'LABEL'=>'Site',
-        'SHORTLABEL'=>'Website',
-        'CARDINALITY'=>'300',
+        'INDEXFIELDS'=>array('id'),
+        'TABLE'=>'ClassA',
+        'LABEL'=>'ClassA',
+        'SHORTLABEL'=>'ClassA',
+        'CARDINALITY'=>'3000',
         'CARDINALITY_TYPE'=>'FIXED',
-        'FIELDS'=>array(
-            'id_site'=>array(
-                'TYPE'=>'AutoIncrement',
-                'MIN'=>0,
-                'MAX'=>9999999999,
-                'LABEL'=>'id_website',
-                'SHORTLABEL'=>'id_website',
-                'DESCRIPTIVE'=>'true',
-                'ISLABEL'=>'true'
+        'FIELDS'=>[
+            "id"=>["TYPE"=>"AutoIncrement"],
+            "StateField"=>[
+                "TYPE"=>"State",
+                "VALUES"=>["one","two","three"]
+            ],
+            "Field_1"=>["TYPE"=>"String"],
+            "Field_2"=>["TYPE"=>"String"],
+            "Field_3"=>["TYPE"=>"String"],
+            "Field_4"=>["TYPE"=>"String"],
+            "Field_5"=>["TYPE"=>"String"]
+        ],
+        'STATES' => [
+            'FIELD'=>'StateField',
+            'DEFAULT'=>'one',
+            'LISTENER_TAGS'=>array(
+                "CALLBACK_SIMPLE"=>"MetodoSimple",
+                "CALLBACK_COMPLEX"=>array(
+                    "METHOD"=>"MetodoComplex",
+                    "PARAMS"=>["param1"]
+                ),
+                "TEST"=>"MetodoTest",
+                "TEST2"=>"MetodoTest2",
+                "LEAVE"=>"MetodoLeave",
+                "ENTER"=>"MetodoEnter"
             ),
-            'host'=>array(
-                'TYPE'=>'String',
-                'MAXLENGTH'=>40,
-                'DESCRIPTIVE'=>'true',
-                'LABEL'=>'Host',
-                'SHORTLABEL'=>'host',
-                'ISLABEL'=>'true'
-            ),
-            'canonical_url'=>array(
-                'TYPE'=>'String',
-                'MAXLENGTH'=>255,
-                'LABEL'=>'Canonical url',
-                'SHORTLABEL'=>'canonical_url',
-                'DESCRIPTIVE'=>'true',
-                'ISLABEL'=>'true'
-            ),
-            'hasSSL'=>array(
-                'TYPE'=>'Boolean',
-                'LABEL'=>'Has SSL',
-                'SHORTLABEL'=>'hasSSL',
-                'DESCRIPTIVE'=>'true',
-                'ISLABEL'=>'true'
-            ),
-            'namespace'=>array(
-                'DEFAULT'=>'',
-                'MINLENGTH'=>'4',
-                'LABEL'=>'namespace',
-                'SHORTLABEL'=>'namespace',
-                'MAXLENGTH'=>'45',
-                'TYPE'=>'String',
-                'DESCRIPTIVE'=>'true',
-                'ISLABEL'=>'true'
-            ),
-            'websiteName'=>array(
-                'DEFAULT'=>'',
-                'MINLENGTH'=>'4',
-                'LABEL'=>'name',
-                'SHORTLABEL'=>'name',
-                'MAXLENGTH'=>'45',
-                'TYPE'=>'String',
-                'DESCRIPTIVE'=>'true',
-                'ISLABEL'=>'true',
-                'SEARCHABLE'=>1
-            )
-        ),
-        'ALIASES'=>array(
-            'Pages'=>array(
-                'TYPE'=>'InverseRelation',
-                'MODEL'=>'\model\web\Page',
-                'ROLE'=>'HAS_MANY',
-                'MULTIPLICITY'=>'1:N',
-                'CARDINALITY'=>100,
-                'FIELDS'=>array('id_site'=>'id_site')
-            )
-        ),
-        'PERMISSIONS'=>array(),
-        'SOURCE'=>[
-        'STORAGE'=>array(
-            'MYSQL'=>array(
-                'ENGINE'=>'InnoDb',
-                'CHARACTER SET'=>'utf8',
-                'COLLATE'=>'utf8_general_ci',
-                'TABLE_OPTIONS'=>array('ROW_FORMAT'=>'FIXED')
-            )
-        )
+            "STATES"=>[
+                "one"=>[
+                    'LISTENERS'=>[
+                        'TEST'=>["TEST"],
+                        'ON_LEAVE'=>["LEAVE"],
+                        'ON_ENTER'=>["ENTER"]
+                    ],
+                    'FIELDS' => [
+                        'EDITABLE' => ['*'],
+                        'REQUIRED'=>['Field_3']
+                    ],
+                    'PERMISSIONS'=>array(
+                        "ADD"=>[["REQUIRES"=>"ADD","ON"=>"/model/web/Page"]],
+                        "DELETE"=>[["REQUIRED"=>"DELETE","ON"=>"/model/web/Page"]],
+                        "EDIT"=>[["REQUIRES"=>"ADMIN","ON"=>"/model/web/Page"]],
+                        "VIEW"=>[["REQUIRES"=>"VIEW","ON"=>"/model/web/Page"]]
+                    )
+                ],
+                "two"=>[
+                    'ALLOW_FROM'=>['one'],
+                    'LISTENERS'=>[
+                        'TEST'=>["TEST"],
+                        'ON_LEAVE'=>["LEAVE"],
+                        'ON_ENTER'=>["ENTER"]
+                    ],
+                    'FIELDS' => array(
+                        'EDITABLE' => array('Field_1','Field_2'),
+                        'REQUIRED'=>array()
+                    ),
+                    'PERMISSIONS'=>array(
+                        "ADD"=>[["TYPE"=>"ACL","REQUIRES"=>"ADD","ON"=>"/model/web/Page"]],
+                        "DELETE"=>[["TYPE"=>"Role","ROLE"=>"Editor"]],
+                        "EDIT"=>[["TYPE"=>"Public"]],
+                        "VIEW"=>[["REQUIRES"=>"VIEW","ON"=>"/model/web/Page"]]
+                    )
+                ],
+                "three"=>[
+                    'ALLOW_FROM'=>['one','two'],
+                    'LISTENERS'=>[
+                        'TEST'=>["STATES"=>["one"=>"TEST","two"=>"TEST2"],
+                            'ON_LEAVE'=>["MetodoLeave"],
+                            'ON_ENTER'=>["MetodoEnter"]
+                        ],
+                        'FIELDS' => array(
+                            'EDITABLE' => array('Field_3'),
+                            'REQUIRED'=>array('Field_1','Field_2')
+                        ),
+                        'PERMISSIONS'=>array(
+                            "ADD"=>[["TYPE"=>"ACL","REQUIRES"=>"ADD","ON"=>"/model/web/Page"]],
+                            "DELETE"=>[["TYPE"=>"Role","ROLE"=>"Editor"]],
+                            "EDIT"=>[["TYPE"=>"Public"]],
+                            "VIEW"=>[["REQUIRES"=>"VIEW","ON"=>"/model/web/Page"]]
+                        ),
+                        "FINAL"=>true
+
+                    ]
+                ]
             ]
-    );
+        ]
+    ];
 }

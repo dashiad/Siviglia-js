@@ -40,7 +40,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'REQUIRED'=>true
                            ),
                      'id_site'=>array(
-                           'DEFAULT'=>'NULL',
+
                            'FIELDS'=>array('id_site'=>'id_site'),
                            "SOURCE"=>[
                                "LABEL"=>"websiteName"
@@ -64,7 +64,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'ISLABEL'=>true
                            ),
                      'date_add'=>array(
-                           'DEFAULT'=>'NULL',
+
                            'SHORTLABEL'=>'date_add',
                            'TYPE'=>'DateTime',
                            'LABEL'=>'date_add',
@@ -72,7 +72,7 @@ class Definition extends \lib\model\BaseModelDefinition
                            'ISLABEL'=>true
                            ),
                      'date_modified'=>array(
-                           'DEFAULT'=>'NULL',
+
                            'SHORTLABEL'=>'date_modified',
                            'TYPE'=>'DateTime',
                            'LABEL'=>'date_modified',

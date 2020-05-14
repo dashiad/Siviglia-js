@@ -1,6 +1,7 @@
 <?php namespace model\reflection\Types\types;
 
 
+include_once(__DIR__."/../BaseReflectedType.php");
 class BaseType extends \lib\model\types\TypeSwitcher
 {
     static $typeCache;

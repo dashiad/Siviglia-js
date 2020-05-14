@@ -1,13 +1,10 @@
 <?php namespace model\reflection\Types\types;
 
-class Enum extends \lib\model\types\Container
+include_once(__DIR__."/../BaseReflectedType.php");
+class Enum extends \model\reflection\types\BaseReflectedType
 {
     function __construct($name,$parentType=null, $value=null,$validationMode=null){
-parent::__construct($name, [
-            "LABEL"=>"Enum",
-            "TYPE"=>"Container",
-            "FIELDS"=>[
-                "LABEL"=>["LABEL"=>"Label","TYPE"=>"String"],
+parent::__construct($name, "Enum",[
                 "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Enum"],
                 "VALUES"=>[
                     "LABEL"=>"Valores permitidos",
@@ -16,7 +13,6 @@ parent::__construct($name, [
                         "TYPE"=>"String"
                     ]
                 ],
-                "REQUIRED"=>["LABEL"=>"Requerido","TYPE"=>"Boolean","DEFAULT"=>false],
                 "DEFAULT"=>["TYPE"=>"String",
                     "LABEL"=>"Valor por defecto",
                     "SOURCE"=>[
@@ -26,8 +22,7 @@ parent::__construct($name, [
                         "VALUE"=>"VALUE"
                     ]
                 ]
-            ]
-        ],$parentType,$value,$validationMode);
+            ],$parentType,$value,$validationMode);
 
     }
 }

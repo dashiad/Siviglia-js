@@ -1,17 +1,13 @@
 <?php namespace model\reflection\Types\types;
 
 
-  class AutoIncrement extends \lib\model\types\Container
+  include_once(__DIR__."/../BaseReflectedType.php");
+class AutoIncrement extends \model\reflection\types\BaseReflectedType
   {
       function __construct($name,$parentType=null, $value=null,$validationMode=null){
-parent::__construct($name, [
-              "TYPE"=>"Container",
-              "FIELDS"=>[
-                  "LABEL"=>["LABEL"=>"Label","TYPE"=>"String"],
-                  "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"AutoIncrement"],
-                  "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
-              ]
-          ],$parentType,$value,$validationMode);
+    parent::__construct($name, "AutoIncrement",[
+                  "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"AutoIncrement"]
+              ],$parentType,$value,$validationMode);
 
       }
   }

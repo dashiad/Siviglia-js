@@ -1,11 +1,10 @@
 <?php namespace model\reflection\Types\types;
 
-class ModelField extends \lib\model\types\Container
+include_once(__DIR__."/../BaseReflectedType.php");
+class ModelField extends \model\reflection\types\BaseReflectedType
 {
     function __construct($name,$parentType=null, $value=null,$validationMode=null){
-        parent::__construct($name, [
-            "TYPE"=>"Container",
-            "FIELDS"=>[
+        parent::__construct($name,"ModelField",[
                 "MODEL"=>[
                     "LABEL"=>"Modelo",
                     "TYPE"=>"String",
@@ -30,9 +29,7 @@ class ModelField extends \lib\model\types\Container
                         "LABEL"=> "NAME",
                         "VALUE"=> "NAME"
                     ]
-                ]
-            ]
-        ],$parentType,$value,$validationMode);
+            ]],$parentType,$value,$validationMode);
 
     }
 }

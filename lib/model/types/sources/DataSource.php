@@ -73,6 +73,11 @@ class DataSource extends BaseSource
     {
         $datasource=$this->buildDataSource();
         $it=$datasource->fetchAll();
-        return $it->getFullData();
+        $data=$it->getFullData();
+        if(isset($this->definition["PREPEND"]))
+            $data=array_merge($this->definition["PREPEND"],$data);
+        if(isset($this->definition["APPEND"]))
+            $data=array_merge($data,$this->definition["APPEND"]);
+        return $data;
     }
 }

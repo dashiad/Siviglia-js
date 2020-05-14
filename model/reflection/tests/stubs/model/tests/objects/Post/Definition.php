@@ -30,7 +30,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'ISLABEL'=>'false'
             ),
             'creator_id'=>array(
-                'DEFAULT'=>'NULL',
+
                 'FIELDS'=>array('creator_id'=>'id'),
                 'MODEL'=> '\model\tests\User',
                 'LABEL'=>'Creator',

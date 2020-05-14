@@ -36,7 +36,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'DEFAULT' => 'Created'
             ),
             'user_id'=>[
-                'DEFAULT'=>'NULL',
+
                 'FIELDS'=>array('user_id'=>'id'),
                 'MODEL'=> '\model\tests\User',
                 'LABEL'=>'User',
@@ -53,7 +53,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'ISLABEL'=>'true'
             ],
             'shipment_id'=>[
-                'DEFAULT'=>'NULL',
+
                 'FIELDS'=>array('shipment_id'=>'id'),
                 'MODEL'=> '\model\tests\Product\Shipment',
                 'LABEL'=>'Shipment',

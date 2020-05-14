@@ -1,31 +1,18 @@
 <?php
   namespace model\reflection\Types\types;
 
-  class _Array extends \lib\model\types\Container
+  include_once(__DIR__."/../BaseReflectedType.php");
+class _Array extends \model\reflection\types\BaseReflectedType
   {
       function __construct($name,$parentType=null, $value=null,$validationMode=null){
-parent::__construct($name, [
-              "LABEL"=>"Array",
-              "TYPE"=>"Container",
-              "FIELDS"=>[
+        parent::__construct($name, "Array",[
                   "TYPE"=>["LABEL"=>"Type","TYPE"=>"String","FIXED"=>"Array"],
-                  "LABEL"=>["TYPE"=>"String","LABEL"=>"Label"],
                   "ELEMENTS"=>[
                       "LABEL"=>"Elementos",
                       "TYPE"=>"/model/reflection/Model/types/TypeReference",
                       "REQUIRED"=>true
                   ],
-                  "REQUIRED"=>[
-                      "LABEL"=>"Requerido",
-                      "TYPE"=>"Boolean",
-                      "DEFAULT"=>false,
-                      "KEEP_KEY_ON_EMPTY"=>false
-                  ],
-                  "HELP"=>["LABEL"=>"Ayuda","TYPE"=>"Text","KEEP_KEY_ON_EMPTY"=>false],
-                  "KEEP_KEY_ON_EMPTY"=>["LABEL"=>"Permitir valor vacío","TYPE"=>"Boolean","KEEP_KEY_ON_EMPTY"=>false],
-                  "SOURCE"=>\model\reflection\Types::getSourceMeta()
-              ]
-          ],$parentType,$value,$validationMode);
+              ],$parentType,$value,$validationMode);
 
       }
   }

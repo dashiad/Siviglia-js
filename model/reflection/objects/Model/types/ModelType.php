@@ -103,7 +103,7 @@ class ModelType extends \lib\model\types\Container
                        "FIELDS" => [
                            "LABEL" => "Campos",
                            "TYPE" => "Dictionary",
-                           "VALUETYPE" => "BaseType",
+                           "VALUETYPE" => "/model/reflection/Types/types/BaseType",
                            "HELP" => "Campos existentes en el modelo"
                        ],
 
@@ -164,7 +164,19 @@ class ModelType extends \lib\model\types\Container
                                            "REQUIRED" => true
 
                                        ],
-                                       "MULTIPLICITY" => ["LABEL" => "Multiplicidad", "TYPE" => "Enum", "VALUES" => ["1:N", "0-1:N", "M:N"]],
+                                       "MULTIPLICITY" => [
+                                           "LABEL" => "Multiplicidad",
+                                           "TYPE" => "String",
+                                           "SOURCE" => [
+                                               "TYPE" => "Array",
+                                               "DATA" => [
+                                                   ["Label"=>"1:N"],
+                                                   ["Label"=>"0-1:N"],
+                                               ],
+                                               "LABEL" => "Label",
+                                               "VALUE" => "Label"
+                                           ]
+                                       ],
                                        "HELP" => ["LABEL" => "Ayuda", "TYPE" => "Text", "KEEP_KEY_ON_EMPTY" => false],
                                        "CARDINALITY" => ["LABEL" => "Cardinalidad", "TYPE" => "Integer", "HELP" => "Numero aproximado de elementos del modelo remoto que apuntan a 1 elemento del modelo actual."],
                                        "KEEP_KEY_ON_EMPTY" => ["LABEL" => "Permitir valor vacío", "TYPE" => "Boolean", "KEEP_KEY_ON_EMPTY" => false],
@@ -235,7 +247,6 @@ class ModelType extends \lib\model\types\Container
                                            "REQUIRED" => true
 
                                        ],
-                                       "MULTIPLICITY" => ["LABEL" => "Multiplicidad", "TYPE" => "Enum", "VALUES" => ["N:1", "N:0-1", "M:N"]],
                                        "KEEP_KEY_ON_EMPTY" => ["LABEL" => "Permitir valor vacío", "TYPE" => "Boolean", "KEEP_KEY_ON_EMPTY" => false],
                                        "REQUIRED" => ["TYPE" => "Boolean", "DEFAULT" => false, "LABEL" => "Requerido", "KEEP_KEY_ON_EMPTY" => false],
                                        "DEFAULT" => ["TYPE" => "String", "LABEL" => "Valor por defecto", "KEEP_KEY_ON_EMPTY" => false]

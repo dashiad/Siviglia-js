@@ -3,13 +3,11 @@
 
 namespace model\reflection\Types\types;
 
-class Image extends \lib\model\types\Container
+include_once(__DIR__."/../BaseReflectedType.php");
+class Image extends \model\reflection\types\BaseReflectedType
 {
     function __construct($name,$parentType=null, $value=null,$validationMode=null){
-parent::__construct($name, [
-            "LABEL"=>"Image",
-            "TYPE" => "Container",
-            "FIELDS" => [
+parent::__construct($name, "Image", [
                 "TYPE" => ["TYPE" => "String", "FIXED" => "Image"],
                 "MINSIZE"=>["TYPE"=>"Integer","LABEL"=>"Tamaño mínimo","KEEP_KEY_ON_EMPTY"=>false],
                 "MAXSIZE"=>["TYPE"=>"Integer","LABEL"=>"Tamaño máximo","KEEP_KEY_ON_EMPTY"=>false],
@@ -39,12 +37,8 @@ parent::__construct($name, [
                         ]
                 ],
                 "DESCRIPTION"=>["TYPE"=>"Text","LABEL"=>"Descripción","REQUIRED"=>false,"KEEP_KEY_ON_EMPTY"=>false],
-                "AUTODELETE" => ["TYPE"=>"Boolean","LABEL"=>"Borrado automático","DEFAULT"=>false],
-                "HELP" => ["LABEL" => "Ayuda", "TYPE" => "Text", "KEEP_KEY_ON_EMPTY" => false],
-                "KEEP_KEY_ON_EMPTY" => ["LABEL" => "Permitir valor vacío", "TYPE" => "Boolean", "KEEP_KEY_ON_EMPTY" => false],
-                "REQUIRED" => ["TYPE" => "Boolean", "DEFAULT" => false, "LABEL" => "Requerido", "KEEP_KEY_ON_EMPTY" => false]
-            ]
-        ],$parentType,$value,$validationMode);
+                "AUTODELETE" => ["TYPE"=>"Boolean","LABEL"=>"Borrado automático","DEFAULT"=>false]
+            ],$parentType,$value,$validationMode);
 
     }
 }

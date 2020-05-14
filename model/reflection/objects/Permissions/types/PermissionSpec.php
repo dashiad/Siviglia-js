@@ -43,7 +43,7 @@ class PermissionSpec extends \lib\model\types\_Array
                         "TYPE" => "Container",
                         "FIELDS" => [
                             "TYPE"=>[
-                                "LABEL"=>"Public",
+                                "LABEL"=>"Logged",
                                 "TYPE"=>"String",
                                 "FIXED"=>"Logged"
                             ]
@@ -54,7 +54,7 @@ class PermissionSpec extends \lib\model\types\_Array
                         "TYPE"=>"Container",
                         "FIELDS"=>[
                             "TYPE"=>[
-                                "LABEL"=>"Public",
+                                "LABEL"=>"Role",
                                 "TYPE"=>"String",
                                 "FIXED"=>"Role"
                             ],
@@ -64,7 +64,10 @@ class PermissionSpec extends \lib\model\types\_Array
                                 "SOURCE" => [
                                     "TYPE" => "DataSource",
                                     "MODEL" => "/model/web/Permissions",
-                                    "DATASOURCE" => "RoleList"
+                                    "DATASOURCE" => "ListRoles",
+                                    "LABEL"=>"group_charPath",
+                                    "VALUE"=>"group_charPath"
+
                                 ]
                             ]
                         ]
@@ -74,7 +77,7 @@ class PermissionSpec extends \lib\model\types\_Array
                         "TYPE" => "Container",
                         "FIELDS" => [
                             "TYPE"=>[
-                                "LABEL"=>"Public",
+                                "LABEL"=>"ACL",
                                 "TYPE"=>"String",
                                 "FIXED"=>"ACL"
                             ],
@@ -93,15 +96,17 @@ class PermissionSpec extends \lib\model\types\_Array
                                                 "TYPE"=>"String",
                                                 "FIXED"=>"ITEM"
                                             ],
-                                            "REQUIRES" => [
+                                            "ITEM" => [
                                                 "TYPE" => "String",
                                                 "SOURCE" => [
                                                     "TYPE" => "DataSource",
                                                     "MODEL" => "/model/web/Permissions",
                                                     "DATASOURCE" => "ListItems",
                                                     "PARAMS" => [
-                                                        "itemType" => 1
-                                                    ]
+                                                        "item_type" => 1
+                                                    ],
+                                                    "LABEL"=>"item_value",
+                                                    "VALUE"=>"item_value"
                                                 ]
                                             ]
                                         ]
@@ -115,15 +120,17 @@ class PermissionSpec extends \lib\model\types\_Array
                                                 "TYPE"=>"String",
                                                 "FIXED"=>"GROUP"
                                             ],
-                                            "REQUIRES" => [
+                                            "GROUP" => [
                                                 "TYPE" => "String",
                                                 "SOURCE" => [
                                                     "TYPE" => "DataSource",
                                                     "MODEL" => "/model/web/Permissions",
                                                     "DATASOURCE" => "ListGroups",
                                                     "PARAMS" => [
-                                                        "itemType" => 1
-                                                    ]
+                                                        "group_type" => 1
+                                                    ],
+                                                    "LABEL"=>"group_charPath",
+                                                    "VALUE"=>"group_charPath"
                                                 ]
                                             ]
                                         ]
