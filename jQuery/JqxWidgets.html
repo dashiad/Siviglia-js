@@ -1062,9 +1062,6 @@
                         preInitialize:function(params)
                         {
                             this.Container$preInitialize(params);
-
-                            this.containerDefinition=this.type.getDefinition();
-
                             this.containerGroups=this.getGroups();
                             this.labels=[];
                             for(var k in this.containerGroups)
@@ -1096,6 +1093,34 @@
                         }
 
                     }
+                },
+                AccordionContainer:{
+                    // Solo heredamos de TabbedContainer para reutilizar addError,
+                    // aunque realmente el AddError de TabbedContainer no es el que deberia
+                    // tener AccordionContainer.
+                    inherits:"TabbedContainer",
+                    methods:{
+                        preInitialize:function(params)
+                        {
+                            this.Container$preInitialize(params);
+                            this.containerGroups=this.getGroups();
+                            for(var k in this.containerGroups)
+                            {
+                                this.containerGroups[k].ICON=Siviglia.issetOr(this.containerGroups[k].ICON,"");
+                            }
+                        },
+                        initialize:function(params)
+                        {
+                            this.Container$initialize(params);
+
+
+                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ width: 600, height: 250});
+
+                            this.jqxAccordion.jqxNavigationBar(iParams);
+                        }
+
+                    }
+
                 },
                 FlexContainer:{
                     inherits:"Container"
@@ -1434,13 +1459,15 @@
                             }
                     },
                 Form:{
-                    inherits:"Container",
+                    inherits:"BaseInput",
                     destruct:function()
                     {
                         if(this.__bto)
                             this.__bto.destruct();
-                        if(this.__container)
-                            this.__container.destruct();
+                        if(this.type)
+                            this.type.destruct();
+                        if(this.__containerWidget)
+                            this.__containerWidget.destruct();
                     },
                     methods:
                         {
@@ -1455,12 +1482,12 @@
                                 var m=this;
                                 this.__bto=null;
                                 this.__model=null;
-                                this.__container=null;
+                                this.type=null;
                                 this.__erroredInputs={};
+                                this.__containerWidget=null;
                                 if(typeof params.model==="undefined") {
                                     this.__bto = params.bto;
                                     this.setupBto();
-                                    this.Container$preInitialize({type:this.__container,form:this});
                                     loadedPromise.resolve(this.bto);
                                 }
                                 else {
@@ -1474,7 +1501,7 @@
                                         if (result.error == 0) {
                                             this.__bto = new Siviglia.Model.Form(params.model, params.name, params.keys, result.form.definition, result.form.value);
                                             this.setupBto();
-                                            this.Container$preInitialize({type:this.__container,form:this});
+
                                             loadedPromise.resolve(this.__bto);
                                         } else
                                             loadedPromise.reject();
@@ -1482,9 +1509,24 @@
                                 }
                                 return loadedPromise;
                             },
+                            initialize:function()
+                            {
+                                var factory=new Siviglia.inputs.jqwidgets.Factory();
+                                //this.curType=this.type.getField(key);
+                                factory.getInput(this.type,{controller:this.type.controller},this).then(
+                                  function(instance)
+                                  {
+                                      this.__containerWidget=instance;
+                                      this.formNode.append(this.__containerWidget.rootNode);
+                                  }.bind(this)
+                                );
+
+
+
+                            },
                             setupBto:function()
                             {
-                                this.__container = new Siviglia.types.Container(this.__bto);
+                                this.type = new Siviglia.types.Container(this.__bto);
                                 var ip = Siviglia.issetOr(this.__bto.__definition.INPUTPARAMS, {});
                                 this.__ip = [];
                                 for (var k in ip) {
@@ -1986,6 +2028,19 @@
                     <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2/VALUE"}'></div>
                 </div>
 
+            </div>
+        </div>
+    </div>
+
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.AccordionContainer" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.AccordionContainer">
+        <div data-sivId='jqxAccordion' data-sivLoop="*containerGroups" data-contextIndex="current">
+            <div data-sivValue="[%@current/LABEL%]"></div>
+            <div>
+                <div data-sivLoop="@current/FIELDS" data-contextIndex="current2">
+                    <div data-sivValue="[%*type/definition/FIELDS/{%@current2%}/LABEL%]"></div>
+                    <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2"}'></div>
+                </div>
             </div>
         </div>
     </div>

@@ -44,7 +44,7 @@
 </div>
 
 
-<div data-sivView="MyTest.test" data-sivlayout="Siviglia.inputs.jqwidgets.Container"></div>
+<div data-sivView="MyTest.test" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
 
 <script>
     Siviglia.Utils.buildClass({
@@ -57,33 +57,44 @@
                     {
                         this.bType=new Siviglia.model.BaseTypedObject({
                             "FIELDS": {
-                                a1: {
-                                    "LABEL": "Array1",
-                                    "TYPE": "Array",
-                                    "ELEMENTS": {
-                                        "LABEL": "cont1",
-                                        "TYPE": "Container",
-                                        "FIELDS": {
-                                            "Field1": {
-                                                "LABEL": "Field 1",
-                                                "TYPE": "String"
-                                            },
-                                            "Field2": {
-                                                "LABEL": "Field 2",
-                                                "TYPE": "Integer"
-                                            }
-                                        },
-                                        GROUPS: {
-                                            "G1": {"LABEL": "Grupo 1", "FIELDS": ["Field1"]},
-                                            "G2": {"LABEL": "Grupo 2", "FIELDS": ["Field2"]}
-                                        }
-                                    }
+
+                                "Field1": {
+                                    "LABEL": "Field 1",
+                                    "TYPE": "String"
+                                },
+                                "Field2": {
+                                    "LABEL": "Field 2",
+                                    "TYPE": "Integer"
+                                },
+                                "Field3": {
+                                    "LABEL": "Field 3",
+                                    "TYPE": "Integer"
+                                },
+                                "Field4": {
+                                    "LABEL": "Field 4",
+                                    "TYPE": "Integer"
+                                },
+                                "Field5": {
+                                    "LABEL": "Field 5",
+                                    "TYPE": "Integer"
+                                },
+                                "Field6": {
+                                    "LABEL": "Field 6",
+                                    "TYPE": "Integer"
                                 }
                             },
 
+                            GROUPS: {
+                                "G1": {"LABEL": "Grupo 1", "FIELDS": ["Field1","Field2","Field3"]},
+                                "G2": {"LABEL": "Grupo 2", "FIELDS": ["Field4","Field5"]},
+                                "G3": {"LABEL": "Grupo 3", "FIELDS": ["Field6"]}
+                            },
+
+
+
                             "INPUTPARAMS":{
-                                "/a1/.*": {
-                                    "INPUT": "TabbedContainer",
+                                "^/$": {
+                                    "INPUT": "AccordionContainer",
                                     "JQXPARAMS":{width:700,height:500,position:top}
                                 }
 
@@ -97,17 +108,6 @@
                     },
                     setupBto:function()
                     {
-                        this.__bto.__definition.INPUTPARAMS = {
-                            "/": {
-                                "INPUT": "TabbedContainer",
-                                "JQXPARAMS":{width:700,height:500,position:top}
-                            }
-                        };
-                        this.__bto.__definition.GROUPS={
-                            "G1":{"LABEL":"Grupo 1","FIELDS":["id_page","name","tag","id_type"]},
-                            "G2":{"LABEL":"Grupo 2","FIELDS":["date_add","date_modified"]},
-                            "G3":{"LABEL":"Grupo 3","FIELDS":["isPrivate","title","path","tags","description","model","modelParam","datasource"]}
-                        };
                         this.Form$setupBto();
                     }
                 }
