@@ -159,6 +159,7 @@
                         preInitialize: function (params) {
                             this.errored = false;
                             this.controller = this.parentView;
+                            this.tooltipNode=null;
                             this.changing=false;
                             this.errorMessage = "";
                             this.form=Siviglia.issetOr(params.form,null);
@@ -176,6 +177,7 @@
                             this.createInput(opts);
                             this.inputNode[this.getJqxWidgetName()]('theme', 'light');
                             var m = this;
+                            this.tooltipNode=this.inputNode;
                             this.inputNode.on("change", function () {
                                 if (m.changing)
                                     return;
@@ -272,12 +274,12 @@
                                 this.showError(Siviglia.i18n.es.base.getErrorFromJsException(exception));
                             }
                             else
-                                console.err("Invalid error path:"+exception.path);
+                                console.error("Invalid error path:"+exception.path);
 
                         },
                         showError: function (message,dontAppend) {
                             var d = new Date();
-                            this.tooltip = this.inputNode.jqxTooltip(
+                            this.tooltip = this.tooltipNode.jqxTooltip(
                                 {
                                     name: d + d.getMilliseconds(),
                                     animationShowDelay: 'fast',
@@ -285,15 +287,15 @@
                                     closeOnClick: false,
                                     position: 'right'
                                 });
-                            this.tooltipIds=this.inputNode.data().jqxTooltip.instance.IDArray;
-                            this.inputNode.jqxTooltip({content: message});
-                            this.inputNode.jqxTooltip("open");
-                            this.inputNode.addClass("errored");
+                            this.tooltipIds=this.tooltipNode.data().jqxTooltip.instance.IDArray;
+                            this.tooltipNode.jqxTooltip({content: message});
+                            this.tooltipNode.jqxTooltip("open");
+                            this.tooltipNode.addClass("errored");
                             this.form.appendError(this.type.getFullPath(),this);
                         },
                         clearErrors: function () {
                             if (this.tooltip) {
-                                this.inputNode.jqxTooltip('destroy');
+                                this.tooltipNode.jqxTooltip('destroy');
                                 this.tooltip = null;
                                 for(var k=0;k<this.tooltipIds.length;k++)
                                 {
@@ -988,21 +990,23 @@
                                 },
                                 addError:function(path,exception)
                                 {
-                                    debugger;
+
                                     var key=path.shift();
                                     if(key==this.currentKey)
                                     {
+
                                         if(this.currentWidget!==null) {
                                             this.currentWidget.addError(path, exception);
-                                            return;
                                         }
                                     }
                                     else {
                                         this.currentKey = key;
+                                        this.hasCurrentKey=true;
                                     }
-                                        if (typeof this.currentErrors[key] == "undefined")
-                                            this.currentErrors[key] = [];
-                                        this.currentErrors[key].push({path: path, error: exception});
+
+                                    if (typeof this.currentErrors[key] == "undefined")
+                                        this.currentErrors[key] = [];
+                                    this.currentErrors[key].push({path: path, error: exception});
 
                                 }
 
@@ -1084,12 +1088,14 @@
                             var idx=0;
                             for(var k in this.containerGroups)
                             {
-                                if(this.containerGroups[k].FIELDS.indexOf(key)>=0) {
+                                for(var j=0;j<this.containerGroups[k].FIELDS.length;j++) {
+                                    if (this.containerGroups[k].FIELDS[j].VALUE==key) {
                                     this.jqxTabs.jqxTabs("select", idx);
                                     this.subwidgets[key].addError(path,exception);
                                     return;
                                 }
                             }
+                        }
                         }
 
                     }
@@ -1125,6 +1131,55 @@
                 FlexContainer:{
                     inherits:"Container"
                 },
+                MenuContainer:{
+                    inherits:"Container",
+                    methods: {
+                        preInitialize: function (params) {
+                            this.Container$preInitialize(params);
+                            this.menu = params["MENU"];
+                            this.self = this;
+                        },
+                        initialize: function (params) {
+
+                            this.menuNode.jqxMenu({ width: '120', mode: 'vertical'});
+
+                        }
+                    }
+
+
+                },
+                Menu:{
+                    inherits:"Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
+                    methods: {
+                        preInitialize: function (params) {
+                            this.controller = params.controller;
+                            this.menu = params.menu;
+                        },
+                        initialize: function () {
+                        },
+                        getSubMenu: function (node, params) {
+                            var label = params.spec.Label;
+                            node.attr("href","#");
+                            node.html(params.spec.Label);
+                            switch (params.spec.Type) {
+                                case "Menu": {
+                                    var menuWidget = new Siviglia.inputs.jqwidgets.Menu('Siviglia.inputs.jqwidgets.Menu',
+                                        {controller: this.controller, menu: params.spec.Menu},
+                                        {},
+                                        $('<div></div>'),
+                                        this.__context
+                                    );
+                                    menuWidget.__build().then(function (instance) {
+                                        node.parent().append(menuWidget.rootNode);
+                                    })
+                                }
+                                    break;
+                            }
+
+                        }
+                    }
+
+                },
                 Array:
                     {
                         inherits:'BaseInput',
@@ -1138,6 +1193,7 @@
                             {
                                 this.currentItem.destruct();
                             }
+                            this.currentSelection=null;
                         },
                         methods:
                             {
@@ -1217,7 +1273,9 @@
                                 },
                                 setSelected:function(idx)
                                 {
-
+                                    if(idx==this.currentSelection)
+                                        return;
+                                    this.currentSelection=idx;
                                     var factory=new Siviglia.inputs.jqwidgets.Factory();
                                     factory.getInput(this.type.getValue()["*"+idx],{},this.form).then(function(instance){
                                         if(this.currentItem) {
@@ -1478,6 +1536,7 @@
                                 // un basetypedobject, cuando, por ejemplo, es un filtro para un datasource, o un test.
 
                                 var loadedPromise = $.Deferred();
+                                var containerPromise=$.Deferred();
 
                                 var m=this;
                                 this.__bto=null;
@@ -1501,25 +1560,33 @@
                                         if (result.error == 0) {
                                             this.__bto = new Siviglia.Model.Form(params.model, params.name, params.keys, result.form.definition, result.form.value);
                                             this.setupBto();
+                                            loadedPromise.resolve(this.bto);
 
-                                            loadedPromise.resolve(this.__bto);
                                         } else
                                             loadedPromise.reject();
                                     }.bind(this))
                                 }
-                                return loadedPromise;
-                            },
-                            initialize:function()
-                            {
+
+                                $.when(loadedPromise).then(function(bto){
                                 var factory=new Siviglia.inputs.jqwidgets.Factory();
-                                //this.curType=this.type.getField(key);
-                                factory.getInput(this.type,{controller:this.type.controller},this).then(
+                                    factory.getInput(this.type,{controller:this.__bto},this).then(
                                   function(instance)
                                   {
                                       this.__containerWidget=instance;
+                                            containerPromise.resolve(this.__bto);
+
+                                        }.bind(this)
+                                    );
+
+                                }.bind(this));
+                                return containerPromise;
+                            },
+                            initialize:function()
+                            {
+                                if(this.formNode)
                                       this.formNode.append(this.__containerWidget.rootNode);
-                                  }.bind(this)
-                                );
+                                //this.curType=this.type.getField(key);
+
 
 
 
@@ -1536,6 +1603,10 @@
                                     var r = new RegExp("^" + t + "$");
                                     this.__ip.push({reg: r, ip: ip[k]});
                                 }
+                            },
+                            getInputFor:function(node,params)
+                            {
+                                return this.__containerWidget.getInputFor(node,params);
                             },
                             getFormParams:function(typePath)
                             {
@@ -1555,7 +1626,7 @@
                                 if(typeof this.__erroredInputs[path]!=="undefined")
                                     delete this.__erroredInputs[path];
                             },
-                            submit: function (instance,actionName) {
+                            submit: function () {
                                 var errors=null;
                                 try {
                                     this.__bto.__save();
@@ -1575,7 +1646,7 @@
 
                                         var path = errors[k].path.split("/");
                                         path.shift();
-                                        this.addError(path, errors[k]);
+                                        this.__containerWidget.addError(path, errors[k]);
                                     }
                                 }
                                 for (var k in this.erroredInputs)
@@ -1622,7 +1693,7 @@
                                         function (r) {
                                             if (r.error == 0) {
                                                 //this.__bto.setValue(r.data[0]);
-						var returned=r.data!==null?r.data[0]:null;
+						                        var returned=r.data!==null?r.data[0]:null;
                                                 this.onSuccess(returned);
                                                 if(!this.doRedirect("ON_SUCCESS"))
                                                     p.resolve(r);
@@ -1662,7 +1733,7 @@
                                                         var parts=error.path.split("/");
                                                         if (parts[0] == "")
                                                             parts.shift();
-                                                        this.addError(parts, error);
+                                                        this.__containerWidget.addError(parts, error);
                                                     }
                                                 }
                                         }
@@ -1739,6 +1810,10 @@
 </script>
 
 <div style="display:none">
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.AutoIncrement" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.AutoIncrement">
+        <input type="text" data-sivId="inputNode"></input>
+    </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.String" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.String">
         <input type="text" data-sivId="inputNode"></input>
@@ -1901,7 +1976,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="inputs container" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+                <div class="inputs container" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current" >
                     <div class="col col-sm-2" data-sivValue="/@current/LABEL"></div>
                     <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
                 </div>
@@ -1988,12 +2063,14 @@
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Form" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Form">
         <div data-sivId="formNode"></div>
+        <div class="formSubmit"><input type="button" data-sivEvent="click" data-sivCallback="submit" value="Save"></div>
     </div>
 
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.FilteringForm" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.FilteringForm">
         <div data-sivId="formNode"></div>
+
     </div>
 
     <!--
@@ -2031,6 +2108,9 @@
             </div>
         </div>
     </div>
+    <!--
+            ---------------------------------------------------------------------------------------
+            -->
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.AccordionContainer" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.AccordionContainer">
@@ -2044,5 +2124,22 @@
             </div>
         </div>
     </div>
-
+    <!--
+            ---------------------------------------------------------------------------------------
+            -->
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.MenuContainer" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.MenuContainer">
+        <div data-sivId="menuNode" data-sivView="Siviglia.inputs.jqwidgets.Menu" data-sivParams='{"controller":"*self","menu":"*menu"}'>
+        </div>
+    </div>
+    <!--
+            ---------------------------------------------------------------------------------------
+            -->
+    <ul data-sivWidget="Siviglia.inputs.jqwidgets.Menu" data-widgetParams="controller" data-widgetCode="Siviglia.inputs.jqwidgets.Menu">
+        <div data-sivLoop="/*menu" data-contextIndex="current" data-sivnested="false">
+            <li>
+                <a data-sivCall="getSubMenu" data-sivParams='{"spec":"@current"}'></a>
+            </li>
+        </div>
+    </ul>
 </div>

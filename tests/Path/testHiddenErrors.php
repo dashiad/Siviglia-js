@@ -22,6 +22,9 @@
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.darkblue.css">
+    <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">
+    <link rel="stylesheet" href="../../../../reflection/css/style.css">
+
     <script>
         var Siviglia = Siviglia || {};
         Siviglia.config = {
@@ -58,7 +61,7 @@
 </div>
 
 
-<div data-sivView="Test.HiddenErrors"></div>
+<div data-sivView="Test.HiddenErrors" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
 
 
 <script>
@@ -107,17 +110,17 @@
                                     }
                                 },
                                 INPUTPARAMS:{
-                                    "/": {
+                                 /*   "/": {
                                         "INPUT": "TabbedContainer",
                                         "JQXPARAMS":{width:700,height:500,position:top}
-                                    }
+                                    }*/
                                 }
                             }
                         );
                         var p={
                             bto:instance
                         };
-                        this.Form$preInitialize(p);
+                        return this.Form$preInitialize(p);
 
                     }
                 }

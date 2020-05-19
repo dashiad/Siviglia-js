@@ -249,7 +249,7 @@
                                 this.showError(Siviglia.i18n.es.base.getErrorFromJsException(exception));
                             }
                             else
-                                console.err("Invalid error path:"+exception.path);
+                                console.error("Invalid error path:"+exception.path);
 
                         },
                         showError: function (message,dontAppend) {
@@ -1050,12 +1050,14 @@
                             var idx=0;
                             for(var k in this.containerGroups)
                             {
-                                if(this.containerGroups[k].FIELDS.indexOf(key)>=0) {
+                                for(var j=0;j<this.containerGroups[k].FIELDS.length;j++) {
+                                    if (this.containerGroups[k].FIELDS[j].VALUE==key) {
                                     this.jqxTabs.jqxTabs("select", idx);
                                     this.subwidgets[key].addError(path,exception);
                                     return;
                                 }
                             }
+                        }
                         }
 
                     }
@@ -1762,7 +1764,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div> --> 
+                                </div> -->
 
                             </div>
 

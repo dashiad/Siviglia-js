@@ -371,11 +371,22 @@ Siviglia.Utils.buildClass(
                                 }
                             }catch(e)
                             {
+                                // Si este error lo esta lanzando un BTO interno, copiamos sus valores a los nuestros.
+                                if(e.code==Siviglia.types.BaseTypeException.ERR_SAVE_ERROR)
+                                {
+                                    var internalErrors=e.params;
+                                    if(errors==null)
+                                        errors=internalErrors;
+                                    else
+                                        errors.concat(internalErrors)
+                                }
+                                else {
                                 if(errors==null)
                                     errors=[e];
                                 else
                                 errors.push(e);
                             }
+                        }
                         }
                         if(errors==null)
                             return null;

@@ -50,7 +50,7 @@
 
     </div>
 </div>
-<div data-sivView="Test.SimpleWidget" data-sivlayout="Siviglia.inputs.jqwidgets.Container"></div>
+<div data-sivView="Test.SimpleWidget" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
 <script>
 
         Siviglia.Utils.buildClass(
@@ -203,7 +203,7 @@
                                             }
                                         }
                                     });
-                                    this.Form$preInitialize({bto:this.bType})
+                                    return this.Form$preInitialize({bto:this.bType})
                                 }
 
                             }

@@ -410,13 +410,17 @@
                                     aa:{Field1:"LALA1",Field2:35},
                                     bb:{Field1:"LALA2",Field2:45}
                                 }
-                                this.Form$preInitialize({bto:this.typedObj});
+                                return this.Form$preInitialize({bto:this.typedObj});
                             },
                             initialize: function (params) {
                             },
                             show: function () {
 
                                 console.dir(this.typedObj.getValue());
+                            },
+                            getInputFor:function(node,params)
+                            {
+                                return this.__containerWidget.getInputFor(node,params);
                             }
                         }
                     }

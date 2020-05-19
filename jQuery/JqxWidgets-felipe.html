@@ -249,7 +249,7 @@
                                 this.showError(Siviglia.i18n.es.base.getErrorFromJsException(exception));
                             }
                             else
-                                console.err("Invalid error path:"+exception.path);
+                                console.error("Invalid error path:"+exception.path);
 
                         },
                         showError: function (message,dontAppend) {
@@ -1735,7 +1735,7 @@
                                         </li>
                                     </ul> -->
                                     <ul class="nav nav-pills" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                                        <li class="nav-item">                                            
+                                        <li class="nav-item">
                                             <a class="nav-link" id="tab-/@current/LABEL" data-toggle="pill" href="#/@current/LABEL"><span data-sivValue="/@current/LABEL" data-sivParams='{"key":"/@current/LABEL"}' data-sivEvent="click" data-sivCallback="onLabelClicked" title="Seleccionar /@current/LABEL"></span> <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}' title="Eliminar"></i></a>
                                         </li>
                                     </ul>
@@ -1747,7 +1747,7 @@
 
                             <!-- <div class="Dictionary-keyList" width="150px">
                                 <div class="Dictionary-mainKeyList">
-                                    
+
                                     <ul class="Dictionary-keys-add">
                                         <li>
                                             <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
@@ -1788,7 +1788,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div> --> 
+                                </div> -->
 
                             </div>
 
@@ -1906,18 +1906,18 @@
             ---------------------------------------------------------------------------------------
             -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.NewItem" data-widgetParams="parentObject,parentNode" data-widgetCode="Siviglia.inputs.jqwidgets.NewItem" class="NewItem">
-    
-        <div class="input-group custom">         
+
+        <div class="input-group custom">
             <div data-sivId="inputNode"></div>
             <!-- <input type="text" class="form-control" placeholder="Add new item..." aria-describedby="button-add"> -->
                 <div class="input-group-append" id="button-add">
-                    <button class="NewItem-addButton" type="button" data-sivEvent="click" data-sivCallback="onAdd" data-sivValue="Añadir"></button> 
-                </div>                
-        </div>          
-            
-            
-            
-            
+                    <button class="NewItem-addButton" type="button" data-sivEvent="click" data-sivCallback="onAdd" data-sivValue="Añadir"></button>
+                </div>
+        </div>
+
+
+
+
             <!-- <div style="display:table-row">
                 <div style="display:table-cell" data-sivId="inputNode">
                 </div>

@@ -39,8 +39,8 @@
 <body>
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 <div style="display:none">
-    <div data-sivWidget="MyTest.test" data-widgetCode="MyTest.test">
-    </div>
+    <div data-sivWidget="MyTest.test"></div>
+
 </div>
 
 
