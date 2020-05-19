@@ -22,8 +22,8 @@ class BaseReflectedType extends \lib\model\types\Container
                 "REQUIRED"=>["LABEL"=>"Requerido","TYPE"=>"Boolean","DEFAULT"=>false]
             ]
         ];
-        foreach($def as $key=>$value)
-            $baseDef["FIELDS"][$key]=$value;
+        foreach($def as $key=>$v)
+            $baseDef["FIELDS"][$key]=$v;
         parent::__construct($name, $baseDef,$parentType,$value,$validationMode);
     }
 }

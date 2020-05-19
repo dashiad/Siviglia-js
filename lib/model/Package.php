@@ -146,6 +146,8 @@ class Package
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot() && $fileinfo->isDir()) {
                 $name=$fileinfo->getFilename();
+                // Proteccion contra carpetas que existan dentro de objects, pero que no contengan modelos.
+                if(is_file($fileinfo->getRealPath()."/".$name.".php") && is_file($fileinfo->getRealPath()."/Definition.php")) {
                 $current=array(
                     "name"=>$name,
                     "package"=>$this->name,
@@ -157,6 +159,7 @@ class Package
                     $current["subobjects"]=$subobjects;
                 $objects[]=$current;
             }
+        }
         }
         return $objects;
     }

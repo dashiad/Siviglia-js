@@ -1,7 +1,7 @@
 <?php
 
 
-namespace model\Reflection\MetaDefinition;
+namespace model\reflection\MetaDefinition;
 
 
 class Definition extends \lib\model\BaseModelDefinition

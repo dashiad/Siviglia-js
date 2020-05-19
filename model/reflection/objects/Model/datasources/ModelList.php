@@ -77,6 +77,7 @@ class ModelList
         \model\reflection\ReflectorFactory::iterateOnPackages(function($pkg) use (& $list,$filter){
             $pkg->iterateOnModelTree(function($model) use ($pkg,& $list,$filter){
                 //if($pkg->getName()!=="reflection") {
+                    $reflected=$model->getReflectedModel();
                     $normalized=str_replace('\\', '/', $model->getClassName());
                     if($filter==null || $normalized==$filter) {
                         $list[] = ["package" => $pkg->getName(),

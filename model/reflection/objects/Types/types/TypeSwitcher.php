@@ -4,7 +4,7 @@ include_once(__DIR__."/../BaseReflectedType.php");
 class TypeSwitcher extends \lib\model\types\TypeSwitcher
 {
     function __construct($name,$parentType=null, $value=null,$validationMode=null){
-        parent::__construct($name,"TypeSwitcher",
+        parent::__construct("TypeSwitcher",
             [
                 "LABEL"=>"TypeSwitcher",
                 "TYPE"=>"TypeSwitcher",
@@ -13,7 +13,7 @@ class TypeSwitcher extends \lib\model\types\TypeSwitcher
                     ["FIELD"=>"ON","IS"=>"Present","THEN"=>"BY_COND"]
                 ],
                 "ALLOWED_TYPES"=>[
-                    "BY_TYPE"=>[
+                    "BY_TYPE"=>
                         [
                             "LABEL"=>"Por tipo",
                             "TYPE"=>"Container",
@@ -99,7 +99,6 @@ class TypeSwitcher extends \lib\model\types\TypeSwitcher
                         ]
                         ]
                 ]
-            ]
 
         );
         /*

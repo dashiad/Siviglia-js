@@ -1,14 +1,10 @@
 <?php
 
 
-namespace model\Reflection;
+namespace model\reflection;
 include_once(__DIR__."/Definition.php");
 
-class MetaDefinition extends \lib\model\BaseTypedObject
+class MetaDefinition extends \lib\model\BaseTypedModel
 {
-    function __construct()
-    {
-        $def=\model\reflection\MetaDefinition\Definition::$definition;
-        parent::__construct($def);
-    }
+
 }

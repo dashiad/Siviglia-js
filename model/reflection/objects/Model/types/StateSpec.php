@@ -103,9 +103,11 @@ class StateSpec extends \lib\model\types\Container
             "LABEL"=>"Callbacks de entrada al estado",
             "TYPE"=>"TypeSwitcher",
             "ON"=>[
+                [
                 "FIELD"=>"STATES",
                 "IS"=>"Present",
                 "THEN"=>"ByState"
+                ]
             ],
             "IMPLICIT_TYPE"=>"Always",
             "ALLOWED_TYPES"=>[
@@ -275,22 +277,11 @@ class StateSpec extends \lib\model\types\Container
                                 "LABEL"=>"Permisos",
                                 "TYPE"=>"Container",
                                 "FIELDS"=>[
-                                    "ADD"=>[
-                                        "LABEL"=>"Permisos para Añadir",
-                                        "TYPE"=>"/model/reflection/Permissions/types/PermissionSpec"
-                                    ],
-                                    "EDIT"=>[
-                                        "LABEL"=>"Permisos para Editar",
-                                        "TYPE"=>"/model/reflection/Permissions/types/PermissionSpec"
-                                    ],
-                                    "VIEW"=>[
-                                        "LABEL"=>"Permisos para Ver",
-                                        "TYPE"=>"/model/reflection/Permissions/types/PermissionSpec"
-                                    ],
-                                    "DELETE"=>[
-                                        "LABEL"=>"Permisos para Eliminar",
-                                        "TYPE"=>"/model/reflection/Permissions/types/PermissionSpec"
-                                    ]
+                                    "ADD"=>"/model/reflection/Permissions/types/PermissionSpec",
+                                    "EDIT"=>"/model/reflection/Permissions/types/PermissionSpec",
+                                    "VIEW"=>"/model/reflection/Permissions/types/PermissionSpec",
+                                    "DELETE"=>"/model/reflection/Permissions/types/PermissionSpec"
+
                                 ]
                             ],
                             "FINAL"=>[

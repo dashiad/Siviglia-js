@@ -9,7 +9,7 @@
 namespace model\web\Page;
 
 
-class Route
+class Route extends \lib\model\BaseTypedModel
 {
 
 }
