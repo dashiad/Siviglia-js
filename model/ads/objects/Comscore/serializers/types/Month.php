@@ -2,7 +2,7 @@
 namespace model\ads\Comscore\serializers\types;
 
 
-  class BaseType
+  class Month extends BaseType
   {
       function serialize($name,$type,$serializer,$model=null)
       {
@@ -12,5 +12,4 @@ namespace model\ads\Comscore\serializers\types;
           }
           return null;
       }
-
   }

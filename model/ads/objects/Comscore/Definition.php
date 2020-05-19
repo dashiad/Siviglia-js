@@ -233,8 +233,8 @@ class Definition extends BaseModelDefinition
                 'TYPE' => 'String',
             ],
             "DataThrough" => [
-                    'TYPE' => 'String',
-                ],
+                'TYPE' => 'String',
+            ],
             "DataStatus" => [
                 'TYPE' => 'String',
             ],

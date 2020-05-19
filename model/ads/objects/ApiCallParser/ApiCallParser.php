@@ -20,6 +20,8 @@ class ApiCallParser {
         "PAR_CLOSE",
         "QUOTE_SIMPLE",
         "QUOTE_DOBLE",
+        "ARR_OPEN",
+        "ARR_CLOSE",
         "EXIT",
     ];
 
@@ -56,9 +58,19 @@ class ApiCallParser {
         $this->parser->push("PARAMS", "");
         $this->parser->push("PARAMS", "'with' PAR_OPEN PARAM_LIST PAR_CLOSE");
         $this->parser->push("PARAM_LIST", "PARAM");
+        $this->parser->push("PARAM_LIST", "PARAM COMMA");
         $this->parser->push("PARAM_LIST", "PARAM COMMA PARAM_LIST");
         $this->textParam = $this->parser->push("PARAM", "IDENTIFIER OPERATOR TEXT");
         $this->numberParam = $this->parser->push("PARAM", "IDENTIFIER OPERATOR NUMBER");
+        $this->numberParam = $this->parser->push("PARAM", "IDENTIFIER OPERATOR ARRAY");
+        
+        $this->arrayParam = $this->parser->push("ARRAY", "ARR_OPEN ARR_LIST ARR_CLOSE");
+        $this->parser->push("ARR_LIST", "TEXT");
+        $this->parser->push("ARR_LIST", "TEXT COMMA");
+        $this->parser->push("ARR_LIST", "TEXT COMMA ARR_LIST");
+        $this->parser->push("ARR_LIST", "NUMBER");
+        $this->parser->push("ARR_LIST", "NUMBER COMMA");
+        $this->parser->push("ARR_LIST", "NUMBER ARR_LIST");
         
         // Return fields syntax
         $this->parser->push("RETURN", "");
@@ -90,6 +102,8 @@ class ApiCallParser {
         $this->lex->push("[=]", $this->parser->tokenId("EQ_OPERATOR"));
         $this->lex->push("[\x28]", $this->parser->tokenId("PAR_OPEN"));
         $this->lex->push("[\x29]", $this->parser->tokenId("PAR_CLOSE"));
+        $this->lex->push("[\[]", $this->parser->tokenId("PAR_OPEN"));
+        $this->lex->push("[\]]", $this->parser->tokenId("PAR_CLOSE"));
         $this->lex->push("[\']", $this->parser->tokenId("QUOTE_SIMPLE"));
         $this->lex->push("[\"]", $this->parser->tokenId("QUOTE_DOBLE"));      
         

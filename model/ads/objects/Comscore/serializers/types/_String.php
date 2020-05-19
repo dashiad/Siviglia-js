@@ -1,13 +1,12 @@
-<?php
-namespace lib\storage\Comscore\types;
+<?php 
+namespace model\ads\Comscore\serializers\types;
 
-class _String extends BaseType
-{
-    public function serialize($name, $type, $serializer, $model=null)
-    {
-        /**
-         * @var $type \lib\model\types\BaseType
-         */
-        return [$name => $type->getValue()]; // TODO: sanitize if needed
-    }
-}
+
+  class _String extends BaseType
+  {
+      function serialize($name,$type,$serializer,$model=null)
+      {
+         $v= $type->hasValue()?preg_replace('~[\x00\x0A\x0D\x1A\x22\x27\x5C]~u', '\\\$0', $type->getValue()):"NULL";
+         return $v;
+      }
+  }

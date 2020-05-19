@@ -38,6 +38,12 @@ class ComscoreDataSource extends CsvDataSource
         $this->serializer = new \model\ads\Comscore\serializers\ComscoreSerializer($this->serializerDefinition);
     }
     
+    
+    public function __set( $key, $value )
+    {
+        parent::__set($key, $value);
+    }
+    
     public function fetchAll()
     {
 
@@ -46,13 +52,20 @@ class ComscoreDataSource extends CsvDataSource
          * @var \lib\model\BaseTypedObject $model
          */
         $model = \getModel("model\ads\Comscore");
-        $params = [
-            'region' => $this->region,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
-            'campaigns' => json_encode($this->campaigns),
-        ];
-        // REVISAR DATASET DEVUELTO
+        $params = [];
+        if (isset($this->__fields)) {
+            foreach ($this->__fields as $field=>$data) {
+                $params[$field] = $this->serializer->serializeType($field, $data->getType());
+            }
+        }
+
+        foreach($this->__fieldDef as $field=>$fieldConfig) {
+            if (isset($this->__fields->$field) || isset($fieldConfig["DEFAULT"])) {
+                $params[$field] = $this->{$field} ?? $params[$field]["DEFAULT"];
+            } 
+        }
+        
+        
         return $this->serializer->fetchAll($this->serializerDefinition, $this->data, $this->numRows, $this->matchingRows, $params, null);
     }
     

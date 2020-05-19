@@ -234,7 +234,7 @@ class ModelDescriptor
     function getType($typeName,$def,$value)
     {
         $typeName=$this->normalizeTypeName($typeName);
-        $startPath=$this->getTypePath()."/".$typeName."php";
+        $startPath=$this->getTypePath()."/".$typeName.".php";
         if(!is_file($startPath))
             return null;
         include_once($startPath);

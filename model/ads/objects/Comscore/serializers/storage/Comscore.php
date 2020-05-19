@@ -36,11 +36,8 @@ class Comscore
     
     public function __construct(?Array $definition)
     {
-        $this->definition = $definition;
-        //$this->queryBuilder = new QueryBuilder(null, $definition, $this->params, []);  
+        $this->definition = $definition; 
     }
-    
-    
     
     public function setMethod(String $method)
     {
@@ -76,12 +73,12 @@ class Comscore
     
     public function connect()
     {
-        // $this->conn = ?
+        return true;
     }
     
     public function getConnection()
     {
-        //return $this->conn;
+        //
     }
     
     protected function createRequestContent($params, &$options)

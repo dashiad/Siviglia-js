@@ -6,14 +6,12 @@ require_once(__DIR__.'/ComscoreDataSource.php');
 require_once(__DIR__.'/storage/Comscore.php');
 require_once(__DIR__.'/storage/QueryBuilder.php');
 
-use lib\php\ParametrizableString;
-use lib\datasource\DataSource;
-use model\ads\Comscore\serializers\Comscore\storage\Comscore;
-use model\ads\Comscore\datasources\ComscoreDataSource;
 
 class ComscoreSerializerException extends \lib\model\BaseException
 {
-    const ERR_DEFAULT = 1;
+    const ERR_UNKNOWN_API = 1;
+    const ERR_APÎ_CONNECTION = 2;
+    const ERR_API_REQUEST = 3;
 }
 
 class ComscoreSerializer extends \lib\storage\StorageSerializer
@@ -25,9 +23,13 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
     const BASE_DIR = '/vagrant/data/csv/'; // TODO: definir en configuración ruta base para los archivos
     
     protected $conn;
+    protected $config;
     
     function __construct($definition, $useDataSpace=true)
     {
+        global $Config;
+        
+        $this->config = $Config['SERIALIZERS']['comscore']['CONFIG'];
         $this->conn = new  \model\ads\Comscore\serializers\Comscore\storage\Comscore($definition);
         \lib\storage\StorageSerializer::__construct($definition, static::COMSCORE_SERIALIZER_TYPE);         
     }
@@ -124,15 +126,9 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
         return  $qB->build($queryDef["BASE"]);
     }
     
-    function fetchAll($queryDef, &$data, &$nRows, &$matchingRows, $params, $pagingParams)
+        
+    protected function getReportsApi($q, $params, $pagingParams)
     {
-        /*if(isset($queryDef["PRE_QUERIES"]))
-        {
-            foreach($queryDef["PRE_QUERIES"] as $cq)
-                $this->conn->doQ($cq);
-        }*/
-            
-        $q = $this->buildQuery($queryDef, $params, $pagingParams);
         $result = $this->conn->request($q, "");
         
         $comscoreJob = json_decode($result);
@@ -146,7 +142,7 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
         $dataReady = false;
         $attemps = 0;
         
-        while(!$dataReady && $attemps<static::MAX_ATTEMPTS) {
+        while(!$dataReady && $attemps<$this->config['API_MAX_ATTEMPTS']) {
             
             $attemps++;
             $waitQuery = ['BASE' => "ON Comscore CALL checkReport WITH (report_id='$comscoreJobId', region='[%region%]')"];
@@ -156,23 +152,141 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
             
             $comscoreJobStatus = (json_decode($result)->data->status=="COMPLETED");
             $dataReady = $comscoreJobStatus;
-            if (!$dataReady) sleep(static::POLL_PAUSE);
+            if (!$dataReady) sleep($this->config['API_WAIT_TIMEOUT']);
         }
         
         $getQuery = ['BASE' => "ON Comscore CALL getReport WITH (report_id='$comscoreJobId', region='[%region%]')"];
         $q = $this->buildQuery($getQuery, $params, $pagingParams);
         $this->data = $data = $this->conn->request($q, "");
         
-        $this->filename = static::BASE_DIR."comscore_report_".time().".csv";
+        $this->filename = $this->config['DATA_ROOT_DIR']."comscore_report_".time().".csv";
         $file = fopen($this->filename, "w+");
         $this->nRows = fwrite($file, $data);
         $this->__returnedFields = $this->definition['FIELDS'];
         fclose($file);
         
-        // TO-DO: revisar
-        $this->iterator=new \lib\model\types\DataSet(["FIELDS"=>$this->__returnedFields], $this->data,$this->nRows, $this->matchingRows, $this, $this->mapField);
+        $this->iterator = new \lib\model\types\DataSet(["FIELDS"=>$this->__returnedFields], $this->data,$this->nRows, $this->matchingRows, $this, $this->mapField);
         $this->__loaded=true;
         return $this->iterator;
+    }
+    
+    protected function generateSoapParams($params)
+    {
+        $soapParams = [];
+        foreach ($params as $param=>$values) 
+        {
+            foreach ((array)$values as $value) {
+                $soapParams[] = [
+                    'KeyId' => $param,
+                    'Value' => $value,
+                ];
+            }
+        }
+        return ['query' => ['Parameter' => $soapParams] ];
+    }
+    
+    protected function getMedia($q, $params, $pagingParams)
+    {
+        $result = $this->conn->request($q, "");
+        $response = json_decode($result);
+        /*foreach ($this->definition['FIELDS'] as $field=>$responseField) {
+            $this->__returnedFields[$field] = $response->MediaItem->{$responseField};
+        }*/
+        return $response;
+    }
+    
+    protected function getDemographicsApi($q, $params, $pagingParams)
+    {
+        
+        try {
+            
+            $parameters = $q['soapParams']['parameters'];
+            if (!$q['testing']) {
+                $method = "SubmitReport";
+                $q['soapParams']['parameters'] = ["parameterId" => "geo"];
+                $soapParams = $this->generateSoapParams($parameters);
+            } else {
+                $method = "TestMethodOne";
+                $soapParams = $parameters;
+            }
+            
+            $client = new \SoapClient($q["url"], $q['soapParams']);
+            $result = $client->{$method}($soapParams);
+            
+            if (isset($result->SubmitReportResult->Errors))
+            {
+                throw new ComscoreSerializerException(ComscoreSerializerException::ERR_API_REQUEST);
+            }
+            
+            if ($q['waitForResult']) {
+                $params = ['jobId' => $result->SubmitReportResult->JobId];
+                $waiting = true;
+            } else {
+                return $result; // TODO: formatear
+            }
+            
+            while ($waiting) {
+                 $result = $client->PingReportStatus($params);
+                 if ($result->PingReportStatusResult->Status=="Completed") {
+                     $waiting = false;
+                 } else {
+                     sleep(5);
+                 }
+            }
+            $result = $client->FetchReport($params);
+            $data = $this->__getSoapResults($result->FetchReportResult->REPORT);
+            $this->data = $data['values'];
+                
+        } catch (\SoapFault $e) {
+          echo $e->getMessage();
+          echo $client->__getLastRequest();
+          throw new ComscoreSerializerException(ComscoreSerializerException::ERR_API_CONNECTION);
+        }
+        
+        $this->__returnedFields = $data['fields'];
+        $this->iterator = new \lib\model\types\DataSet(["FIELDS"=>$this->__returnedFields], $this->data, $this->nRows, $this->matchingRows, $this, $this->mapField);
+        $this->__loaded = true;
+        return $this->iterator;
+    }
+    
+    
+    protected function __getSoapResults($soapData)
+    {
+        $data = [];
+        foreach ($soapData->TABLE->THEAD->TR[count($soapData->TABLE->THEAD->TR)-1]->TD as $field) {
+            $data['fields'][] = $field->_;
+        }
+        foreach ($soapData->TABLE->TBODY->TR->TD as $value) {
+            $data['values'][] = $value->_;
+        }
+        return $data;
+    }
+    
+    function fetchAll($queryDef, &$data, &$nRows, &$matchingRows, $params, $pagingParams)
+    {
+        /*if(isset($queryDef["PRE_QUERIES"]))
+        {
+            foreach($queryDef["PRE_QUERIES"] as $cq)
+                $this->conn->doQ($cq);
+        }*/
+        
+        $q = $this->buildQuery($queryDef, $params, $pagingParams);
+        
+        switch (strtolower($q['api'])) {
+            case "comscore":
+                return $this->getReportsApi($q, $params, $pagingParams);
+                break;
+            case "comscoredemographics":
+                if (empty($q["soapParams"])) {
+                    return $this->getMedia($q, $params, $pagingParams);
+                } else {
+                    return $this->getDemographicsApi($q, $params, $pagingParams);
+                }
+                break;
+            default:
+                throw new ComscoreSerializerException(ComscoreSerializerException::ERR_UNKNOWN_API);
+        }
+        
         
     }
     

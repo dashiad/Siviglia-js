@@ -4,78 +4,99 @@ namespace model\ads\Comscore\serializers\Comscore\storage;
 use \lib\php\ParametrizableString;
 use \model\ads\ApiCallParser;
 use lib\datasource\BaseQueryBuilder;
+use lib\storage\Comscore\ComscoreSerializerException;
+use lib\storage\Comscore\ComscoreException;
 
 
 class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 {
        
-    const AUTH_DATA = [
-        'spain' => [
-            'url'       => 'https://adeffx-api.comscore.com/api/v3/',
-            'client_id' => '18259431',
-            'user'      => 'sp5_asmartclip',
-            'password'  => '93ba6f07',
-        ],
-        'latam' => [
-            'url'       => 'https://adeffx-api.comscore.com/api/v3/',
-            'client_id' => '24939011',
-            'user'      => 'agb_asmartclip',
-            'password'  => '1cf7e3a5',
-        ],
-    ]; // TODO: mover configuraciones a un sitio más razonable
+    protected $config;
     
     protected $action;
     protected $params;
     protected $region;
     
+    protected $api;
     protected $url;
     protected $method;
     protected $headers = [];
     protected $body;
+    protected $soapParams;
+    protected $waitForResult;
+    protected $testing;
     
     protected $queryReady;
     
     protected $parser;
     
+    const DO_NOT_WAIT = ["TestService", "SearchMedia"];
+    const IS_TEST = ["TestService"];
+    
     public function __construct($serializer, $definition, $params, $pagingParams)
     {
+        global $Config;
+        
+        $this->config = $Config['SERIALIZERS']['comscore']['CONFIG'];
         parent::__construct($serializer, $definition, $params, $pagingParams);
+        
         $this->parser = new ApiCallParser();
     }
     
     function build(?String $query=null, $onlyConditions=false)
     {
+        
         $query = ParametrizableString::getParametrizedString($query, $this->data);
         
         $this->params = $this->parser->parse($query);
-        //$this->action = $this->params['call']
-        
+        $this->api    = $this->params['api'];
         $this->action = $this->params['call'];
         $this->type   = $this->params['params']['type']['value'];
         $this->region = $this->params['params']['region']['value'];
-       
+        $this->soapParams = null;
+        
         $this->queryReady = false;
         
-        switch ($this->action) {
-            case 'requestReport':
-                $this->queryReady = $this->requestReport();
+        switch (strtolower($this->api)) {
+            case 'comscore':
+                switch ($this->action) {
+                    case 'requestReport':
+                        $this->queryReady = $this->requestReport();
+                        break;
+                    case 'checkReport':
+                        $this->queryReady = $this->checkReport($this->params['params']['report_id']);
+                        break;
+                    case 'getReport':
+                        $this->queryReady = $this->getReport($this->params['params']['report_id']);
+                        break;
+                    default:
+                        throw new \model\ads\ComscoreException(\model\ads\ComscoreException::ERR_INVALID_ACTION);
+                    }
                 break;
-            case 'checkReport':
-                $this->queryReady = $this->checkReport($this->params['params']['report_id']);
-                break;
-            case 'getReport':
-                $this->queryReady = $this->getReport($this->params['params']['report_id']);
+            case 'comscoredemographics':
+                switch ($this->action) {
+                    case 'SearchMedia':
+                        $this->queryReady = $this->searchMedia();
+                        break;
+                    default:
+                        $this->queryReady = $this->getDemographicsReport();
+                }
                 break;
             default:
-                throw new ComscoreException(ComscoreException::ERR_INVALID_ACTION);
+                throw new \model\ads\ComscoreException(\model\ads\ComscoreException::ERR_UNKNOWN_API);
         }
+        
         if ($this->queryReady) {
             return [
-                'url'     => $this->url,
-                'method'  => $this->method,
-                'headers' => $this->headers,
-                'body'    => $this->body,
-            ];
+                'api'           => $this->api,
+                'url'           => $this->url,
+                'method'        => $this->method,
+                'headers'       => $this->headers,
+                'body'          => $this->body,
+                'soapParams'    => $this->soapParams,
+                'waitForResult' => $this->waitForResult,
+                'testing'       => $this->testing??false,
+            ];  
         } else {
             return false;
         }
@@ -88,15 +109,26 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
     
     protected function getAuthData(?String $value=null)
     {
+        switch (strtolower($this->api)) {
+            case "comscore":
+                $authData = $this->region;
+                break;
+            case "comscoredemographics":
+                $authData = "demographics";
+                break;
+            default:
+                throw new \model\ads\ComscoreException(\model\ads\ComscoreException::ERR_INVALID_ACTION);
+        }
+        
         if (is_null($value))
-            return static::AUTH_DATA[$this->region];
+            return $this->config[$authData];
         else
-            return static::AUTH_DATA[$this->region][$value];
+            return $this->config[$authData][$value];
     }
     
     protected function getAuthHeader()
     {
-        return "Basic ".base64_encode($this->getAuthData('user').": ".$this->getAuthData('password'));
+        return "Basic ".base64_encode($this->getAuthData('user').":".$this->getAuthData('password'));
     }
     
     protected function requestReport()
@@ -117,12 +149,12 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
             "includeMobile"     => true,
             "campaignIds"       => $this->params['params']['campaigns']['value'],
             "clientId"          => $this->getAuthData("client_id"),
-            "populationId"      => "724",
+            "populationId"      => "724",   // TODO: parametrizar?
             "viewByType"        => "Total", // TODO: parametrizar?
             "startDate"         => date("m-d-Y", strtotime($this->params['params']['start_date']['value'])),
             "endDate"           => date("m-d-Y", strtotime($this->params['params']['end_date']['value'])),
         ];
-        $this->body = json_encode($params);
+        $this->body = json_encode($params, JSON_UNESCAPED_SLASHES);
         return true;
     }
     
@@ -156,6 +188,96 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         $this->headers['Accept'] = 'text/csv';
         $this->headers['Authorization'] = $this->getAuthHeader();
         return true;
+    }
+    
+    protected function getDemographicsReport()
+    {
+        $urlPattern = "[%base_url%][%action%].asmx?wsdl";
+        $urlParams = [
+            'base_url' => $this->getBaseUrl(),
+            'action'   => $this->action,
+        ];
+        
+        $this->url = ParametrizableString::getParametrizedString($urlPattern, $urlParams);
+        $this->method = "POST";
+        $this->headers = [];
+        $this->waitForResult = (!in_array($this->action, self::DO_NOT_WAIT));
+        $this->testing = (in_array($this->action, self::IS_TEST));
+        
+        $this->soapParams = [
+            'trace'      => true,
+            'login'      => $this->getAuthData('user'),
+            'password'   => $this->getAuthData('password'),
+            //'header'     => "Content-Type: text/xml",
+            'parameters' => [],
+        ];
+        foreach ($this->params['params'] as $param=>$value) {
+            $this->soapParams['parameters'][$param] = $value['value'];
+        }
+        return true;
+    }
+    
+    protected function searchMedia()
+    {
+        $urlPattern = "[%base_url%][%action%]";
+        $urlParams = [
+            'base_url' => $this->getBaseUrl(),
+            'action'   => "/mediaratings/digital/v1/mmx/KeyMeasures/Media/media",
+        ];
+        
+        $params = $this->params['params'];
+        $this->url = ParametrizableString::getParametrizedString($urlPattern, $urlParams);
+        $this->method = "POST";
+        $this->headers = [];
+        $this->headers['Authorization'] = $this->getAuthHeader();
+        $this->headers['Content-Type'] = 'application/json';
+        $this->waitForResult = false;
+        
+        
+        $params = [
+            'fetchMediaQuery' => [
+                'SearchCritera' => [
+                    ['ExactMatch' => ($params['ExactMatch']['value']?true:false),
+                        'Critera' => ($params['Critera']['value']??''),
+                    ]
+                ]
+            ],
+            'reportQuery' => [
+                'Parameter' => [
+                    [
+                        'KeyId' => 'dataSource',
+                        'Value' => $params['dataSource']['value']??25,
+                    ],
+                    [
+                        'KeyId' => 'geo',
+                        'Value' => $params['geo']['value']??724,
+                    ],
+                    [
+                        'KeyId' => 'timeType',
+                        'Value' => $params['timeType']['value']??1,
+                    ],
+                    [
+                        'KeyId' => 'timePeriod',
+                        'Value' => $params['timePeriod']['value']??$this->getLastMonth(),
+                    ],
+                    [
+                        'KeyId' => 'mediaSetType',
+                        'Value' => ($params['dataSource']['value']??'1'),
+                    ],
+                ],
+            ],
+        ];
+        
+        $this->body = json_encode($params, JSON_UNESCAPED_SLASHES);
+        return true;
+    }
+    
+    protected function getLastMonth() : String
+    {
+        $origin = new \DateTime("2000-01-01");
+        $lastMonth = new \DateTime("-1 months");
+        $diff = $origin->diff($lastMonth);
+        return 12*$diff->y + $diff->m;
     }
     
     function getSerializerType()
