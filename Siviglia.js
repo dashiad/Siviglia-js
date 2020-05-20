@@ -1,6 +1,100 @@
 if (typeof Siviglia === 'undefined') {
     Siviglia = {};
 }
+// PinkySwear : https://github.com/timjansen/pinkyswear.js
+(function (e) {
+
+    function g(h) {
+        return "function" == typeof h
+    }
+
+    function k(h) {
+        //"undefined" != typeof setImmediate ? setImmediate(h) : "undefined" != typeof process && process.nextTick ? process.nextTick(h) : setTimeout(h, 0)
+        h();
+    }
+
+
+    e[0][e[1]] = function n(f) {
+        function a(a, g) {
+            null == b && null != a && (b = a, l = g, c.length && k(function () {
+                for (var a = 0; a < c.length; a++) c[a]()
+            }));
+            return b
+        }
+
+        var b, l = [], c = [];
+        a.resolve = function (e) {
+            a(true, e);
+        }
+        a.reject = function () {
+            a(false);
+        }
+        a.then = function (a, e) {
+            function m() {
+                try {
+                    var c = b ? a : e;
+                    if (g(c)) {
+                        var f = function (a) {
+                            var c, b = 0;
+                            try {
+                                if (a && ("object" == typeof a || g(a)) && g(c = a.then)) {
+                                    if (a === d) throw new TypeError;
+                                    c.call(a, function () {
+                                        b++ || f.apply(void 0, arguments)
+                                    }, function (a) {
+                                        b++ || d(!1, [a])
+                                    })
+                                } else d(!0, arguments)
+                            } catch (e) {
+                                b++ || d(!1, [e])
+                            }
+                        };
+                        f(c.apply(void 0, SMC.isset(l) ? (SMC.isArray(l) ? l : [l]) : []))
+                    } else d(b, l)
+                } catch (k) {
+                    d(!1, [k])
+                }
+            }
+
+            var d = n(f);
+            null != b ? k(m) : c.push(m);
+            return d
+        };
+        f && (a = f(a));
+        return a
+    }
+})("undefined" == typeof module ? [window, "SMCPromise"] : [module, "exports"]);
+SMCPromise.when=function(p)
+{
+    if(p.then)
+        return p;
+    return {then:function(a,b){
+            a.apply(p);
+        }}
+}
+Siviglia.all = function (promiseArray) {
+    var allPromise = $.Deferred();
+
+    if (!SMC.isset(promiseArray) || promiseArray.length == 0) {
+        allPromise(true, []);
+    } else {
+        var n = promiseArray.length;
+        var result = new Array(n);
+        promiseArray.map(function (p, i) {
+            p.then(function (res) {
+                result[i] = res;
+                n--;
+                if (n == 0) {
+                    allPromise(true, [result])
+                }
+                ;
+            }, function () {
+                allPromise(false);
+            })
+        })
+    }
+    return allPromise;
+};
 
 // Se crea la funcion "map" para navegadores que no lo soporten
 if (!Array.prototype.map) {
@@ -432,7 +526,7 @@ Siviglia.Utils.buildClass({
                     }
                 },
                 _ev_notify: function (evType, data, target) {
-                    
+
                 },
                 destroyListeners: function () {
                     delete Siviglia.Dom.existingManagers[this._ev_id];
@@ -1228,6 +1322,7 @@ Siviglia.Path.eventize=function(obj,propName) {
         var v = obj[propName];
         var ev = new Siviglia.Dom.EventManager();
 
+
         Object.defineProperty(obj, "*" + propName, {
             get: function () {
                 return ev;
@@ -1292,6 +1387,8 @@ Siviglia.Path.Proxify=function(obj,ev)
     var objProxy = new Proxy(obj,{
         get:function(target,prop)
         {
+            if(prop==="__ev__")
+                return ev;
             if(prop==="__isProxy__")
                 return true;
             if(prop=="__disableEvents__")
@@ -1397,7 +1494,7 @@ Siviglia.Utils.buildClass(
                             },
                             recurseHTML: function (node, applyFunc) {
                                 var dataset = node.data();
-                                if (dataset.noparse)
+                                if (dataset && dataset.noparse)
                                     return;
                                 var parseChildren = applyFunc(node);
                                 if (!parseChildren)
@@ -1405,8 +1502,22 @@ Siviglia.Utils.buildClass(
                                 var m = this;
                                 node.trigger("startChildren");
                                 var n=node[0];
-                                for(var k=0;k<n.childNodes.length;k++)
-                                    m.recurseHTML($(n.childNodes[k]), applyFunc);
+
+                                var nextNode=null;
+
+                                for(var k=0;k<n.childNodes.length;k++) {
+                                    // Nos saltamos el texto
+                                    if(n.childNodes[k].nodeType!==3) {
+                                        // Nos quedamos con el siguiente nodo al actual.
+                                        nextNode = n.childNodes[k + 1];
+                                        m.recurseHTML($(n.childNodes[k]), applyFunc);
+                                        // Como es posible que el nodo actual (k), haya sido reemplazado por N nodes, que ya
+                                        // están parseados, el siguiente a parsear era el que estaba originalmente después del actual,
+                                        // saltándonos todos los que haya creados.
+                                        while (n.childNodes[k+1] !== nextNode && k < n.childNodes.length)
+                                            k++;
+                                    }
+                                }
 
                                 node.trigger("endChildren");
                             },
@@ -1649,8 +1760,11 @@ Siviglia.Utils.buildClass(
                         this.oManager = null;
                         this.resolver = null;
                         this.Expando("sivloop");
+                        this.oldNodes=null;
+                        this.origNode=null;
                         this.childNodes = [];
                         this.nest = true;
+
                     },
                     destruct: function () {
                         this.reset();
@@ -1662,6 +1776,7 @@ Siviglia.Utils.buildClass(
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
                             this.origHTML = [];
                             this.stack = stack;
+                            this.origNode=node;
                             this.node = node;
                             for (var k = 0; k < node[0].childNodes.length; k++) {
                                 var cNode = node[0].childNodes[k];
@@ -1687,10 +1802,9 @@ Siviglia.Utils.buildClass(
 
                         },
                         update: function (event, params) {
-                            for (var k = 0; k < this.childNodes.length; k++)
-                                this.childNodes[k].remove();
 
-                            this.reset();
+                            var oldNodes=this.childNodes;
+                            var oldManager=this.oManager;
                             if(params.valid===false)
                                 return;
                             this.ownStack = this.stack.getCopy();
@@ -1703,7 +1817,8 @@ Siviglia.Utils.buildClass(
                                 val = [];
 
                             var contextRoot;
-                            var newNode;
+                            var newNode=$("<div></div>");
+                            var newNodes=[];
                             var cb = (function (key, value) {
                                 contextRoot = {};
                                 if(!this.ownStack.hasPrefix("@"))
@@ -1713,25 +1828,21 @@ Siviglia.Utils.buildClass(
                                 }
                                 contextRoot[this.contextParam] = value;
                                 contextRoot[this.contextParam + "-index"] = key;
-                                var reference = this.node[0];
+
 
                                 for (var j = 0; j < this.origHTML.length; j++) {
                                     var curNode = this.origHTML[j].cloneNode(true);
                                     if (curNode.nodeType == 1)
                                         this.oManager.parse($(curNode));
-                                    if (this.nest)
-                                        newNode.appendChild(curNode);
-                                    else {
-                                        reference.parentNode.insertBefore(curNode, reference.nextSibling);
-                                        this.chilNodes.push({node:$(curNode),value:value});
-                                        reference = curNode;
-                                    }
+                                        //reference.parentNode.insertBefore(curNode, reference.nextSibling);
+                                        newNodes.push({node:$(curNode),value:value});
+                                        newNode.append($(curNode));
+                                        //reference = curNode;
                                 }
 
                             }).bind(this);
 
                             var valType = val.constructor.toString();
-                            newNode=document.createElement("div");
 
                             if (valType.substr(0,16) =="function Array()")
                                 val.map(function (value, index) {
@@ -1747,8 +1858,20 @@ Siviglia.Utils.buildClass(
                                     return;
                                 }
                             }
-                            this.node[0].innerHTML = "";
-                            $(newNode).children().appendTo(this.node);
+                            var newChildren=$(newNode).children();
+                            this.node.each(function(index){
+                                if(index>0)
+                                    $(this).remove();
+                            })
+                            this.node.replaceWith(newChildren)
+                            //$(newNode).children().appendTo(this.node);
+                            this.node=newChildren;
+                            this.childNodes=newNodes;
+
+                            if(oldManager)
+                                oldManager.destruct();
+                            for(var k in oldNodes.length)
+                                oldNodes[k].node.remove();
                         }
                     }
                 },
@@ -2010,6 +2133,7 @@ Siviglia.Utils.buildClass(
                     __build: function () {
                         var widgetFactory = new Siviglia.UI.Expando.WidgetFactory();
                         var p=$.Deferred();
+                        //var p=new SMCPromise();
                         var f=(function (w) {
 
                             var returned=this.preInitialize(this.__params);
@@ -2021,7 +2145,7 @@ Siviglia.Utils.buildClass(
                                 this.__composeHtml(w);
                                 this.parseNode();
                                 this.initialize(this.__params);
-                                p.resolve();
+                                p.resolve(this);
                             }.bind(this);
                             if(typeof returned!=="undefined" && returned.then)
                                 returned.then(f);
@@ -2029,28 +2153,38 @@ Siviglia.Utils.buildClass(
                                 f();
                         }).bind(this);
                         if(!widgetFactory.hasInstance(this.__template))
-                            $.when(widgetFactory.getInstance(this.__template)).then(f);
+                            SMCPromise.when(widgetFactory.getInstance(this.__template)).then(f);
                         else
                             f(widgetFactory.getInstance(this.__template));
                         return p;
                     },
                     __composeHtml: function (widget) {
 
-                        var widgetNode = widget.getNode();
+                        this.widgetNode = widget.getNode();
                         //this.__node[0].parentNode.insertBefore(widgetNode[0],this.__node[0].nextSibling);
-                        this.__node.html("");
-                        this.__node.append(widgetNode);
+
                     },
                     parseNode:function()
                     {
 
                         this.oManager = new Siviglia.UI.HTMLParser(this.__context);
                         try {
-                            this.__node[0].removeAttribute("data-sivview");
+                            this.__node.removeAttr("data-sivview");
                             this.__node.removeData("sivview");
                             Siviglia.UI.viewStack.push(this);
+                            var oldNode=this.__node;
+                            this.__node=this.widgetNode;
+                            this.rootNode=this.__node;
                             this.oManager.parse(this.__node);
+                            $.each(oldNode,function(idx,value){
+                                if(idx==0)
+                                    value.replaceWith(this.widgetNode);
+                                else
+                                    value.remove();
+                            }.bind(this));
                             Siviglia.UI.viewStack.pop();
+                            this.rootNode=this.widgetNode.children();
+
                         }catch(e)
                         {
                             console.dir(e);
@@ -2058,6 +2192,10 @@ Siviglia.Utils.buildClass(
                         }
                         //console.log(this.__node[0].innerHTML)
                     },
+                    getNode:function()
+                    {
+                        return this.__node;
+                    }
 
                 }
 
@@ -2073,6 +2211,8 @@ Siviglia.Utils.buildClass(
                     this.altLayout=null;
                     this.gotName=false;
                     this.paramListeners=[];
+                    this.noContainer=false;
+                    this.currentNodeReference=null;
                 },
                 destruct: function () {
                     if (this.view !== null)
@@ -2081,8 +2221,10 @@ Siviglia.Utils.buildClass(
                 methods:
                     {
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
+
                             // Listener de nombre de vista: Es el propio del Expando.
                             var altLayout = node.data("sivlayout");
+
                             if(typeof altLayout!=="undefined")
                                 this.altLayout=altLayout;
 
@@ -2092,6 +2234,7 @@ Siviglia.Utils.buildClass(
                             // Nota: Esto podria ser un array.
                             this.oldNode=null;
                             this.node = node;
+                            this.currentNodeReference=node;
                             this.params=typeof nodeExpandos["sivparams"]=="undefined"?null:nodeExpandos["sivparams"];
                             if (this.params)
                                 this.params.addListener("CHANGE", this, "updateParams", "ViewExpando:" + this.method);
@@ -2111,47 +2254,45 @@ Siviglia.Utils.buildClass(
                         rebuild:function()
                         {
                             var p=$.Deferred();
-                            var oldSibling=null;
-                            var oldParent=null;
-                            if(this.oldNode)
-                            {
-                                oldSibling=this.oldNode[0].nextElementSibling;
-                                oldParent=this.oldNode[0].parentElement;
-                            }
-                            //this.node[0].outerHTML=this.nodeOuter;
-                            this.oldNode=this.node;
-                            this.node.removeData("sivview");
-                            this.node[0].removeAttribute("data-sivview");
+                            //var p=new SMCPromise();
 
-                            if (this.view)
-                                this.view.destruct();
+
+                            this.node.removeData("sivview");
+                            this.node.removeAttr("data-sivview");
+                            var oldNodes=null;
+                            var oldView=null;
+                            if (this.view) {
+                                oldNodes=this.node;
+                                oldView=this.view;
+                               // oldView.getNode().css({"display":"none"})
+                            }
                             if(this.params)
                                 this.currentParamsValues=this.params.getValues();
                             var widgetFactory = new Siviglia.UI.Expando.WidgetFactory();
                             var m=this;
+
                             var f=(function (w) {
                                 var className=w.getClass();
                                 var obj=Siviglia.Utils.stringToContextAndObject(className);
-
+                                var tempNode=$("<div></div>");
                                 this.view = new obj.context[obj.object](
                                     this.altLayout==null?this.name:this.altLayout,
-                                    this.currentParamsValues,null, this.node,  this.stack);
+                                    this.currentParamsValues,null, tempNode,  this.stack);
                                 this.view.__build().then(function(){
-                                    if(oldSibling!==null)
-                                    {
-                                        oldParent.insertBefore(m.node[0],oldSibling);
-                                    }else
-                                    {
-                                        if(oldParent!=null)
-                                            oldParent.appendChild(m.node[0]);
-                                    }
+
+                                        m.rootNode = m.view.getNode();
+                                        m.node.replaceWith(m.rootNode);
+                                        m.node = m.rootNode;
+                                        if(oldView)
+                                            oldView.destruct();
+
                                     p.resolve()
                                 });
 
                             }).bind(this);
 
                             if(!widgetFactory.hasInstance(this.name)) {
-                                $.when(widgetFactory.getInstance(this.name)).then(f);
+                                SMCPromise.when(widgetFactory.getInstance(this.name)).then(f);
                             }
                             else
                                 f(widgetFactory.getInstance(this.name));
@@ -2247,7 +2388,7 @@ Siviglia.Utils.load=function(assets)
                     var promises=[];
                     promises.push(loadHTML(Siviglia.config.baseUrl+p.template,p.node));
                     promises.push(loadJS(Siviglia.config.baseUrl+p.js));
-                    $.when.apply($,promises).then(function(){
+                    SMCPromise.when.apply($,promises).then(function(){
                         var parser= new Siviglia.UI.HTMLParser(p.context);
                         parser.parse(p.node);
                         pr.resolve(p.node);
@@ -2266,7 +2407,7 @@ Siviglia.Utils.load=function(assets)
         }
     }
 
-    $.when.apply($, subpromises).done(function() {curPromise.resolve();});
+    SMCPromise.when.apply($, subpromises).done(function() {curPromise.resolve();});
     return curPromise;
 };
 

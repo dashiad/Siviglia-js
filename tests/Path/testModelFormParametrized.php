@@ -93,7 +93,7 @@
 
 
                             "INPUTPARAMS":{
-                                "^/$": {
+                                "/": {
                                     "INPUT": "AccordionContainer",
                                     "JQXPARAMS":{width:700,height:500,position:top}
                                 }

@@ -2114,7 +2114,8 @@
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.AccordionContainer" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.AccordionContainer">
-        <div data-sivId='jqxAccordion' data-sivLoop="*containerGroups" data-contextIndex="current">
+        <div data-sivId='jqxAccordion'>
+        <div data-sivLoop="*containerGroups" data-contextIndex="current">
             <div data-sivValue="[%@current/LABEL%]"></div>
             <div>
                 <div data-sivLoop="@current/FIELDS" data-contextIndex="current2">
@@ -2122,6 +2123,7 @@
                     <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2"}'></div>
                 </div>
             </div>
+        </div>
         </div>
     </div>
     <!--
