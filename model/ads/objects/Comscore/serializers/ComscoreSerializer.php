@@ -233,7 +233,7 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
                      sleep(5);
                  }
             }
-            $result = $client->FetchReport($params);
+            $result = $client->FetchReport($params, SOAP_SINGLE_ELEMENT_ARRAYS );
             $data = $this->__getSoapResults($result->FetchReportResult->REPORT);
             $this->data = $data['values'];
                 
@@ -250,9 +250,56 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
     }
     
     
+    protected function createTable($obj, $level=1, $parent=null)
+    {
+        $htmlElement = "";
+        if (is_object($obj)) {
+            foreach($obj as $tag=>$sub) {
+                if ($level==1 && strtoupper($tag)!=="TABLE")
+                    continue;
+                switch ($tag) {
+                    case "_":
+                        $htmlElement .=  $sub;
+                        break;
+                    case "id":
+                        $htmlElement .= " ($sub)";
+                        break;
+                    case "TR":
+                        if (is_array($sub)) {
+                            $htmlElement .= $this->createTable($sub, $level+1, $tag);
+                        } elseif (is_object($sub)) {
+                            $htmlElement .= $this->createTable($sub->TH, $level+1, "TH");
+                            $htmlElement .= $this->createTable($sub->TD, $level+1, "TD");
+                        }
+                        break;
+                    case "TH":
+                    case "TD":
+                        if (is_array($sub)) {
+                            $htmlElement .= $this->createTable($sub, $level+1, $tag);
+                        } elseif (is_object($sub)) {
+                            $htmlElement .= "<$tag>".$sub->_."</$tag>";
+                        } 
+                        break;
+                    default:
+                        $htmlElement .= "<$tag>".$this->createTable($sub, $level+1)."</$tag>";
+                }
+            }
+        } elseif (is_array($obj)) {
+            foreach($obj as $sub) {
+                $htmlElement .= "<$parent>".$this->createTable($sub, $level+1)."</$parent>";
+            }
+        } else {
+            $htmlElement = $obj;
+        }
+       
+        
+        return $htmlElement; 
+    }
+    
     protected function __getSoapResults($soapData)
     {
         $data = [];
+        echo $this->createTable($soapData);
         foreach ($soapData->TABLE->THEAD->TR[count($soapData->TABLE->THEAD->TR)-1]->TD as $field) {
             $data['fields'][] = $field->_;
         }
