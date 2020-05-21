@@ -282,7 +282,63 @@ class DemographicProfile
                 )
             )
         ),
-        'FIELDS' => array(),
+        'FIELDS' => array(
+            'meta' => [
+                'TYPE'  => 'Container',
+                'LABEL' => 'Metadatos',
+                'FIELDS' => [
+                    'title'     => [
+                        'TYPE' => 'String',
+                        'LABEL' => 'Título',
+                    ],
+                    'subtitle'  => [
+                        'TYPE' => 'String',
+                        'LABEL' => 'Subtítulo',
+                    ],
+                    'base'      => [
+                        'TYPE' => 'String',
+                        'LABEL' => 'Base',
+                    ],
+                    'country'   => [
+                        'TYPE' => 'String',
+                        'LABEL' => 'País',
+                    ],
+                    'media'     => [
+                        'TYPE' => 'String',
+                        'LABEL' => 'Medio',
+                    ],
+                    'month'     => [
+                        'TYPE' => 'String',
+                        'LABEL' => 'Mes',
+                    ],
+                ],
+                'filter_type'  => [
+                    'TYPE'  => 'String',
+                    'LABEL' => 'Tipo de segmento', 
+                ],
+                'filter_value' => [
+                    'TYPE'  => 'String',
+                    'LABEL' => 'Segmento',
+                ],
+                'values'       => [
+                    'TYPE'     => 'Array',
+                    'LABEL'    => 'Informe',
+                    'ELEMENTS' => [
+                        'TYPE'   => 'Container',
+                        'FIELDS' => [
+                            'name' => [
+                                'TYPE'  => 'String',
+                                'LABEL' => 'Nombre', 
+                            ],
+                            'values' => [
+                                'TYPE'  => 'String',
+                                'LABEL' => 'Valor',
+                            ],
+                        ], 
+                    ],
+                ], 
+            ],
+        ),
         'PERMISSIONS' => array(),
         'SOURCE' => array(
             'STORAGE' => array(
@@ -291,23 +347,23 @@ class DemographicProfile
                     'CLASS' => 'model\\ads\\Comscore\\serializers\\ComscoreSerializer',
                     'DEFINITION' => array(
                         'BASE' => 'ON ComscoreDemographics CALL DemographicProfile WITH (
-            [%dataSource:dataSource="{%dataSource%}",%]
-            [%geo:geo="{%geo%}",%]
-            [%loc:loc="{%loc%}",%]
-            [%timeType:timeType="{%timeType%}",%]
-            [%timePeriod:timePeriod="{%timePeriod%}",%]
-            [%targetGroupBase:targetGroupBase="{%targetGroupBase%}",%]
-            [%targetBase:targetBase="{%targetBase%}",%]
-            [%targetGroup:targetGroup="{%targetGroup%}",%]
-            [%target:target="{%target%}",%]
-            [%universeTypeId:universeTypeId="{%universeTypeId%}",%]
-            [%targetType:targetType="{%targetType%}",%]
-            [%targetCustom:targetCustom="{%targetCustom%}",%]
-            [%mediaSetType:mediaSetType="{%mediaSetType%}",%]
-            [%media:media="{%media%}",%]
-            [%measure:measure="{%measure%}",%]
-            [%nestingOptions:nestingOptions="{%nestingOptions%}",%]
-            [%miscDataOption:miscDataOption="{%miscDataOption%}",%])',
+                                    [%dataSource:dataSource="{%dataSource%}",%]
+                                    [%geo:geo="{%geo%}",%]
+                                    [%loc:loc="{%loc%}",%]
+                                    [%timeType:timeType="{%timeType%}",%]
+                                    [%timePeriod:timePeriod="{%timePeriod%}",%]
+                                    [%targetGroupBase:targetGroupBase="{%targetGroupBase%}",%]
+                                    [%targetBase:targetBase="{%targetBase%}",%]
+                                    [%targetGroup:targetGroup="{%targetGroup%}",%]
+                                    [%target:target="{%target%}",%]
+                                    [%universeTypeId:universeTypeId="{%universeTypeId%}",%]
+                                    [%targetType:targetType="{%targetType%}",%]
+                                    [%targetCustom:targetCustom="{%targetCustom%}",%]
+                                    [%mediaSetType:mediaSetType="{%mediaSetType%}",%]
+                                    [%media:media="{%media%}",%]
+                                    [%measure:measure="{%measure%}",%]
+                                    [%nestingOptions:nestingOptions="{%nestingOptions%}",%]
+                                    [%miscDataOption:miscDataOption="{%miscDataOption%}",%])',
                         'CONDITIONS' => array(
                             0 => array(
                                 'FILTER' => '[%dataSource%]',

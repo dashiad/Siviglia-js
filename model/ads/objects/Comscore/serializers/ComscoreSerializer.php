@@ -119,6 +119,25 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
         return ComscoreDataSource::class;
     }
     
+    public function getSerializer()
+    {
+        if($this->serializer)
+            return $this->serializer;
+        $service=\Registry::getService("storage");
+        if(isset($this->__objectDef["SERIALIZER"]))
+        {
+            if(is_array($this->__objectDef["SERIALIZER"]))
+                $this->serializer=$service->getSerializer($this->__objectDef["SERIALIZER"]);
+                else
+                    $this->serializer=$service->getSerializerByName($this->__objectDef["SERIALIZER"]);
+        }
+        else
+            $this->serializer= $service->getDefaultSerializer($this->objName);
+            return $this->serializer;
+
+    }
+           
+    
     function buildQuery($queryDef, $params, $pagingParams, $findRows=true)
     {
         $qB = new  \model\ads\Comscore\serializers\Comscore\storage\QueryBuilder($this, $queryDef, $params, $pagingParams);
@@ -204,6 +223,7 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
             if (!$q['testing']) {
                 $method = "SubmitReport";
                 $q['soapParams']['parameters'] = ["parameterId" => "geo"];
+                $q['soapParams']['features'] = SOAP_SINGLE_ELEMENT_ARRAYS;
                 $soapParams = $this->generateSoapParams($parameters);
             } else {
                 $method = "TestMethodOne";
@@ -233,7 +253,7 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
                      sleep(5);
                  }
             }
-            $result = $client->FetchReport($params, SOAP_SINGLE_ELEMENT_ARRAYS );
+            $result = $client->FetchReport($params);
             $data = $this->__getSoapResults($result->FetchReportResult->REPORT);
             $this->data = $data['values'];
                 
@@ -258,6 +278,9 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
                 if ($level==1 && strtoupper($tag)!=="TABLE")
                     continue;
                 switch ($tag) {
+                    case "TABLE":
+                        $htmlElement .= "<$tag border=1>".$this->createTable($sub[0], $level+1)."</$tag>";
+                        break;
                     case "_":
                         $htmlElement .=  $sub;
                         break;
@@ -296,16 +319,50 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
         return $htmlElement; 
     }
     
+    protected function parseDemographicReport($obj)
+    {
+        $meta = [
+            'title'     => $obj->TITLE,
+            'subtitle'  => $obj->SUBTITLE,
+            'base'      => $obj->SUMMARY->BASE,
+            'country'   => $obj->SUMMARY->GEOGRAPHY,
+            'media'     => $obj->SUMMARY->MEDIA,
+            'month'     => $obj->SUMMARY->TIMEPERIOD,
+        ];
+        $report = [
+            'fields'    => [],
+            'rows'      => [],
+        ];
+        
+        foreach ($obj->TABLE[0]->THEAD->TR[2]->TD as $field) {
+            $report['fields'][] = $field->_;
+        }
+        
+        foreach($obj->TABLE[0]->TBODY->TR as $rowData) {
+            $row = [
+                'meta'         => $meta,
+                'filter_type'  => $rowData->TH[0]->_,
+                'filter_value' => $rowData->TH[1]->_,
+                'values'       => [],
+            ];
+            foreach ($rowData->TD as $index=>$value) {
+                $row['values'][] = [
+                    'name'  => $report['fields'][$index],
+                    'value' => $value->_,
+                ];
+            }
+            $report['rows'][] = $row;
+        }
+        return $report;
+    }
+    
     protected function __getSoapResults($soapData)
     {
         $data = [];
         echo $this->createTable($soapData);
-        foreach ($soapData->TABLE->THEAD->TR[count($soapData->TABLE->THEAD->TR)-1]->TD as $field) {
-            $data['fields'][] = $field->_;
-        }
-        foreach ($soapData->TABLE->TBODY->TR->TD as $value) {
-            $data['values'][] = $value->_;
-        }
+        $report = $this->parseDemographicReport($soapData);
+        $data['fields'] = $report['fields'];
+        $data['values'] = $report['rows'];
         return $data;
     }
     
