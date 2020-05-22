@@ -26,6 +26,7 @@
     <!-- este tira de variables css del segundo style.css -->
     <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">
     <link rel="stylesheet" href="../../../../reflection/css/style.css">
+    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.adtopy-dev.css">
 
     <!-- cargar resto de css del theme -->
     <link rel="stylesheet" href="../../../../reflection/css/bootstrap/bootstrap.css">
@@ -33,8 +34,7 @@
     <link rel="stylesheet" href="../../../../reflection/css/bootstrap/colors.css">
     <link rel="stylesheet" href="../../../../reflection/css/bootstrap/components.css">
     <link rel="stylesheet" href="../../../../reflection/css/bootstrap/vendors.min.css">
-    <link rel="stylesheet" href="../../../../reflection/css/themes/dark-layout.css">
-    <!-- <link rel="stylesheet" href="../../../../reflection/css/themes/semi-dark-layout.css"> -->
+    <link rel="stylesheet" href="../../../../reflection/css/themes/dark-layout.css">    
     <link rel="stylesheet" href="../../../../reflection/css/vendors/select2.min.css">
 
     <script src="../../../../reflection/js/vendors.min.js"></script>
@@ -49,22 +49,33 @@
 </head>
 <style type="text/css">
 </style>
-<body style="background-color:#EEE">
-<?php include_once("../../jQuery/JqxWidgets.html"); ?>
+<body style="background-color: #e4f9eb !important;">
+<?php include_once("../../jQuery/JqxWidgets-felipe.html"); ?>
 <div style="display:none">
+    <!-- 
+    ORIGINAL JM    
+    <div data-sivWidget="Siviglia.model.reflection.MetaDefinition.forms.Add" data-widgetCode="Siviglia.model.reflection.MetaDefinition.forms.Add">
+
+        <div><div>Definition:</div>
+            <div data-sivCall="getInputFor" data-sivParams='{"key":"definition"}'></div>
+        </div>
+        <div><input type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar"></div>
+    </div> -->
+
+    
+    <!-- felipe custom -->
     <div data-sivWidget="Siviglia.model.reflection.MetaDefinition.forms.Add" data-widgetCode="Siviglia.model.reflection.MetaDefinition.forms.Add">
         <div class="widget-content">
-            <div><div class="widget-title">Destination file:</div>
-                <div data-sivCall="getInputFor" data-sivParams='{"key":"file"}'></div>
-            </div>
-        
             <div><div class="widget-title">Definition:</div>
                 <div data-sivCall="getInputFor" data-sivParams='{"key":"definition"}'></div>
             </div>
             <div><input class="form-button" type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar"></div>
         </div>
     </div>
+    
 </div>
+
+
 
 
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->
@@ -89,13 +100,9 @@
                         };
                         var bto=new Siviglia.model.BaseTypedObject({
                             "FIELDS":{
-                                "file":{"LABEL":"File","TYPE":"String"},
-                                "definition":{"LABEL":"Definition","TYPE":"/model/reflection/Model/types/BaseTypedObject"}
+                                "definition":{"LABEL":"Definition","TYPE":"/model/reflection/Model/types/ModelType"}
                             }
                         })
-                        var t=Siviglia.types.TypeFactory.getType(null,"/model/reflection/Model/types/ModelType",null);
-                        bto.file="Test";
-                        bto.definition=t.definition;
                         //var t=Siviglia.types.TypeFactory.getType(null,"/model/reflection/Model/ModelType",null);
                         return this.Form$preInitialize({bto:bto});
                     }

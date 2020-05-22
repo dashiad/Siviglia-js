@@ -1,3 +1,34 @@
+<script>
+    function uniqid(a = "",b = false){
+    var c = Date.now()/1000;
+    var d = c.toString(16).split(".").join("");
+    while(d.length < 14){
+        d += "0";
+    }
+    var e = "";
+    if(b){
+        e = ".";
+        var f = Math.round(Math.random()*100000000);
+        e += f;
+    }
+    return a + d + e;
+}
+</script>
+
+<!-- <script>
+$('.collapser').click(function() {
+    $(this).next().collapse('toggle');
+});
+</script> -->
+
+<script>
+$('.collapser').click(function(){
+    // $(this).toggleClass('glyphicon-chevron-down');
+    // $(this).toggleClass('glyphicon-chevron-up');
+    $(this).parent().find(".collapsed").collapse('toggle');
+});
+</script>
+
 <style>
     .remove, .NewItemString .add {
         font-family:'IcoMoon'
@@ -145,6 +176,7 @@
                             this.hasHelpMessage = (this.helpMessage != null ? true : false);
                             this.inputParams = Siviglia.issetOr(params.inputParams, {});
                             this.formParams=Siviglia.issetOr(params.formParams,{});
+                            this.counter=0;
                         },
                         initialize: function (params) {
                             var opts = this.getDefaultInputOptions();
@@ -249,7 +281,7 @@
                                 this.showError(Siviglia.i18n.es.base.getErrorFromJsException(exception));
                             }
                             else
-                                console.error("Invalid error path:"+exception.path);
+                                console.err("Invalid error path:"+exception.path);
 
                         },
                         showError: function (message,dontAppend) {
@@ -858,7 +890,7 @@
                                     this.currentKey=null;
                                     this.params=params;
                                     this.currentErrors={};
-
+                                    //this.counter=0;
                                 },
                                 initialize:function(params)
                                 {
@@ -987,7 +1019,16 @@
                                 this.Dictionary$preInitialize(params);
                                 this.globalErrors = [];
                                 this.hasGlobalErrors = false;
-
+                                var contador = this.counter;
+                                if (typeof (Siviglia.inputs.jqwidgets.Dictionary.__proto__.counter) == "undefined") {
+                                    contador = 0;
+                                }
+                                else {
+                                    contador = Siviglia.inputs.jqwidgets.Dictionary.__proto__.counter+1;                                                               
+                                }
+                                this.accordionId="accordionClass"+contador;
+                                this.accordionClass="#"+this.accordionId;
+                                Siviglia.inputs.jqwidgets.Dictionary.__proto__.counter=contador;
                             },
                             getInputFor: function (node, params) {
 
@@ -1624,11 +1665,9 @@
 </script>
 
 <div style="display:none">
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.String" data-widgetParams="type,inputParams"
+    <div class="longitud-input" data-sivWidget="Siviglia.inputs.jqwidgets.String" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.String">
-        <div class="longitud-input">
-            <input type="text" placeholder="" class="form-control" data-sivId="inputNode">
-        </div>
+        <input type="text" placeholder="" class="form-control" data-sivId="inputNode">
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Enum" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Enum">
@@ -1648,7 +1687,10 @@
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Boolean" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Boolean">
-        <div data-sivId="inputNode"></div>
+        <!-- <div data-sivId="inputNode"></div> -->
+        <div class="checkbox">
+            <input type="checkbox" class="checkbox-input" data-sivId="inputNode">
+        </div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Date" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Date">
@@ -1711,34 +1753,23 @@
         <div data-sivId="inputNode"></div>
     </div>
 
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.Dictionary" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Dictionary">
-        <div class="DictionaryType ContainerType">
-            <div class="panel panel-primary">
-                <div class="Dictionary-heading" data-sivValue="/*title" class="title"></div>
-                <div class="Dictionary-body">
-                    <!--<div class="container-fluid">-->
-                    <p class="text-info description" data-sivValue="/*description"></p>
-                    <div data-sivIf="[%/*hasSimpleType%] == false" >
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Dictionary" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Dictionary"
+         class="DictionaryType ContainerType">
+        <div class="panel panel-primary">
+            <div class="Dictionary-heading" data-sivValue="/*title" class="title"></div>
+            <div class="Dictionary-body">
+                <!--<div class="container-fluid">-->
+                <p class="text-info description" data-sivValue="/*description"></p>
+                <div data-sivIf="[%/*hasSimpleType%] == false" >
 
-                        <div class="row-form Dictionary-row" style="margin-left:0px">
-                            <div>
+                    <div class="row-form Dictionary-row" style="margin-left:0px">
 
-                                <div class="Dictionary-keyList" width="150px">
-                                    <div class="Dictionary-mainKeyList">
-                                        <!-- añade el boton + -->
-                                        <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
+                        <div>
 
-                                        <!-- añade las claves introducidas -->
-                                        <ul class="nav nav-pills">
-                                            <div data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                                                <li class="nav-item">
-                                                    <a class="nav-link" id="tab-/@current/LABEL" data-toggle="pill" href="#/@current/LABEL">
-                                                        <span data-sivValue="/@current/LABEL" data-sivParams='{"key":"/@current/LABEL"}' data-sivEvent="click" data-sivCallback="onLabelClicked" title="Seleccionar /@current/LABEL"></span> <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}' title="Eliminar"></i>
-                                                    </a>
-                                                </li>
-                                            </div>
-                                        </ul>
-
+                            <div class="Dictionary-keyList" width="150px">
+                                <div class="Dictionary-mainKeyList">
+                                    <!-- añade el boton + -->
+                                    <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
 
                                     <!-- añade las claves introducidas funciona bien! -->
                                     <!-- <ul  class="Dictionary-keys" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
@@ -1747,54 +1778,97 @@
                                             <span class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}'></span>
                                         </li>
                                     </ul> -->
-                                        
+                                    <ul class="nav nav-pills" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
+                                        <li class="nav-item">                                            
+                                            <a class="nav-link" id="tab-/@current/LABEL" data-toggle="pill" href="#/@current/LABEL"><span data-sivValue="/@current/LABEL" data-sivParams='{"key":"/@current/LABEL"}' data-sivEvent="click" data-sivCallback="onLabelClicked" title="Seleccionar /@current/LABEL"></span> <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}' title="Eliminar"></i></a>
+                                        </li>
+                                    </ul>
 
+                                </div>
+                            </div>
+
+
+
+                            <!-- <div class="Dictionary-keyList" width="150px">
+                                <div class="Dictionary-mainKeyList">
+                                    
+                                    <ul class="Dictionary-keys-add">
+                                        <li>
+                                            <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
+                                        </li>
+                                    </ul>
+
+                                    <ul  class="Dictionary-keys" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
+                                        <li role="presentation">
+                                            <button class="Form-button Dictionary-button" data-sivValue="/@current/LABEL" data-sivEvent="click" data-sivCallback="onLabelClicked" data-sivParams='{"key":"/@current/LABEL"}'></button>
+                                            <span class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}'></span>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div> -->
+                            <!-- contenido añadido en add.html -->
+                            <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
+                                <div class="Dictionary-current">
+                                    <div data-sivValue="/*type/definition/LABEL"></div>
+                                    <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
                                     </div>
                                 </div>
 
 
-                                <!-- contenido añadido en add.html -->
-                                <div class="Dictionary-current">
-                                    <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
-                                        <div data-sivValue="/*type/definition/LABEL"></div>
-                                        <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
+                               <!-- <div class="accordion collapse-icon accordion-icon-rotate" id="accordionWrapa2" data-toggle-hover="true">
+
+                                    <div class="card collapse-header">
+                                        <div id="headingCollapse1" class="card-header collapsed" data-toggle="collapse" role="button" data-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
+                                            <span class="collapse-title">
+                                                <div data-sivValue="/*type/definition/LABEL"></div>
+                                            </span>
+                                        </div>
+                                        <div id="collapse1" role="tabpanel" aria-labelledby="headingCollapse1" class="collapse" style="">
+                                            <div class="card-content">
+                                                <div class="card-body">
+                                                    <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --> 
 
                             </div>
 
                         </div>
-                    </div>
-                    <div data-sivIf="[%/*hasSimpleType%] == true" >
-                        <div  data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                            <div style="display:flex">
-                                <div>
-                                    <span class="Dictionary-label Form-label" data-sivValue="/@current"></span>
-                                </div>
-                                <div>
-                                    <span data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></span>
-                                </div>
-                                <div>
-                                    <span class="Dictionary-removeButton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current"}'></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
-                    </div>
 
-                    <!--</div>-->
+                    </div>
                 </div>
+                <div data-sivIf="[%/*hasSimpleType%] == true" >
+                    <div  data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
+                        <div style="display:flex">
+                            <div>
+                                <span class="Dictionary-label Form-label" data-sivValue="/@current"></span>
+                            </div>
+                            <div>
+                                <span data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></span>
+                            </div>
+                            <div>
+                                <span class="Dictionary-removeButton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current"}'></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
+                </div>
+
+                <!--</div>-->
             </div>
         </div>
     </div>
 <!--
     ----------------------------------------------------------------------------------------
 -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.Container" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Container">
-    <div class="ContainerType">
+    <!-- 
+        FUNCIONA BIEN
+        <div data-sivWidget="Siviglia.inputs.jqwidgets.Container" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Container"
+         class="ContainerType">
         <div class="panel panel-primary">
-            <!--<div class="panel-heading" data-sivValue="/*title" class="title"></div>-->
             <div class="panel-body">
                 <p class="text-info description" data-sivValue="/*description"></p>
                 <div data-sivIf="[%/*hasGlobalErrors%] == true">
@@ -1804,55 +1878,111 @@
                         </ul>
                     </div>
                 </div>
-                <div class="inputs container">
-                    <div data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
-                        <div class="col col-sm-12" data-sivValue="/@current/LABEL"></div>
-                        <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
-                    </div>
+                <div class="inputs container" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+                    <div class="col col-sm-2" data-sivValue="/@current/LABEL"></div>
+                    <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
                 </div>
             </div>
         </div>
-    </div>
-    </div>
+    </div> -->
+
+    <!-- 
+y luego, con sivValue, haces data-sivValue="id|/*accordionId"
+y en el otro nodo, data-sivValue="data-target|/*accordionClass"
+        
+    -->
+
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Container" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Container"
+         class="ContainerType">
+
+        <div class="accordion collapse-icon accordion-icon-rotate" data-toggle-hover="true">
+            <div class="card collapse-header open">
+                <div class="card-header" data-toggle="collapse" data-sivValue="data-target|/*accordionClass">
+                    <span class="collapse-title">
+                        <i class="bx bx-code align-middle"></i>
+                        <span class="align-middle" data-sivValue="/*description">Container data</span>
+                    </span>
+                </div>
+                <div data-sivValue="id|/*accordionId" class="collapse show">
+                    <div class="card-content">
+                        <div class="card-body">
+
+                            <div class="inputs container" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+                                <fieldset class="form-group">
+                                    <label data-sivValue="/@current/LABEL"></label>
+                                    <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
+                                </fieldset>
+                                
+                                
+                                <!-- funciona bien: <div class="col col-sm-12" data-sivValue="/@current/LABEL"></div>
+                                <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div> -->
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>            
+        </div>
+
+
+        <!-- <div class="panel panel-primary"> -->
+            <!--<div class="panel-heading" data-sivValue="/*title" class="title"></div>-->
+            <!-- <div class="panel-body">
+                <p class="text-info description" data-sivValue="/*description"></p>
+                <div data-sivIf="[%/*hasGlobalErrors%] == true">
+                    <div class="globalErrors">
+                        <ul class="globalErrorList" sata-sivLoop="/*globalErrors" data-contextIndex="current">
+                            <li class="globalError" sivValue="/@current"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="inputs container" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+                    <div class="col col-sm-2" data-sivValue="/@current/LABEL"></div>
+                    <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
+                </div>
+            </div>
+        </div> -->
+
+
+
+    </div>                        
+
+
     <!--
     ----------------------------------------------------------------------------------------
 -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.FlexContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.FlexContainer">
-        <div class="ContainerType">
-                <div style="display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start">
-                    <div data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
-                        <div style="margin:4px" data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
-                    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.FlexContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.FlexContainer"
+         class="ContainerType">
+
+                <div style="display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+
+                            <div style="margin:4px" data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
+
                 </div>
-        </div>
+
     </div>
 <!--
     --------------------------------------------------------------------------------------------
 -->
-            <div data-sivWidget="Siviglia.inputs.jqwidgets.Array" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.Array">
-            <div class="ArrayType">
+            <div data-sivWidget="Siviglia.inputs.jqwidgets.Array" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.Array" class="ArrayType">
                 <!--<p class="text-info description" data-sivValue="/*description"></p>-->
                 <div data-sivIf="[%/*hasSimpleType%] == true" >
-                    <div class="arrayValues" style="min-height:20px;margin-bottom:5px">
-                        <div data-sivLoop="/*type" data-contextIndex="current">
-                            <span style="border:2px solid red;margin:3px;padding:2px;border-radius:5px">
-                                <span  data-sivValue="/@current"></span>
-                                <button style="color:red" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"/@current-index"}'>x</button>
-                            </span>
-                        </div>
+                    <div data-sivLoop="/*type" data-contextIndex="current" class="arrayValues" style="min-height:20px;margin-bottom:5px">
+                        <span style="border:2px solid red;margin:3px;padding:2px;border-radius:5px">
+                            <span  data-sivValue="/@current"></span>
+                            <button style="color:red" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"/@current-index"}'>x</button>
+                        </span>
                     </div>
                     <div>
                     <div data-sivId="newItemNode" data-sivCall="buildNewItemWidget"></div>
-                        <button data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
+                        <button class="NewItem-addButton" data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
                     </div>
                 </div>
                 <div data-sivIf="[%/*hasSimpleType%] == false" >
                     <div style="display:flex;flex-direction:row;flex-wrap:nowrap">
-                    <div class="arrayValues" style="min-height:20px;margin-bottom:5px; width:100px">
-                        <div data-sivLoop="/*type" data-contextIndex="current">
-                            <a data-sivEvent="click" data-sivParams='{"key":"@current-index"}' data-sivCallback="getInputFor" class="label label-primary" style="margin-right:4px;font-size:14px" data-sivValue="[%/@current-index%]"></a>
-                            <span class="remove ion-close-circled " style="color:red;padding-left:5px" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"[%@current-index%]"}'></span>
-                        </div>
+                    <div data-sivLoop="/*type"  style="width:100px" data-contextIndex="current" class="arrayValues" style="min-height:20px;margin-bottom:5px">
+                        <a data-sivEvent="click" data-sivParams='{"key":"@current-index"}' data-sivCallback="getInputFor" class="label label-primary" style="margin-right:4px;font-size:14px" data-sivValue="[%/@current-index%]"></a>
+                        <span class="remove ion-close-circled " style="color:red;padding-left:5px" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"[%@current-index%]"}'></span>
                     </div>
                         <div style="border:1px solid black" data-sivId="currentItemNode">
 
@@ -1861,13 +1991,13 @@
                     <button data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
                 </div>
 
-            </div>
+
+
             </div>
     <!--
     ------------------------------------------------------------------------------------------------------
     -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.TypeSwitcher" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.TypeSwitcher">
-    <div class="TypeSwitchType">
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.TypeSwitcher" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.TypeSwitcher" class="TypeSwitchType">
         <div class="panel panel-primary">
             <div class="panel-body">
 
@@ -1880,20 +2010,28 @@
 
         </div>
     </div>
-    </div>
      <!--
             ---------------------------------------------------------------------------------------
             -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.NewItem" data-widgetParams="parentObject,parentNode" data-widgetCode="Siviglia.inputs.jqwidgets.NewItem">
-    <div class="NewItem">
-        <div class="input-group custom">
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.NewItem" data-widgetParams="parentObject,parentNode" data-widgetCode="Siviglia.inputs.jqwidgets.NewItem" class="NewItem">
+    
+        <div class="input-group custom">         
             <div data-sivId="inputNode"></div>
             <!-- <input type="text" class="form-control" placeholder="Add new item..." aria-describedby="button-add"> -->
                 <div class="input-group-append" id="button-add">
-                    <button class="NewItem-addButton" type="button" data-sivEvent="click" data-sivCallback="onAdd" data-sivValue="Añadir"></button>
+                    <button class="NewItem-addButton" type="button" data-sivEvent="click" data-sivCallback="onAdd" data-sivValue="Añadir"></button> 
+                </div>                
+        </div>          
+            
+            
+            
+            
+            <!-- <div style="display:table-row">
+                <div style="display:table-cell" data-sivId="inputNode">
                 </div>
-        </div>
-    </div>
+                <div style="display:table-cell;vertical-align: top;line-height: 1.0;font-size: 20px;">
+                <div class="NewItem-addButton" data-sivEvent="click" data-sivCallback="onAdd" class="add"></div></div>
+            </div> -->
     </div>
     <!--
             ---------------------------------------------------------------------------------------

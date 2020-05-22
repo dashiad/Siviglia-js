@@ -4,24 +4,19 @@
     <script src="../../Siviglia.js"></script>
     <script src="../../SivigliaTypes.js"></script>
     <script src="../../SivigliaStore.js"></script>
-
     <script src="../../Model.js"></script>
     <style type="text/css">
-        .estilo1 {
-            color: red
-        }
+        .estilo1 { color: red }
 
-        .estilo2 {
-            color: blue
-        }
+        .estilo2 { color: blue }
     </style>
-
-
 
     <script src="../../../jqwidgets/jqx-all.js"></script>
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
+    <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">
+    <link rel="stylesheet" href="../../../../reflection/css/style.css">
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.adtopy-dev.css">
     <script>
 
         var Siviglia = Siviglia || {};
@@ -38,9 +33,6 @@
             //jsFramework:'dojo'
         };
         Siviglia.Model.initialize(Siviglia.config);
-
-
-
 
         var t1 = {
             "TYPE": "Container",
@@ -66,7 +58,7 @@
             "Segunda":{"Dos":22,"Uno":"wannn"}
         });
         ins.removeItem("Segunda");*/
-    </script>
+</script>
 </head>
 <body>
 <?php include_once("../../jQuery/JqxWidgets.html"); ?>
@@ -145,7 +137,14 @@
 
     </div>
 </div>
-<div data-sivView="Test.SimpleWidget"></div>
+
+<!--- INSTANCIACION DEL EDITOR DE MODELOS -->
+<div class="widget">
+    <div class="widget-content">
+        <div data-sivView="Test.SimpleWidget"></div>
+    </div>
+</div>
+
 <script>
     Siviglia.Utils.buildClass(
         {
