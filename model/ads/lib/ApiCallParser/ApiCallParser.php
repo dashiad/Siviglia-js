@@ -1,5 +1,5 @@
 <?php
-namespace model\ads;
+namespace model\ads\lib;
 
 use Parle\Token;
 use Parle\Lexer;

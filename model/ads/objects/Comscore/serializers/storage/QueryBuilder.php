@@ -2,7 +2,7 @@
 namespace model\ads\Comscore\serializers\Comscore\storage;
 
 use \lib\php\ParametrizableString;
-use \model\ads\ApiCallParser;
+use \model\ads\lib\ApiCallParser;
 use lib\datasource\BaseQueryBuilder;
 use lib\storage\Comscore\ComscoreSerializerException;
 use lib\storage\Comscore\ComscoreException;
