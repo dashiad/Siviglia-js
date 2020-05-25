@@ -251,7 +251,7 @@
 
                         }
                     },
-                    collapseTree(node, doUpdate) {
+                    collapseTree:function(node, doUpdate) {
                         doUpdate = Siviglia.issetOr(doUpdate, true);
                         var p = this.childProperty;
                         if (typeof node[p] == "undefined")

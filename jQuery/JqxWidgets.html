@@ -1141,7 +1141,8 @@
                         },
                         initialize: function (params) {
 
-                            this.menuNode.jqxMenu({ width: '120', mode: 'vertical'});
+                            this.menuNode.jqxMenu({ width: '600', height:"30px"});
+                            this.menuNode.css({ 'visibility':'visible'});
 
                         }
                     }
@@ -2131,17 +2132,21 @@
             -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.MenuContainer" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.MenuContainer">
-        <div data-sivId="menuNode" data-sivView="Siviglia.inputs.jqwidgets.Menu" data-sivParams='{"controller":"*self","menu":"*menu"}'>
+        <div data-sivId="menuNode">
+            <div data-sivView="Siviglia.inputs.jqwidgets.Menu" data-sivParams='{"controller":"*self","menu":"*menu"}'>
+            </div>
         </div>
     </div>
     <!--
             ---------------------------------------------------------------------------------------
             -->
-    <ul data-sivWidget="Siviglia.inputs.jqwidgets.Menu" data-widgetParams="controller" data-widgetCode="Siviglia.inputs.jqwidgets.Menu">
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Menu" data-widgetParams="controller" data-widgetCode="Siviglia.inputs.jqwidgets.Menu">
+        <ul style="width:250px">
         <div data-sivLoop="/*menu" data-contextIndex="current" data-sivnested="false">
             <li>
                 <a data-sivCall="getSubMenu" data-sivParams='{"spec":"@current"}'></a>
             </li>
         </div>
-    </ul>
+        </ul>
+    </div>
 </div>

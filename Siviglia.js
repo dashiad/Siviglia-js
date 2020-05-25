@@ -49,9 +49,10 @@ if (typeof Siviglia === 'undefined') {
                                 b++ || d(!1, [e])
                             }
                         };
-                        f(c.apply(void 0, SMC.isset(l) ? (SMC.isArray(l) ? l : [l]) : []))
+                        f(c.apply(void 0, Siviglia.isset(l) ? (Siviglia.isArray(l) ? l : [l]) : []))
                     } else d(b, l)
                 } catch (k) {
+                    console.error(k);
                     d(!1, [k])
                 }
             }
@@ -1020,7 +1021,7 @@ Siviglia.Utils.buildClass({
                         this._ps_id=Siviglia.Utils.parametrizableStringCounter;
                         Siviglia.Utils.parametrizableStringCounter++;
                         this.contextStack=contextStack;
-                        this.BASEREGEXP=/\[%(?:(?:([^: ,]*)%\])|(?:([^: ,]*)|([^:]*)):(.*?(?=%\]))%\])/g;
+                        this.BASEREGEXP=/\[%(?:(?:([^: ,]*?)%\])|(?:([^: ,]*?)|([^:]*)):(.*?(?=%\]))%\])/g;
                         this.BODYREGEXP=/\{%(?:([^%:]*)|(?:([^:]*):(.*?(?=%\}))))%\}/g;
                         this.PARAMREGEXP=/([^|$ ]+)(?:\||$|(?: ([^|$]+)))/g;
                         this.SUBPARAMREGEXP=/('[^']*')|([^ ]+)/g;
@@ -1504,19 +1505,20 @@ Siviglia.Utils.buildClass(
                                 var n=node[0];
 
                                 var nextNode=null;
+                                // Primero, se hace una pasada por los nodos, antes de procesarlos.
+                                // Nos quedamos con una referencia a los nodos que hay ANTES de ser procesados.
+                                // Y son estos los que hay que procesar, ignorando cualquier otro que se añada
+                                // durante el procesamiento.
+                                var actualNodes=[];
+                                for(var k=0;k<n.childNodes.length;k++) {
+                                    actualNodes.push(n.childNodes[k]);
+                                }
+
 
                                 for(var k=0;k<n.childNodes.length;k++) {
-                                    // Nos saltamos el texto
-                                    if(n.childNodes[k].nodeType!==3) {
-                                        // Nos quedamos con el siguiente nodo al actual.
-                                        nextNode = n.childNodes[k + 1];
-                                        m.recurseHTML($(n.childNodes[k]), applyFunc);
-                                        // Como es posible que el nodo actual (k), haya sido reemplazado por N nodes, que ya
-                                        // están parseados, el siguiente a parsear era el que estaba originalmente después del actual,
-                                        // saltándonos todos los que haya creados.
-                                        while (n.childNodes[k+1] !== nextNode && k < n.childNodes.length)
-                                            k++;
-                                    }
+                                //for(var k=0;k<actualNodes.length;k++) {
+                                        nextNode = actualNodes[k].nextElementSibling;
+                                        m.recurseHTML($(actualNodes[k]), applyFunc);
                                 }
 
                                 node.trigger("endChildren");
@@ -2132,8 +2134,8 @@ Siviglia.Utils.buildClass(
                 methods: {
                     __build: function () {
                         var widgetFactory = new Siviglia.UI.Expando.WidgetFactory();
-                        var p=$.Deferred();
-                        //var p=new SMCPromise();
+                       // var p=$.Deferred();
+                        var p=SMCPromise();
                         var f=(function (w) {
 
                             var returned=this.preInitialize(this.__params);
@@ -2209,10 +2211,6 @@ Siviglia.Utils.buildClass(
                     this.params = null;
                     this.str=null;
                     this.altLayout=null;
-                    this.gotName=false;
-                    this.paramListeners=[];
-                    this.noContainer=false;
-                    this.currentNodeReference=null;
                 },
                 destruct: function () {
                     if (this.view !== null)
@@ -2234,7 +2232,8 @@ Siviglia.Utils.buildClass(
                             // Nota: Esto podria ser un array.
                             this.oldNode=null;
                             this.node = node;
-                            this.currentNodeReference=node;
+                            this.expandoNode=node;
+
                             this.params=typeof nodeExpandos["sivparams"]=="undefined"?null:nodeExpandos["sivparams"];
                             if (this.params)
                                 this.params.addListener("CHANGE", this, "updateParams", "ViewExpando:" + this.method);
@@ -2259,10 +2258,8 @@ Siviglia.Utils.buildClass(
 
                             this.node.removeData("sivview");
                             this.node.removeAttr("data-sivview");
-                            var oldNodes=null;
                             var oldView=null;
                             if (this.view) {
-                                oldNodes=this.node;
                                 oldView=this.view;
                                // oldView.getNode().css({"display":"none"})
                             }
@@ -2274,13 +2271,13 @@ Siviglia.Utils.buildClass(
                             var f=(function (w) {
                                 var className=w.getClass();
                                 var obj=Siviglia.Utils.stringToContextAndObject(className);
-                                var tempNode=$("<div></div>");
+                                var tempNode=$("<div class='inner'></div>");
                                 this.view = new obj.context[obj.object](
                                     this.altLayout==null?this.name:this.altLayout,
                                     this.currentParamsValues,null, tempNode,  this.stack);
                                 this.view.__build().then(function(){
 
-                                        m.rootNode = m.view.getNode();
+                                        m.rootNode = m.view.getNode().children();
                                         m.node.replaceWith(m.rootNode);
                                         m.node = m.rootNode;
                                         if(oldView)

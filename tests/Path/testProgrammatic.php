@@ -31,37 +31,57 @@
 <body>
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 <div style="display:none">
-    <div data-sivWidget="Siviglia.model.web.Page.forms.Edit" data-widgetCode="Siviglia.model.web.Page.forms.Edit">
-        <div data-sivView="Siviglia.inputs.jqwidgets.Form" data-sivParams='{"bto":"/*instance"}'></div>
-
+    <div data-sivWidget="Siviglia.tests.b" data-widgetCode="Siviglia.tests.b">aaa</div>
+    <div data-sivWidget="Siviglia.tests.a" data-widgetCode="Siviglia.tests.a">
+        <div data-sivId="theNode"></div>
     </div>
 </div>
 
 
-<div data-sivView="Siviglia.model.web.Page.forms.Edit" data-sivParams='{"id_page":2}'></div>
+<div data-sivView="Siviglia.tests.a"></div>
 
 
 <script>
     Siviglia.Utils.buildClass({
-        "context":"Siviglia.model.web.Page.forms",
+        "context":"Siviglia.tests",
         "classes":{
-            Edit:{
+            a:{
                 "inherits":"Siviglia.UI.Expando.View",
                 "methods":{
                     preInitialize:function(params)
                     {
-                        var p=$.Deferred();
-                        var m=this;
-                        var f=new Siviglia.Model.ModelFactory();
-                        f.load("/model/web/Page",params.id_page).then(function(instance){
-                            m.instance=instance;
-                            p.resolve();
-                        })
-                        return p;
                     },
-                    initialize:function(params){}
+                    initialize:function(params){
+                        var stack = new Siviglia.Path.ContextStack();
+                        var instance=new Siviglia.tests.b(
+                            "Siviglia.tests.b",
+                            {},
+                            {},
+                            $("<div></div>"),
+                            stack
+                        );
+                        instance.__build().then(function(){
+                            // Se crea el layout y se le pasa la instancia.
+
+                            this.theNode.append(instance.rootNode);
+
+                        }.bind(this))
+
+                    }
                 }
-            }
+            },
+            b:
+                {
+                    "inherits": "Siviglia.UI.Expando.View",
+                    "methods": {
+                        preInitialize: function (params) {
+                        },
+                        initialize: function (params) {
+
+                        }
+
+                    }
+                }
         }
     });
 </script>
