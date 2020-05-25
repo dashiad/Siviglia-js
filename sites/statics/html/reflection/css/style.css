@@ -9,7 +9,7 @@
     url("../fonts/boxicons.woff2") format("woff2");
 }
 :root {
-    --main-background:#222;
+    --main-background:#EEE;
     --secondary-background:#333;
     --main-font:"ExpresswayRg";
     --main-color:#EEE;

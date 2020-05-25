@@ -21,6 +21,8 @@ class Package extends \lib\model\Package
             require_once($this->getWorkersPath($className));
         } elseif ($this->isTypeSerializer($className)) {
             require_once($this->getTypeSerializersPath($className));
+        } elseif ($this->isLib($className)) {
+            require_once($this->getLibPath($className));
         } else {
             return $this->includeModel($className);
         }
@@ -57,6 +59,26 @@ class Package extends \lib\model\Package
         } else {
             return false;
         }
+    }
+
+    protected function isLib($className) : bool
+    {
+        //$classParts = explode("\\", ltrim($className, ltrim($this->baseNamespace, "\\")));
+        $classParts = explode("\\", str_replace(ltrim($this->baseNamespace, "\\"), "", ltrim($className, "\\")));
+        if (isset($classParts[1])) {
+            return $classParts[1]=="lib";
+        } else {
+            return false;
+        }
+    }
+
+    protected function getLibPath($className) : string
+    {
+        //$classParts = explode("\\", ltrim($className, ltrim($this->baseNamespace, "\\")));
+        $classParts = explode("\\", str_replace(ltrim($this->baseNamespace, "\\"), "", ltrim($className, "\\")));
+        if (!isset($classParts[3])) array_push($classParts, $classParts[2]);
+        $className = implode("/", $classParts);
+        return $this->fullPath."$className.php";
     }
 
     protected function getTypeSerializersPath($className) : string
