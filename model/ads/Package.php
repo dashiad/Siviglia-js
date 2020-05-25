@@ -14,7 +14,7 @@ use lib\model\ModelService;
 class Package extends \lib\model\Package
 {
     const WORKERS_DIRNAME = "WORKERS";
-        
+
     public function includeFile($className)
     {
         if($this->isWorker($className)) {
@@ -25,11 +25,14 @@ class Package extends \lib\model\Package
             return $this->includeModel($className);
         }
     }
-        
+
     public function includeModel($modelName)
     {
         $typesBase = 'model\\ads\\objects\\Comscore\\types\\';
-        if (substr($typesBase, 0, strlen($modelName))===$typesBase) {
+        //if (substr($typesBase, 0, strlen($modelName))===$typesBase) {
+        $pos=strpos($modelName,$typesBase);
+        if($pos===0 || $pos===1)
+        {
             $typeName = array_pop(explode('\\\\', $modelName));
             include_once($this->getBasePath()."/model/ads/objects/Types/types/$typeName.php");
             return;
@@ -37,7 +40,7 @@ class Package extends \lib\model\Package
             parent::includeModel($modelName);
         }
     }
-    
+
     protected function getWorkersPath($className) : string
     {
         $classParts = explode("\\", ltrim($className, ltrim($this->baseNamespace, "\\")));
@@ -45,7 +48,7 @@ class Package extends \lib\model\Package
         $className = implode("/", $classParts);
         return $this->fullPath."/objects/".$className.".php";
     }
-    
+
     protected function isWorker($className) : bool
     {
         $classParts = explode("\\", ltrim($className, ltrim($this->baseNamespace, "\\")));
@@ -55,7 +58,7 @@ class Package extends \lib\model\Package
             return false;
         }
     }
-    
+
     protected function getTypeSerializersPath($className) : string
     {
         $classParts = explode("\\", ltrim($className, ltrim($this->baseNamespace, "\\")));
@@ -63,7 +66,7 @@ class Package extends \lib\model\Package
         $className = implode("/", $classParts);
         return $this->fullPath."/objects/".$className.".php";
     }
-    
+
     protected function isTypeSerializer($className) : bool
     {
         $classParts = explode("\\", ltrim($className, ltrim($this->baseNamespace, "\\")));
@@ -73,6 +76,6 @@ class Package extends \lib\model\Package
             return false;
         }
     }
-    
-    
+
+
 }
