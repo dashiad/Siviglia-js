@@ -63,6 +63,7 @@
                                 "name": "FullList",
                                 "settings":{
                                     pageSize:20
+
                                 }
                                 },
                             "columns":{
@@ -74,7 +75,7 @@
                                 "orderId":{"Type":"Field","Field":"orderId","Label":"orderId"},
                                 "startDateTime":{"Type":"Field","Field":"startDateTime","Label":"startDateTime"},
                                 "endDateTime":{"Type":"Field","Field":"endDateTime","Label":"endDateTime"},
-                                "creativeRotationType":{"Type":"Field","Field":"creativeRotationType","Label":"creativeRotationType",gridOpts:{width:"30px"}},
+                                "creativeRotationType":{"Type":"Field","Field":"creativeRotationType","Label":"creativeRotationType",gridOpts:{width:"30px",height:"100px"}},
                                 "lineItemType":{"Type":"Field","Field":"lineItemType","Label":"lineItemType",gridOpts:{width:"50px"}},
                                 "priority":{"Type":"Field","Field":"priority","Label":"priority"},
                                 "budget":{"Type":"Field","Field":"budget","Label":"budget"},
@@ -82,7 +83,8 @@
                                 "isArchived":{"Type":"Field","Field":"isArchived","Label":"isArchived"}
                             },
                             "gridOpts":{
-                                width:"100%"
+                                width:"100%",
+                                //rowsheight:100
                             }
                             }
                         );

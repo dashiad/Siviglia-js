@@ -1515,8 +1515,8 @@ Siviglia.Utils.buildClass(
                                 }
 
 
-                                for(var k=0;k<n.childNodes.length;k++) {
-                                //for(var k=0;k<actualNodes.length;k++) {
+                                //for(var k=0;k<n.childNodes.length;k++) {
+                                for(var k=0;k<actualNodes.length;k++) {
                                         nextNode = actualNodes[k].nextElementSibling;
                                         m.recurseHTML($(actualNodes[k]), applyFunc);
                                 }
