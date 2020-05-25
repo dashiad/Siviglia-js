@@ -1,3 +1,34 @@
+<script>
+    function uniqid(a = "",b = false){
+    var c = Date.now()/1000;
+    var d = c.toString(16).split(".").join("");
+    while(d.length < 14){
+        d += "0";
+    }
+    var e = "";
+    if(b){
+        e = ".";
+        var f = Math.round(Math.random()*100000000);
+        e += f;
+    }
+    return a + d + e;
+}
+</script>
+
+<!-- <script>
+$('.collapser').click(function() {
+    $(this).next().collapse('toggle');
+});
+</script> -->
+
+<script>
+$('.collapser').click(function(){
+    // $(this).toggleClass('glyphicon-chevron-down');
+    // $(this).toggleClass('glyphicon-chevron-up');
+    $(this).parent().find(".collapsed").collapse('toggle');
+});
+</script>
+
 <style>
     .remove, .NewItemString .add {
         font-family:'IcoMoon'
@@ -131,35 +162,11 @@
                     destruct:function()
                     {
                       this.clearErrors();
-                      // Destruccion del jqxInput
-                      var widgetName=this.getJqxWidgetName();
-                      if(this.inputNode) {
-                          this.inputNode[widgetName]('destroy');
-                          var ariaNode=this.inputNode.attr("aria-owns");
-                          if(ariaNode)
-                          {
-                              var R=new RegExp(ariaNode,"i");
-                              var curEvents=$._data(document,"events");
-                              for(var k in curEvents)
-                              {
-                                  var curList=curEvents[k];
-                                  for(var j = 0;j<curList.length;j++)
-                                  {
-                                      if(R.exec(curList[j].namespace))
-                                      {
-                                          jQuery(document).off(curList[j]["type"], curList[j]["namespace*"]);
-                                      }
-                                  }
-                              }
-                          }
-
-                      }
                     },
                     methods: {
                         preInitialize: function (params) {
                             this.errored = false;
                             this.controller = this.parentView;
-                            this.tooltipNode=null;
                             this.changing=false;
                             this.errorMessage = "";
                             this.form=Siviglia.issetOr(params.form,null);
@@ -169,6 +176,7 @@
                             this.hasHelpMessage = (this.helpMessage != null ? true : false);
                             this.inputParams = Siviglia.issetOr(params.inputParams, {});
                             this.formParams=Siviglia.issetOr(params.formParams,{});
+                            this.counter=0;
                         },
                         initialize: function (params) {
                             var opts = this.getDefaultInputOptions();
@@ -177,7 +185,6 @@
                             this.createInput(opts);
                             this.inputNode[this.getJqxWidgetName()]('theme', 'light');
                             var m = this;
-                            this.tooltipNode=this.inputNode;
                             this.inputNode.on("change", function () {
                                 if (m.changing)
                                     return;
@@ -274,12 +281,12 @@
                                 this.showError(Siviglia.i18n.es.base.getErrorFromJsException(exception));
                             }
                             else
-                                console.error("Invalid error path:"+exception.path);
+                                console.err("Invalid error path:"+exception.path);
 
                         },
                         showError: function (message,dontAppend) {
                             var d = new Date();
-                            this.tooltip = this.tooltipNode.jqxTooltip(
+                            this.tooltip = this.inputNode.jqxTooltip(
                                 {
                                     name: d + d.getMilliseconds(),
                                     animationShowDelay: 'fast',
@@ -287,15 +294,15 @@
                                     closeOnClick: false,
                                     position: 'right'
                                 });
-                            this.tooltipIds=this.tooltipNode.data().jqxTooltip.instance.IDArray;
-                            this.tooltipNode.jqxTooltip({content: message});
-                            this.tooltipNode.jqxTooltip("open");
-                            this.tooltipNode.addClass("errored");
+                            this.tooltipIds=this.inputNode.data().jqxTooltip.instance.IDArray;
+                            this.inputNode.jqxTooltip({content: message});
+                            this.inputNode.jqxTooltip("open");
+                            this.inputNode.addClass("errored");
                             this.form.appendError(this.type.getFullPath(),this);
                         },
                         clearErrors: function () {
                             if (this.tooltip) {
-                                this.tooltipNode.jqxTooltip('destroy');
+                                this.inputNode.jqxTooltip('destroy');
                                 this.tooltip = null;
                                 for(var k=0;k<this.tooltipIds.length;k++)
                                 {
@@ -502,11 +509,7 @@
 
                 ComboBox: {
                     inherits: 'BaseInput',
-                    destruct:function()
-                    {
-                        var s = this.type.getSource();
-                        s.removeListeners(this);
-                    },
+
                     methods: {
                         preInitialize: function (params) {
                             this.preprocessParams(params);
@@ -523,7 +526,7 @@
                             this.inputNode[this.getJqxWidgetName()]('theme', 'light');
                             var m = this;
                             this.inputNode.on("select", function (ev) {
-                                if(!m.dataBinding && !m.changing) {
+                                if(!m.dataBinding) {
                                     if (ev.args) {
                                         m.changing = true;
                                         var newVal = ev.args.item.value;
@@ -887,7 +890,7 @@
                                     this.currentKey=null;
                                     this.params=params;
                                     this.currentErrors={};
-
+                                    //this.counter=0;
                                 },
                                 initialize:function(params)
                                 {
@@ -915,41 +918,31 @@
                                 },
                                 onLabelClicked:function(node, params)
                                 {
-                                    // Hacemos esto para evitar doble repintado del widget, ya que hay
-                                    // listeners para ambas variables.
                                     this.currentKey=params.key;
                                     this.hasCurrentKey=true;
 
                                 },
                                 getInputFor:function(node,params)
                                 {
-
                                     if(this.currentWidget!=null) {
 
                                         this.currentWidget.destruct();
                                         this.currentWidget = null;
                                         node.html("");
                                     }
-                                    var key=this.currentKey;
-                                    if(key==null)
+                                    if(params.key==null)
                                         return;
 
-                                    this.__getInputFor(key).then(function(instance){
-                                        if(this.currentWidget!=null) {
-
-                                            this.currentWidget.destruct();
-                                            this.currentWidget = null;
-                                            node.html("");
-                                        }
+                                    this.__getInputFor(params.key).then(function(instance){
                                         this.currentWidget=instance;
                                         node.append(this.currentWidget.rootNode);
-                                        var ce=this.currentErrors[key]
+                                        var ce=this.currentErrors[params.key]
                                         if(ce) {
                                             for(var k=0;k<ce.length;k++) {
                                                 instance.addError(ce[k].path, ce[k].error);
                                             }
                                         }
-                                        delete this.currentErrors[key];
+                                        delete this.currentErrors[params.key];
 
 
                                     }.bind(this));
@@ -990,23 +983,21 @@
                                 },
                                 addError:function(path,exception)
                                 {
-
+                                    debugger;
                                     var key=path.shift();
                                     if(key==this.currentKey)
                                     {
-
                                         if(this.currentWidget!==null) {
                                             this.currentWidget.addError(path, exception);
+                                            return;
                                         }
                                     }
                                     else {
                                         this.currentKey = key;
-                                        this.hasCurrentKey=true;
                                     }
-
-                                    if (typeof this.currentErrors[key] == "undefined")
-                                        this.currentErrors[key] = [];
-                                    this.currentErrors[key].push({path: path, error: exception});
+                                        if (typeof this.currentErrors[key] == "undefined")
+                                            this.currentErrors[key] = [];
+                                        this.currentErrors[key].push({path: path, error: exception});
 
                                 }
 
@@ -1028,7 +1019,16 @@
                                 this.Dictionary$preInitialize(params);
                                 this.globalErrors = [];
                                 this.hasGlobalErrors = false;
-
+                                var contador = this.counter;
+                                if (typeof (Siviglia.inputs.jqwidgets.Dictionary.__proto__.counter) == "undefined") {
+                                    contador = 0;
+                                }
+                                else {
+                                    contador = Siviglia.inputs.jqwidgets.Dictionary.__proto__.counter+1;                                                               
+                                }
+                                this.accordionId="accordionClass"+contador;
+                                this.accordionClass="#"+this.accordionId;
+                                Siviglia.inputs.jqwidgets.Dictionary.__proto__.counter=contador;
                             },
                             getInputFor: function (node, params) {
 
@@ -1066,6 +1066,9 @@
                         preInitialize:function(params)
                         {
                             this.Container$preInitialize(params);
+
+                            this.containerDefinition=this.type.getDefinition();
+
                             this.containerGroups=this.getGroups();
                             this.labels=[];
                             for(var k in this.containerGroups)
@@ -1088,115 +1091,22 @@
                             var idx=0;
                             for(var k in this.containerGroups)
                             {
-                                for(var j=0;j<this.containerGroups[k].FIELDS.length;j++) {
-                                    if (this.containerGroups[k].FIELDS[j].VALUE==key) {
+                                if(this.containerGroups[k].FIELDS.indexOf(key)>=0) {
                                     this.jqxTabs.jqxTabs("select", idx);
                                     this.subwidgets[key].addError(path,exception);
                                     return;
                                 }
                             }
                         }
-                        }
 
                     }
-                },
-                AccordionContainer:{
-                    // Solo heredamos de TabbedContainer para reutilizar addError,
-                    // aunque realmente el AddError de TabbedContainer no es el que deberia
-                    // tener AccordionContainer.
-                    inherits:"TabbedContainer",
-                    methods:{
-                        preInitialize:function(params)
-                        {
-                            this.Container$preInitialize(params);
-                            this.containerGroups=this.getGroups();
-                            for(var k in this.containerGroups)
-                            {
-                                this.containerGroups[k].ICON=Siviglia.issetOr(this.containerGroups[k].ICON,"");
-                            }
-                        },
-                        initialize:function(params)
-                        {
-                            this.Container$initialize(params);
-
-
-                            // var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ width: 600, height: 250});
-                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ width: 'auto', height: 'auto'});
-
-                            this.jqxAccordion.jqxNavigationBar(iParams);
-                        }
-
-                    }
-
                 },
                 FlexContainer:{
                     inherits:"Container"
                 },
-                MenuContainer:{
-                    inherits:"Container",
-                    methods: {
-                        preInitialize: function (params) {
-                            this.Container$preInitialize(params);
-                            this.menu = params["MENU"];
-                            this.self = this;
-                        },
-                        initialize: function (params) {
-
-                            this.menuNode.jqxMenu({ width: '600', height:"30px"});
-                            this.menuNode.css({ 'visibility':'visible'});
-
-                        }
-                    }
-
-
-                },
-                Menu:{
-                    inherits:"Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
-                    methods: {
-                        preInitialize: function (params) {
-                            this.controller = params.controller;
-                            this.menu = params.menu;
-                        },
-                        initialize: function () {
-                        },
-                        getSubMenu: function (node, params) {
-                            var label = params.spec.Label;
-                            node.attr("href","#");
-                            node.html(params.spec.Label);
-                            switch (params.spec.Type) {
-                                case "Menu": {
-                                    var menuWidget = new Siviglia.inputs.jqwidgets.Menu('Siviglia.inputs.jqwidgets.Menu',
-                                        {controller: this.controller, menu: params.spec.Menu},
-                                        {},
-                                        $('<div></div>'),
-                                        this.__context
-                                    );
-                                    menuWidget.__build().then(function (instance) {
-                                        node.parent().append(menuWidget.rootNode);
-                                    })
-                                }
-                                    break;
-                            }
-
-                        }
-                    }
-
-                },
                 Array:
                     {
                         inherits:'BaseInput',
-                        destruct:function()
-                        {
-                            if(this.newItemSelector)
-                                this.newItemSelector.destruct();
-                            if(this.newInstance)
-                                this.newInstance.destruct();
-                            if(this.currentItem)
-                            {
-                                this.currentItem.destruct();
-                            }
-                            this.currentSelection=null;
-                        },
                         methods:
                             {
                                 preInitialize:function(params)
@@ -1218,16 +1128,15 @@
                                 },
                                 buildNewItemWidget:function(node,params)
                                 {
-
+                                    if(this.newItemWidget) {
+                                        this.newItemWidget.destruct();
+                                        this.newInstance.destruct();
+                                    }
+                                    this.newItemNode.html("");
                                     this.newInstance=this.type.getValueInstance();
                                     var factory=new Siviglia.inputs.jqwidgets.Factory();
 
                                     factory.getInput(this.newInstance,{},this.form).then(function(instance){
-                                        if(this.newItemSelector) {
-                                            this.newItemSelector.destruct();
-                                            this.newInstance.destruct();
-                                        }
-                                        this.newItemNode.html("");
                                       this.newItemSelector =instance;
                                         this.newItemNode.append(this.newItemSelector.rootNode);
                                     }.bind(this));
@@ -1256,6 +1165,7 @@
 
 
                                         }
+                                        this.newItemSelector._setInputValue("");
                                         this.newItemSelector.inputNode.focus();
                                     }
                                     else
@@ -1266,7 +1176,6 @@
                                             this.type.setValue([newInstance]);
                                         else
                                             this.type.getValue().push(newInstance);
-                                        this.setSelected(this.type.getValue().length-1);
                                     }
                                 },
 
@@ -1275,15 +1184,12 @@
                                 },
                                 setSelected:function(idx)
                                 {
-                                    if(idx==this.currentSelection)
-                                        return;
-                                    this.currentSelection=idx;
+                                    if(this.currentItem) {
+                                        this.currentItem.destruct();
+                                        this.currentItemNode.html("");
+                                    }
                                     var factory=new Siviglia.inputs.jqwidgets.Factory();
                                     factory.getInput(this.type.getValue()["*"+idx],{},this.form).then(function(instance){
-                                        if(this.currentItem) {
-                                            this.currentItem.destruct();
-                                            this.currentItemNode.html("");
-                                        }
                                     this.currentItem=instance;
                                     this.currentItemNode.append(this.currentItem.rootNode);
                                     }.bind(this));
@@ -1299,15 +1205,6 @@
                     },
                 TypeSwitcher: {
                     inherits: 'BaseInput',
-                    destruct:function()
-                    {
-                        if(this.typeSelector)
-                            this.typeSelector.destruct();
-                        if(this.typeSelectorWidget)
-                            this.typeSelectorWidget.destruct();
-                        if(this.subNode)
-                            this.subNode.destruct();
-                    },
                     methods:
                         {
                         preInitialize:function(params){
@@ -1336,11 +1233,10 @@
 
                         initialize:function(params)
                         {
-
+                            this.detach();
                             var factory=new Siviglia.inputs.jqwidgets.Factory();
                             factory.getInput(this.typeSelector,{},this.form).then(
                                 function(instance){
-                                    this.detach();
                                     this.typeSelectorWidget =instance;
                                     var m=this;
                                     this.typeSelector.addListener("CHANGE",function(event,params){
@@ -1363,6 +1259,12 @@
                             },
                             buildTypeUI:function()
                             {
+                                if(this.subNode) {
+
+                                    this.fieldContainer.html("");
+                                    this.subNode.destruct();
+                                }
+
                                 var factory=new Siviglia.inputs.jqwidgets.Factory()
 
                                 this.curType=this.type.getCurrentType();
@@ -1370,10 +1272,6 @@
                                 if(this.curType) {
                                     var curTypeObj=this.type.getCurrentTypeObj();
                                     factory.getInput(curTypeObj, {controller: this.type.controller},this.form).then(function(instance){
-                                        if(this.subNode) {
-                                            this.subNode.destruct();
-                                            this.fieldContainer.html("");
-                                        }
                                         this.fieldContainer.append(instance.rootNode);
                                         this.subNode=instance;
                                     }.bind(this));
@@ -1463,11 +1361,6 @@
                 NewItem:
                     {
                         inherits:"Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
-                        destruct:function(){
-                            if(this.subInput) {
-                                this.subInput.destruct();
-                            }
-                        },
                         methods:
                             {
                                 preInitialize:function(params)
@@ -1487,7 +1380,7 @@
                                 },
                                 initialize:function()
                                 {
-                                    //this.type.addListener("CHANGE",this,"paintInput");
+                                    this.type.addListener("CHANGE",this,"paintInput");
                                     this.paintInput(null);
                                 },
                                 detach:function()
@@ -1513,21 +1406,18 @@
                                 },
                                 onAdd: function () {
                                     this.parent.onAdd(this.subInput.getValue());
-                                    this.subInput.inputNode.val(null);
 
                                 }
                             }
                     },
                 Form:{
-                    inherits:"BaseInput",
+                    inherits:"Container",
                     destruct:function()
                     {
                         if(this.__bto)
                             this.__bto.destruct();
-                        if(this.type)
-                            this.type.destruct();
-                        if(this.__containerWidget)
-                            this.__containerWidget.destruct();
+                        if(this.__container)
+                            this.__container.destruct();
                     },
                     methods:
                         {
@@ -1538,17 +1428,16 @@
                                 // un basetypedobject, cuando, por ejemplo, es un filtro para un datasource, o un test.
 
                                 var loadedPromise = $.Deferred();
-                                var containerPromise=$.Deferred();
 
                                 var m=this;
                                 this.__bto=null;
                                 this.__model=null;
-                                this.type=null;
+                                this.__container=null;
                                 this.__erroredInputs={};
-                                this.__containerWidget=null;
                                 if(typeof params.model==="undefined") {
                                     this.__bto = params.bto;
                                     this.setupBto();
+                                    this.Container$preInitialize({type:this.__container,form:this});
                                     loadedPromise.resolve(this.bto);
                                 }
                                 else {
@@ -1562,40 +1451,17 @@
                                         if (result.error == 0) {
                                             this.__bto = new Siviglia.Model.Form(params.model, params.name, params.keys, result.form.definition, result.form.value);
                                             this.setupBto();
-                                            loadedPromise.resolve(this.bto);
-
+                                            this.Container$preInitialize({type:this.__container,form:this});
+                                            loadedPromise.resolve(this.__bto);
                                         } else
                                             loadedPromise.reject();
                                     }.bind(this))
                                 }
-
-                                $.when(loadedPromise).then(function(bto){
-                                var factory=new Siviglia.inputs.jqwidgets.Factory();
-                                    factory.getInput(this.type,{controller:this.__bto},this).then(
-                                  function(instance)
-                                  {
-                                      this.__containerWidget=instance;
-                                            containerPromise.resolve(this.__bto);
-
-                                        }.bind(this)
-                                    );
-
-                                }.bind(this));
-                                return containerPromise;
-                            },
-                            initialize:function()
-                            {
-                                if(this.formNode)
-                                      this.formNode.append(this.__containerWidget.rootNode);
-                                //this.curType=this.type.getField(key);
-
-
-
-
+                                return loadedPromise;
                             },
                             setupBto:function()
                             {
-                                this.type = new Siviglia.types.Container(this.__bto);
+                                this.__container = new Siviglia.types.Container(this.__bto);
                                 var ip = Siviglia.issetOr(this.__bto.__definition.INPUTPARAMS, {});
                                 this.__ip = [];
                                 for (var k in ip) {
@@ -1605,10 +1471,6 @@
                                     var r = new RegExp("^" + t + "$");
                                     this.__ip.push({reg: r, ip: ip[k]});
                                 }
-                            },
-                            getInputFor:function(node,params)
-                            {
-                                return this.__containerWidget.getInputFor(node,params);
                             },
                             getFormParams:function(typePath)
                             {
@@ -1628,17 +1490,8 @@
                                 if(typeof this.__erroredInputs[path]!=="undefined")
                                     delete this.__erroredInputs[path];
                             },
-                            submit: function () {
-                                var errors=null;
-                                try {
-                                    this.__bto.__save();
-                                }catch(e)
-                                {
-                                    if(e.code===Siviglia.types.BaseTypeException.ERR_SAVE_ERROR)
-                                        errors=e.params;
-                                    else
-                                        throw e;
-                                }
+                            submit: function (instance,actionName) {
+                                var errors = this.__bto.__save();
                                 if (errors !== null) {
                                     for (var k=0;k<errors.length;k++) {
                                         if(!errors[k].path)
@@ -1648,7 +1501,7 @@
 
                                         var path = errors[k].path.split("/");
                                         path.shift();
-                                        this.__containerWidget.addError(path, errors[k]);
+                                        this.addError(path, errors[k]);
                                     }
                                 }
                                 for (var k in this.erroredInputs)
@@ -1695,7 +1548,7 @@
                                         function (r) {
                                             if (r.error == 0) {
                                                 //this.__bto.setValue(r.data[0]);
-						                        var returned=r.data!==null?r.data[0]:null;
+						var returned=r.data!==null?r.data[0]:null;
                                                 this.onSuccess(returned);
                                                 if(!this.doRedirect("ON_SUCCESS"))
                                                     p.resolve(r);
@@ -1735,7 +1588,7 @@
                                                         var parts=error.path.split("/");
                                                         if (parts[0] == "")
                                                             parts.shift();
-                                                        this.__containerWidget.addError(parts, error);
+                                                        this.addError(parts, error);
                                                     }
                                                 }
                                         }
@@ -1812,13 +1665,9 @@
 </script>
 
 <div style="display:none">
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.AutoIncrement" data-widgetParams="type,inputParams"
-         data-widgetCode="Siviglia.inputs.jqwidgets.AutoIncrement">
-        <input type="text" data-sivId="inputNode"></input>
-    </div>
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.String" data-widgetParams="type,inputParams"
+    <div class="longitud-input" data-sivWidget="Siviglia.inputs.jqwidgets.String" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.String">
-         <input type="text" placeholder="" class="form-control" data-sivId="inputNode">
+        <input type="text" placeholder="" class="form-control" data-sivId="inputNode">
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Enum" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Enum">
@@ -1838,7 +1687,10 @@
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Boolean" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Boolean">
-        <div data-sivId="inputNode"></div>
+        <!-- <div data-sivId="inputNode"></div> -->
+        <div class="checkbox">
+            <input type="checkbox" class="checkbox-input" data-sivId="inputNode">
+        </div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Date" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Date">
@@ -1901,255 +1753,285 @@
         <div data-sivId="inputNode"></div>
     </div>
 
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.Dictionary" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Dictionary">
-        <div class="DictionaryType ContainerType">
-            <div class="panel panel-primary">
-                <div class="Dictionary-heading" data-sivValue="/*title" class="title"></div>
-                <div class="Dictionary-body">
-                    <!--<div class="container-fluid">-->
-                    <p class="text-info description" data-sivValue="/*description"></p>
-                    <div data-sivIf="[%/*hasSimpleType%] == false" >
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Dictionary" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Dictionary"
+         class="DictionaryType ContainerType">
+        <div class="panel panel-primary">
+            <div class="Dictionary-heading" data-sivValue="/*title" class="title"></div>
+            <div class="Dictionary-body">
+                <!--<div class="container-fluid">-->
+                <p class="text-info description" data-sivValue="/*description"></p>
+                <div data-sivIf="[%/*hasSimpleType%] == false" >
 
-                        <div class="row-form Dictionary-row" style="margin-left:0px">
-                            <div>
+                    <div class="row-form Dictionary-row" style="margin-left:0px">
 
-                                <div class="Dictionary-keyList" width="150px">
-                                    <div class="Dictionary-mainKeyList">
-                                        <!-- añade el boton + -->
-                                        <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
+                        <div>
 
-                                        <!-- añade las claves introducidas -->
-                                        <ul class="nav nav-pills">
-                                            <div data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                                                <li class="nav-item">
-                                                    <a class="nav-link" id="tab-/@current/LABEL" data-toggle="pill" href="#/@current/LABEL">
-                                                        <span data-sivValue="/@current/LABEL" data-sivParams='{"key":"/@current/LABEL"}' data-sivEvent="click" data-sivCallback="onLabelClicked" title="Seleccionar /@current/LABEL"></span> <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}' title="Eliminar"></i>
-                                                    </a>
-                                                </li>
-                                            </div>
-                                        </ul>
+                            <div class="Dictionary-keyList" width="150px">
+                                <div class="Dictionary-mainKeyList">
+                                    <!-- añade el boton + -->
+                                    <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
 
-                                        <!-- añade las claves introducidas funciona bien! -->
-                                        <!-- <ul  class="Dictionary-keys" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                                            <li role="presentation">
-                                                <button class="Form-button Dictionary-button" data-sivValue="/@current/LABEL" data-sivEvent="click" data-sivCallback="onLabelClicked" data-sivParams='{"key":"/@current/LABEL"}'></button>
-                                                <span class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}'></span>
-                                            </li>
-                                        </ul> -->
+                                    <!-- añade las claves introducidas funciona bien! -->
+                                    <!-- <ul  class="Dictionary-keys" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
+                                        <li role="presentation">
+                                            <button class="Form-button Dictionary-button" data-sivValue="/@current/LABEL" data-sivEvent="click" data-sivCallback="onLabelClicked" data-sivParams='{"key":"/@current/LABEL"}'></button>
+                                            <span class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}'></span>
+                                        </li>
+                                    </ul> -->
+                                    <ul class="nav nav-pills" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
+                                        <li class="nav-item">                                            
+                                            <a class="nav-link" id="tab-/@current/LABEL" data-toggle="pill" href="#/@current/LABEL"><span data-sivValue="/@current/LABEL" data-sivParams='{"key":"/@current/LABEL"}' data-sivEvent="click" data-sivCallback="onLabelClicked" title="Seleccionar /@current/LABEL"></span> <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}' title="Eliminar"></i></a>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+
+
+
+                            <!-- <div class="Dictionary-keyList" width="150px">
+                                <div class="Dictionary-mainKeyList">
+                                    
+                                    <ul class="Dictionary-keys-add">
+                                        <li>
+                                            <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
+                                        </li>
+                                    </ul>
+
+                                    <ul  class="Dictionary-keys" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
+                                        <li role="presentation">
+                                            <button class="Form-button Dictionary-button" data-sivValue="/@current/LABEL" data-sivEvent="click" data-sivCallback="onLabelClicked" data-sivParams='{"key":"/@current/LABEL"}'></button>
+                                            <span class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}'></span>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div> -->
+                            <!-- contenido añadido en add.html -->
+                            <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
+                                <div class="Dictionary-current">
+                                    <div data-sivValue="/*type/definition/LABEL"></div>
+                                    <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
                                     </div>
                                 </div>
 
-                                <!-- contenido añadido en add.html -->
-                                <div class="Dictionary-current">
-                                    <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
-                                        <div data-sivValue="/*type/definition/LABEL"></div>
-                                        <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
+
+                               <!-- <div class="accordion collapse-icon accordion-icon-rotate" id="accordionWrapa2" data-toggle-hover="true">
+
+                                    <div class="card collapse-header">
+                                        <div id="headingCollapse1" class="card-header collapsed" data-toggle="collapse" role="button" data-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
+                                            <span class="collapse-title">
+                                                <div data-sivValue="/*type/definition/LABEL"></div>
+                                            </span>
+                                        </div>
+                                        <div id="collapse1" role="tabpanel" aria-labelledby="headingCollapse1" class="collapse" style="">
+                                            <div class="card-content">
+                                                <div class="card-body">
+                                                    <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --> 
 
                             </div>
 
                         </div>
-                    </div>
-                    <div data-sivIf="[%/*hasSimpleType%] == true" >
-                        <div  data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                            <div style="display:flex">
-                                <div>
-                                    <span class="Dictionary-label Form-label" data-sivValue="/@current"></span>
-                                </div>
-                                <div>
-                                    <span data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></span>
-                                </div>
-                                <div>
-                                    <span class="Dictionary-removeButton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current"}'></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
-                    </div>
 
+                    </div>
                 </div>
+                <div data-sivIf="[%/*hasSimpleType%] == true" >
+                    <div  data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
+                        <div style="display:flex">
+                            <div>
+                                <span class="Dictionary-label Form-label" data-sivValue="/@current"></span>
+                            </div>
+                            <div>
+                                <span data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></span>
+                            </div>
+                            <div>
+                                <span class="Dictionary-removeButton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current"}'></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
+                </div>
+
+                <!--</div>-->
             </div>
         </div>
     </div>
-
-    <!-- CODIGO JM -->        
-    <!--
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.Dictionary" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Dictionary">
-        <div class="DictionaryType ContainerType">
-            <div class="panel panel-primary">
-                <div class="Dictionary-heading" data-sivValue="/*title" class="title"></div>
-                <div class="Dictionary-body">
-                    <p class="text-info description" data-sivValue="/*description"></p>
-                    <div data-sivIf="[%/*hasSimpleType%] == false" >
-
-                        <div class="Form-row Dictionary-row" style="margin-left:0px">
-
-                            <div style="display:flex">
-
-                                <div class="Dictionary-keyList" width="150px">
-                                    <div class="Dictionary-mainKeyList">
-                                        <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
-                                        
-                                        <ul class="Dictionary-keys">
-                                            <div data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                                                <li role="presentation">
-                                                    <button class="Form-button Dictionary-button" data-sivValue="/@current/LABEL" data-sivEvent="click" data-sivCallback="onLabelClicked" data-sivParams='{"key":"/@current/LABEL"}'></button>
-                                                    <span class="Dictionary-removeButton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}'></span>
-                                                </li>
-                                            </div>
-                                        </ul>
-                                    </div>
-                                </div>
-
-
-                                <div class="Dictionary-keyList" width="150px">
-                                    <div class="Dictionary-mainKeyList">
-                                        <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
-    
-                                        <ul class="nav nav-pills" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                                            <li class="nav-item">                                            
-                                                <a class="nav-link" id="tab-/@current/LABEL" data-toggle="pill" href="#/@current/LABEL"><span data-sivValue="/@current/LABEL" data-sivParams='{"key":"/@current/LABEL"}' data-sivEvent="click" data-sivCallback="onLabelClicked" title="Seleccionar /@current/LABEL"></span> <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}' title="Eliminar"></i></a>
-                                            </li>
-                                        </ul>
-    
-                                    </div>
-                                </div>
-
-                                <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
-                                    <div class="Dictionary-current">
-                                        <div class="currentWidget" data-sivCall="getInputFor">
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
+<!--
+    ----------------------------------------------------------------------------------------
+-->
+    <!-- 
+        FUNCIONA BIEN
+        <div data-sivWidget="Siviglia.inputs.jqwidgets.Container" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Container"
+         class="ContainerType">
+        <div class="panel panel-primary">
+            <div class="panel-body">
+                <p class="text-info description" data-sivValue="/*description"></p>
+                <div data-sivIf="[%/*hasGlobalErrors%] == true">
+                    <div class="globalErrors">
+                        <ul class="globalErrorList" sata-sivLoop="/*globalErrors" data-contextIndex="current">
+                            <li class="globalError" sivValue="/@current"></li>
+                        </ul>
                     </div>
-                    <div data-sivIf="[%/*hasSimpleType%] == true" >
-                        <div data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                            <div style="display:flex">
-                                <div>
-                                    <span class="Dictionary-label Form-label" data-sivValue="/@current"></span>
-                                </div>
-                                <div>
-                                    <span data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></span>
-                                </div>
-                                <div>
-                                    <span class="Dictionary-removeButton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current"}'></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
-                    </div>
-
+                </div>
+                <div class="inputs container" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+                    <div class="col col-sm-2" data-sivValue="/@current/LABEL"></div>
+                    <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
                 </div>
             </div>
         </div>
     </div> -->
-<!--
-    ----------------------------------------------------------------------------------------
--->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.Container" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Container">
-        <div class="ContainerType">
-            <div class="panel panel-primary">
-                <!--<div class="panel-heading" data-sivValue="/*title" class="title"></div>-->
-                <div class="panel-body">
-                    <p class="text-info description" data-sivValue="/*description"></p>
-                    <div data-sivIf="[%/*hasGlobalErrors%] == true">
-                        <div class="globalErrors">
-                            <ul class="globalErrorList" sata-sivLoop="/*globalErrors" data-contextIndex="current">
-                                <li class="globalError" sivValue="/@current"></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="inputs container">
-                        <div data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
-                            <div class="col col-sm-12" data-sivValue="/@current/LABEL"></div>
-                            <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
+
+    <!-- 
+y luego, con sivValue, haces data-sivValue="id|/*accordionId"
+y en el otro nodo, data-sivValue="data-target|/*accordionClass"
+        
+    -->
+
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Container" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Container"
+         class="ContainerType">
+
+        <div class="accordion collapse-icon accordion-icon-rotate" data-toggle-hover="true">
+            <div class="card collapse-header open">
+                <div class="card-header" data-toggle="collapse" data-sivValue="data-target|/*accordionClass">
+                    <span class="collapse-title">
+                        <i class="bx bx-code align-middle"></i>
+                        <span class="align-middle" data-sivValue="/*description">Container data</span>
+                    </span>
+                </div>
+                <div data-sivValue="id|/*accordionId" class="collapse show">
+                    <div class="card-content">
+                        <div class="card-body">
+
+                            <div class="inputs container" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+                                <fieldset class="form-group">
+                                    <label data-sivValue="/@current/LABEL"></label>
+                                    <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
+                                </fieldset>
+                                
+                                
+                                <!-- funciona bien: <div class="col col-sm-12" data-sivValue="/@current/LABEL"></div>
+                                <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div> -->
+                            </div>
+
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>            
         </div>
-    </div>
+
+
+        <!-- <div class="panel panel-primary"> -->
+            <!--<div class="panel-heading" data-sivValue="/*title" class="title"></div>-->
+            <!-- <div class="panel-body">
+                <p class="text-info description" data-sivValue="/*description"></p>
+                <div data-sivIf="[%/*hasGlobalErrors%] == true">
+                    <div class="globalErrors">
+                        <ul class="globalErrorList" sata-sivLoop="/*globalErrors" data-contextIndex="current">
+                            <li class="globalError" sivValue="/@current"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="inputs container" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+                    <div class="col col-sm-2" data-sivValue="/@current/LABEL"></div>
+                    <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
+                </div>
+            </div>
+        </div> -->
+
+
+
+    </div>                        
+
+
     <!--
     ----------------------------------------------------------------------------------------
 -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.FlexContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.FlexContainer">
-        <div class="ContainerType">
-            <div style="display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
-                <div style="margin:4px" data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
-            </div>
-        </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.FlexContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.FlexContainer"
+         class="ContainerType">
+
+                <div style="display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+
+                            <div style="margin:4px" data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
+
+                </div>
+
     </div>
 <!--
     --------------------------------------------------------------------------------------------
 -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.Array" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.Array" class="ArrayType">
-    <!--<p class="text-info description" data-sivValue="/*description"></p>-->
-    <div data-sivIf="[%/*hasSimpleType%] == true" >
-        <div class="arrayValues" style="min-height:20px;margin-bottom:5px">
-            <div data-sivLoop="/*type" data-contextIndex="current">
-                <span style="border:2px solid red;margin:3px;padding:2px;border-radius:5px">
-                    <span  data-sivValue="/@current"></span>
-                    <button style="color:red" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"/@current-index"}'>x</button>
-                </span>
-            </div>
-        </div>
-        <div>
-            <div data-sivId="newItemNode" data-sivCall="buildNewItemWidget"></div>
-                <button data-sivId="addSimpleItem" data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
-            </div>
-        </div>
-        <div data-sivIf="[%/*hasSimpleType%] == false" >
-            <div style="display:flex;flex-direction:row;flex-wrap:nowrap">
-                <div class="arrayValues" style="width:100px min-height:20px;margin-bottom:5px">
-                    <div data-sivLoop="/*type" data-contextIndex="current">
-                        <a data-sivEvent="click" data-sivParams='{"key":"@current-index"}' data-sivCallback="getInputFor" class="label label-primary" style="margin-right:4px;font-size:14px" data-sivValue="[%/@current-index%]"></a>
-                            <span class="remove ion-close-circled " style="color:red;padding-left:5px" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"[%@current-index%]"}'></span>
+            <div data-sivWidget="Siviglia.inputs.jqwidgets.Array" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.Array" class="ArrayType">
+                <!--<p class="text-info description" data-sivValue="/*description"></p>-->
+                <div data-sivIf="[%/*hasSimpleType%] == true" >
+                    <div data-sivLoop="/*type" data-contextIndex="current" class="arrayValues" style="min-height:20px;margin-bottom:5px">
+                        <span style="border:2px solid red;margin:3px;padding:2px;border-radius:5px">
+                            <span  data-sivValue="/@current"></span>
+                            <button style="color:red" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"/@current-index"}'>x</button>
+                        </span>
+                    </div>
+                    <div>
+                    <div data-sivId="newItemNode" data-sivCall="buildNewItemWidget"></div>
+                        <button class="NewItem-addButton" data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
                     </div>
                 </div>
-                <div style="border:1px solid black" data-sivId="currentItemNode">
+                <div data-sivIf="[%/*hasSimpleType%] == false" >
+                    <div style="display:flex;flex-direction:row;flex-wrap:nowrap">
+                    <div data-sivLoop="/*type"  style="width:100px" data-contextIndex="current" class="arrayValues" style="min-height:20px;margin-bottom:5px">
+                        <a data-sivEvent="click" data-sivParams='{"key":"@current-index"}' data-sivCallback="getInputFor" class="label label-primary" style="margin-right:4px;font-size:14px" data-sivValue="[%/@current-index%]"></a>
+                        <span class="remove ion-close-circled " style="color:red;padding-left:5px" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"[%@current-index%]"}'></span>
+                    </div>
+                        <div style="border:1px solid black" data-sivId="currentItemNode">
 
+                        </div>
+                    </div>
+                    <button data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
                 </div>
+
+
+
             </div>
-            <button data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
-        </div>
-    </div>
     <!--
     ------------------------------------------------------------------------------------------------------
     -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.TypeSwitcher" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.TypeSwitcher">
-        <div class="TypeSwitchType">
-            <div class="panel panel-primary">
-                <div class="panel-body">
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.TypeSwitcher" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.TypeSwitcher" class="TypeSwitchType">
+        <div class="panel panel-primary">
+            <div class="panel-body">
 
-                    <div class="typeChanger">
-                        <span>Seleccionar Tipo:</span>
-                        <span data-sivId="typeSwitchSelector">
-                        </span>
+                <div class="typeChanger">
+                    <div data-sivId="typeSwitchSelector">
                     </div>
-
-                    <div data-sivId="fieldContainer"></div>
                 </div>
-
+                <div data-sivId="fieldContainer"></div>
             </div>
-        </div>        
+
+        </div>
     </div>
      <!--
             ---------------------------------------------------------------------------------------
             -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.NewItem" data-widgetParams="parentObject,parentNode" data-widgetCode="Siviglia.inputs.jqwidgets.NewItem">
-        <div class="NewItem">
-            <div style="display:table-row">
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.NewItem" data-widgetParams="parentObject,parentNode" data-widgetCode="Siviglia.inputs.jqwidgets.NewItem" class="NewItem">
+    
+        <div class="input-group custom">         
+            <div data-sivId="inputNode"></div>
+            <!-- <input type="text" class="form-control" placeholder="Add new item..." aria-describedby="button-add"> -->
+                <div class="input-group-append" id="button-add">
+                    <button class="NewItem-addButton" type="button" data-sivEvent="click" data-sivCallback="onAdd" data-sivValue="Añadir"></button> 
+                </div>                
+        </div>          
+            
+            
+            
+            
+            <!-- <div style="display:table-row">
                 <div style="display:table-cell" data-sivId="inputNode">
                 </div>
-                <div style="display:table-cell;vertical-align: top;line-height: 1.0;font-size: 20px;"><div class="NewItem-addButton" data-sivEvent="click" data-sivCallback="onAdd" class="add"></div></div>
-            </div>
-        </div>
+                <div style="display:table-cell;vertical-align: top;line-height: 1.0;font-size: 20px;">
+                <div class="NewItem-addButton" data-sivEvent="click" data-sivCallback="onAdd" class="add"></div></div>
+            </div> -->
     </div>
     <!--
             ---------------------------------------------------------------------------------------
@@ -2157,15 +2039,12 @@
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Form" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Form">
         <div data-sivId="formNode"></div>
-        <!-- <div class="formSubmit"></div> -->
-        <input class="form-button" type="button" data-sivEvent="click" data-sivCallback="submit" value="Save">
     </div>
 
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.FilteringForm" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.FilteringForm">
         <div data-sivId="formNode"></div>
-
     </div>
 
     <!--
@@ -2193,54 +2072,15 @@
                 <li data-sivValue="[%@current%]"></li>
             </ul>
         </div>
-        <div data-sivId="groups" style="display:none">
-            <div data-sivLoop="*containerGroups" data-contextIndex="current">
-                <div data-sivLoop="*containerGroups/{%@current-index%}/FIELDS" data-contextIndex="current2">
-                    <div>
-                        <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2/VALUE"}'></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--
-            ---------------------------------------------------------------------------------------
-            -->
+        <div data-sivId="groups" style="display:none" data-sivLoop="*containerGroups" data-contextIndex="current">
+            <div data-sivLoop="*containerGroups/{%@current-index%}/FIELDS" data-contextIndex="current2">
 
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.AccordionContainer" data-widgetParams="type,inputParams"
-         data-widgetCode="Siviglia.inputs.jqwidgets.AccordionContainer">
-        <div data-sivId='jqxAccordion'>
-        <div data-sivLoop="*containerGroups" data-contextIndex="current">
-            <div data-sivValue="[%@current/LABEL%]"></div>
-            <div>
-                <div data-sivLoop="@current/FIELDS" data-contextIndex="current2">
-                    <div data-sivValue="[%*type/definition/FIELDS/{%@current2%}/LABEL%]"></div>
-                    <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2"}'></div>
+                <div>
+                    <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2/VALUE"}'></div>
                 </div>
-            </div>
-        </div>
-        </div>
-    </div>
-    <!--
-            ---------------------------------------------------------------------------------------
-            -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.MenuContainer" data-widgetParams="type,inputParams"
-         data-widgetCode="Siviglia.inputs.jqwidgets.MenuContainer">
-        <div data-sivId="menuNode">
-            <div data-sivView="Siviglia.inputs.jqwidgets.Menu" data-sivParams='{"controller":"*self","menu":"*menu"}'>
+
             </div>
         </div>
     </div>
-    <!--
-            ---------------------------------------------------------------------------------------
-            -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.Menu" data-widgetParams="controller" data-widgetCode="Siviglia.inputs.jqwidgets.Menu">
-        <ul style="width:250px">
-        <div data-sivLoop="/*menu" data-contextIndex="current" data-sivnested="false">
-            <li>
-                <a data-sivCall="getSubMenu" data-sivParams='{"spec":"@current"}'></a>
-            </li>
-        </div>
-        </ul>
-    </div>
+
 </div>

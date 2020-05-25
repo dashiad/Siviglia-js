@@ -52,7 +52,7 @@
 </head>
 <!-- <body class="dark-layout" style="background-color:#F2F4F4;"> -->
 <body>
-<?php include_once(__DIR__."/../../jQuery/JqxWidgets-felipe.html"); ?>
+<?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->
 <div class="widget" data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Edit" data-sivParams='{"id_page":2}'></div>
