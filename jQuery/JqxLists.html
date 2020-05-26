@@ -52,6 +52,7 @@
                             this.builtWidgets={};
                             this.actualColumns=[];
                             this.columnSpec=[];
+                            this.formWidgetName=typeof params.filters==="undefined"?null:params.filters;
 
                             this.jqgrid=null;
                             /*
@@ -63,8 +64,6 @@
 
                             this.ds.freeze();
                             var gtime=new Date().getTime();
-                            this.ds.params.start=gtime-24*60*60*1000;
-                            this.ds.params.end=gtime;
                             this.ds.settings.__start = 0;
                             this.ds.settings.__count = typeof params.ds.settings.pageSize=="undefined"?20:params.ds.settings.pageSize;
                             this.ds.addListener("CHANGE", this, "refreshGrid");
@@ -78,11 +77,11 @@
                             /*
                                 Inicializacion del formulario de filtro
                             */
-                            this.parameters.__definition.INPUTPARAMS={
+                            /*this.parameters.__definition.INPUTPARAMS={
                                 "/":{
                                     "INPUT": "FlexContainer"
                                 }
-                            }
+                            }*/
                             /*
                                 Inicializacion de parametros pasados a jqxGrid
                              */
@@ -93,6 +92,7 @@
                         {
                             if(this.ds)
                                 this.ds.unfreeze(); // LLama automaticamente a refresh
+                            this.buildFilters();
                         },
                         buildColumns:function()
                         {
@@ -134,7 +134,6 @@
                                                         var ctx = new Siviglia.Path.BaseObjectContext(rowdata, "*", stack);
                                                         var ps = new Siviglia.Path.ParametrizableString(curIt.str, stack);
                                                         var st = ps.parse();
-                                                        console.log(st);
                                                         return st;
                                                     }
                                                 }
@@ -191,6 +190,7 @@
                             }
                             this.builtWidgets={};
                         },
+
                         getColumn:function(row, columnfield, value, defaulthtml, columnproperties, rowdata)
                         {
                             debugger;
@@ -377,7 +377,7 @@
                                     // Aqui nos quedamos con una referencia a los widgets, usando como key el div. De esta forma
                                     // recuperamos el widget si se produce un cambio de seleccion, lo cual repinta las columnas.
 
-                                    m.builtWidgets[$(cur.div)]=wid;
+                                    m.builtWidgets[cur.div]=wid;
                                 });
 
                             }
@@ -386,9 +386,19 @@
                                 de que se vuelva a llamar a este callback.
                              */
                             this.futureWidgetData=[];
+                        },
+                        buildFilters:function()
+                        {
+                            if(this.formWidgetName===null)
+                                return;
+                            var formNamespace=Siviglia.Utils.stringToContextAndObject(this.formWidgetName);
+                            this.filterWidget=new formNamespace.context[formNamespace.object](this.formWidgetName,
+                                {bto:this.parameters},{},$("<div></div>"),this.__context);
+                            this.filterWidget.__build().then(function(){
+                                this.filterNode.append(this.filterWidget.rootNode);
+                            }.bind(this))
+
                         }
-
-
                     }
                 }
 
@@ -399,6 +409,7 @@
 </script>
 <div style="display:none">
     <div data-sivWidget="Siviglia.lists.jqwidgets.BaseGrid" data-widgetCode="Siviglia.lists.jqwidgets.BaseGrid">
+        <div data-sivId="filterNode"></div>
         <div data-sivId="grid"></div>
     </div>
 </div>

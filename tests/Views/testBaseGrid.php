@@ -36,8 +36,56 @@
 <?php include_once(__DIR__."/../../jQuery/JqxLists.html");?>
 <div style="display:none">
 
+    <div data-sivWidget="Test.ListViewerForm" data-widgetCode="Test.ListViewerForm">
+        <div class="input">
+            <div class="label">Id</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"id"}'></div>
+        </div>
+        <div class="input">
+            <div class="label">Name</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"name"}'></div>
+        </div>
+        <div class="input">
+            <div class="label">OrderName</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"orderName"}'></div>
+        </div>
+        <div class="input">
+            <div class="label">startDateTime</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"startDateTime"}'></div>
+        </div>
+        <div class="input">
+            <div class="label">endDateTime</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"endDateTime"}'></div>
+        </div>
+        <div class="input">
+            <div class="label">LineItemType</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"lineItemType"}'></div>
+        </div>
+        <div class="input">
+            <div class="label">Status</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"status"}'></div>
+        </div>
+        <div class="input">
+            <div class="label">isArchived</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"isArchived"}'></div>
+        </div>
+        <div class="input">
+            <div class="label">isMissingCreatives</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"isMissingCreatives"}'></div>
+        </div>
+        <div class="input">
+            <div class="label">userConsentEligibility</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"userConsentEligibility"}'></div>
+        </div>
+        <div class="input">
+            <div class="label">remoteId</div>
+            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams='{"key":"remoteId"}'></div>
+        </div>
+    </div>
+
     <div data-sivWidget="Test.ListViewer" data-widgetCode="Test.ListViewer">
     </div>
+
     <div data-sivWidget="Test.ButtonList" data-widgetCode="Test.ButtonList">
         <div>
             <input type="button" value="Borrar" data-sivEvent="click" data-sivCallback="onClicked">
@@ -58,12 +106,12 @@
                     preInitialize:function(params)
                     {
                         this.BaseGrid$preInitialize({
+                            "filters":"Test.ListViewerForm",
                             "ds": {
                                 "model": "/model/ads/AdManager/LineItemSummary",
                                 "name": "FullList",
                                 "settings":{
                                     pageSize:20
-
                                 }
                                 },
                             "columns":{
@@ -108,6 +156,17 @@
                     {
                         alert(this.data.id);
                     }
+                }
+            },
+            ListViewerForm:{
+                "inherits":"Siviglia.inputs.jqwidgets.Form",
+                "methods":{
+                    preInitialize:function(params)
+                    {
+
+                        return this.Form$preInitialize(params);
+                    }
+
                 }
             }
         }
