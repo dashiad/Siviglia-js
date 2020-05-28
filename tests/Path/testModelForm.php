@@ -8,8 +8,11 @@
     <script src="../../SivigliaTypes.js"></script>
     <script src="../../../jqwidgets/jqx-all.js"></script>
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
+    <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">
+    <link rel="stylesheet" href="../../../../reflection/css/style.css">
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.adtopy-dev.css">
+    
     <script>
         var Siviglia = Siviglia || {};
         Siviglia.config = {
@@ -25,7 +28,7 @@
 
         };
         Siviglia.Model.initialize(Siviglia.config);
-    </script>
+</script>
 
 </head>
 <body>
@@ -33,12 +36,15 @@
 <div style="display:none">
     <div data-sivWidget="Siviglia.model.web.Page.forms.Edit" data-widgetCode="Siviglia.model.web.Page.forms.Edit">
         <div data-sivView="Siviglia.inputs.jqwidgets.Form" data-sivParams='{"bto":"/*instance"}'></div>
-
     </div>
 </div>
 
 
-<div data-sivView="Siviglia.model.web.Page.forms.Edit" data-sivParams='{"id_page":2}'></div>
+<div class="widget">
+    <div class="widget-content">
+        <div data-sivView="Siviglia.model.web.Page.forms.Edit" data-sivParams='{"id_page":2}'></div>
+    </div>
+</div>
 
 
 <script>

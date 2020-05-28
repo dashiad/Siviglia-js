@@ -406,7 +406,8 @@
                                 height: 25,
                                 displayMember: "label",
                                 valueMember: "value",
-                                width: 200, minLength: 0
+                                width: '100%',
+                                minLength: 0
                             };
                             return opts;
                         },
@@ -603,7 +604,7 @@
                                 displayMember: this.getLabelField(),
                                 valueMember: this.getValueField(),
                                 autoDropDownHeight: true,
-                                width: 200,
+                                width: '100%',
                                 height: 25,
                                 placeHolder:Siviglia.issetOr(this.inputParams["placeholder"],"--Select"),
                                 search: function (str) {
@@ -781,7 +782,8 @@
                     methods:
                         {
                             getDefaultInputOptions: function () {
-                               return {};
+                               // añadida propiedad para que el icono del calendario sea fluid 100%
+                               return {width: '100%'};
                             },
                             getJqxWidgetName: function () {
                                 return "jqxDateTimeInput";
@@ -1154,7 +1156,10 @@
                         },
                         initialize: function (params) {
 
-                            this.menuNode.jqxMenu({ width: '600', height:"30px"});
+                            this.menuNode.jqxMenu({ 
+                                    width: '100%', height:"100%"
+                                    /* width: '600', height:"30px" */ 
+                            });
                             this.menuNode.css({ 'visibility':'visible'});
 
                         }
@@ -1931,11 +1936,11 @@
                                         <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
 
                                         <!-- añade las claves introducidas -->
-                                        <ul class="nav nav-pills">
+                                        <ul class="Dictionary-row Dictionary-keyList">
                                             <div data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                                                <li class="nav-item">
-                                                    <a class="nav-link" id="tab-/@current/LABEL" data-toggle="pill" href="#/@current/LABEL">
-                                                        <span data-sivValue="/@current/LABEL" data-sivParams='{"key":"/@current/LABEL"}' data-sivEvent="click" data-sivCallback="onLabelClicked" title="Seleccionar /@current/LABEL"></span> <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}' title="Eliminar"></i>
+                                                <li class="Dictionary-item">
+                                                    <a class="mainKeyList" id="tab-/@current/LABEL" data-toggle="pill" href="#/@current/LABEL">
+                                                        <span data-sivValue="/@current/LABEL" data-sivParams='{"key":"/@current/LABEL"}' data-sivEvent="click" data-sivCallback="onLabelClicked" data-sivValue="title|/@current/LABEL"></span> <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}' title="Eliminar"></i>
                                                     </a>
                                                 </li>
                                             </div>

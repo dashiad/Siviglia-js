@@ -5,12 +5,6 @@
     <script src="../../SivigliaTypes.js"></script>
     <script src="../../SivigliaStore.js"></script>
     <script src="../../Model.js"></script>
-    <style type="text/css">
-        .estilo1 { color: red }
-
-        .estilo2 { color: blue }
-    </style>
-
     <script src="../../../jqwidgets/jqx-all.js"></script>
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">

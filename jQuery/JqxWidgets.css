@@ -2,7 +2,7 @@
 /* .Form-row { display: block; margin: 0; } */
 .row-form { display: block; margin: 0; }
 
-.form-button {
+.form-button, input[type="button"] {
     border-radius: var(--border-radio-boton);
     display: inline-block;
     margin: 26px 0;
@@ -18,6 +18,8 @@
     line-height: 1.6rem;
     border-radius: 0.267rem;
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    cursor: pointer;
+    width: 30%;
 }
   
 @media (prefers-reduced-motion: reduce) { .form-button { transition: none; } }
@@ -32,19 +34,19 @@
 .form-button.disabled, .form-button:disabled { opacity: 0.45; cursor: not-allowed; }    
 
 /* clases Boton Principal */
-.form-button {
+.form-button, input[type="button"] {
     color: var(--color-boton-texto);
     background-color: var(--color-boton-bg-exito);
     border-color: var(--color-boton-bg-exito);
 }
   
-.form-button:hover {
+.form-button:hover, input[type="button"]:hover{
     color: var(--color-boton-texto);
     background-color: var(--color-boton-bg-exito-hover);
     border-color: var(--color-boton-bg-exito-hover);;
 }
   
-.form-button.disabled, .form-button:disabled {
+.form-button.disabled, .form-button:disabled, input[type="button"]:disabled {
     color: var(--color-boton-texto);
     background-color: var(--color-boton-bg-exito);
     border-color: var(--color-boton-bg-exito);    
@@ -81,17 +83,103 @@
     border-color: var(--color-boton-bg-secundario);
 }
 
+/* Estilo para los botones genérico */
+button {
+  color: var(--color-boton-texto);
+  background-color: var(--color-boton-bg-secundario);
+  border-color: var(--color-boton-bg-secundario);
+  border: 0 solid #0000;
+  display: inline-block;
+  margin: 15px 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  padding: 0.467rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6rem;
+  border-radius: 0.267rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+button:hover {
+  color: var(--color-boton-texto);
+  background-color: var(--color-boton-bg-secundario-hover);
+  border-color: var(--color-boton-bg-secundario-hover);;
+}
+
+button.disabled, button:disabled {
+  color: var(--color-boton-texto);
+  background-color: var(--color-boton-bg-secundario);
+  border-color: var(--color-boton-bg-secundario);    
+}
+
+button:not(:disabled):not(.disabled):active, button:not(:disabled):not(.disabled).active, .show > button.dropdown-toggle {
+  color: var(--color-boton-texto);
+  background-color: var(--color-boton-bg-secundario);
+  border-color: var(--color-boton-bg-secundario);
+}
+
 
 .ContainerType {}
+
+
 .DictionaryType {
     /* margin-left: 10px; */
     border-left: 2px solid #808080;
     padding-left: 20px;
 }
-.Dictionary-row {}
-.Dictionary-keyList {
-    /* margin-left: 6px; */
+
+/* Diccionario estilos */
+.Dictionary-row {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
 }
+
+.Dictionary-keyList .mainKeyList {
+  border-radius: 0.267rem;
+  background-color: #F2F4F4;
+  margin: 0 15px 15px 0;
+  color: black;
+  text-decoration: none;
+  display: block;
+  padding: 0.567rem 1.33rem;
+}
+/* nav-pills = Dictionary-keyList 
+   nav-link = mainKeyList
+*/
+
+
+
+.Dictionary-keyList .mainKeyList:hover { 
+  color: var(--dictionary-color-text-main);
+  background: var(--dictionary-bg-key-main);
+}
+
+.Dictionary-item { margin-bottom: 1rem; margin-right: 0.8rem; }
+
+.Dictionary-keyList .mainKeyList:active, .Dictionary-keyList .mainKeyList:focus {
+  color: var(--dictionary-color-text-hover);
+  background: var(--dictionary-bg-key-hover);
+  box-shadow: 0 2px 4px 0 rgba(90, 141, 238, 0.5);
+  border-radius: 0.267rem;
+}
+
+.Dictionary-keyList .mainKeyList:hover { 
+  color: var(--dictionary-color-text-hover);
+  background-color: var(--dictionary-bg-key-hover);
+}
+
+
+.Dictionary-keyList .show > .mainKeyList {
+  color: #FFFFFF;
+  background-color: #5A8DEE;
+}
+
 .Dictionary-mainKeyList {
     /* min-height: 161px;
     max-height: 250px;
@@ -123,6 +211,9 @@
     margin-top: 20px;
     /* padding: 30px 20px; */    
 }
+
+
+
 .Dictionary-newItemWidget {}
 .Dictionary-keys-add {
     margin: 0px;
@@ -403,12 +494,12 @@ h6, .h6 { font-size: var(--h6-size); }
     margin-bottom: 0;
     list-style: none;
     /* margin-top: 15px; */
-  }
+}
   
-  .nav-link, .menu-navegacion {
+.nav-link, .menu-navegacion {
     display: block;
     padding: 0.567rem 1.33rem;
-  }
+}
   
   .nav-link:hover, .nav-link:focus, .menu-navegacion:hover, .menu-navegacion:focus {
     text-decoration: none;
@@ -470,6 +561,7 @@ h6, .h6 { font-size: var(--h6-size); }
     background-color: #F2F4F4;
     margin: 0 15px 15px 0;
     color: black;
+    text-decoration: none;
   }
   
   .nav-pills .nav-link:hover { color: #5A8DEE; }

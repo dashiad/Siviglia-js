@@ -11,8 +11,11 @@
     <script src="../../SivigliaTypes.js"></script>
     <script src="../../../jqwidgets/jqx-all.js"></script>
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
+    <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">
+    <link rel="stylesheet" href="../../../../reflection/css/style.css">
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.adtopy-dev.css">
+
     <script>
         var Siviglia = Siviglia || {};
         Siviglia.config = {
@@ -28,7 +31,7 @@
 
         };
         Siviglia.Model.initialize(Siviglia.config);
-    </script>
+</script>
 
 </head>
 <body>
@@ -94,7 +97,11 @@
 
 </div>
 
-<div data-sivView="Test.ListViewer" data-sivLayout="Siviglia.lists.jqwidgets.BaseGrid"></div>
+<div class="widget">
+    <div class="widget-content">
+        <div data-sivView="Test.ListViewer" data-sivLayout="Siviglia.lists.jqwidgets.BaseGrid"></div>
+    </div>
+</div>
 
 <script>
     Siviglia.Utils.buildClass({
@@ -117,17 +124,17 @@
                             "columns":{
 
                                 "id":{"Type":"Field","Field":"id","Label":"id",gridOpts:{width:"80px"}},
-                                "Id-name":{"Label":"Pstring","Type":"PString","str":'<a href="#" onclick="javascript:alert([%*id%]);">[%*name%]</a>'},
-                                "Wid":{"Label":"Wid","Type":"Widget","Widget":"Test.ButtonList"},
-                                "name":{"Type":"Field","Field":"name","Label":"name"},
-                                "orderId":{"Type":"Field","Field":"orderId","Label":"orderId"},
-                                "startDateTime":{"Type":"Field","Field":"startDateTime","Label":"startDateTime"},
-                                "endDateTime":{"Type":"Field","Field":"endDateTime","Label":"endDateTime"},
+                                "Id-name":{"Label":"Pstring","Type":"PString","str":'<a href="#" onclick="javascript:alert([%*id%]);">[%*name%]</a>',gridOpts:{width:'10%'}},
+                                "Wid":{"Label":"Wid","Type":"Widget","Widget":"Test.ButtonList",gridOpts:{width:'10%'}},
+                                "name":{"Type":"Field","Field":"name","Label":"name",gridOpts:{width:'10%'}},
+                                "orderId":{"Type":"Field","Field":"orderId","Label":"orderId",gridOpts:{width:'10%'}},
+                                "startDateTime":{"Type":"Field","Field":"startDateTime","Label":"startDateTime",gridOpts:{width:'10%'}},
+                                "endDateTime":{"Type":"Field","Field":"endDateTime","Label":"endDateTime",gridOpts:{width:'10%'}},
                                 "creativeRotationType":{"Type":"Field","Field":"creativeRotationType","Label":"creativeRotationType",gridOpts:{width:"30px",height:"100px"}},
                                 "lineItemType":{"Type":"Field","Field":"lineItemType","Label":"lineItemType",gridOpts:{width:"50px"}},
                                 "priority":{"Type":"Field","Field":"priority","Label":"priority"},
                                 "budget":{"Type":"Field","Field":"budget","Label":"budget"},
-                                "status":{"Type":"Field","Field":"status","Label":"status",gridOpts:{width:"80px"}},
+                                "status":{"Type":"Field","Field":"status","Label":"status",gridOpts:{width:"40px"}},
                                 "isArchived":{"Type":"Field","Field":"isArchived","Label":"isArchived"}
                             },
                             "gridOpts":{

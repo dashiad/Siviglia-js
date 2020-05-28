@@ -13,11 +13,14 @@
     <script src="../../SivigliaStore.js"></script>
     <script src="../../SivigliaTypes.js"></script>
     <script src="../../Model.js"></script>
-
     <script src="../../../jqwidgets/jqx-all.js"></script>
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
+
+    <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">
+    <link rel="stylesheet" href="../../../../reflection/css/style.css">
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.adtopy-dev.css">
+
     <script>
         var Siviglia = Siviglia || {};
         Siviglia.config = {
@@ -30,12 +33,11 @@
             // 2) Un Mapper en Siviglia.Model.XXXMapper
             // 3) Las urls de carga de modelos seria /js/XXX/model/zzz/yyyy....
             mapper:'Siviglia'
-
         };
         Siviglia.Model.initialize(Siviglia.config);
-    </script>
-
+</script>
 </head>
+
 <body>
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 <div style="display:none">
@@ -43,8 +45,11 @@
     </div>
 </div>
 
-
-<div data-sivView="MyTest.test" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
+<div class="widget">
+    <div class="widget-content">
+        <div data-sivView="MyTest.test" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
+    </div>
+</div>
 
 <script>
     Siviglia.Utils.buildClass({

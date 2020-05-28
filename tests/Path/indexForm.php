@@ -10,19 +10,20 @@
         .estilo2 {color:blue}
     </style>
     <script src="../../SivigliaTypes.js"></script>
-
-
     <script src="../../../jqwidgets/jqx-all.js"></script>
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
+
+    <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">
+    <link rel="stylesheet" href="../../../../reflection/css/style.css">
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.adtopy-dev.css">
+
     <style>
         .test4 {font-family:'Impact'}
         .test2 {font-family:'Verdana'}
         .test  {border:4px solid black}
     </style>
     <script>
-
         var Siviglia=Siviglia || {};
         Siviglia.config={
             baseUrl:'http://editor.adtopy.com/',
@@ -38,21 +39,22 @@
             //jsFramework:'dojo'
         };
         Siviglia.Model.initialize(Siviglia.config);
-
-
 </script>
 </head>
-<body>
+<body class="bg-green">
 <?php include_once("../../jQuery/JqxWidgets.html");?>
 
 <div style="display:none">
-    <div data-sivWidget="Test.SimpleWidget" data-widgetParams="" data-widgetCode="Test.SimpleWidget">
+    <div data-sivWidget="Test.SimpleWidget" data-widgetParams="" data-widgetCode="Test.SimpleWidget"></div>
+</div>
 
+<div class="widget">
+    <div class="widget-content">
+        <div data-sivView="Test.SimpleWidget" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
     </div>
 </div>
-<div data-sivView="Test.SimpleWidget" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
-<script>
 
+<script>
         Siviglia.Utils.buildClass(
             {
                 context:"Test",
