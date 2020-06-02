@@ -62,7 +62,7 @@ class MetaDataProvider
         if ($target !== MetaDataProvider::GET_LIST) {
             $ds = \lib\datasource\DataSourceFactory::getDataSource($modelName, $targetName);
             if($target==MetaDataProvider::GET_DEFINITION || $target==MetaDataProvider::GET_FIELD) {
-                $def=$ds->getOriginalDefinition();
+                $def=$ds->getDefinition();
                 if($target==MetaDataProvider::GET_FIELD)
                 {
                     return $def["FIELDS"][$field];

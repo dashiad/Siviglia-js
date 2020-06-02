@@ -22,7 +22,7 @@ class JsonDataSource extends \lib\output\Datasource
         // Para ello, hay que hacer que funcionen la metadata de los tipos, que ahora
         // mismo solo devuleven el array de definicion, pero no filtran una definicion para hacerla "publica"
         //$metaDataObj=new \model\reflection\Datasource\DataSourceMetadata($this->definition["MODEL"],$this->definition["NAME"]);
-        $result["definition"]=$ds->getOriginalDefinition();
+        $result["definition"]=$ds->getDefinition();
 
         if($this->getRole()=="view") {
             $data=$it->getFullRow();

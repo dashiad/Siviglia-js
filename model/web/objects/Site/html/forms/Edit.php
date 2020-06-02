@@ -24,11 +24,7 @@ class Edit extends \lib\output\html\Form
                      ),
                'INPUTS'=>array(),
                'INDEXFIELDS'=>array(
-                     'id_site'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'id_site',
-                           'MODEL'=>'\model\web\Site'
-                           )
+                     'id_site'
                      )
                );
 
