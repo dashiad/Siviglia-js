@@ -7,7 +7,7 @@ class DictionaryException extends \lib\model\types\BaseTypeException
     const TXT_INVALID_VALUE="This dictionary doesnt accept values of type [%type%]";
     const TXT_INVALID_KEY="Invalid key:[%key%]";
 }
-class Dictionary extends \lib\model\types\BaseContainer implements \ArrayAccess
+class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
 {
 
     function _setValue($val,$validationMode=null)

@@ -1,5 +1,7 @@
 <?php
 namespace lib\model\types;
+use lib\model\BaseTypedException;
+
 class ContainerException extends \lib\model\types\BaseTypeException
 {
     const ERR_REQUIRED_FIELD=101;
@@ -9,12 +11,28 @@ class ContainerException extends \lib\model\types\BaseTypeException
     const TXT_NOT_A_FIELD="Field [%field%] does not exist";
     const TXT_INVALID_TYPE_FOR_FIELD="Invalid type [%type%] for field [%field%]";
 }
-class Container extends BaseContainer implements \ArrayAccess
+class Container extends BaseType implements \ArrayAccess
 {
-    var $__fields;
+    protected $__fields;
+    protected $__fieldDef;
+    protected $__stateDef;
+    protected $__allowRead=false;
+    protected $__changingState=false;
+    protected $__isDirty=false;
+    protected $__dirtyFields=array();
+    protected $__pendingRequired=[];
+    protected $__savedValidationMode;
+
     function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
         $this->__fields=[];
+        $this->__fieldDef=$def["FIELDS"];
+        if($def["STATES"])
+        {
+            $this->__stateDef=new \lib\model\StatedDefinition($this);
+        }
+        else
+            $this->stateDef=null;
         parent::__construct($name,$def,$parentType,$value,$validationMode);
 
     }
@@ -85,6 +103,82 @@ class Container extends BaseContainer implements \ArrayAccess
     {
         //
     }
+    function __getFields()
+    {
+        foreach($this->__fieldDef as $key=>$value)
+            $this->__getField($key);
+        return $this->__fields;
+    }
+    function __getField($fieldName)
+    {
+        if(!isset($this->__fields[$fieldName]))
+        {
+            if(isset($this->__fieldDef[$fieldName]))
+            {
+                $this->__fields[$fieldName]=TypeFactory::getType($fieldName,$this->__fieldDef["fieldName"],$this,null,$this->validationMode);
+                if($this->__stateDef===null) {
+                    if($this->controller)
+                        $this->__fields[$fieldName]->setController($this->controller);
+                }
+                else
+                    $this->__fields[$fieldName]->setController($this);
+            }
+            else
+            {
+                // Caso de "path"
+                if(strpos($fieldName,"/")!==false)
+                {
+                    $remField=$this->__findField($fieldName);
+                    if($remField)
+                        return $remField;
+                }
+                throw new \lib\model\BaseTypedException(BaseTypedException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
+            }
+        }
+        return $this->__fields[$fieldName];
+    }
+    function __findField($varName)
+    {
+        $p=strpos($varName,"/");
+        if($p===false) {
+
+            return $this->__getField($varName, true);
+        }
+        $parts = explode("/", $varName);
+        if ($parts[0] == "") {
+            array_splice($parts, 0, 1);
+        }
+        // Si el path es, por ejemplo, a/b/c, queremos encontrar a/b , y pedirle el campo c.
+        // Por eso se extrae y se guarda el ultimo elemento.
+        $lastField=array_splice($parts,-1,1);
+        $result=$this->getPath("/".implode("/",$parts));
+        if(!is_object($result)) {
+            throw new BaseTypedException(BaseTypedException::ERR_INVALID_PATH,array("path"=>$varName));
+        }
+        // Por fuerza, el objeto $result tiene que ser un objeto relacion.Por lo tanto, hay que obtener el remote object, y a este, pedirle
+        // el ultimo campo que hemos guardado previamente.
+        if(is_a($result,'\lib\model\types\ModelBaseRelation')) {
+            return $result->offsetGet(0)->__getField($lastField[0]);
+        }
+        return $result->__getField($lastField[0]);
+    }
+    function __getFieldNames()
+    {
+        return array_keys($this->__fields);
+    }
+    function getFields()
+    {
+        return $this->__fields;
+    }
+    function & __getFieldDefinition($fieldName)
+    {
+        if(isset($this->__fieldDef[$fieldName]))
+            return $this->__fieldDef[$fieldName];
+
+        throw new BaseTypedException(BaseTypedException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
+
+    }
+
     function _getValue()
     {
         // Si la definicion no tiene campos, el valor es [].
@@ -180,54 +274,74 @@ class Container extends BaseContainer implements \ArrayAccess
     {
         return false;
     }
-    function __set($fieldName,$value)
-    {
-        if(!isset($this->definition["FIELDS"][$fieldName]))
-            throw new BaseTypeException(\lib\model\types\ContainerException::ERR_NOT_A_FIELD,array("field"=>$fieldName),$this);
-        $instance=\lib\model\types\TypeFactory::getType($fieldName,$this->definition["FIELDS"][$fieldName],$this,null,$this->validationMode);
 
-        if(is_object($value))
+    function __set($varName,$value) {
+
+        $this->__allowRead=true;
+        if(isset($this->__fieldDef[$varName]))
         {
-            if(get_class($value)!=get_class($instance))
-                throw new ContainerException(ContainerException::ERR_INVALID_TYPE_FOR_FIELD,["type"=>get_class($value),"field"=>$fieldName],$this);
-
-            $instance->validate($value->getValue());
-            $this->__fields[$fieldName]=$value;
+            if($this->__stateDef->hasState)
+            {
+                if(!$this->__stateDef->isEditable($varName) && $value!=$this->{$varName})
+                {
+                    $this->__allowRead=false;
+                    throw new BaseTypedException(BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,array("field"=>$varName,"state"=>$this->__stateDef->getCurrentState()));
+                }
+            }
         }
         else
         {
-            $instance->apply($value);
-            $this->__fields[$fieldName]=$instance;
+            $remField=$this->__findField($varName);
+            if($remField)
+            {
+                $remField->setValue($value);
+            }
         }
-        if($this->__fields[$fieldName]->hasOwnValue())
+
+        // Ahora hay que tener cuidado.Si lo que se esta estableciendo es el campo que define el estado
+        // de este objeto, no hay que copiarlo.Hay que meterlo en una variable temporal, hasta que se haga SAVE
+        // del objeto.El nuevo estado aplicará a partir del SAVE.Asi, podemos cambiar otros campos que era posible
+        // cambiar en el estado actual del objeto.
+
+        $targetField=$this->__getField($varName);
+        $targetField->setValue($value);
+        if($targetField->parent==$this)
+            $this->addDirtyField($varName);
+        $this->__allowRead=false;
+        if($this->__fields[$varName]->hasOwnValue())
             $this->valueSet=true;
     }
-    function __get($fieldName)
+    function __setChangingState($newState)
     {
-        // Si se esta validando,lo que hacemos es devolver un campo "temporal". Asi, es posible
-        // validar SOURCES, que hacen referencia al valor de otros campos, mientra se está
-        // validando, y esos campos aun no han sido asignados.
-
-        $returnType=false;
-        if($fieldName[0]=="*") {
-            $returnType=true;
-            $fieldName = substr($fieldName, 1);
-        }
-
-            if (!isset($this->__fields[$fieldName])) {
-                if (!isset($this->definition["FIELDS"][$fieldName]))
-                    throw new ContainerException(ContainerException::ERR_NOT_A_FIELD, ["field" => $fieldName], $this);
-                else
-                    $this->__fields[$fieldName] = \lib\model\types\TypeFactory::getType($fieldName, $this->definition["FIELDS"][$fieldName],$this,null,$this->validationMode);
-
-            }
-            $target=$this->__fields[$fieldName];
-
-            if($returnType)
-                return $target;
-
-        return $target->getValue();
+        $this->__changingState=true;
+        $this->__newState=$newState;
+        $this->__pendingRequired=$this->__stateDef->getRequiredFields($newState);
+        $this->__checkStateChangeCompleted();
     }
+    function __checkStateChangeCompleted($field=null)
+    {
+        if($this->__dirtyFields==null)
+            return;
+        $newPending=[];
+        for($k=0;$k<count($this->__pendingRequired);$k++)
+        {
+            $reqField=$this->__pendingRequired[$k];
+            $f=$this->__getField($reqField);
+            if($f->is_set())
+                continue;
+            if(isset($this->__dirtyFields[$reqField]))
+                continue;
+            $newPending[]=$reqField;
+        }
+        if(count($newPending)==0)
+        {
+            $this->__changingState=false;
+            $this->__stateDef->changeState($this->__newState);
+        }
+        $this->__pendingRequired=$newPending;
+    }
+
+
     function _copy($ins)
     {
         $ins->setParent($this->parent,$this->fieldName);
@@ -242,6 +356,24 @@ class Container extends BaseContainer implements \ArrayAccess
     function getEmptyValue()
     {
         return [];
+    }
+    function __get($varName)
+    {
+        if($this->__changingState && !$this->__allowRead)
+            throw new BaseTypedException(BaseTypedException::ERR_PENDING_STATE_CHANGE,["state"=>$this->newState,"extra"=>$varName]);
+        $reference=false;
+        if($varName[0]=="*") {
+            $reference = true;
+            $varName=substr($varName,1);
+        }
+        $field=$this->__findField($varName);
+        if($reference)
+            return $field;
+        if($field)
+        {
+            return $field->getValue();
+        }
+        throw new BaseTypedException(BaseTypedException::ERR_NOT_A_FIELD,array("field"=>$varName));
     }
 
 
@@ -274,4 +406,100 @@ class Container extends BaseContainer implements \ArrayAccess
         return $this->__fields[$offset]->apply($value);
     }
     public function offsetUnset ( $offset ) {}
+
+    function isDirty()
+    {
+        return $this->__isDirty;
+    }
+
+    function setDirty($dirty)
+    {
+        $this->__isDirty=$dirty;
+        if(!$dirty)
+            $this->__dirtyFields=array();
+    }
+
+    function addDirtyField($fieldName)
+    {
+        $this->__isDirty=true;
+        $this->__dirtyFields[$fieldName]=1;
+        if($this->__changingState)
+            $this->__checkStateChangeCompleted();
+    }
+
+    function cleanDirtyFields()
+    {
+        $this->__isDirty=false;
+        $this->__dirtyFields=array();
+        $this->__stateDef->reset();
+    }
+    function getDirtyFields()
+    {
+        return $this->__dirtyFields;
+    }
+    function isRequired($fieldName)
+    {
+        $fieldDef=$this->__getField($fieldName)->getDefinition();
+        // TODO: El modelo podria ser otro, no solo el actual.
+        if(isset($fieldDef["MODEL"]) && isset($fieldDef["FIELD"]))
+            $fieldName=$fieldDef["FIELD"];
+        return $this->__stateDef->isRequired($fieldName);
+    }
+    function isEditable($fieldName)
+    {
+        if(!$this->__stateDef)
+            return true;
+        return $this->__stateDef->isEditable($fieldName);
+    }
+
+    function disableStateChecks()
+    {
+        if($this->__stateDef)
+            $this->__stateDef->disable();
+    }
+    function enableStateChecks()
+    {
+        if($this->__stateDef)
+            $this->__stateDef->enable();
+    }
+    function getStateField()
+    {
+        if($this->__stateDef)
+            return $this->__stateDef->getStateField();
+        return null;
+    }
+    function getStates()
+    {
+        if($this->__stateDef)
+            return $this->__stateDef->getStates();
+        return null;
+    }
+    function getStateDef()
+    {
+        return $this->__stateDef;
+
+    }
+
+    function getStateId($stateName)
+    {
+        if(!$this->__stateDef)
+            return null;
+        return array_search($stateName, array_keys($this->definition["STATES"]["STATES"]));
+    }
+
+    function getStateLabel($stateId)
+    {
+        if (!$this->__stateDef)
+            return null;
+        $statekeys = array_keys($this->definition["STATES"]["STATES"]);
+        return $statekeys[$stateId];
+    }
+
+    function getState()
+    {
+        if(!$this->stateDef)
+            return null;
+        return $this->__stateDef->getCurrentState();
+    }
+
 }

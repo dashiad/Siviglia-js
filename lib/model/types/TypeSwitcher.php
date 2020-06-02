@@ -11,7 +11,7 @@ class TypeSwitcherException extends \lib\model\types\BaseTypeException
     const TXT_INVALID_TYPE="Type [%type%] is not allowed";
     const TXT_MISSING_CONTENT_FIELD="Content field [%field%] is missing";
 }
-class TypeSwitcher extends BaseContainer implements \ArrayAccess
+class TypeSwitcher extends BaseType implements \ArrayAccess
 {
 
     var $currentType;

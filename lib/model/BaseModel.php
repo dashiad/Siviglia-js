@@ -96,22 +96,21 @@ class BaseModel extends BaseTypedModel
         $this->__key->set($id);
     }
 
-    function __getField($fieldName,$inAliases=false)
+    function __getField($fieldName)
     {
 
         try
         {
-            return parent::__getField($fieldName,$inAliases);
+            return parent::__getField($fieldName);
         }
         catch(\lib\model\BaseTypedException $e)
         {
 
-            if ($inAliases==true && $this->__aliasDef && isset($this->__aliasDef[$fieldName]))
+            if ($this->__aliasDef && isset($this->__aliasDef[$fieldName]))
             {
                 $newField=$this->__addField($fieldName,$this->__aliasDef[$fieldName]);
                 return $newField;
             }
-
             throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
         }
     }

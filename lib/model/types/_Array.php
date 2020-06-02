@@ -8,7 +8,7 @@
       const TXT_INVALID_ARRAY_VALUE="Value [%value%] invalid for array";
   }
 
-  class _Array extends BaseContainer implements \ArrayAccess
+  class _Array extends BaseType implements \ArrayAccess
   {
       var $subTypeDef;
       var $subObjects;

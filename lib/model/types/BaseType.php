@@ -2,17 +2,17 @@
 
   use lib\model\BaseTypedException;
 
-  abstract class BaseType
+  abstract class BaseType implements \lib\model\PathObject
   {
-      var $valueSet=false;
-      var $value=null;
-      var $definition;
-      var $validationMode;
-      var $flags=0;
-      var $parent;
-      var $setOnEmpty;
-      var $fieldPath;
-      var $validating;
+      protected $valueSet=false;
+      protected $value=null;
+      protected $definition;
+      protected $validationMode;
+      protected $flags=0;
+      protected $parent;
+      protected $setOnEmpty;
+      protected $fieldPath;
+      protected $validating;
       const TYPE_SET_ON_SAVE=0x1;
       const TYPE_SET_ON_ACCESS=0x2;
       const TYPE_IS_FILE=0x4;
@@ -26,7 +26,9 @@
       const VALIDATION_MODE_COMPLETE=2; // Validacion de tipo y source.
       const VALIDATION_MODE_STRICT=3; // Validacion de tipo, source y REQUIRED
 
-      var $fieldName;
+      protected $fieldName;
+      // El controller es el container que gestiona los posibles cambios de estado.
+      protected $controller;
       function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
           // Parent es el padre de este tipo, que puede ser otro tipo, o un bto.
@@ -111,7 +113,8 @@
       function setValue($val)
       {
            $this->apply($val,BaseType::VALIDATION_MODE_NONE);
-           $this->validate($val,$this->validationMode);
+           if($this->validationMode!==BaseType::VALIDATION_MODE_NONE)
+            $this->validate($val,$this->validationMode);
       }
 
       function apply($val,$validationMode=null)
@@ -194,7 +197,7 @@
       {
           return $this->valueSet;
       }
-      final function copy($type)
+      function copy($type)
       {
           if($type->hasValue())
               $this->_copy($type);

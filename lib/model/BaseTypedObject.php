@@ -3,473 +3,8 @@
 
 use lib\model\types\BaseTypeException;
 
-class PathObjectException extends \lib\model\BaseException {
-    const ERR_PATH_NOT_FOUND=1;
-    const ERR_NO_CONTEXT=2;
-}
-
-class ContextStack
-{
-    function __construct()
-    {
-        $this->contextRoots = [];
-    }
-
-    function addContext($handler)
-    {
-        $prefix = $handler->getPrefix();
-        if ($prefix === "")
-            $prefix = "/";
-        $this->contextRoots[$prefix] = $handler;
-        $handler->setStack($this);
-    }
-
-    function removeContext($handler)
-    {
-        $prefix = $handler->getPrefix();
-        if ($prefix === "")
-            $prefix = "/";
-        if (!$this->hasPrefix($prefix))
-            throw new PathObjectException(PathObjectException::ERR_NO_CONTEXT, ["context" => "$prefix"]);
-        $ctx = $this->contextRoots[$prefix];
-        $this->contextRoots[$prefix] = null;
-    }
-
-    function getContext($prefix)
-    {
-        if ($this->contextRoots[$prefix] != "undefined")
-            return $this->contextRoots[$prefix];
-        throw new PathObjectException(PathObjectException::ERR_NO_CONTEXT, ["context" => "$prefix"]);
-    }
-
-    function getRoot($str)
-    {
-        $prefix = substr($str, 0, 1);
-        $ctx = $this->getContext($prefix);
-        return $ctx->getRoot();
-    }
-
-    function hasPrefix($char)
-    {
-        return isset($this->contextRoots[$char]);
-    }
-
-    function getCursor($prefix)
-    {
-        $cursor = new BaseCursor($this->contextRoots[$prefix]->getRoot());
-        $cursor->setPrefix($prefix);
-        return $cursor;
-    }
-
-    function getCopy()
-    {
-        $newContext = new ContextStack();
-        foreach ($this->contextRoots as $k => $v)
-            $newContext->addContext($v);
-        return $newContext;
-
-    }
-}
-    class Context
-    {
-        var $prefix;
-        var $stack;
-        function __construct($prefix,$stack)
-        {
-            $this->prefix=$prefix;
-            $this->stack=$stack;
-            if(isset($stack) && $stack!==null)
-                $stack->addContext($this);
-        }
-
-        function getPrefix(){return $this->prefix;}
-        function setStack($stack){
-            $this->stack=$stack;
-        }
-    }
-    class BaseCursor
-    {
-        var $objRoot;
-        var $pathStack;
-        var $__lastTyped;
-        var $prefix;
-        var $pointer;
-
-        function __construct($objRoot)
-        {
-            $this->objRoot = $objRoot;
-            $this->pathStack = [];
-            $this->__lastTyped = false;
-            $this->prefix = null;
-            $this->pointer = null;
-            $this->reset();
-        }
-
-        function setPrefix($p)
-        {
-            $this->prefix = $p;
-        }
-
-        function getPrefix()
-        {
-            return $this->prefix;
-        }
-
-        function reset()
-        {
-            $this->__lastTyped = null;
-            $this->pointer = $this->objRoot;
-        }
-
-        function moveTo($spec)
-        {
-            $this->__lastTyped = false;
-            if($spec[0]=="*")
-            {
-                $this->__lastTyped=true;
-                $spec=substr($spec,1);
-            }
-            if ($spec === "..") {
-                $cVal = $this->pointer->getParent();
-                $this->pointer = $cVal;
-                return $cVal;
-            } else {
-                $v = null;
-                if(is_a($this->pointer,'\lib\model\BaseTypedObject') && !is_a($this->pointer,'\lib\model\ModelBaseRelation'))
-                {
-                    $field=$this->pointer->__getField($spec,true);
-                    if($field->isRelation())
-                        $v=$this->pointer->{$spec};
-                    else
-                        $v=$this->pointer->{"*".$spec};
-                }
-                else {
-                    if (is_array($this->pointer)) {
-                        if (!isset($this->pointer[$spec]))
-                            throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND, array("path" => $spec));
-                        $v = $this->pointer[$spec];
-                    } else {
-                        if (is_object($this->pointer)) {
-                            if(is_a($this->pointer,'\lib\model\types\BaseContainer') &&
-                              $spec!=="[[KEYS]]" && $spec!=="[[SOURCE]]")
-                            {
-                                $v=$this->pointer->{"*".$spec};
-                            }
-                            else
-                                $v = $this->pointer->{$spec};
-                            if (!isset($v) || $v === null) {
-                                if ($this->pointer instanceof \ArrayAccess) {
-                                    $v = $this->pointer[$spec];
-                                    if (!isset($v))
-                                        throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND, array("path" => $spec));
-                                } else
-                                    throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND, array("path" => $spec));
-                            }
-                        }
-                    }
-                }
-                if (!isset($v))
-                    throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND, ["path" => "$spec"]);
-                $this->pointer = $v;
-            }
-        }
-
-        function getValue()
-        {
-            if (is_a($this->pointer, '\lib\model\types\BaseType') && !$this->__lastTyped)
-                return $this->pointer->getValue();
-            return $this->pointer;
-        }
-    }
-
-    class BaseObjectContext extends Context{
-        var $objRoot;
-        function __construct($objRoot,$prefix,$stack)
-        {
-            $this->objRoot=$objRoot;
-            Context::__construct($prefix,$stack);
-        }
-
-        function getRoot(){
-            return $this->objRoot;
-            }
-        function getCursor()
-        {
-            return new BaseObjectContainerCursor($this->objRoot);
-        }
-    }
-    class PathResolver
-    {
-        var $contexts;
-        var $path;
-        var $valid;
-        var $cursors;
-        var $lastValue;
-        function __construct($contexts,$path)
-        {
-            $this->contexts = $contexts;
-
-            if(($path[1]==="*" || $path[1]==="@") && $path[0]==="/")
-                $path=substr($path,1);
-            $this->path=$path;
-            $this->cursors=[];
-            $this->valid=false;
-            $this->lastValue=null;
-        }
-        function buildTree($str)
-        {
-            $prefix=$str[0];
-            $len=strlen($str);
-            $stack=[];
-            $cad="";
-            for($k=1;$k<$len;$k++)
-            {
-                if($str[$k]=="%" && $str[$k+1]=="}")
-                {
-                    if($cad!="") {
-                        $stack[]=
-                        ["str"=> $cad,
-                        "type"=>"pathElement"];
-                        $cad="";
-                    }
-                    $len=$k+2;
-                    break;
-                }
-                if($str[$k]=="{" && $str[$k+1]=="%")
-                {
-                    if($cad!=="")
-                    {
-                        $stack[]=["type"=>"pathElement","str"=>$cad];
-                    }
-                    $res=$this->buildTree(substr($str,$k+2));
-                    $stack[]=["prefix"=>$prefix,"type"=>"subpath","subtype"=>"static","components"=>$res["stack"]];
-                    $k+=($res["len"]+1);
-                    $cad="";
-                    continue;
-                }
-                $cad.=$str[$k];
-            }
-
-            if($cad!="")
-            {
-                $stack[]=["type"=>"pathElement","str"=>$cad];
-            }
-            $res=[];
-            for($k=0;$k<count($stack);$k++)
-            {
-                if($stack[$k]["type"]!=="pathElement")
-                {
-                    $res[]=$stack[$k];
-                    continue;
-                }
-                $parts=explode("/",$stack[$k]["str"]);
-                for($j=0;$j<count($parts);$j++)
-                {
-                    if($parts[$j]=="")continue;
-                    $res[]=["prefix"=>$prefix,"type"=>"pathElement","str"=>$parts[$j]];
-                }
-            }
-            return ["len"=>$len,"stack"=>$res];
-        }
 
 
-            function isValid()
-            {
-                return $this->valid;
-            }
-            function getPath()
-            {
-                $p=$this->path[0];
-                if($this->contexts->hasPrefix($p))
-                {
-                    $result = $this->buildTree($this->path);
-                    $this->stack=$result["stack"];
-                    $this->valid = true;
-                    try {
-                        $newVal = $this->parse($this->stack);
-                    }catch(\Exception $e)
-                    {
-                        $this->valid=false;
-                        $newVal=null;
-                        throw $e;
-                    }
-                }
-                else
-                {
-                    $this->valid=true;
-                    $newVal=$this->path;
-                }
-                $this->lastValue=$newVal;
-
-                return $newVal;
-            }
-            function getValue(){return $this->lastValue;}
-            function parse($pathParts)
-            {
-                $cursor=$this->contexts->getCursor($pathParts[0]["prefix"]);
-                $this->cursors[]=$cursor;
-                for($k=0;$k<count($pathParts) && $this->valid ;$k++)
-                {
-                    $p=$pathParts[$k];
-                    switch($p["type"])
-                    {
-                        case "pathElement":
-                            {
-                                try {
-                                    $cursor->moveTo($p["str"]);
-                                }catch(\Exception $e)
-                                {
-                                    $this->valid=false;
-                                    throw $e;
-                                }
-                            }break;
-                        case "subpath":
-                            {
-                                $val=$this->parse($p["components"],$p["subtype"]=="static"?false:true);
-                                if($this->valid) {
-                                    $cursor->moveTo($val);
-                                }
-                            }break;
-                    }
-                }
-                return $cursor->getValue();
-            }
-}
-
-
-/*class PathObject {
-    var $tempContext;
-   function getPath($path, $context)
-   {
-       if($path[0]!='/')
-           $path='/'.$path;
-       $path=$this->parseString($path,$context);
-       if($context)
-           $context->setCaller($this);
-
-       $parts=explode("/",$path);
-       $pathLength=count($parts);
-       return PathObject::_getPath($this,$parts,0,$context,$path,$pathLength);
-   }
-   private function psCallback($match)
-   {
-       return $this->getPath($match[1],$this->tempContext);
-   }
-    // La siguiente funcion gestiona paths dentro de paths.
-   function parseString($str,$context)
-   {
-       $this->tempContext=$context;
-       return preg_replace_callback("/{\%([^%]*)\%}/",array($this,"psCallback"),$str);
-   }
-
-   static function _getPath(& $obj,$path,$index,$context,& $origPath,$pathLength=-1)
-   {
-       if(!isset($obj))
-           throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND,array("path"=>$origPath,"index"=>$index));
-      if($index+1==$pathLength)
-            return $obj;
-
-      if(is_string($path[$index+1]))
-      {
-        $c=$path[$index+1][0];
-        if($c=="@")
-        {
-            if(!$context)
-            {
-                throw new PathObjectException(PathObjectException::ERR_NO_CONTEXT);
-            }
-
-            $onListener=null;
-
-            $caller=$context->getCaller();
-            $path[$index+1]=substr($path[$index+1],1);
-            $onListener=$caller->{$path[$index+1]};
-
-            if($onListener)
-                $tempObj=$caller;
-            else
-                $tempObj=$context;
-
-            if(is_array($tempObj))
-            {
-                $val=$tempObj[$path[$index+1]];
-                if(!isset($val))
-                    throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND,array("path"=>$origPath,"index"=>$index+1));
-            }
-            else
-            {
-                if(is_object($tempObj))
-                {
-                    $val=$tempObj->{$path[$index+1]};
-                    if(!isset($val) || $val===null)
-                    if($tempObj instanceof \ArrayAccess)
-                    {
-                        $val=$tempObj[$path[$index+1]];
-                        if(!isset($val))
-                            throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND,array("path"=>$origPath,"index"=>$index+1));
-                    }
-                    else
-                        throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND,array("path"=>$origPath,"index"=>$index+1));
-                }
-            }
-            if(is_object($val) || is_array($val))
-            {
-                 $index++;
-                 $obj=$val;
-            }
-            else
-            {
-                $path[$index+1]=$val;
-            }
-            return PathObject::_getPath($obj,$path,$index,$context,$origPath,$pathLength);
-        }
-    }
-    if(is_array($obj) || is_a($obj,"ArrayAccess"))
-    {
-
-        if(isset($obj[$path[$index+1]]))
-        {
-            return PathObject::_getPath($obj[$path[$index+1]],$path,$index+1,$context,$origPath,$pathLength);
-        }
-        throw new PathObjectException(PathObjectException::ERR_PATH_NOT_FOUND,array("path"=>$origPath,"index"=>$index+1));
-    }
-
-    if(is_object($obj))
-    {
-        $propName=$path[$index+1];
-        $val=$obj->{$propName};
-        if(!(is_object($val) || is_array($val)))
-        {
-            if(method_exists($obj,$val))
-            {
-                $result=$obj->{$val}();
-                return PathObject::_getPath($result,$path,$index+1,$context,$origPath,$pathLength);
-            }
-            return $val;
-        }
-        else
-             return PathObject::_getPath($val,$path,$index+1,$context,$origPath,$pathLength);
-    }
-     else
-        return $obj;
-
-}
-}
-
-
-
- class SimplePathObject extends \lib\model\PathObject
- {
-        function addPath($nodeName,& $objectInstance)
-        {
-            $this->{$nodeName}=& $objectInstance;
-        }
- }
-*/
-abstract class PathObject
-{
-    abstract function getPath($path);
-}
 class BaseTypedException extends BaseException {
     const ERR_REQUIRED_FIELD=1;
     const ERR_NOT_A_FIELD=2;
@@ -490,60 +25,33 @@ class BaseTypedException extends BaseException {
     const ERR_PENDING_STATE_CHANGE=17;
 }
 
-class BaseTypedObject extends PathObject
+class BaseTypedObject extends \lib\model\types\Container
 {
-        protected $__fieldDef;
-        protected $__data;
-        protected $__fields;
+
         protected $__objectDef;
         protected $__loaded=0;
         protected $__serializer=null;
-        protected $__isDirty=false;
-        protected $__dirtyFields=array();
-        protected $__stateDef;
-        protected $__oldState=null;
+
+
         protected $__newState=null;
         protected $__key=null;
-        protected $__changingState=false;
-        protected $__pendingRequired=[];
-        protected $__allowRead=false;
+
+
+
         protected $__validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE;
 
         function __construct($definition,$validationMode=null)
         {
                 $this->__objectDef=$definition;
-                if($validationMode!==null)
-                    $this->__validationMode=$validationMode;
-
                 if(isset($definition["TYPES"]))
                 {
                     foreach($definition["TYPES"] as $key=>$value)
                         \lib\model\types\TypeFactory::installType($key,$value);
                 }
-                $this->__fieldDef=& $this->__objectDef[$this->getFieldsKey()];
-                $this->__stateDef=new \lib\model\states\StatedDefinition($this);
-
                 $this->__key=null;
                 if (isset($this->__objectDef["INDEXFIELDS"]))
                     $this->__key = new ModelKey($this, $this->__objectDef);
-
-
-        }
-        function setValidationMode($mode)
-        {
-            $this->__validationMode=$mode;
-            if($this->__fields!==null) {
-                foreach ($this->__fields as $key => $value)
-                    $value->setValidationMode($mode);
-            }
-        }
-        function getValidationMode()
-        {
-            return $this->__validationMode;
-        }
-        function getFieldsKey()
-        {
-            return "FIELDS";
+                parent::__construct(null,$definition,null,null,$validationMode);
         }
         function __getKeys()
         {
@@ -559,65 +67,15 @@ class BaseTypedObject extends PathObject
         {
             return $this->__key!==null;
         }
-        function getDefinition() {
-                return $this->__objectDef;
-        }
 
-
-        function __getFields()
-        {
-               foreach($this->__fieldDef as $key=>$value)
-                    $this->__getField($key);
-               return $this->__fields;
-        }
-
-
-        function __getField($fieldName,$inAliases=false)
-        {
-            if(!isset($this->__fields[$fieldName]))
-            {
-                if(isset($this->__fieldDef[$fieldName]))
-                {
-                    $this->__fields[$fieldName]=\lib\model\ModelField::getModelField($fieldName,$this,$this->__fieldDef[$fieldName]);
-                }
-                else
-                {
-                    // Caso de "path"
-                    if(strpos($fieldName,"/")!==false)
-                    {
-                        $remField=$this->__findField($fieldName);
-                        if($remField)
-                            return $remField;
-                    }
-                    throw new \lib\model\BaseTypedException(BaseTypedException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
-                }
-            }
-            return $this->__fields[$fieldName];
-        }
-        function __getFieldNames()
-        {
-            return array_keys($this->__fields);
-        }
-        function & __getFieldDefinition($fieldName)
-        {
-            if(isset($this->__fieldDef[$fieldName]))
-                return $this->__fieldDef[$fieldName];
-
-            throw new BaseTypedException(BaseTypedException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
-
-        }
         // Usado para los aliases de BaseModel
         function & __addField($fieldName,$definition)
         {
-            $this->__fields[$fieldName]=\lib\model\ModelField::getModelField($fieldName,$this,$definition);
-            return $this->__fields[$fieldName];
-
+            $this->__fields[$fieldName]=$definition;
+            $newField=$this->__getField($fieldName);
+            unset($this->__fields[$fieldName]);
+            return $newField;
         }
-        function __setSerializer($serializer)
-        {
-            $this->__serializer=$serializer;
-        }
-        protected $__savedValidationMode;
         function beginUnserialize()
         {
             $this->disableStateChecks();
@@ -631,168 +89,15 @@ class BaseTypedObject extends PathObject
             $this->setValidationMode($this->__savedValidationMode);
             $this->cleanDirtyFields();
         }
+        function __setSerializer($serializer)
+        {
+            $this->__serializer=$serializer;
+        }
 
         // Prioritiza el orden en el que hay que aplicar un callback.
         // El orden es: primero, campo propio de estado.
         // Segundo, relaciones, y posibles paths asociados a esas relaciones
         // Finalmente, el resto de campos.
-
-        function prioritizeChanges($dataOrObj,$callback)
-        {
-            if(is_a($dataOrObj,'\lib\model\BaseTypedObject'))
-            {
-                $data=$dataOrObj->normalizeToAssociativeArray();
-            }
-            else
-                $data=$dataOrObj;
-            $localFields=[];
-            $relationships=[];
-            $relationshipPaths=[];
-            $invRelationships=[];
-            $referencedModel=$this;
-            $stateField=$referencedModel->getStateField();
-            $state=null;
-            foreach($data as $k=>$v)
-            {
-                if(strpos($k,"/")>0)
-                {
-                    $path=explode("/",$k);
-                    $relation=array_shift($path);
-                    $f=$referencedModel->__getField($relation,true);
-                    if($f->isInverseRelation()) {
-                        $index = array_shift($path);
-                        if(!is_numeric($index))
-                            throw new BaseTypedException(BaseTypedException::ERR_INVALID_PATH,["path"=>$index."/".implode("/",$path)]);
-                        $subPath=implode("/",$path);
-                        $invRelationships[$relation][$index][$subPath]=$v;
-                    }
-                    else {
-                        $subPath = implode("/", $path);
-                        $relationshipPaths[$relation][$subPath] = $v;
-                    }
-                    continue;
-                }
-                if($k==$stateField) {
-                    $state = $k;
-                    continue;
-                }
-                $f = $referencedModel->__getField($k,true);
-
-                if(!$f->isRelation())
-                    $localFields[$k]=$v;
-                else {
-                    // La siguiente linea significa:
-                    // El campo a validar actual es una relacion inversa, pero no es un path.
-                    // Es decir, el valor tiene que ser el asignable a una relacion inversa, es decir, un array
-                    // de modelos.
-                    // Al asignar directamente el valor, tenemos que lo que queremos es establecer el valor de la relacion,
-                    // es decir, borrar los elementos relacionados actuales, y establecer los especificados.
-                    // Pero, principalmente, hay que ver que como $v es un array, esta especificacion de relaciones inversas es
-                    // compatible con la generada usando paths dentro del nombre de campo.
-                    if($f->isInverseRelation())
-                        $invRelationships[$k]=$v;
-
-                    else
-                        $relationships[$k] = $v;
-                }
-            }
-            // Primero, se cambia el estado.
-            if($state)
-            {
-                call_user_func($callback,1,$state,$data[$state],$this->__fieldDef["state"]);
-            }
-            // Segundo, se itera por los campos que sean relaciones, y que estan tanto como campos simples, como paths.
-            foreach($relationships as $key=>$value)
-            {
-                    call_user_func($callback, 2, $key, $value, $referencedModel->__getField($key));
-            }
-            // Tercero, todos los campos "finales" que pertenecen a este modelo.
-            // Esto es necesario para completar, en su caso, el cambio de estado.
-            foreach($localFields as $key=>$value)
-            {
-                call_user_func($callback,4,$key,$value,$referencedModel->__getField($key));
-            }
-            // Siguiente, cuando el objeto local ya esta listo, se itera por las relaciones que incluyen paths
-            foreach($relationshipPaths as $key=>$value)
-            {
-                call_user_func($callback,3,$key,$value,$referencedModel->__getField($key));
-            }
-            // Finalmente, las relaciones inversas
-            foreach($invRelationships as $key=>$value)
-            {
-                call_user_func($callback,5,$key,$value,$referencedModel->__getField($key));
-            }
-
-
-
-
-        }
-        // Si raw es true, el valor se asigna incluso si la validacion da un error.
-        function loadFromArray($data,$raw=false,$unserializing=true,$loadResult=null)
-        {
-            // Cargar de un array se tiene que hacer en varias fases.
-            // La primera fase, es detectar paths. Si hay paths, hay que cargar primero
-            // los elementos propios, y luego los remotos. Asi, evitamos que las relaciones
-            // pierdan sus datos.
-            // Esto es porque si A es un objeto nuevo, que se relaciona con B (que ya existe), e
-            // intentamos modificar B, primero hay que asignar la relacion en A, y luego modificar B,
-            // ya que de otro modo, estariamos creando un nuevo B, y luego lo reasignariamos.
-            // Por otro lado, primero hay que asignar el campo estado, si existe, y luego, el resto.
-            $data=$this->normalizeToAssociativeArray($data);
-            if(!$unserializing)
-            {
-                $result=$this->__validateArray($data,$loadResult);
-                if(!$result->isOk())
-                {
-                    throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_LOAD_DATA_FAILED);
-                }
-            }
-            if($unserializing)
-                $this->beginUnserialize();
-
-            $this->prioritizeChanges($data,function($fieldType,$fieldName,$fieldValue,$fieldDefinition)
-            use ($raw,$unserializing,$loadResult)
-            {
-                switch($fieldType)
-                {
-                    case 2: // Campo relacion, sin path
-                        {
-                            if(is_array($fieldValue))
-                                $this->{$fieldName}[0]->loadFromArray($fieldValue,$raw,$unserializing,$loadResult);
-                            else
-                                $this->{$fieldName}=$fieldValue;
-                        }break;
-                    case 1: // campo de estado.
-
-                    case 4: // cualquier otro campo{
-                        {
-                            $this->{$fieldName}=$fieldValue;
-                        }break;
-
-                    case 3: //campo relacion, con un path
-                        {
-                            $this->{$fieldName}[0]->loadFromArray($fieldValue,$raw,$unserializing,$loadResult);
-                        }break;
-                    case 5:{ // relaciones inversas.
-                        $n=count($fieldValue);
-                        for($k=0;$k<$n;$k++)
-                            $this->{$fieldName}[$k]->loadFromArray($fieldValue[$k],$raw,$unserializing,$loadResult);
-                    }break;
-                }
-            });
-
-            if(!$unserializing)
-            {
-                $this->save();
-            }
-            else {
-                $this->endUnserialize();
-                $this->__data=$data;
-                $this->__loaded=true;
-                $this->cleanDirtyFields();
-            }
-            return $loadResult;
-        }
 
 
         function getAsDictionary($nonSetAsNull=true)
@@ -815,68 +120,9 @@ class BaseTypedObject extends PathObject
         {
             return $this->__loaded;
         }
-        function __get($varName)
-        {
-            if($this->__changingState && !$this->__allowRead)
-                throw new BaseTypedException(BaseTypedException::ERR_PENDING_STATE_CHANGE,["state"=>$this->newState,"extra"=>$varName]);
-            $reference=false;
-            if($varName[0]=="*") {
-                $reference = true;
-                $varName=substr($varName,1);
-            }
-            $field=$this->__findField($varName);
-            if($reference)
-                return $field->getType();
-            $parent=$field->getModel();
-            $gMethod="get_".$field->getName();
-            if(method_exists($parent,$gMethod)) {
-                return $parent->$gMethod();
-            }
-            if($field)
-            {
-            if($reference)
-                return $field->getType();
-            return $field->get();
 
-            }
-            throw new BaseTypedException(BaseTypedException::ERR_NOT_A_FIELD,array("field"=>$varName));
-        }
 
-        function __findField($varName)
-        {
-            $p=strpos($varName,"/");
-            if($p===false) {
 
-                return $this->__getField($varName, true);
-            }
-            $parts = explode("/", $varName);
-            if ($parts[0] == "") {
-                array_splice($parts, 0, 1);
-            }
-            // Si el path es, por ejemplo, a/b/c, queremos encontrar a/b , y pedirle el campo c.
-            // Por eso se extrae y se guarda el ultimo elemento.
-            $lastField=array_splice($parts,-1,1);
-            $result=$this->getPath("/".implode("/",$parts));
-            if(!is_object($result)) {
-                throw new BaseTypedException(BaseTypedException::ERR_INVALID_PATH,array("path"=>$varName));
-            }
-            // Por fuerza, el objeto $result tiene que ser un objeto relacion.Por lo tanto, hay que obtener el remote object, y a este, pedirle
-            // el ultimo campo que hemos guardado previamente.
-            if(is_a($result,'\lib\model\ModelBaseRelation')) {
-                return $result->offsetGet(0)->__getField($lastField[0]);
-            }
-
-            return $result->__getField($lastField[0]);
-        }
-        function getPath($path,$ctxStack=null)
-        {
-            if($ctxStack===null) {
-                $ctxStack = new \lib\model\ContextStack();
-            }
-            $ctx = new \lib\model\BaseObjectContext($this, "/", $ctxStack);
-            $path=new \lib\model\PathResolver($ctxStack,$path);
-            return $path->getPath();
-        }
         function setFields($fields)
         {
             foreach($fields as $key => $value)
@@ -887,94 +133,6 @@ class BaseTypedObject extends PathObject
 
         }
 
-        function getFields()
-        {
-            return $this->__fields;
-        }
-
-        function __set($varName,$value) {
-
-            $this->__allowRead=true;
-            if(isset($this->__fieldDef[$varName]))
-            {
-                // Se comprueba primero que el valor del campo es diferente del que tenemos actualmente.
-
-                if($this->{"*".$varName}->equals($value)) {
-                    $this->__allowRead=false;
-                    return;
-                }
-
-                if($this->__stateDef->hasState && $this->isLoaded())
-                {
-                    if(!$this->__stateDef->isEditable($varName) && $value!=$this->{$varName})
-                    {
-                        $this->__allowRead=false;
-                        throw new BaseTypedException(BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,array("field"=>$varName,"state"=>$this->__stateDef->getCurrentState()));
-                    }
-                }
-                $checkMethod="check_".$varName;
-                if(method_exists($this,$checkMethod)) {
-                    if(!$this->$checkMethod($value)) {
-                        $this->__allowRead=false;
-                        throw new BaseTypedException(BaseTypedException::ERR_INVALID_VALUE, array("field" => $varName, "value" => $value));
-                    }
-                }
-
-                $processName="process_".$varName;
-                $existsProcess=method_exists($this,$processName);
-
-                if($existsProcess)
-                    $value=$this->$processName($value);
-            }
-            else
-            {
-                $remField=$this->__findField($varName);
-                if($remField)
-                {
-                    $model=$remField->getModel();
-                    $model->__set($remField->getName(),$value);
-                    $this->__allowRead=false;
-                }
-            }
-
-            // Ahora hay que tener cuidado.Si lo que se esta estableciendo es el campo que define el estado
-            // de este objeto, no hay que copiarlo.Hay que meterlo en una variable temporal, hasta que se haga SAVE
-            // del objeto.El nuevo estado aplicará a partir del SAVE.Asi, podemos cambiar otros campos que era posible
-            // cambiar en el estado actual del objeto.
-
-            $targetField=$this->__getField($varName);
-            $parentModel=$targetField->getModel();
-            if($parentModel->__stateDef->hasState)
-            {
-                if($varName==$parentModel->__stateDef->getStateField())
-                {
-                    if (isset($parentModel->__dirtyFields[$varName])) {
-                        $this->__allowRead=false;
-                        throw(new BaseTypedException(BaseTypedException::ERR_DOUBLESTATECHANGE));
-                    }
-                    $parentModel->__stateDef->setOldState($parentModel->__getField($varName)->get());
-                    $parentModel->__setChangingState($value);
-
-                }
-                else {
-                        $targetField->set($value);
-                }
-
-            }
-            else {
-                    $targetField->set($value);
-            }
-            if($parentModel==$this)
-                $parentModel->addDirtyField($varName);
-            $this->__allowRead=false;
-        }
-        function __setChangingState($newState)
-        {
-            $this->__changingState=true;
-            $this->__newState=$newState;
-            $this->__pendingRequired=$this->__stateDef->getRequiredFields($newState);
-            $this->__checkStateChangeCompleted();
-        }
         function __getRequiredFields($state=null)
         {
             if($this->__stateDef->hasState)
@@ -991,30 +149,163 @@ class BaseTypedObject extends PathObject
             }
             return $required;
         }
-
-
-        function __checkStateChangeCompleted($field=null)
+    function prioritizeChanges($dataOrObj,$callback)
+    {
+        if(is_a($dataOrObj,'\lib\model\BaseTypedObject'))
         {
-            if($this->__dirtyFields==null)
-                return;
-            $newPending=[];
-            for($k=0;$k<count($this->__pendingRequired);$k++)
-            {
-                $reqField=$this->__pendingRequired[$k];
-                $f=$this->__getField($reqField);
-                if($f->is_set())
-                    continue;
-                if(isset($this->__dirtyFields[$reqField]))
-                    continue;
-                $newPending[]=$reqField;
-            }
-            if(count($newPending)==0)
-            {
-                $this->__changingState=false;
-                $this->__stateDef->changeState($this->__newState);
-            }
-            $this->__pendingRequired=$newPending;
+            $data=$dataOrObj->getValue();
         }
+        else
+            $data=$dataOrObj;
+        $localFields=[];
+        $relationships=[];
+        $relationshipPaths=[];
+        $invRelationships=[];
+        $referencedModel=$this;
+        $stateField=$referencedModel->getStateField();
+        $state=null;
+        foreach($data as $k=>$v)
+        {
+            if(strpos($k,"/")>0)
+            {
+                $path=explode("/",$k);
+                $relation=array_shift($path);
+                $f=$referencedModel->__getField($relation);
+                if(is_a($f,'\lib\model\types\InverseRelation')) {
+                    $index = array_shift($path);
+                    if(!is_numeric($index))
+                        throw new BaseTypedException(BaseTypedException::ERR_INVALID_PATH,["path"=>$index."/".implode("/",$path)]);
+                    $subPath=implode("/",$path);
+                    $invRelationships[$relation][$index][$subPath]=$v;
+                }
+                else {
+                    $subPath = implode("/", $path);
+                    $relationshipPaths[$relation][$subPath] = $v;
+                }
+                continue;
+            }
+            if($k==$stateField) {
+                $state = $k;
+                continue;
+            }
+            $f = $referencedModel->__getField($k,true);
+
+            if(is_a($f,'\lib\model\types\Relation'))
+                $localFields[$k]=$v;
+            else {
+                // La siguiente linea significa:
+                // El campo a validar actual es una relacion inversa, pero no es un path.
+                // Es decir, el valor tiene que ser el asignable a una relacion inversa, es decir, un array
+                // de modelos.
+                // Al asignar directamente el valor, tenemos que lo que queremos es establecer el valor de la relacion,
+                // es decir, borrar los elementos relacionados actuales, y establecer los especificados.
+                // Pero, principalmente, hay que ver que como $v es un array, esta especificacion de relaciones inversas es
+                // compatible con la generada usando paths dentro del nombre de campo.
+                if(is_a($f,'\lib\model\types\InverseRelation'))
+                    $invRelationships[$k]=$v;
+
+                else
+                    $relationships[$k] = $v;
+            }
+        }
+        // Primero, se cambia el estado.
+        if($state)
+        {
+            call_user_func($callback,1,$state,$data[$state],$this->__fieldDef["state"]);
+        }
+        // Segundo, se itera por los campos que sean relaciones, y que estan tanto como campos simples, como paths.
+        foreach($relationships as $key=>$value)
+        {
+            call_user_func($callback, 2, $key, $value, $referencedModel->__getField($key));
+        }
+        // Tercero, todos los campos "finales" que pertenecen a este modelo.
+        // Esto es necesario para completar, en su caso, el cambio de estado.
+        foreach($localFields as $key=>$value)
+        {
+            call_user_func($callback,4,$key,$value,$referencedModel->__getField($key));
+        }
+        // Siguiente, cuando el objeto local ya esta listo, se itera por las relaciones que incluyen paths
+        foreach($relationshipPaths as $key=>$value)
+        {
+            call_user_func($callback,3,$key,$value,$referencedModel->__getField($key));
+        }
+        // Finalmente, las relaciones inversas
+        foreach($invRelationships as $key=>$value)
+        {
+            call_user_func($callback,5,$key,$value,$referencedModel->__getField($key));
+        }
+
+
+
+
+    }
+    // Si raw es true, el valor se asigna incluso si la validacion da un error.
+    function loadFromArray($data,$raw=false,$unserializing=true,$loadResult=null)
+    {
+        // Cargar de un array se tiene que hacer en varias fases.
+        // La primera fase, es detectar paths. Si hay paths, hay que cargar primero
+        // los elementos propios, y luego los remotos. Asi, evitamos que las relaciones
+        // pierdan sus datos.
+        // Esto es porque si A es un objeto nuevo, que se relaciona con B (que ya existe), e
+        // intentamos modificar B, primero hay que asignar la relacion en A, y luego modificar B,
+        // ya que de otro modo, estariamos creando un nuevo B, y luego lo reasignariamos.
+        // Por otro lado, primero hay que asignar el campo estado, si existe, y luego, el resto.
+        $data=$this->normalizeToAssociativeArray($data);
+        if(!$unserializing)
+        {
+            $result=$this->__validateArray($data,$loadResult);
+            if(!$result->isOk())
+            {
+                throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_LOAD_DATA_FAILED);
+            }
+        }
+        if($unserializing)
+            $this->beginUnserialize();
+
+        $this->prioritizeChanges($data,function($fieldType,$fieldName,$fieldValue,$fieldDefinition)
+        use ($raw,$unserializing,$loadResult)
+        {
+            switch($fieldType)
+            {
+                case 2: // Campo relacion, sin path
+                    {
+                        if(is_array($fieldValue))
+                            $this->{$fieldName}[0]->loadFromArray($fieldValue,$raw,$unserializing,$loadResult);
+                        else
+                            $this->{$fieldName}=$fieldValue;
+                    }break;
+                case 1: // campo de estado.
+
+                case 4: // cualquier otro campo{
+                    {
+                        $this->{$fieldName}=$fieldValue;
+                    }break;
+
+                case 3: //campo relacion, con un path
+                    {
+                        $this->{$fieldName}[0]->loadFromArray($fieldValue,$raw,$unserializing,$loadResult);
+                    }break;
+                case 5:{ // relaciones inversas.
+                    $n=count($fieldValue);
+                    for($k=0;$k<$n;$k++)
+                        $this->{$fieldName}[$k]->loadFromArray($fieldValue[$k],$raw,$unserializing,$loadResult);
+                }break;
+            }
+        });
+
+        if(!$unserializing)
+        {
+            $this->save();
+        }
+        else {
+            $this->endUnserialize();
+            $this->__loaded=true;
+            $this->cleanDirtyFields();
+        }
+        return $loadResult;
+    }
+
+
         function __getPendingRequired()
         {
             return $this->__pendingRequired;
@@ -1248,105 +539,7 @@ class BaseTypedObject extends PathObject
              $this->__dirtyFields=[];
          }
 
-         function isDirty()
-         {
-             return $this->__isDirty;
-         }
 
-         function setDirty($dirty)
-         {
-             $this->__isDirty=$dirty;
-             if(!$dirty)
-                 $this->__dirtyFields=array();
-         }
-
-         function addDirtyField($fieldName)
-         {
-             $this->__isDirty=true;
-             $this->__dirtyFields[$fieldName]=1;
-             if($this->__changingState)
-                 $this->__checkStateChangeCompleted();
-         }
-
-         function cleanDirtyFields()
-         {
-             $this->__isDirty=false;
-             $this->__dirtyFields=array();
-             $this->__stateDef->reset();
-         }
-         function getDirtyFields()
-         {
-             return $this->__dirtyFields;
-         }
-         function isRequired($fieldName)
-         {
-             $fieldDef=$this->__getField($fieldName)->getDefinition();
-             // TODO: El modelo podria ser otro, no solo el actual.
-             if(isset($fieldDef["MODEL"]) && isset($fieldDef["FIELD"]))
-                 $fieldName=$fieldDef["FIELD"];
-             return $this->__stateDef->isRequired($fieldName);
-         }
-         function isEditable($fieldName)
-         {
-             return $this->__stateDef->isEditable($fieldName);
-         }
-         function isFixed($fieldName)
-         {
-             return $this->__stateDef->isFixed($fieldName);
-         }
-
-    function disableStateChecks()
-    {
-        $this->__stateDef->disable();
-    }
-    function enableStateChecks()
-    {
-        $this->__stateDef->enable();
-    }
-    function getStateField()
-    {
-        return $this->__stateDef->getStateField();
-    }
-    function getStates()
-    {
-        return $this->__stateDef->getStates();
-    }
-    function getStateDef()
-    {
-        return $this->__stateDef;
-    }
-
-    function getStateId($stateName)
-    {
-        if (!$this->__objectDef["STATES"])
-            return null;
-        return array_search($stateName, array_keys($this->__objectDef["STATES"]["STATES"]));
-    }
-
-    function getStateLabel($stateId)
-    {
-        if (!$this->__objectDef["STATES"])
-            return null;
-        $statekeys = array_keys($this->__objectDef["STATES"]["STATES"]);
-        //var_dump($statekeys[$stateId]);
-        return $statekeys[$stateId];
-    }
-
-    function getState()
-    {
-        return $this->__stateDef->getCurrentState();
-    }
-
-    function __setRaw($fieldName,$data)
-    {
-        $field=$this->__getField($fieldName);
-        $field->__rawSet($data);
-        $this->__data[$fieldName]=$data;
-    }
-    function __getRaw()
-    {
-        return $this->__data;
-    }
     function __transferFields($modelName)
     {
         $result=[];
@@ -1377,11 +570,9 @@ class BaseTypedObject extends PathObject
             $sDef=$this->__stateDef->getRequiredPermissions($action);
             if($sDef!==null)
                 return $sDef;
-
         }
         if(isset($this->definition["PERMISSIONS"]) && isset($this->definition["PERMISSIONS"][$action]))
             return $this->definition["PERMISSIONS"][$action];
         return [["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PUBLIC]];
     }
-
 }
