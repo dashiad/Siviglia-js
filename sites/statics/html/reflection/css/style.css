@@ -68,6 +68,19 @@
     --border-width-widget: 1px;
     --border-radius-widget: 0.267rem;
     --padding-widget: 1.7rem;
+
+    /* bg-color for body classes */
+    --body-bg-color-light: rgb(238, 238, 238);
+    --body-bg-color-dark: rgba(30, 41, 60, 0.831);
+    --body-bg-color-secondary: rgb(163, 175, 189);
+    --body-bg-color-red: rgba(157, 0, 1, 0.702);
+    --body-bg-color-green:  rgba(37, 199, 119, 0.31);
+
+    /* clases para diccionario */    
+    --dictionary-color-text-main: rgb(0, 0, 0);
+    --dictionary-color-text-hover: rgb(255, 255, 255);
+    --dictionary-bg-key-main: rgb(242, 244, 244);
+    --dictionary-bg-key-hover: rgb(90, 141, 238);
 }
 body
 {
@@ -76,6 +89,12 @@ body
     background-color:var(--main-background);
     font-family:var(--main-font);
 }
+
+body.bg-light       { background-color: var(--body-bg-color-light) !important; }
+body.bg-dark        { background-color: var(--body-bg-color-dark) !important; }
+body.bg-secondary   { background-color: var(--body-bg-color-secondary) !important; }
+body.bg-red         { background-color: var(--body-bg-color-red) !important; }
+body.bg-green       { background-color: var(--body-bg-color-green) !important; }
 
 .error-icon:before {
     font-family:var(--icon-font);
