@@ -36,13 +36,17 @@ class SingleConfig
                 'MODEL' => '\model\ads\SmartConfig',
                 'FIELD' => 'domain',
             ],
+            'regex' => [
+                'MODEL' => '\model\ads\SmartConfig',
+                'FIELD' => 'regex',
+            ],
             'plugin' => [
                 'MODEL' => '\model\ads\SmartConfig',
                 'FIELD' => 'plugin',
             ],
             'config' => [
                 'MODEL' => '\model\ads\SmartConfig',
-                'FIELD' => 'config',
+                'FIELD' => 'plugin',
             ],
         ],
         'PERMISSIONS' => [],

@@ -217,8 +217,6 @@ class BaseModel extends BaseTypedModel
             if ($value->hasOwnValue())
             {
                 $serialized=$serializer->serializeType($key,$value->getType());
-                if(!is_array($serialized))
-                    $serialized[$key]=$serialized;
 
                 foreach($serialized as $k=>$v)
                 {

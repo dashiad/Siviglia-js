@@ -1,7 +1,7 @@
 <?php
 namespace model\ads\SmartConfig\serializers\types;
 
-class Regex extends BaseType
+class _String extends BaseType
 {
     function serialize($name,$type,$serializer,$model=null)
     {

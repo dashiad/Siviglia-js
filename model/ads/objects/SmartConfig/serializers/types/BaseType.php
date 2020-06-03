@@ -8,7 +8,7 @@ namespace model\ads\SmartConfig\serializers\types;
       {
           if($type->hasValue())
           {
-              return $type->value;
+              return [$name=>$type->value];
           }
           return null;
       }

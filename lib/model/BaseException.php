@@ -66,7 +66,7 @@
           }
           if($key==null)
               return $this->getCodeString();
-          // Luego, se obtienen los valores de cadena, y se busca si hace match con
+          // Luego, se obtienen los valores de cadena, yz se busca si hace match con
           // alguna de las excepciones anteriores
           $txtKey=preg_replace("/^ERR_/","TXT_",$key2);
           if(!isset($constants[$txtKey]))

@@ -32,7 +32,11 @@ class SmartConfigDataSource extends TableDataSource {
 
     public function fetchAll()
     {
-        $params = null;
+        $params = [
+            'domain' => $this->__getField('domain')->getValue(),
+            'regex'  => $this->__getField('regex')->getValue(),
+            'plugin' => $this->__getField('plugin')->getValue(),
+        ];
         return $this->serializer->fetchAll($this->serializerDefinition, $this->data, $this->numRows, $this->matchingRows, $params, null);
     }
 

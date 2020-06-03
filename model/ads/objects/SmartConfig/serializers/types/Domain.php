@@ -7,7 +7,7 @@ class Domain extends BaseType
     {
         if($type->hasValue())
         {
-            return $type->value;
+            return [$name=>$type->value];
         }
         return null;
     }

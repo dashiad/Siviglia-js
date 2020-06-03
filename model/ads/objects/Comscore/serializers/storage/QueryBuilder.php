@@ -6,6 +6,7 @@ use \model\ads\lib\ApiCallParser;
 use lib\datasource\BaseQueryBuilder;
 use lib\storage\Comscore\ComscoreSerializerException;
 use lib\storage\Comscore\ComscoreException;
+use model\ads\Comscore\serializers\ComscoreSerializer;
 
 
 class QueryBuilder extends \lib\datasource\BaseQueryBuilder
@@ -282,7 +283,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
     
     function getSerializerType()
     {
-        return \lib\storage\Comscore\ComscoreSerializer::COMSCORE_SERIALIZER_TYPE;
+        return ComscoreSerializer::COMSCORE_SERIALIZER_TYPE;
     }
     
     function getDynamicParamValue($paramValue, $paramType)
