@@ -1,3 +1,4 @@
+/* Backup del commit de JM: https://github.com/dashiad/Siviglia-js/blob/2e285a529e9bb10c9f446014fc67b4b09a7fbb7a/Model.js */
 // Nombres de modelos: App.<layer>.<objetoPadre>.Model
 Siviglia.globals = {};
 Siviglia.Model={};
@@ -488,6 +489,8 @@ Siviglia.Utils.buildClass({
                     this.__model=model;
                     this.__name=name;
                     this.__params=params;
+                    this.__currentPromise=null;
+                    this.__nextPromise=null;
                     if(typeof response=="undefined" || response==null)
                     {
                         meta=Siviglia.Model.loader.getDatasourceMeta(model,name);
@@ -585,29 +588,57 @@ Siviglia.Utils.buildClass({
                     },
                     refresh:function()
                     {
-                        if(this.__frozen)
-                            return;
+
+                        // Si ahora mismo estamos refrescando, y alguien vuelve a pedir un refresco
+                        if(this.currentPromise)
+                        {
+                            // Si no tenemos una promesa proxima
+                            if(!this.nextPromise)
+                            {
+                                // Creamos una nueva promesa, que servira para todos aquellos que pidan un
+                                // refresh antes de que termine la request actual
+                                this.nextPromise=$.Deferred();
+                            }
+                            // Y devolvemos el futuro refresh
+                            return this.nextPromise;
+                        }
+
                         // Un datasource va a ser simplemente un BaseTypedObject con una definicion fija
                         // de datos, total de elementos, criterios de ordenacion, etc,etc.
                         var mName = new Siviglia.Model.ModelDescriptor(this.__model);
                         var location = mName.getDataSourceUrl(this.__name, null, this.params,this.settings);
                         var transport = new Siviglia.Model.Transport();
                         var m=this;
-                        var h = $.Deferred();
+
+                        if(this.currentPromise===null)
+                            this.currentPromise=$.Deferred();
+
                         transport.doGet(location).then(
                             function (response) {
                                 if (response.error) {
-                                    h.reject(error);
+                                    this.currentPromise.reject(error);
                                 }else {
-                                    m.onResponse(response);
-                                    h.resolve();
+                                    this.onResponse(response);
+                                    this.currentPromise.resolve();
                                 }
-                            },
+                                // indicamos que ya no tenemos promesa actual
+                                this.currentPromise=null;
+                                // Pero si tenemos una promesa proxima
+                                if(this.nextPromise!==null)
+                                {
+                                    // Hacemos que la promesa actual, sea la proxima.
+                                    this.currentPromise=this.nextPromise;
+                                    // Borramos la nextPromise
+                                    this.nextPromise=null;
+                                    // Y refrescamos.
+                                    this.refresh();
+                                }
+                            }.bind(this),
                             function (error) {
-                                h.reject(error);
+                                this.currentPromise.reject(error);
                                 throw error;
-                            });
-                        return h;
+                            }.bind(this));
+                        return this.currentPromise;
                     },
                     getDynamicParam:function()
                     {

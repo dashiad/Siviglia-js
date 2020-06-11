@@ -101,6 +101,7 @@
                             "INPUTPARAMS":{
                                 "/": {
                                     "INPUT": "MenuContainer",
+                                    // "INPUT": "Siviglia.inputs.jqxWidgets-json.String",
                                     "JQXPARAMS":{width:700,height:500,position:top},
                                     "MENU":{
                                         "Actions":{

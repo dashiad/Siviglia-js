@@ -107,7 +107,8 @@
                             }
                             var stack = new Siviglia.Path.ContextStack();
                             var instance=new Siviglia.inputs.jqwidgets[input](
-                                "Siviglia.inputs.jqwidgets."+input,
+                                //"Siviglia.inputs.jqwidgets."+input,
+                                input.indexOf(".")>-1?input:"Siviglia.inputs.jqwidgets."+input,
                                 p,
                                 {},
                                 dv,
@@ -1146,6 +1147,9 @@
                 FlexContainer:{
                     inherits:"Container"
                 },
+                GridContainer:{
+                    inherits:"Container"
+                },
                 MenuContainer:{
                     inherits:"Container",
                     methods: {
@@ -1837,6 +1841,12 @@
          data-widgetCode="Siviglia.inputs.jqwidgets.String">
          <input type="text" placeholder="" class="form-control" data-sivId="inputNode">
     </div>
+    <!-- nuevo para jqxwidgets-json.String -->
+    <div data-sivWidget="Siviglia.inputs.jqwidgets-json.String" 
+         data-widgetCode="Siviglia.inputs.jqwidgets.String">
+        <input type="text" placeholder="" class="form-control-json" data-sivId="inputNode">
+    </div>
+
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Enum" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Enum">
         <div data-sivId="inputNode"></div>
@@ -2100,6 +2110,18 @@
             <div style="display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
                 <div style="margin:4px" data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
             </div>
+        </div>
+    </div>
+<!--
+    --------------------------------------------------------------------------------------------
+-->
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.GridContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.GridContainer">
+        <div class="Grid2ContainerType">            
+                <div data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+                    <div class="GridItem">
+                        <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
+                    </div>
+                </div>
         </div>
     </div>
 <!--

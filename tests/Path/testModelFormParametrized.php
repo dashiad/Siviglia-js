@@ -76,11 +76,11 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                                 },
                                 "Field2": {
                                     "LABEL": "Field 2",
-                                    "TYPE": "Integer"
+                                    "TYPE": "String"
                                 },
                                 "Field3": {
                                     "LABEL": "Field 3",
-                                    "TYPE": "Integer"
+                                    "TYPE": "String"
                                 },
                                 "Field4": {
                                     "LABEL": "Field 4",
@@ -112,9 +112,13 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
 
 
                             "INPUTPARAMS":{
+                                // "/": {
+                                //     "INPUT": "AccordionContainer",
+                                //     "JQXPARAMS":{width:700,height:500,position:top}
+                                // "/String": {
+                                //     "INPUT": "Siviglia.inputs.jqxWidgets-json.String",
                                 "/": {
-                                    "INPUT": "AccordionContainer",
-                                    "JQXPARAMS":{width:700,height:500,position:top}
+                                    "INPUT": "GridContainer"
                                 }
 
                             }

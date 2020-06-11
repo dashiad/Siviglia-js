@@ -55,7 +55,11 @@
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->
-<div class="widget" data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Edit" data-sivParams='{"id_page":2}'></div>
+<div class="widget">
+    <div class="widget-content">
+        <div data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Edit" data-sivParams='{"id_page":2}'></div>    
+    </div>
+</div>
 
 <!-- forms edit metadefinition -->
 <!-- <div data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Edit" data-sivParams='{"id_page":2}'></div> -->
