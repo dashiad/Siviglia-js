@@ -1144,6 +1144,29 @@
                     }
 
                 },
+                TabsContainer:{
+                    inherits:"Container",
+                    methods:{
+                        preInitialize:function(params)
+                        {
+                            this.Container$preInitialize(params);
+                            this.containerGroups=this.getGroups();
+                            for(var k in this.containerGroups)
+                            {
+                                this.containerGroups[k].ICON=Siviglia.issetOr(this.containerGroups[k].ICON,"");
+                            }
+                        },
+                        initialize:function(params)
+                        {
+                            this.Container$initialize(params);
+                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ width: 'auto', height: '300'});
+
+                            this.jqxTabs.jqxTabs(iParams);
+                        }
+
+                    }
+            
+                },
                 FlexContainer:{
                     inherits:"Container"
                 },
@@ -2260,6 +2283,29 @@
         </div>
         </div>
     </div>
+    <!--
+            ---------------------------------------------------------------------------------------
+            -->
+
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.TabsContainer" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.TabsContainer">
+        <div data-sivId='jqxTabs'>
+            <ul>
+                <div data-sivLoop="*containerGroups" data-contextIndex="current">
+                    <li data-sivValue="[%@current/LABEL%]"></li>
+                </div>
+            </ul>
+
+            <div data-sivLoop="*containerGroups" data-contextIndex="current">
+                <div>
+                    <div data-sivLoop="@current/FIELDS" data-contextIndex="current2">
+                        <div data-sivValue="[%*type/definition/FIELDS/{%@current2%}/LABEL%]"></div>
+                        <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2"}'></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
     <!--
             ---------------------------------------------------------------------------------------
             -->

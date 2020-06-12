@@ -41,26 +41,19 @@
 <body>
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 <div style="display:none">
-    <div data-sivWidget="MyTest.test"></div>
+    <div data-sivWidget="TestTabs.test"></div>
 </div>
 
 <!-- con class="widget" se define un espacio con margenes, estilos, etc., que define lo que es un widget. 
 Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
 <!-- class="widget-content" crea el estilo para ese widget (fondo blanco, bordes, etc..) -->
 <div class="widget">
-    <div data-sivView="MyTest.test" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
+    <div data-sivView="TestTabs.test" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
 </div>
-
-<!-- ejemplo anterior con widget-content -->
-<!-- <div class="widget">
-    <div class="widget-content">
-        <div data-sivView="MyTest.test" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
-    </div>
-</div> -->
 
 <script>
     Siviglia.Utils.buildClass({
-        "context":"MyTest",
+        "context":"TestTabs",
         "classes":{
             test:{
                 "inherits":"Siviglia.inputs.jqwidgets.Form",
@@ -94,12 +87,10 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                                     "LABEL": "Field 6",
                                     "TYPE": "Integer"
                                 },
-                                // "Field7": {
-                                //     "LABEL": "Field 7",
-                                //     "TYPE": "/model/reflection/Model/types/ModelType"
-                                // }  
-                                // Falla, da este error:
-                                // Siviglia.js:1075 --> PATH NOT FOUND::*type/definition/FIELDS/{%@current2%}/LABEL                              
+                                "Field7": {
+                                    "LABEL": "Field 7",
+                                    "TYPE": "String"
+                                }  
                             },
 
                             GROUPS: {
@@ -107,25 +98,13 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                                 "G1": {"LABEL": "Grupo 1", "FIELDS": ["Field1","Field2","Field3"]},
                                 "G2": {"LABEL": "Grupo 2", "FIELDS": ["Field4","Field5"]},
                                 "G3": {"LABEL": "Grupo 3", "FIELDS": ["Field6"]},
-                                //"G4": {"LABEL": "Grupo 4", "FIELDS": ["Field7"]}
+                                "G4": {"LABEL": "Grupo 4", "FIELDS": ["Field7"]}
                             },
 
-
-
                             "INPUTPARAMS":{
-                                // "/": {
-                                //     "INPUT": "AccordionContainer",
-                                //     "JQXPARAMS":{width:700,height:500,position:top}
-                                // }
-                                // "/String": {
-                                //     "INPUT": "Siviglia.inputs.jqxWidgets-json.String",
-                                // Coge el tipo layout de GridContainer que tiene los widgets en JqxWidgets.html
-                                // "/": {
-                                //     "INPUT": "GridContainer"
-                                // }
                                 "/": {
-                                    "INPUT": "GridContainer",
-                                    "JQXPARAMS":{width:700,height:500}
+                                    "INPUT": "TabsContainer",
+                                    "JQXPARAMS":{width:700,height:500} // no pilla bien los parametros adicionales
                                 }
 
                             }
