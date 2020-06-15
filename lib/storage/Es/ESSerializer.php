@@ -310,9 +310,8 @@ class ESSerializer extends \lib\storage\StorageSerializer
     }
     // El primer parametro es la tabla
     // El segundo, es un array asociativo de tipo {clave_fija=>valor}.Son las columnas que indican la parte de la relacion fija, con su valor.
-    // El tercero, es un array simple que indican los nombres de campo de la parte de relacion que estamos editando.
-    // El cuarto, es un array con los valores a establecer.Este array es asociativo, y dentro de cada key, hay un array de valores.
-    function setRelation($table,$fixedSide,$variableSides,$srcValues)
+    // El tercero, es un array con los valores a establecer.Este array es asociativo, y dentro de cada key, hay un array de valores.
+    function setRelation($table,$fixedSide,$srcValues)
     {
         // No implementado.
         return;
@@ -382,7 +381,7 @@ class ESSerializer extends \lib\storage\StorageSerializer
         include_once(LIBPATH . "/php/ArrayTools.php");
         foreach ($fields as $key => $value)
         {
-            $typeValue=\lib\model\types\TypeFactory::getType($key,$value,null);
+            $typeValue=\lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>"/"],$value,null);
 
                 $typeSerializer = $this->getTypeSerializer($typeValue);
 

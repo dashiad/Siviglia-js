@@ -56,21 +56,21 @@ class CallbackCollection
         $this->definition=$definition;
     }
 
-    function apply($callbackSpec,$referenceModel,$mode="LINEAR")
+    function apply($callbackSpec,$referenceModel,$mode="LINEAR",$params=null)
     {
-        return $this->applyList($callbackSpec,$referenceModel,$mode);
+        return $this->applyList($callbackSpec,$referenceModel,$mode,$params);
     }
-    private function applyList($callbackSpec,$referenceModel,$mode="LINEAR")
+    private function applyList($callbackSpec,$referenceModel,$mode="LINEAR",$params=null)
     {
         foreach($callbackSpec as $key=>$value)
         {
-            $result=$this->applyObject($value,$referenceModel,$mode);
+            $result=$this->applyObject($value,$referenceModel,$mode,$params);
             if(!$result && $mode=="TEST")
                 return false;
         }
         return true;
     }
-    private function applyObject($name, $referenceModel,$mode)
+    private function applyObject($name, $referenceModel,$mode,$params=null)
     {
         if(!isset($this->definition[$name]))
             throw new CallbackCollectionException(CallbackCollectionException::ERR_NO_SUCH_CALLBACK,array("callback"=>$name));
@@ -82,8 +82,10 @@ class CallbackCollection
         switch($cdef["TYPE"])
         {
             case "METHOD":{
-                $params=isset($cdef["PARAMS"])?$cdef["PARAMS"]:array();
-                $result=call_user_func_array(array($target,$cdef["METHOD"]),$params);
+                $allParams=isset($cdef["PARAMS"])?$cdef["PARAMS"]:array();
+                if($params!==null)
+                    $allParams=array_merge($params,$allParams);
+                $result=call_user_func_array(array($target,$cdef["METHOD"]),$allParams);
                 if(!$result && $mode=="TEST")
                     return $result;
             }break;

@@ -21,6 +21,7 @@ class BaseModelException extends \lib\model\BaseException
     const ERR_INVALID_STATE_DATASOURCE=14;
     const ERR_INVALID_FIELD_PATH=15;
     const ERR_NOT_ENOUGH_PERMISSIONS=16;
+    const ERR_SAVE_ERROR=17;
 }
 
 
@@ -29,11 +30,12 @@ class BaseModel extends BaseTypedModel
 
     protected $__aliasDef;
     protected $serializer;
-    protected $__new = true;
     protected $__filters = array();
     protected $__relayAllowed=true;
     protected $__writeSerializer;
     protected $__saving;
+    protected $__postSaveFields=[];
+    protected $__saveCounter=0;
 
     function __construct($serializer = null, $definition = null,$validationMode=null)
     {
@@ -126,12 +128,16 @@ class BaseModel extends BaseTypedModel
             include_once(PROJECTPATH."/lib/model/BaseModel.php");
             throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
    }
+    function getPathPrefix()
+    {
+        return "/";
+    }
 
 
 
     function __isNew()
     {
-        return $this->__new;
+        return !$this->__key->is_set();
     }
 
     function __getFilter($serializerType)
@@ -171,12 +177,11 @@ class BaseModel extends BaseTypedModel
     function unserialize($serializer,$data)
     {
         $serializer->unserializeObjectFromData($this,$data);
-        $this->__new = false;
         $this->__loaded=true;
         $this->cleanDirtyFields();
     }
 
-    function copy(& $remoteObject)
+    function copy($remoteObject)
     {
 
         $remFields=$remoteObject->__getFields();
@@ -197,8 +202,8 @@ class BaseModel extends BaseTypedModel
         }
         //$this->__dirtyFields=$remoteObject->__dirtyFields;
         //$this->__isDirty=$remoteObject->__isDirty;
-        $this->__new=!$this->__key->is_set();
-        if(!$this->__new)
+
+        if(!$this->__isNew())
             $this->__loaded=true;
     }
 
@@ -215,7 +220,7 @@ class BaseModel extends BaseTypedModel
         {
             if ($value->hasOwnValue())
             {
-                $serialized=$serializer->serializeType($key,$value->getType());
+                $serialized=$serializer->serializeType($key,$value);
                 if(!is_array($serialized))
                     $serialized[$key]=$serialized;
 
@@ -241,7 +246,7 @@ class BaseModel extends BaseTypedModel
         {
             throw new BaseModelException(BaseModelException::ERR_UNKNOWN_OBJECT);
         }
-        $this->__new=false;
+
         $this->__loaded=true;
         $this->__isDirty=false;
         $this->cleanDirtyFields();
@@ -249,13 +254,11 @@ class BaseModel extends BaseTypedModel
     function endUnserialize()
     {
         parent::endUnserialize();
-        $this->__new=false;
+
     }
 
     function reload()
     {
-        if($this->__new)
-            return;
         $this->unserialize();
 
     }
@@ -271,7 +274,7 @@ class BaseModel extends BaseTypedModel
             $cField=$this->__getField($fieldName);
             $cField->set($arguments[0]);
             $serializer=$this->__getSerializer();
-            $filters[] = array("FILTER" => array("F" => $fieldName, "OP" => "=", "V" => \lib\model\types\TypeFactory::serializeType($cField->getType(), $serializer->getSerializerType())));
+            $filters[] = array("FILTER" => array("F" => $fieldName, "OP" => "=", "V" => \lib\model\types\TypeFactory::serializeType($cField, $serializer->getSerializerType())));
 
             $serializer->fetchAll(array("BASE"=>array("*"),"TABLE"=>$this->__getTableName(),"CONDITIONS"=>$filters),$data,$nRows, $matchingRows, null);
 
@@ -294,9 +297,11 @@ class BaseModel extends BaseTypedModel
 
     function save($serializer = null)
     {
-        if($this->__saving || $this->__stateDef->isChangingState())
+        if($this->__saving || ($this->__stateDef && $this->__stateDef->isChangingState()))
             return;
+
         $this->__saving=true;
+        $this->__saveCounter=0;
         if (!$serializer)
             $serializer = $this->__getSerializer("WRITE");
         if($this->mustSelfNuke())
@@ -313,24 +318,21 @@ class BaseModel extends BaseTypedModel
         }
         if($this->__stateDef)
             $this->__stateDef->checkState();
-        $this->__loaded = true;
-        $isNew=$this->__new;
         do
         {
             $this->__saveMembers($serializer);
-        }
-        while ($this->isDirty());
+            $this->__saveCounter++;
+        } while ($this->isDirty() && $this->__saveCounter<2);
+        if($this->__saveCounter==2)
+            throw new BaseModelException(BaseModelException::ERR_SAVE_ERROR);
+        $this->__loaded = true;
         parent::save();
-        if($isNew)
-        {
-         //   \lib\model\ModelCache::store($this);
-        }
         $this->__saving=false;
     }
     private function nuke()
     {
         // Se destruye de la cache
-        $this->__new=true;
+
         $this->__fields=array();
         $this->__isDirty=false;
         $this->__dirtyFields=array();
@@ -349,8 +351,6 @@ class BaseModel extends BaseTypedModel
         return false;
     }
 
-
-
     static function getObjectTableName($objectName, $def)
     {
 
@@ -368,69 +368,63 @@ class BaseModel extends BaseTypedModel
         $dFields = array();
         // se tienen que guardar todos, ya que puede haber valores por defecto.
         $fields=$this->__getFields();
-        $aliasFields=array();
        //$this->__dirtyFields=array();
-        foreach ($fields as $key => $value)
+        // Es necesario hacer un duplicado de __dirtyFields, ya que los campos podrian autoeliminarse de
+        // __dirtyFields a medida que se salvan.
+        for($k=0;$k<count($this->__dirtyFields);$k++)
         {
-
-            if (!isset($this->__dirtyFields[$key]) && !$value->isAlias())
-                $value->save();
-            else
-            {
-
-                if($this->__new)
-                {
-                    // Si este elemento era nuevo, y tenemos alias que nos apuntan (mas especificamente, relaciones inversas), y estan sucias,
-                    // tenemos que guardarnos primero nosotros, y luego las relaciones inversas.
-                    // Esto es: A es nuevo.Accedemos a un B a traves de una relacion inversa de A.
-                    // Esto significa que B tiene una relacion con A.Pero como A es nuevo, aun no tiene INDEX.Hay que esperar a que A se guarde ($this->__new==false) para
-                    // guardar B
-
-                    if($value->isAlias()  && isset($this->__dirtyFields[$key])) //&& $value->isDirty())
-                    {
-                        $aliasFields[$key]=1;
-                        continue;
-                    }
-                    //$type=$value->getType();
-
-                    // Si es un tipo de dato (sobre todo, imagen), que para calcular su valor, puede
-                    // requerir que el resto de los campos de este modelo ya tengan valor (especialmente, los
-                    // ids autogenerados), se deja como dirty, y no se le pasa al serializador.
-                    // Asi, el metodo save(), vera que aun quedan dirtyFields, y volvera a llamar a este metodo,
-                    // guardandose asi el fichero , en la segunda llamada.
-                    if($value->requiresUpdateOnNew())
-                    {
-                        continue;
-                    }
-                }
-                $value->save();
-
-
-                // Fields that require some kind of saving hare handled here.
-                // Examples of this kind of fields are:
-                // Relationships that may have pending saves on their remote objects
-                // Files,etc.
-
-                if (array_key_exists($key, $this->__fieldDef))
-                    $dFields[$key] = $value;
-            }
-            unset($this->__dirtyFields[$key]);
+            $dFields[$this->__dirtyFields[$k]->__getFieldPath()]=$this->__dirtyFields[$k];
         }
+
         $isNew = $this->__isNew();
-        if (count($dFields) > 0 || $isNew)
+        // Se llama ahora a todos los campos, para que hagan save()
+        // Al hacer save, es posible que haya campos que se den cuenta de que necesitan updatearse cuando
+        // el objeto se haya guardado.
+        // Esto es necesario cuando se dan dos condiciones:
+        // El objeto era nuevo, y hay un campo Autonumerico, que tendrá valor solo cuando el objeto se haya salvado.
+        // Hay algun campo que necesita ese id, para almacenarse.
+        // Esto ocurre en dos casos principales:
+        // 1) Aliases (relaciones inversas, relaciones multiples)
+        // 2) Campos que utilizan el id para cosas como calcular paths, etc.
+        $setOnSave=false;
+        $saved=[];
+        if($this->__saveCounter==0) {
+            foreach ($this->__fieldDef as $key => $value) {
+                $f = $this->__getField($key);
+                if ($f->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_SAVE)
+                    $setOnSave = true;
+                $f->save();
+                $saved[$key]=1;
+            }
+        }
+        // Borramos los postSaveFields antes de guardar
+        $this->__postSaveFields=[];
+        // Iteramos tanto por los campos, como los aliases.
+        foreach($this->__fields as $key=>$value)
+        {
+            if(isset($saved[$key]))
+                continue;
+            $f=$this->__getField($key);
+            if($f->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_SAVE)
+                $setOnSave=true;
+            $f->save();
+        }
+
+
+        if (count($dFields) > 0 || ($isNew && $setOnSave==true))
         {
             // Guardamos el estado del objeto.
             $serializer->_store($this, $isNew, $dFields);
         }
-        foreach($aliasFields as $key=>$val)
-            $this->__dirtyFields[$key]=$val;
 
-        // Una vez que el modelo ya esta en el contexto global, se pueden guardar las columnas.
-        foreach ($this->__fields as $key => $value)
-            $value->onModelSaved();
-        $this->__new = false;
-        //$this->cleanDirtyFields();
-        $this->__isDirty=(count(array_keys($this->__dirtyFields))>0);
+
+        /* Esto esta aqui para campos que dependen de que se guarde el objeto principal, para obtener valor.*/
+        // Si esto provoca que el objeto vuelva a ponerse sucio, en la funcion que nos ha llamado, save(),
+        // volvera a llamar a esta funcion.
+        for($k=0;$k<count($this->__postSaveFields);$k++) {
+            $this->__postSaveFields[$k]->save();
+            $this->__postSaveFields[$k]->onModelSaved();
+        }
     }
 
 
@@ -569,7 +563,7 @@ class BaseModel extends BaseTypedModel
      * devolveria un array indicando cada tabla, el local y el remoto.
      * @param $path
      */
-    function __getFieldPath($path)
+    function __getFieldByPath($path)
     {
         $parts=explode("/",$path);
         if($parts[0]=="")
@@ -609,12 +603,16 @@ class BaseModel extends BaseTypedModel
     {
         try
         {
-            return $this->__getFieldPath($this->definition->getOwnerPath());
+            return $this->__getFieldByPath($this->definition->getOwnerPath());
 
         }catch(BaseModelDefinitionException $e)
         {
             return null;
         }
+    }
+    function __addPostSaveField($field)
+    {
+        $this->__postSaveFields[]=$field;
     }
 
 }

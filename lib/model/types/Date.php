@@ -37,8 +37,9 @@
       }
       function _setValue($v,$validationMode=null)
       {
-          if($v=="NOW")
-              $this->setAsNow();
+          if($v=="NOW") {
+              return $this->setAsNow();
+          }
           $asArr=$this->asArray($v);
           if($asArr!==false) {
               $this->value = $asArr["year"]."-".str_pad($asArr["month"],2,"0",STR_PAD_LEFT)."-".str_pad($asArr["day"],2,0,STR_PAD_LEFT);

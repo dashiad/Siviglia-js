@@ -8,7 +8,7 @@
       const TXT_INVALID_ARRAY_VALUE="Value [%value%] invalid for array";
   }
 
-  class _Array extends BaseType implements \ArrayAccess
+  class _Array extends BaseType implements \ArrayAccess,\Countable
   {
       var $subTypeDef;
       var $subObjects;
@@ -37,7 +37,7 @@
       }
       function getSubtypeInstance($fieldName)
       {
-         return TypeFactory::getType($fieldName,$this->subTypeDef,$this,null,$this->validationMode);
+         return TypeFactory::getType(["fieldName"=>$fieldName,"path"=>$this->fieldNamePath],$this->subTypeDef,$this,null,$this->validationMode);
       }
 
       function _setValue($val,$validationMode=null)
@@ -64,8 +64,13 @@
               else
               {
                   $ninst=$this->getSubtypeInstance($k);
-                  $ninst->apply($v,$validationMode);
+                  // Tenemos que asignarlo primero al array, y luego darle valor.
+                  // Esto es necesario porque en apply, se va a preguntar si el campo es requerido,
+                  // usando el path del valor. El path va a hacer referencia al array
+                  // (va a ser del tipo /arrayType/0) , y si el array aun no lo tiene asignado, va a dar error.
                   $this->subObjects[]=$ninst;
+                  $ninst->apply($v,$validationMode);
+
               }
           }
           if(count($this->subObjects)>0)
@@ -76,16 +81,16 @@
       {
         if(!is_array($value))
                 $value=array($value);
-
-         for($k=0;$k<count($value);$k++)
-         {
-             $remoteType=$this->getSubtypeInstance($k);
-             $remoteClass=get_class($remoteType);
-             if(is_a($value[$k],$remoteClass))
-                 continue;
-             if(!$remoteType->validate($value[$k]))
-                 return false;
-         }
+          if($this->__onlyValidating) {
+              for ($k = 0; $k < count($value); $k++) {
+                  $remoteType = $this->getSubtypeInstance($k);
+                  $remoteClass = get_class($remoteType);
+                  if (is_a($value[$k], $remoteClass))
+                      continue;
+                  if (!$remoteType->validate($value[$k]))
+                      return false;
+              }
+          }
          return true;
       }
       function _getValue()
@@ -96,6 +101,10 @@
               $v[]=$this->subObjects[$k]->getValue();
           }
           return $v;
+      }
+      function getReference()
+      {
+          return $this;
       }
 
       function count()
@@ -146,6 +155,28 @@
           if(!$this->valueSet)
               return false;
           return isset($this->subObjects[$index]);
+      }
+      function __getFieldDefinition($field)
+      {
+
+          return $ins->getDefinition();
+      }
+      // TODO : Este metodo es muy problematico en arrays.
+      // En arrays, los "campos" son los indices.
+      // Mientras un container tiene paths como /container/campo1, los arrays tienen paths del
+      // tipo /array/0 . Mientras el campo del container siempre existe, tenga valor o no,
+      // los indices del array sólo existen si se ha asignado un valor. Esto es importante, ya
+      // que si se quiere validar si un valor es correcto, sin asignarlo previamente, al container
+      // se le puede preguntar por la definicion de /container/campo1, pero a un array, no se
+      // le puede preguntar por /array/0, ya que no existe (ya que sólo se está validando, no asignando).
+      // Es por eso que aqui, si un campo no existe, el array "se lo inventa", creando una instancia.
+
+      function __getField($field)
+      {
+          if(isset($this->subObjects[$field]) || $field=="[[KEYS]]")
+              return $this->__get($field);
+          $ins=$this->getSubtypeInstance(0);
+          return $ins;
       }
       function __get($index)
       {

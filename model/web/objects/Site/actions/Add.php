@@ -10,7 +10,7 @@ namespace model\web\Site\actions;
 
 class Add extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\web\Site',
                'ROLE'=>'Add',
                'PERMISSIONS'=>array(
@@ -63,7 +63,7 @@ class Add extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(Add::$definition);
+			parent::__construct(Add::$_definition);
 
 	}
 
@@ -87,7 +87,7 @@ class Add extends \lib\action\Action
 	 *
 	 * RETURNS:
 	 */
-	 function validate ( $actionResult )
+	 function validateAction ( $actionResult )
 	{
 
 

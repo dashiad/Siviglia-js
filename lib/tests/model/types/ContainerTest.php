@@ -155,8 +155,8 @@ class ContainerTest extends TestCase
     function testMissing()
     {
         $cnt=$this->getDefinition2();
-        $this->expectException('\lib\model\types\ContainerException');
-        $this->expectExceptionCode(\lib\model\types\ContainerException::ERR_REQUIRED_FIELD);
+        $this->expectException('\lib\model\types\BaseTypeException');
+        $this->expectExceptionCode(\lib\model\types\BaseTypeException::ERR_REQUIRED);
         $cnt->setValue(["one"=>"tres"]);
     }
     function testInvalid()
@@ -176,8 +176,8 @@ class ContainerTest extends TestCase
     function testValidateMissing()
     {
         $cnt=$this->getDefinition2();
-        $this->expectException('\lib\model\types\ContainerException');
-        $this->expectExceptionCode(\lib\model\types\ContainerException::ERR_REQUIRED_FIELD);
+        $this->expectException('\lib\model\types\BaseTypeException');
+        $this->expectExceptionCode(\lib\model\types\BaseTypeException::ERR_REQUIRED);
         $cnt->validate(["one"=>"tres"]);
     }
     function testNull()
@@ -242,7 +242,7 @@ class ContainerTest extends TestCase
     {
         $cnt=$this->getDefinition6();
         $result=$cnt->getPath("#one/0/f1");
-        $keys=array_keys($result);
+        $keys=array_keys($result->getValue());
         $this->assertEquals(true,in_array("k1-1",$keys));
         $this->assertEquals(true,in_array("k1-2",$keys));
         $this->assertEquals(true,in_array("k1-3",$keys));
@@ -264,9 +264,9 @@ class ContainerTest extends TestCase
         $dict=$cnt2->{"*f1"};
         $cnt3=$dict->{"*k1-1"};
         $field=$cnt3->{"*q1"};
-        $v1=$field->parent->getPath("#../k1-2/q1");
+        $v1=$field->getParent()->getPath("#../k1-2/q1");
         $this->assertEquals("3",$v1);
-        $v2=$field->parent->getPath("#../../f2/Value");
+        $v2=$field->getParent()->getPath("#../../f2/Value");
         $this->assertEquals("hola",$v2);
     }
 

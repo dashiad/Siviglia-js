@@ -23,6 +23,8 @@ abstract class BaseSource
         if($value===null)
            return true;
         $d=$this->getData();
+        if(is_a($d,'lib\model\BaseModel'))
+            $d=$d->getValue();
         $f=$this->getValueField();
         for($k=0;$k<count($d);$k++)
         {

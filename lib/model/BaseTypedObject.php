@@ -3,8 +3,6 @@
 
 use lib\model\types\BaseTypeException;
 
-
-
 class BaseTypedException extends BaseException {
     const ERR_REQUIRED_FIELD=1;
     const ERR_NOT_A_FIELD=2;
@@ -23,6 +21,9 @@ class BaseTypedException extends BaseException {
     const ERR_UNKNOWN_STATE=15;
     const ERR_INVALID_VALUE=16;
     const ERR_PENDING_STATE_CHANGE=17;
+    const ERR_NO_CONTROLLER=18;
+    const ERR_NO_STATE_CONTROLLER=19;
+    const ERR_NOT_EDITABLE=20;
 }
 
 class BaseTypedObject extends \lib\model\types\Container
@@ -35,6 +36,7 @@ class BaseTypedObject extends \lib\model\types\Container
 
         protected $__newState=null;
         protected $__key=null;
+        protected $__oldValidationMode=null;
 
 
 
@@ -49,9 +51,14 @@ class BaseTypedObject extends \lib\model\types\Container
                         \lib\model\types\TypeFactory::installType($key,$value);
                 }
                 $this->__key=null;
+
+            parent::__construct(null,$definition,null,null,$validationMode);
+                // Queremos que un bto, de principio, no sea nulo. Esto nos va a permitir asignar directamente
+            // sus campos, sin tener que inicializarlo a []
+                $this->value=1;
                 if (isset($this->__objectDef["INDEXFIELDS"]))
                     $this->__key = new ModelKey($this, $this->__objectDef);
-                parent::__construct(null,$definition,null,null,$validationMode);
+
         }
         function __getKeys()
         {
@@ -71,9 +78,9 @@ class BaseTypedObject extends \lib\model\types\Container
         // Usado para los aliases de BaseModel
         function & __addField($fieldName,$definition)
         {
-            $this->__fields[$fieldName]=$definition;
+            $this->__fields[$fieldName]= \lib\model\types\TypeFactory::getType(["fieldName"=>$fieldName,"path"=>$this->fieldNamePath],$definition,$this,null,$this->validationMode);
             $newField=$this->__getField($fieldName);
-            unset($this->__fields[$fieldName]);
+            //unset($this->__fields[$fieldName]);
             return $newField;
         }
         function beginUnserialize()
@@ -190,7 +197,7 @@ class BaseTypedObject extends \lib\model\types\Container
             }
             $f = $referencedModel->__getField($k,true);
 
-            if(is_a($f,'\lib\model\types\Relation'))
+            if(!is_a($f,'\lib\model\types\Relationship'))
                 $localFields[$k]=$v;
             else {
                 // La siguiente linea significa:
@@ -234,13 +241,20 @@ class BaseTypedObject extends \lib\model\types\Container
         {
             call_user_func($callback,5,$key,$value,$referencedModel->__getField($key));
         }
-
-
-
-
     }
+    function _setValue($val, $validationMode=null)
+    {
+        if($validationMode==null)
+            $validationMode=$this->validationMode;
+        $this->__oldValidationMode=$validationMode;
+        $this->loadFromarray($val,$this->validationMode==\lib\model\types\BaseType::VALIDATION_MODE_NONE?true:false,
+            false,null,true);
+        $this->value=1;
+        $this->valueSet=true;
+    }
+
     // Si raw es true, el valor se asigna incluso si la validacion da un error.
-    function loadFromArray($data,$raw=false,$unserializing=true,$loadResult=null)
+    function loadFromArray($data,$raw=false,$unserializing=true,$loadResult=null,$dontSave=false)
     {
         // Cargar de un array se tiene que hacer en varias fases.
         // La primera fase, es detectar paths. Si hay paths, hay que cargar primero
@@ -263,14 +277,14 @@ class BaseTypedObject extends \lib\model\types\Container
             $this->beginUnserialize();
 
         $this->prioritizeChanges($data,function($fieldType,$fieldName,$fieldValue,$fieldDefinition)
-        use ($raw,$unserializing,$loadResult)
+        use ($raw,$unserializing,$loadResult,$dontSave)
         {
             switch($fieldType)
             {
                 case 2: // Campo relacion, sin path
                     {
                         if(is_array($fieldValue))
-                            $this->{$fieldName}[0]->loadFromArray($fieldValue,$raw,$unserializing,$loadResult);
+                            $this->{$fieldName}[0]->loadFromArray($fieldValue,$raw,$unserializing,$loadResult,$dontSave);
                         else
                             $this->{$fieldName}=$fieldValue;
                     }break;
@@ -283,40 +297,48 @@ class BaseTypedObject extends \lib\model\types\Container
 
                 case 3: //campo relacion, con un path
                     {
-                        $this->{$fieldName}[0]->loadFromArray($fieldValue,$raw,$unserializing,$loadResult);
+                        $this->{$fieldName}[0]->loadFromArray($fieldValue,$raw,$unserializing,$loadResult,$dontSave);
                     }break;
                 case 5:{ // relaciones inversas.
                     $n=count($fieldValue);
                     for($k=0;$k<$n;$k++)
-                        $this->{$fieldName}[$k]->loadFromArray($fieldValue[$k],$raw,$unserializing,$loadResult);
+                        $this->{$fieldName}[$k]->loadFromArray($fieldValue[$k],$raw,$unserializing,$loadResult,true);
                 }break;
             }
         });
+        // Despues de asignar campos, vemos si seguimos siendo un objeto nuevo.
 
         if(!$unserializing)
         {
-            $this->save();
+            if( $dontSave==false)
+                $this->save();
+
         }
         else {
             $this->endUnserialize();
-            $this->__loaded=true;
             $this->cleanDirtyFields();
+            $this->__loaded=true;
+
         }
         return $loadResult;
     }
+    // Un BaseTypedObject siempre es controller para sus hijos.
+    function __getControllerForChild()
+    {
+        return $this;
+    }
+    function getPathPrefix()
+    {
+        return "/";
+    }
 
 
-        function __getPendingRequired()
-        {
-            return $this->__pendingRequired;
-        }
+    function copy($remoteObject)
+    {
 
-        function copy(& $remoteObject)
-        {
-
-            $curVal=$remoteObject->normalizeToAssociativeArray();
-            $this->loadFromArray($curVal,true,false);
-         }
+        $curVal=$remoteObject->normalizeToAssociativeArray();
+        $this->loadFromArray($curVal,true,false);
+    }
 
 
          // Normaliza a un array asociativo las siguientes versiones de objetos:
@@ -347,7 +369,7 @@ class BaseTypedObject extends \lib\model\types\Container
                          foreach($fields as $key=>$value)
                          {
                              if(is_object($value))
-                                 $fieldArray[$key]=$value->getModel()->{$key};
+                                 $fieldArray[$key]=$value->getValue();
                              else
                                  $fieldArray[$key]=$value;
                          }
@@ -357,9 +379,9 @@ class BaseTypedObject extends \lib\model\types\Container
 
 
          }
+
          function __validateArray($fields,\lib\model\ModelFieldErrorContainer $result=null)
          {
-
              return $this->__validate($fields,$result,true);
          }
          // FIELDS ES UN BASETYPEDOBJECT
@@ -397,7 +419,7 @@ class BaseTypedObject extends \lib\model\types\Container
 
              for($k=0;$k<count($reqs);$k++)
                 $requiredFields[$reqs[$k]]=1;
-             $validationMode=$this->getValidationMode();
++             $validationMode=$this->getValidationMode();
 
              $this->prioritizeChanges($fieldArray,function($fieldType,$fieldName,$fieldValue,$fieldDefinition)
              use (&$nextState,$stateFieldName,&$result,$targetModel,$fromArray,&$requiredFields,$oldState,$validationMode)
@@ -410,16 +432,12 @@ class BaseTypedObject extends \lib\model\types\Container
 
                                  $newState = $fieldValue;
                                  if($oldState!=$newState) {
-                                     if (isset($targetModel->__dirtyFields[$stateFieldName]))
-                                         $result->addFieldTypeError($stateFieldName, null, new BaseTypedException(BaseTypedException::ERR_DOUBLESTATECHANGE));
-                                     else
-                                     {
+
                                          if($targetModel->getStateDef()->isFinalState($oldState))
                                              $result->addFieldTypeError($stateFieldName,null,new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_FINAL_STATE));
 
                                          if(!$targetModel->getStateDef()->canTranslateTo($newState))
                                              $result->addFieldTypeError($stateFieldName,null,new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_STATE_TO));
-                                     }
                                  }
                                  $nextState=$targetModel->getStateDef()->getStateLabel($newState);
                                  $reqs=$this->__getRequiredFields($nextState);
@@ -427,7 +445,6 @@ class BaseTypedObject extends \lib\model\types\Container
                                  for($k=0;$k<count($reqs);$k++)
                                     $requiredFields[$reqs[$k]]=1;
                                  unset($requiredFields[$fieldName]);
-
                              } catch (\Exception $e) {
                                  $result->addFieldTypeError($stateFieldName, null, $e);
                              }
@@ -437,26 +454,31 @@ class BaseTypedObject extends \lib\model\types\Container
                          {
                              // Si es una relacion, y se le ha asignado un array, es que se esta asignando el modelo remoto,
                              // no el valor del campo relacion.
-
-                             if($this->{"*".$fieldName}->equals($fieldValue))
+                            $type=$this->{"*".$fieldName};
+                             if($type->equals($fieldValue))
                                  break;
-
-                             if(!$targetModel->getStateDef()->isEditableInState($fieldName,$nextState))
+                             if($nextState!==null)
                              {
-                                 $result->addFieldTypeError($fieldName,$fieldValue,new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,["field"=>$fieldName]));
-                                 break;
+                                if(!$this->__stateDef->isEditableInState($fieldName,$nextState))
+                                    $result->addFieldTypeError($fieldName,$fieldValue,new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,["field"=>$fieldName]));
+                             }
+                             else {
+                                 if (!$type->isEditable()) {
+                                     $result->addFieldTypeError($fieldName, $fieldValue, new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE, ["field" => $fieldName]));
+                                     break;
+                                 }
                              }
                              if($fieldType==2 && is_array($fieldValue)) {
-                                 $this->{$fieldName}[0]->__validate($fieldValue, $result, $fromArray);
+                                 $this->{"*".$fieldName}->validate($fieldValue, $result, $fromArray);
                                  break;
                              }
                              try{
                                  $localField=$targetModel->__getField($fieldName);
                                  if($fieldType==4)
-                                    $localField->getType()->validate($fieldValue);
+                                    $localField->validate($fieldValue);
                                  else
                                  {
-                                     $relType=\lib\model\types\TypeFactory::getType("",$localField->getDefinition(),null,null,$validationMode);
+                                     $relType=\lib\model\types\TypeFactory::getType(null,$localField->getDefinition(),null,null,$validationMode);
                                      $relType->setParent($this,$fieldName);
                                      $relType->validate($fieldValue);
                                  }
@@ -536,6 +558,8 @@ class BaseTypedObject extends \lib\model\types\Container
                  throw new BaseTypedException(BaseTypedException::ERR_PENDING_STATE_CHANGE,["newState"=>$this->__newState]);
              }
              $this->__isDirty=false;
+             foreach($this->__dirtyFields as $key=>$value)
+                 $value->__setDirty(false);
              $this->__dirtyFields=[];
          }
 

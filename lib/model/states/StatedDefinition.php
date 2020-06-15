@@ -111,11 +111,12 @@ class StatedDefinition
         var $newStateLabel=null;
         var $oldStateLabel=null;
         var $changingState=false;
-        function __construct(& $model)
+        var $pathPrefix='';
+        function __construct(& $model,$definition=null)
         {
             $this->model=$model;
-            $this->definition= $model->getDefinition();
-            $this->enable();
+            $this->definition= $definition!==null?$definition:$model->getDefinition();
+            $this->pathPrefix=$model->getPathPrefix();
         }
         function setOldState($state)
         {
@@ -139,7 +140,7 @@ class StatedDefinition
         {
              if($this->oldState)
                  return $this->oldState;
-            return $this->stateType->getValue();
+            return $this->getStateFieldObj()->getValue();
         }
 
         function reset()
@@ -160,8 +161,10 @@ class StatedDefinition
             if($this->hasState)
             {
                 $this->stateField=$this->definition["STATES"]["FIELD"];
+                if($this->stateField[0]!==$this->pathPrefix)
+                    $this->stateField=$this->pathPrefix.$this->stateField;
                 $this->stateFieldObj=$this->model->__getField($this->stateField);
-                $this->stateType=$this->stateFieldObj->getType();
+                $this->stateType=$this->stateFieldObj;
             }
         }
         function getCurrentState()
@@ -169,7 +172,7 @@ class StatedDefinition
                 if(!$this->hasState)
                     return null;
 
-            if($this->stateType->hasOwnValue())
+            if($this->stateType->hasValue())
                 return $this->stateType->getValue();
             return $this->getDefaultState();
         }
@@ -251,17 +254,18 @@ class StatedDefinition
                     throw new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD,array("field"=>$cF));
                 }
             }
-
         }
         function isRequired($fieldName)
         {
             if($this->hasState==false)
                 return $this->model->__getField($fieldName)->isDefinedAsRequired();
 
-            return $this->isRequiredForState($fieldName,$this->getNewState());
+            return $this->isRequiredForState($fieldName,$this->getCurrentStateLabel());
         }
         function isEditable($fieldName)
         {
+            if($fieldName[0]!==$this->pathPrefix)
+                $fieldName=$this->pathPrefix.$fieldName;
             if($this->hasState==false)
                 return true;
             if($fieldName==$this->stateField)
@@ -287,32 +291,53 @@ class StatedDefinition
         }
         function isEditableInState($fieldName,$stateName)
         {
+
             if(!$this->hasState)
                 return true;
+            if($fieldName[0]!==$this->pathPrefix)
+                $fieldName=$this->pathPrefix.$fieldName;
             if($fieldName==$this->stateField)
                 return true;
             $res=$this->existsFieldInStateDefinition($stateName,$fieldName,"EDITABLE",true);
             return $res;
         }
-        /*function isFixedInState($fieldName,$stateName)
+        function isFixedInState($fieldName,$stateName)
         {
             if(!$this->hasState)
                 return true;
             return $this->existsFieldInStateDefinition($stateName,$fieldName,"FIXED");
-        }*/
+        }
 
         // Dependiendo de si el $group existe o no, querriamos que la funcion devolviera una cosa u otra.
         // Por ejemplo, si preguntamos si un cierto campo es REQUIRED dentro de un estado, y ese estado no define
         // REQUIRED, queremos que devuelva false.
         // Pero si en vez de REQUIRED preguntamos por EDITABLE, queremos de devuelva true.
+        // FieldName puede ser un path.
         function existsFieldInStateDefinition($stateName,$fieldName,$group,$defResult=false)
         {
-            $st=& $this->definition["STATES"]["STATES"][$stateName];
+            if($fieldName[0]!==$this->pathPrefix)
+                $fieldName=$this->pathPrefix.$fieldName;
+            if(!isset($this->definition["STATES"]["STATES"][$stateName]))
+                throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_UNKNOWN_STATE,array("state"=>$stateName));
+            $st= $this->definition["STATES"]["STATES"][$stateName];
             if(!isset($st["FIELDS"]))
                 return $defResult;
             if(!isset($st["FIELDS"][$group]))
                 return false;
-            return in_array($fieldName,$st["FIELDS"][$group]) || in_array("*",$st["FIELDS"][$group]);
+            $g=$st["FIELDS"][$group];
+            for($k=0;$k<count($g);$k++)
+            {
+                $path=$g[$k];
+                if($path=="*")
+                    return true;
+                if($path[0]!==$this->pathPrefix)
+                    $path=$this->pathPrefix.$path;
+                if($path==$fieldName)
+                    return true;
+                if(preg_match("~".$path."/~",$fieldName))
+                    return true;
+            }
+            return false;
         }
 
     function isChangingState()
@@ -321,6 +346,21 @@ class StatedDefinition
     }
     function changeState($next)
     {
+        // Si no habia un estado previo, o sea, el estado anterior era nulo, este campo estaba en un
+        // objeto nulo, o ha sido reseteado.
+        // El asunto es que no debe llamar a ningun callback.
+        // Conseguir esto es gracias a que, aunque los campos de estado tienen un valor por defecto,
+        // 1) Esos valores por defecto se inicializan usando apply, por lo que el tipo de dato no
+        // llama a changeState, por lo que oldState sigue siendo null.
+
+        if($this->oldState==null)
+            $this->oldState= $this->model->__getField($this->stateField)->getValue();
+        if($this->oldState===null) {
+
+            $this->nextState=$next;
+            return;
+        }
+
         $orig=$next;
         if(is_string($next))
         {
@@ -345,11 +385,13 @@ class StatedDefinition
         if($this->isFinalState($this->oldStateLabel))
         {
             $this->changingState=false;
+            $this->newState=null;
             throw new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_FINAL_STATE,array("current"=>$this->oldStateLabel,"new"=>$this->newStateLabel));
         }
 
         $actualState = $this->oldState;
         if($this->oldState===$next && $this->oldState!==null) {
+            $this->newState=null;
             $this->changingState=false;
             return true;
         }
@@ -359,6 +401,7 @@ class StatedDefinition
         if(!isset($this->definition["STATES"]["STATES"][$this->newStateLabel]))
         {
             $this->model->__getField($this->stateField)->set($newId);
+            $this->newState=null;
             $this->changingState=false;
             return;
         }
@@ -370,8 +413,11 @@ class StatedDefinition
             $f=$definition["FIELDS"]["REQUIRED"];
             for($n=0;$n<count($f);$n++)
             {
-                if(!$this->model->{"*".$f[$n]}->hasValue())
-                    throw new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD,array("field"=>$f[$n]));
+                if(!$this->model->{"*".$f[$n]}->hasValue()) {
+                    $this->changingState=false;
+                    $this->newState=null;
+                    throw new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, array("field" => $f[$n]));
+                }
             }
         }
         if(isset($definition["ALLOW_FROM"]))
@@ -382,11 +428,13 @@ class StatedDefinition
                 {
                     $this->executeCallbacks("REJECT_TO",$this->newStateLabel,$this->oldStateLabel);
                     $this->changingState=false;
+                    $this->newState=null;
                     throw new BaseTypedException(BaseTypedException::ERR_REJECTED_CHANGE_STATE,array("current"=>$actualState,"new"=>$next));
                 }
                 else
                 {
                     $this->changingState=false;
+                    $this->newState=null;
                     throw new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_STATE_TO,array("current"=>$actualState,"new"=>$next));
                 }
 
@@ -398,16 +446,20 @@ class StatedDefinition
         }catch(\Exception $e)
         {
             $this->changingState=false;
+            $this->newState=null;
             throw $e;
         }
         if(!$result)
         {
+            $this->changingState=false;
+            $this->newState=null;
             throw new BaseTypedException(BaseTypedException::ERR_CANT_CHANGE_STATE,array("current"=>$actualState,"new"=>$next));
         }
         $this->executeCallbacks("ON_LEAVE",$this->oldStateLabel,$this->newStateLabel);
         $this->executeCallbacks("ON_ENTER",$this->newStateLabel,$this->oldStateLabel);
-        $this->model->__getField($this->stateField)->set($newId);
         $this->changingState=false;
+        $this->oldState=$this->newState;
+        $this->newState=null;
     }
 
     function executeCallbacks($type,$state,$refState)
@@ -422,10 +474,18 @@ class StatedDefinition
         $def=$this->definition["STATES"]['STATES'][$state]["LISTENERS"][$type];
         $callbacks=$this->getStatedDefinition($def,$refState);
 
+        //Hay que buscar quien es el modelo destino.
+        $dest=$this->model;
+        while($dest!==null && !is_a($dest,'\lib\model\BaseTypedObject'))
+            $dest=$dest->getParent();
+        if($dest===null)
+            throw new BaseTypedException(BaseTypedException::ERR_NO_STATE_CONTROLLER,array("state"=>$state,"callbackType"=>$type));
+
         $result=$cbConnection->apply(
             $callbacks,
-            $this->model,
-            $type=="TESTS"?"TEST":"LINEAR"
+            $dest,
+            $type=="TESTS"?"TEST":"LINEAR",
+            [$this->model]
             );
         return $result;
     }

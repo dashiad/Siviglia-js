@@ -121,7 +121,7 @@ abstract class TypeSerializer
         $result=array();
         foreach($fields as $key=>$value)
         {
-            $result[$key]=$this->getTypeSerializer($value->getType());
+            $result[$key]=$this->getTypeSerializer($value);
         }
         return $result;
     }

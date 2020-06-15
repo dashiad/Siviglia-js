@@ -3,7 +3,7 @@ namespace model\tests\User\actions;
 
 class DeleteAction extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\tests\User',
                'ROLE'=>'Delete',
                'PERMISSIONS'=>array(
@@ -37,7 +37,7 @@ class DeleteAction extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(DeleteAction::$definition);
+			parent::__construct(DeleteAction::$_definition);
 
 	}
 
@@ -61,7 +61,7 @@ class DeleteAction extends \lib\action\Action
 	 *
 	 * RETURNS:
 	 */
-	 function validate ( $actionResult )
+	 function validateAction ( $actionResult )
 	{
 
 

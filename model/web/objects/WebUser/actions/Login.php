@@ -13,7 +13,7 @@ class LoginException extends \lib\model\BaseException
 
 class Login extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\web\WebUser',
                'ROLE'=>'SEARCH',
                'LABEL'=>'Edit',
@@ -46,7 +46,7 @@ class Login extends \lib\action\Action
 	function __construct( )
 	{
 
-		\lib\action\Action::__construct(Login::$definition);
+		\lib\action\Action::__construct(Login::$_definition);
 
 	}
 
@@ -68,7 +68,7 @@ class Login extends \lib\action\Action
 	 * RETURNS:
 	 */
     var $newUser;
-	function validate ( $actionResult )
+	function validateAction ( $actionResult )
 	{
             try{
                 $this->newUser=\model\web\WebUser::login($this->LOGIN,$this->PASSWORD);

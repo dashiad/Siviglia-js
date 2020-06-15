@@ -11,9 +11,9 @@
       {
           return true;
       }
-      function getRelationshipType()
+      function getRelationshipType($name,$parent)
       {
-          return new Integer($this->name,array("MIN"=>0,"MAX"=>9999999999),$this->parent,$this->value,$this->validationMode);
+          return new Integer($name,array("MIN"=>0,"MAX"=>9999999999),$parent,$this->value,$this->validationMode);
       }
       function getMetaClassName()
       {

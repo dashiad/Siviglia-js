@@ -177,8 +177,8 @@ class BaseCursor
 
     function getValue()
     {
-        if (is_a($this->pointer, '\lib\model\types\BaseType') && !$this->__lastTyped)
-            return $this->pointer->getValue();
+        if(is_a($this->pointer,'\lib\model\types\BaseType'))
+            return $this->pointer->getReference();
         return $this->pointer;
     }
 }

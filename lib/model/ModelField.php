@@ -32,7 +32,7 @@ class ModelField
 
           $this->definition=$definition;
           $this->listeners=[];
-          $this->type=types\TypeFactory::getType($this->name,$definition,$this->model,null,$this->model->getValidationMode());
+          $this->type=types\TypeFactory::getType(["fieldName"=>$this->name,"path"=>"/"],$definition,$this->model,null,$this->model->getValidationMode());
 
           $this->isAlias=false;
           if($value!==null)
@@ -243,7 +243,7 @@ class ModelField
     function setDirty()
     {
        $this->state=ModelField::DIRTY;
-       $this->model->addDirtyField($this->name);
+       $this->model->addDirtyField($this);
     }
 
     function __get($varName)
@@ -347,7 +347,7 @@ class ModelField
             {
 
                 $val=$this->type->getValue();
-                $this->model->addDirtyField($this->name);
+                $this->model->addDirtyField($this);
                 $this->model->__setRaw($this->name,$val);
             }
             return;
@@ -363,7 +363,7 @@ class ModelField
         }
        /* if(!$this->type->hasOwnValue() && $this->type->hasValue())
         {
-            $this->model->addDirtyField($this->name);
+            $this->model->addDirtyField($this);
             $this->model->__setRaw($this->name,$this->type->getValue());
         }*/
 

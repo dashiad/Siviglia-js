@@ -580,7 +580,7 @@ class ESDsDefinition
             // Esto es importante para los campos compuestos, ya que se mapean a varias columnas.
             foreach($this->parentModel->fields as $fieldName=>$field)
             {
-                $types=$field->getType();
+                $types=$field;
                 $serializers=array();
                 $serType="Mysql";
                 foreach($types as $typeKey=>$typeValue)

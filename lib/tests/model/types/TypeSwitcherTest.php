@@ -187,8 +187,9 @@ class TypeSwitcherTest extends TestCase
         $this->assertEquals("pepito",$ts->f3);
         // Si hago esto, deberia cambiar el tipo por debajo.
         $ts->f2="manolito";
-        $this->assertEquals(true,isset($ts->subNode->__fields["f4"]));
-        $this->assertEquals(false,isset($ts->subNode->__fields["f3"]));
+        $fields=$ts->subNode->__getFields();
+        $this->assertEquals(true,isset($fields["f4"]));
+        $this->assertEquals(false,isset($fields["f3"]));
         $this->assertEquals(null,$ts->f4);
     }
     function testTypeByTypeSimple()

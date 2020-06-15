@@ -53,7 +53,7 @@ class XlsxRenderer
                     $headers=array();
                     foreach($fields as $k=>$v)
                     {
-                        $type=\lib\model\types\TypeFactory::getType($k,$v,null);
+                        $type=\lib\model\types\TypeFactory::getType(["fieldName"=>$k,"path"=>"/"],$v,null);
                         if(is_a($type,'\lib\model\types\Integer'))
                             $headers[$k]='Entero';
                         if(is_a($type,'\lib\model\types\Money'))

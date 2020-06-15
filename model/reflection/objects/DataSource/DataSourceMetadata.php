@@ -22,7 +22,7 @@ class DataSourceMetadata extends Meta {
             foreach($this->definition["FIELDS"] as $key=>$value)
             {
                 $info=$value;
-                $type=\lib\model\types\TypeFactory::getType($key,$info,null);
+                $type=\lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>"/"],$info,null);
                 $this->definition["FIELDS"][$key]=\lib\model\types\TypeFactory::getTypeMeta(array_merge($info,$type->definition));
             }
             unset($this->definition["STORAGE"]);
@@ -33,7 +33,7 @@ class DataSourceMetadata extends Meta {
             foreach($this->definition["PARAMS"] as $key=>$value)
             {
                 $info=$value;
-                $type=\lib\model\types\TypeFactory::getType($key,$info,null);
+                $type=\lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>"/"],$info,null);
                 $this->definition["PARAMS"][$key]=\lib\model\types\TypeFactory::getTypeMeta(array_merge($info,$type->definition));
             }
             unset($this->definition["STORAGE"]);

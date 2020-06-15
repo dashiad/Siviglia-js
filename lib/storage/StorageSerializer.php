@@ -48,6 +48,7 @@ abstract class StorageSerializer extends TypeSerializer
         $keys = $object->__getKeys();
         if (!$keys)
             return null;
+
         $fields = $keys->serialize($this);
 
         $expr = "";
@@ -64,13 +65,47 @@ abstract class StorageSerializer extends TypeSerializer
         }
         return $conditions;
     }
-    function _store($object, $isNew, $dirtyFields)
+    function _batchStore($objectArray)
+    {
+        for($k=0;$k<count($objectArray);$k++)
+        {
+            $object=$objectArray[$k];
+            $isNew=$object->__isNew();
+            $this->_store($object,$isNew,null);
+
+        }
+    }
+    function _store($object, $isNew, $dirtyFields=null)
     {
         $results = array();
+
+        $newDirty=[];
+        foreach($dirtyFields as $k=>$v)
+        {
+            $parts=explode("/",$k);
+            $f="";
+            if(count($parts)>1)
+            {
+                if($parts[0]=="")
+                    $f=$parts[1];
+
+                else
+                    $f=$parts[0];
+            }
+            else
+                $f=$k;
+            $newDirty[$f]=$object->{"*".$f};
+        }
+        $dirtyFields=$newDirty;
+
         if($isNew)
             $tFields=$object->__getFields();
         else
             $tFields=$dirtyFields;
+        $fieldList=$object->__getFields();
+
+        // En mysql, nos quedamos con el primer nivel de los campos, que es lo que va a determinar la columna.
+
         $setOnSaveFields=[];
         $nSetOnSave=0;
         foreach ($tFields as $key => $value)
@@ -81,18 +116,27 @@ abstract class StorageSerializer extends TypeSerializer
                 {
                     continue;
                 }
-                if($isNew && $value->getType()->hasDefaultValue())
-                    $value->getType()->setValue($value->getType()->getValue());
+                if($isNew && $value->hasDefaultValue())
+                    $value->setValue($value->getType()->getValue());
             }
             if($value->isAlias())
                 continue;
-            if(($isNew && ($value->getType()->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_SAVE))) {
+            if(($isNew && ($value->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_SAVE))) {
                 $setOnSaveFields[$key]=$value;
                 $nSetOnSave++;
                 continue;
             }
 
-            $subVals = $value->serialize($this);
+
+           // $subVals = $value->serialize($this);
+            try
+            {
+                $subVals=$this->serializeType($value->getFieldName(),$value);
+            }catch(\lib\model\types\BaseTypeException $e)
+            {
+                _d($e);
+                throw new BaseModelException(BaseModelException::ERR_INVALID_SERIALIZER,array("fieldName"=>$this->name,"model"=>$this->model->__getObjectName(),"serializer"=>$serializer));
+            }
 
             // Los tipos compuestos pueden devolver un array
 
@@ -133,18 +177,14 @@ abstract class StorageSerializer extends TypeSerializer
 
             if (count($conds) == 0)
             {
-
-                throw new ESSerializerException(StorageSerializerException::ERR_NO_ID_FOR_OBJECT);
+                throw new StorageSerializerException(StorageSerializerException::ERR_NO_ID_FOR_OBJECT);
             }
-
             $builder = $this->getQueryBuilder(array("BASE"=>array("*"),"CONDITIONS" => $conds), null);
             $q=$builder->build(true);
-
             $this->updateFromAssociative($object->__getTableName(), $results, $q, false);
         }
         $this->updateOnSaveFields($object,$setOnSaveFields,$isNew);
-        foreach ($dirtyFields as $key => $value)
-            $value->onModelSaved();
+
     }
 
     function serializeToArray($objects,$fields=null)

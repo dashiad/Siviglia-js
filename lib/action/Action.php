@@ -71,7 +71,7 @@ class Action extends \lib\model\BaseTypedObject
 
 	    if($actionResult->isOk()) {
             $this->__loaded=true;
-            $this->validate($actionResult);
+            $this->validateAction($actionResult);
         }
 
 	    if ($actionResult->isOk()) {
@@ -142,6 +142,8 @@ class Action extends \lib\model\BaseTypedObject
         }
 
     }
+
+
 
     function onError($keys, $params, $actionResult, $user)
     {

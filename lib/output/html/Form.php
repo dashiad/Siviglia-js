@@ -244,7 +244,7 @@ class Form extends \lib\model\BaseTypedObject
     {
 
         $fieldInstance=$this->__getField($field);
-        $type=$fieldInstance->getType();
+        $type=$fieldInstance;
         try
         {
             $iVal=$inputObj->getValue();

@@ -9,7 +9,7 @@ namespace model\web\WebUseractions;
 
 class AddAdministrator extends \lib\controller\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\web\WebUser',
                'ROLE'=>'SEARCH',
                'LABEL'=>'Add Administrator',
@@ -44,7 +44,7 @@ class AddAdministrator extends \lib\controller\Action
 	function __construct( )
 	{
 
-			\lib\controller\Action::__construct(AddAdministrator::$definition);
+			\lib\controller\Action::__construct(AddAdministrator::$_definition);
 
 	}
 
@@ -65,7 +65,7 @@ class AddAdministrator extends \lib\controller\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate ( $actionResult )
+	function validateAction ( $actionResult )
 	{
             /* Insert the validation code here */
             return $actionResult->isOk();

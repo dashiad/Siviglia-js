@@ -134,7 +134,7 @@ class MysqlDataSourceTest extends TestCase
         $this->assertEquals(1,$n1);
         $p=$res->Posts[0];
 
-        $this->assertEquals(1,$p->creator_id);
+        $this->assertEquals(1,$p->{"*creator_id"}->getValue());
         $n2=$res->FullList->count();
         $this->assertEquals(1,$n2);
         $this->assertEquals("User1",$res->FullList[0]->Name);
@@ -156,7 +156,7 @@ class MysqlDataSourceTest extends TestCase
         $res=$datasource->fetchGrouped("creator_id");
         $this->assertEquals(4,$res->count());
         $this->assertEquals(28,$res[0]->likes);
-        $this->assertEquals(1,$res[0]->creator_id);
+        $this->assertEquals(1,$res[0]->{"*creator_id"}->getValue());
         $this->assertEquals(3,$res[0]->N);
     }
     function testGroupings2()

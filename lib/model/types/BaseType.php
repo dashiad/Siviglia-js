@@ -12,7 +12,7 @@
       protected $parent;
       protected $setOnEmpty;
       protected $fieldPath;
-      protected $validating;
+      protected $__onlyValidating;
       const TYPE_SET_ON_SAVE=0x1;
       const TYPE_SET_ON_ACCESS=0x2;
       const TYPE_IS_FILE=0x4;
@@ -27,19 +27,48 @@
       const VALIDATION_MODE_STRICT=3; // Validacion de tipo, source y REQUIRED
 
       protected $fieldName;
+      protected $fieldNamePath;
       // El controller es el container que gestiona los posibles cambios de estado.
-      protected $controller;
+      protected $__controller=null;
+      protected $__controllerPath=null;
+      protected $__isDirty=false;
+      protected $__name;
       function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
           // Parent es el padre de este tipo, que puede ser otro tipo, o un bto.
+          $this->__name=$name;
           $this->parent=$parentType;
-          $this->fieldName=$name;
+          if($name!==null) {
+              if(is_string($name))
+              {
+                  $path="";
+                  $fieldName=$name;
+              }
+              else {
+                  $path=isset($name["path"])?($name["path"]=="/"?"":$name["path"]):"";
+                  $fieldName=$name["fieldName"];
+              }
+              $this->fieldName=$fieldName;
+              $this->fieldNamePath=$path."/".$fieldName;
+          }
+          // Establecemos el controller solo si el tipo derivado no lo ha hecho ya.
+          // Esto lo hacen las relaciones, especialmente las inversas.
+          if ($this->parent !== null && $this->__controller==null) {
+              $this->__controller = $this->parent->__getControllerForChild();
+          }
+          if($this->__controller!==null) {
+              $parentPath=$this->parent->__getFieldPath();
+              $this->__controllerPath = str_replace($this->__controller->__getFieldPath(), "", $this->fieldNamePath);
+              $this->__controllerPath[0]=$this->__controller->getPathPrefix();
+
+          }
+
           $this->validationMode= ($validationMode==null?BaseType::VALIDATION_MODE_STRICT:$validationMode);
           // Controller es siempre el bto original,
           $this->definition=$def;
           $this->flags=0;
           $this->setOnEmpty=false;
-          $this->validating=false;
+          $this->__onlyValidating=false;
           if(isset($def["SET_ON_EMPTY"]) && $def["SET_ON_EMPTY"]==true)
               $this->setOnEmpty=true;
           if (isset($def["FIXED"])) {
@@ -49,15 +78,35 @@
           else {
               if ($value === null) {
                   if ($this->hasDefaultValue() && !isset($definition["DISABLE_DEFAULT"]))
-                      $this->__rawSet($this->getDefaultValue());
+                      $this->apply($this->getDefaultValue(),\lib\model\types\BaseType::VALIDATION_MODE_NONE);
               } else {
                   $this->apply($value);
               }
           }
       }
+     function __getName()
+     {
+         return $this->__name;
+     }
+      function getController()
+      {
+          return $this->__controller;
+      }
+      function isAlias()
+      {
+          return false;
+      }
+      function __getFieldPath()
+      {
+          return $this->fieldNamePath;
+      }
       function setValidationMode($mode)
       {
           $this->validationMode=$mode;
+      }
+      function getValidationMode()
+      {
+          return $this->validationMode;
       }
       function setParent($parent,$fieldName)
       {
@@ -112,33 +161,70 @@
       }
       function setValue($val)
       {
-           $this->apply($val,BaseType::VALIDATION_MODE_NONE);
-           if($this->validationMode!==BaseType::VALIDATION_MODE_NONE)
-            $this->validate($val,$this->validationMode);
+          if($this->isEditable()) {
+              $this->apply($val, $this->validationMode);
+              $this->__setDirty(true);
+          }
+          else {
+              if($this->__controller && $this->__controller->getStateDef()!==null)
+                throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE);
+              else
+                  throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE);
+
+          }
+      }
+      function __setDirty($dirty)
+      {
+          if($dirty==$this->__isDirty)
+              return;
+          if($this->__controller) {
+              if($dirty)
+                $this->__controller->addDirtyField($this);
+              else
+                  $this->__controller->removeDirtyField($this);
+          }
+          $this->__isDirty=$dirty;
+          // Si un campo esta sucio, tiene valor...(¿?)
+      }
+      function isDirty()
+      {
+          return $this->__isDirty;
       }
 
       function apply($val,$validationMode=null)
       {
+          $this->__onlyValidating=false;
+          if($val===null || $this->isEmptyValue($val))
+          {
+              if($this->value!=null)
+                  $this->setDirty(true);
+              $this->value=null;
+              $this->valueSet=false;
+              $this->clear();
+              return;
+          }
           if($validationMode===null)
               $validationMode=$this->validationMode;
+
           if($val===$this->getEmptyValue())
           {
               if($this->setOnEmpty==false)
                     $val=null;
           }
 
-          if($val===null)
-          {
-              $this->clear();
-          }
-          else {
-
               if($this->flags & BaseType::TYPE_NOT_EDITABLE)
                   return;
               $this->_setValue($val,$validationMode);
-              if ($validationMode!==BaseType::VALIDATION_MODE_NONE)
-                    $this->validate($val,$validationMode);
-          }
+              if ($validationMode !== BaseType::VALIDATION_MODE_NONE) {
+                  $this->validate($val, $this->validationMode);
+                  $this->__setDirty(true);
+              }
+              else
+              {
+                  if($this->__controller)
+                      $this->__setDirty(false);
+              }
+
       }
       function getEmptyValue()
       {
@@ -152,6 +238,7 @@
 
       function validate($value,$validationMode=null)
       {
+          $this->__onlyValidating=true;
           if(!$validationMode)
               $validationMode=$this->validationMode;
 
@@ -168,13 +255,24 @@
 
             if($validationMode==BaseType::VALIDATION_MODE_STRICT)
             {
-                $req=io($this->definition,"REQUIRED",false);
+               $req=$this->isRequired();
                 if($req && $this->isEmptyValue($value))
                     throw new BaseTypeException(BaseTypeException::ERR_REQUIRED,["field"=>$this->fieldPath]);
             }
-
-            $this->validating=false;
+            $this->__onlyValidating=false;
             return $res;
+      }
+      function isRequired()
+      {
+          if($this->__controller)
+          {
+              return $this->__controller->isFieldRequired($this->__controllerPath);
+          }
+          return $this->isDefinedAsRequired();
+      }
+      function isDefinedAsRequired()
+      {
+          return io($this->definition,"REQUIRED",false);
       }
       function checkSource($value)
       {
@@ -196,6 +294,13 @@
       function hasOwnValue()
       {
           return $this->valueSet;
+      }
+      // Este metodo es usado por Container: puede que no tenga un valor valido, porque el container no esta completo
+      // (no tiene todos los campos requeridos), pero tampoco es null.
+      // En el resto de los casos, es equivalente a !$this->hasValue
+      function __isEmpty()
+      {
+          return !$this->hasValue();
       }
       function copy($type)
       {
@@ -242,17 +347,27 @@
 
       function clear()
       {
+          if(!$this->__isEmpty())
+          {
+              $this->__setDirty(true);
+          }
           $this->valueSet=false;
       }
 
       function isEditable()
       {
-          return !($this->flags & BaseType::TYPE_NOT_EDITABLE);
+          if ($this->flags & BaseType::TYPE_NOT_EDITABLE)
+              return false;
+          if(!$this->__controller)
+              return true;
+          if(!$this->__controller->getStateDef())
+              return true;
+          return $this->__controller->getStateDef()->isEditable($this->__controllerPath);
       }
 
-      final function getValue()
+      function getValue()
       {
-          if($this->valueSet)
+          if($this->hasValue())
             return $this->_getValue();
           else
           {
@@ -261,6 +376,18 @@
           }
           return null;
       }
+      // La funcion getReference es casi equivalente a getValue. La diferencia es que está pensada
+      // para ser usada con el operador ->. Mientras en una relationship, un getValue() deberia devolver
+      // el entero, getReference() devolveria el propio tipo, para utilizarlo con los operadores [] y ->
+      // Cuando el tipo es simple, getReference es equivalente a getValue. Cuando el tipo es compuesto,
+      // getReference devuelve el propio objeto.
+
+      function getReference()
+      {
+          return $this->getValue();
+      }
+
+
       abstract function _getValue();
 
       function __toString()
@@ -291,9 +418,9 @@
       {
           $this->definition["DEFAULT"]=$val;
       }
-      function getRelationshipType()
+      function getRelationshipType($name,$parent)
       {
-          return $this;
+          return \lib\model\types\TypeFactory::getType($name,$this->definition,$parent);
       }
       function getDefinition()
       {
@@ -329,9 +456,13 @@
           if($ctxStack===null) {
               $ctxStack = new \lib\model\ContextStack();
           }
-          $ctx = new \lib\model\BaseObjectContext($this, "#", $ctxStack);
+          $ctx = new \lib\model\BaseObjectContext($this, $this->getPathPrefix(), $ctxStack);
           $path=new \lib\model\PathResolver($ctxStack,$path);
           return $path->getPath();
+      }
+      function getPathPrefix()
+      {
+          return "#";
       }
 
 
@@ -359,6 +490,35 @@
             "hasValue"=>$this->valueSet
           ];
       }
+      function save()
+      {
+        // Por defecto, un tipo, cuando se guarda,
+          // si tenia un controller, se borra del controller como dirtyField.
+          if($this->isDirty())
+              $this->__setDirty(false);
+      }
+      function onModelSaved()
+      {
+          // LLamado cuando el controller se guarda.Por defecto, no hace nada.
+      }
+      // En un tipo que no sea container, tanto el container "upstream", como el container "downstream",
+      // es el mismo: el __controller que tenga asignado este objeto.
+      function __getController()
+      {
+          return $this->__controller;
+      }
+      function __getControllerForChild()
+      {
+          return $this->__controller;
+      }
+      function isRelation()
+      {
+          return false;
+      }
+      function getTypes()
+      {
+          return array($this->fieldName=>$this);
+      }
 
-      abstract function getMetaClassName();
+
   }

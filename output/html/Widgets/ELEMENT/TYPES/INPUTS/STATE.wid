@@ -1,7 +1,7 @@
 <?php
     
     $fdef=$form->__getField($name);
-    $type=$fdef->getType();    
+    $type=$fdef;
     $labels=$type->getLabels();
     $val=$form->{$name};    
     include_once(PROJECTPATH.'/lib/datasource/ArrayDataSource.php');

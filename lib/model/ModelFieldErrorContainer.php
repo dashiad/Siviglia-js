@@ -33,6 +33,7 @@ class ModelFieldErrorContainer
  //       else
  //           $path=$exception->getPath();
         $this->fieldErrors[$path][$exception->getCodeString()][$code]=array(
+            "exception"=>$e,
             "value"=>$value,
             "code"=>$code,
             "path"=>"/".$path,

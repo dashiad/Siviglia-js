@@ -39,6 +39,10 @@ INSERT INTO `GroupedData` VALUES (2,0),(3,10),(3,20),(1,30),(1,40);
 /*!40000 ALTER TABLE `GroupedData` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
+DROP TABLE IF EXISTS `Complex`;
+CREATE TABLE `Complex` (id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, C1 JSON, C2 JSON,lat float, `lon` float);
+
 --
 -- Table structure for table `Roles`
 --

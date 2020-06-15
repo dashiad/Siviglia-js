@@ -115,8 +115,6 @@ include_once(LIBPATH."/model/types/BaseType.php");
                     {
                         include_once($info["file"]);
                         return new $info["class"]($name,$parentType,$value,$validationMode);
-                            throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type),null);
-                        return $instance;
                     }
 
                 throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type),null);
@@ -170,13 +168,13 @@ include_once(LIBPATH."/model/types/BaseType.php");
       static function getFieldTypeInstance($objectName,$fieldName,$model,$value=null,$validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE)
       {
           $definition=\lib\model\types\TypeFactory::getObjectField($objectName,$fieldName);
-          return TypeFactory::getType($fieldName,$definition,$model,null,$model->getValidationMode());
+          return TypeFactory::getType($fieldName,$definition,$model,null,$model?$model->getValidationMode():\lib\model\types\BaseType::VALIDATION_MODE_NONE);
       }
 
-      static function getRelationFieldTypeInstance($objectName,$fieldName,$model,$value=null,$validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE)
+      static function getRelationFieldTypeInstance($objectName,$fieldName,$destName,$destModel,$value=null,$validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE)
       {
-          $type=\lib\model\types\TypeFactory::getFieldTypeInstance($objectName,$fieldName,$model,$value,null);
-          return $type->getRelationshipType();
+          $type=\lib\model\types\TypeFactory::getFieldTypeInstance($objectName,$fieldName,$destModel,$value,$validationMode);
+          return $type->getRelationshipType($destName,$destModel);
       }
 
        static function getObjectDefinition($objName,$layer=null)
