@@ -13,19 +13,23 @@ include_once(LIBPATH."/autoloader.php");
 include_once(LIBPATH."/startup.php");
 include_once(PROJECTPATH."/lib/model/permissions/AclManager.php");
 
+use lib\model\permissions\PermissionsManager;
 use PHPUnit\Framework\TestCase;
 use lib\model\permissions\AclManager;
 
 class AclManagerTest extends TestCase
 {
     var $acl;
+    var $permsManager;
     var $permsArr;
     function firstSetup()
     {
         $ser=\Registry::getService("storage")->getSerializerByName('default');
 
         include_once(PROJECTPATH . "/lib/model/permissions/AclManager.php");
-        $this->acl = new AclManager($ser);
+        include_once(PROJECTPATH . "/lib/model/permissions/PermissionsManager.php");
+        $this->permsManager=new \lib\model\permissions\PermissionsManager($ser);
+        $this->acl = \lib\model\permissions\PermissionsManager::$aclManager;
         $this->acl->uninstall();
         $this->acl->install();
 
@@ -90,17 +94,18 @@ class AclManagerTest extends TestCase
         $ser=\Registry::getService("storage")->getSerializerByName('web');
 
         include_once(PROJECTPATH . "/lib/model/permissions/AclManager.php");
-        $this->acl = new AclManager($ser);
+        $this->permsManager=new \lib\model\permissions\PermissionsManager($ser);
+        $this->acl = \lib\model\permissions\PermissionsManager::$aclManager;
         $this->acl->uninstall();
         $this->acl->install();
 
 
         $this->permsArr = array(
             "axos" => array(
-                "AllObjects"=>array(
+                "AllModules"=>array(
                     "Sys"=>array(
-                        "web"=>array(
-                            "webModules"=>array(
+                        "model"=>array(
+                            "web"=>array(
                                 "Page"=>array()
                             )
                         )
@@ -111,8 +116,8 @@ class AclManagerTest extends TestCase
             "acos" => array(
                 "AllPermissions"=>array(
                     "Sys"=>array(
-                        "web"=>array(
-                            "webModules"=>array(
+                        "model"=>array(
+                            "web"=>array(
                                 "Page"=>array("create","view")
 
                             )
@@ -123,7 +128,7 @@ class AclManagerTest extends TestCase
 
             "aros"=>array(
                 "AllUsers"=>array(
-                    "Users"=>array(
+                    "Sys"=>array(
                         1
                     )
                 )
@@ -454,8 +459,8 @@ class AclManagerTest extends TestCase
             ->disallowMockingUnknownTypes()
             ->getMock();*/
         $user=null;
-        $access=$this->acl->canAccess(
-            [["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PUBLIC]],$user);
+        $access=$this->permsManager->canAccess(
+            [["TYPE"=>\lib\model\permissions\PermissionsManager::PERMISSIONSPEC_PUBLIC]],$user);
         $this->assertEquals(true,$access);
     }
     function testCanAccessUserModel()
@@ -464,6 +469,7 @@ class AclManagerTest extends TestCase
         $user=$this->getMockBuilder('\model\web\WebUser')
                 ->disableOriginalConstructor()
                 ->getMock();
+        $user->method("isLogged")->willReturn(true);
         $user->method("getId")->willReturn(1);
 
         $model=$this->getMockBuilder('\lib\model\BaseModel')
@@ -479,13 +485,13 @@ class AclManagerTest extends TestCase
         $this->acl->add_acl(array("GROUP"=>"Page","ITEM"=>array("view")),
             array("GROUP"=>"Users","ITEM"=>array("1")),
             array("GROUP"=>"Page"));
-        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+        $res=$this->permsManager->canAccess([["TYPE"=>\lib\model\permissions\PermissionsManager::PERMISSIONSPEC_ACL,
                                           "REQUIRES"=>"view",
-                                          "ON"=>'Page']],$user,$model);
+                                          "ON"=>'/model/web/Page']],$user,$model);
         $this->assertEquals(true,$res);
-        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+        $res=$this->permsManager->canAccess([["TYPE"=>\lib\model\permissions\PermissionsManager::PERMISSIONSPEC_ACL,
             "REQUIRES"=>"create",
-            "ON"=>'Page']],$user,$model);
+            "ON"=>'/model/web/Page']],$user,$model);
         $this->assertEquals(false,$res);
     }
     function testResolveAccessId()
@@ -500,7 +506,7 @@ class AclManagerTest extends TestCase
         $this->assertEquals(2, $id["aco"]["ITEM"]);
 
         $id = $this->acl->resolveAccessIds(null, array(
-            "GROUP" => "/AllPermissions/Sys/web/webModules/Page"
+            "GROUP" => "/AllPermissions/Sys/model/web/Page"
         ), null);
         $this->assertEquals(true, is_array($id));
         $this->assertEquals(true, isset($id["aco"]));
@@ -526,11 +532,11 @@ class AclManagerTest extends TestCase
         $id=$this->acl->resolveAccessIds(null,null,array(
             "GROUP"=>"Sites",
             "CREATE"=>true,
-            "CREATEPATH"=>"/AllObjects/Sys/web/webModules"
+            "CREATEPATH"=>"/AllModules/Sys/model/web"
         ));
         $gId=$id["axo"]["GROUP"];
 
-        $nGid=$this->acl->getGroupFromPath("/AllObjects/Sys/web/webModules/Sites",AclManager::AXO);
+        $nGid=$this->acl->getGroupFromPath("/AllModules/Sys/model/web/Sites",AclManager::AXO);
         $this->assertEquals($gId,$nGid);
     }
 
@@ -542,7 +548,7 @@ class AclManagerTest extends TestCase
         $method->setAccessible(true);
 
         $path=$method->invokeArgs($this->acl, array("/model/web/Sites"));
-        $this->assertEquals("/AllModules/Sys/web/Sites",$path);
+        $this->assertEquals("/AllModules/Sys/model/web/Sites",$path);
     }
     function testAddPermissionOverModule()
     {
@@ -553,6 +559,7 @@ class AclManagerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $user->method("getId")->willReturn(1);
+        $user->method("isLogged")->willReturn(true);
 
         $model=$this->getMockBuilder('\lib\model\BaseModel')
             ->disableOriginalConstructor()
@@ -562,12 +569,12 @@ class AclManagerTest extends TestCase
         $model->method("__getKeys")->will($this->returnCallback(function(){
             return new class {public function get(){return array(1);}};
         }));
-        $this->acl->addPermissionOverModule("view",1,"Page");
+        $this->acl->addPermissionOverModule("view",1,"/model/web/Page");
 
-        $res=$this->acl->canAccess(
-            [["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+        $res=$this->permsManager->canAccess(
+            [["TYPE"=>\lib\model\permissions\PermissionsManager::PERMISSIONSPEC_ACL,
                 "REQUIRES"=>"view",
-                "ON"=>'Page']]
+                "ON"=>'/model/web/Page']]
             ,$user,$model);
         $this->assertEquals(true,$res);
     }
@@ -581,6 +588,7 @@ class AclManagerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $user->method("getId")->willReturn(1);
+        $user->method("isLogged")->willReturn(true);
 
         $model=$this->getMockBuilder('\lib\model\BaseModel')
             ->disableOriginalConstructor()
@@ -590,17 +598,17 @@ class AclManagerTest extends TestCase
         $model->method("__getKeys")->will($this->returnCallback(function(){
             return new class {public function get(){return array(1);}};
         }));
-        $this->acl->addPermissionOverModule("view",1,"Page");
+        $this->acl->addPermissionOverModule("view",1,"/model/web/Page");
 
-        $res=$this->acl->canAccess(
-            [["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+        $res=$this->permsManager->canAccess(
+            [["TYPE"=>\lib\model\permissions\PermissionsManager::PERMISSIONSPEC_ACL,
                 "REQUIRES"=>"view",
-                "ON"=>'Page']],$user,$model);
+                "ON"=>'/model/web/Page']],$user,$model);
         $this->assertEquals(true,$res);
-        $this->acl->removePermissionOverModule("view",1,"/AllObjects/Sys/web/webModules/Page");
-        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+        $this->acl->removePermissionOverModule("view",1,"/AllModules/Sys/model/web/Page");
+        $res=$this->permsManager->canAccess([["TYPE"=>\lib\model\permissions\PermissionsManager::PERMISSIONSPEC_ACL,
             "REQUIRES"=>"view",
-            "ON"=>'Page']],$user,$model);
+            "ON"=>'/model/web/Page']],$user,$model);
         $this->assertEquals(false,$res);
     }
     // This test checks that if permission over all modules is given, but one module is revoked, it still
@@ -614,6 +622,7 @@ class AclManagerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $user->method("getId")->willReturn(1);
+        $user->method("isLogged")->willReturn(true);
 
         $model=$this->getMockBuilder('\lib\model\BaseModel')
             ->disableOriginalConstructor()
@@ -625,22 +634,22 @@ class AclManagerTest extends TestCase
         }));
         $this->acl->add_acl(array("ITEM"=>array("view")),
             array("ITEM"=>array(1)),
-            array("GROUP"=>array("webModules")));
+            array("GROUP"=>array("/AllModules/Sys/model")));
 
-        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+        $res=$this->permsManager->canAccess([["TYPE"=>\lib\model\permissions\PermissionsManager::PERMISSIONSPEC_ACL,
             "REQUIRES"=>"view",
-            "ON"=>'Page']],$user,$model);
+            "ON"=>'/model/web/Page']],$user,$model);
         $this->assertEquals(true,$res);
 
-        $this->acl->removePermissionOverModule("view",1,"/AllObjects/Sys/web/webModules/Page");
-        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+        $this->acl->removePermissionOverModule("view",1,"/AllModules/Sys/model/web/Page");
+        $res=$this->permsManager->canAccess([["TYPE"=>\lib\model\permissions\PermissionsManager::PERMISSIONSPEC_ACL,
             "REQUIRES"=>"view",
-            "ON"=>'Page']],$user,$model);
+            "ON"=>'/model/web/Page']],$user,$model);
         $this->assertEquals(false,$res);
         $id=$this->acl->resolveAccessIds(null,null,array(
             "GROUP"=>"Sites",
             "CREATE"=>true,
-            "CREATEPATH"=>"/AllObjects/Sys/web/webModules"
+            "CREATEPATH"=>"/AllModules/Sys/model/web"
         ));
 
         // Now, we create a model to check the access to Sites work
@@ -652,9 +661,9 @@ class AclManagerTest extends TestCase
         $model->method("__getKeys")->will($this->returnCallback(function(){
             return new class {public function get(){return array(1);}};
         }));
-        $res=$this->acl->canAccess([["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PERMISSION,
+        $res=$this->permsManager->canAccess([["TYPE"=>\lib\model\permissions\PermissionsManager::PERMISSIONSPEC_ACL,
             "REQUIRES"=>"view",
-            "ON"=>'Sites']],$user,$model);
+            "ON"=>'/model/web/Sites']],$user,$model);
         $this->assertEquals(true,$res);
 
     }
@@ -663,31 +672,31 @@ class AclManagerTest extends TestCase
     {
         $this->secondSetup();
         // Primer test: un permiso dado.
-        $this->acl->addPermissionOverModule("view", 1, "Page");
-        $res = $this->acl->getAccessDetails("Page", null, "view", 1, $userGroup = AclManager::DEFAULT_USER_GROUP);
+        $this->acl->addPermissionOverModule("view", 1, "/model/web/Page");
+        $res = $this->acl->getAccessDetails("/AllModules/Sys/model/web/Page", null, "view", 1, $userGroup = PermissionsManager::DEFAULT_USER_GROUP);
         $this->assertEquals(true, $res[0]);
         $this->assertEquals(0, count($res[1]));
 
         // Segundo test: un permiso no dado:
-        $res = $this->acl->getAccessDetails("Page", null, "create", 1, $userGroup = AclManager::DEFAULT_USER_GROUP);
+        $res = $this->acl->getAccessDetails("/AllModules/Sys/model/web/Page", null, "create", 1, $userGroup = PermissionsManager::DEFAULT_USER_GROUP);
         $this->assertEquals(false, $res[0]);
         $this->assertEquals(0, count($res[1]));
 
         // Tercer test: damos un permiso posterior sobre "view": debe tener prioridad sobre el primero
-        $this->acl->removePermissionOverModule("view", 1, "/AllObjects/Sys/web/webModules/Page");
-        $res = $this->acl->getAccessDetails("Page", null, "view", 1, $userGroup = AclManager::DEFAULT_USER_GROUP);
+        $this->acl->removePermissionOverModule("view", 1, "/AllModules/Sys/model/web/Page");
+        $res = $this->acl->getAccessDetails("Page", null, "view", 1, $userGroup = PermissionsManager::DEFAULT_USER_GROUP);
         $this->assertEquals(false, $res[0]);
         $this->assertEquals(0, count($res[1]));
 
         // Cuarto test: damos un permiso sobre "view" a 1 pagina especifica:
         $oid = $this->acl->add_object("Page", "100", AclManager::AXO);
-        $gid = $this->acl->getGroupFromPath("/AllObjects/Sys/web/webModules/Page", AclManager::AXO);
+        $gid = $this->acl->getGroupFromPath("/AllModules/Sys/model/web/Page", AclManager::AXO);
         $id = $this->acl->add_group_object($gid, $oid);
 
         $this->acl->add_acl(array("GROUP" => "Page", "ITEM" => array("view")),
             array("GROUP" => "Users", "ITEM" => array("1")),
             array("GROUP" => "Page", "ITEM" => array("100")));
-        $res = $this->acl->getAccessDetails("Page", null, "view", 1, $userGroup = AclManager::DEFAULT_USER_GROUP);
+        $res = $this->acl->getAccessDetails("Page", null, "view", 1, $userGroup = PermissionsManager::DEFAULT_USER_GROUP);
         $this->assertEquals(false, $res[0]);
         $this->assertEquals(1, count($res[1]));
         $this->assertEquals("100", $res[1][0]);
@@ -696,14 +705,14 @@ class AclManagerTest extends TestCase
     {
         $this->secondSetup();
   // Quinto test, volvemos a dar permisos sobre "view"
-        $this->acl->addPermissionOverModule("view",1,"Page");
-        $res=$this->acl->getAccessDetails("Page", null, "view", 1, $userGroup = AclManager::DEFAULT_USER_GROUP);
+        $this->acl->addPermissionOverModule("view",1,"/model/web/Page");
+        $res=$this->acl->getAccessDetails("Page", null, "view", 1, $userGroup = PermissionsManager::DEFAULT_USER_GROUP);
         $this->assertEquals(true,$res[0]);
         $this->assertEquals(0,count($res[1]));
 
         // Se crea una primera pagina a la que se les da unos permisos que ya tiene
         $oid=$this->acl->add_object("Page","100",AclManager::AXO);
-        $gid=$this->acl->getGroupFromPath("/AllObjects/Sys/web/webModules/Page",AclManager::AXO);
+        $gid=$this->acl->getGroupFromPath("/AllModules/Sys/model/web/Page",AclManager::AXO);
         $id=$this->acl->add_group_object($gid,$oid);
         // Se quitan los permisos para esa pagina
         $this->acl->add_acl(array("GROUP"=>"Page","ITEM"=>array("view")),
@@ -712,7 +721,7 @@ class AclManagerTest extends TestCase
 
         // Se crea una segunda pagina, la 101
         $oid=$this->acl->add_object("Page","101",AclManager::AXO);
-        $gid=$this->acl->getGroupFromPath("/AllObjects/Sys/web/webModules/Page",AclManager::AXO);
+        $gid=$this->acl->getGroupFromPath("/AllModules/Sys/model/web/Page",AclManager::AXO);
         $id=$this->acl->add_group_object($gid,$oid);
         // Se quitan los permisos para esa pagina
         $this->acl->add_acl(array("GROUP"=>"Page","ITEM"=>array("view")),
@@ -720,7 +729,7 @@ class AclManagerTest extends TestCase
             array("GROUP"=>"Page","ITEM"=>array("101")),0);
         // Se obtienen ahora los permisos
         // La 100 no debe salir, ya que coincide con el valor del original.
-        $res=$this->acl->getAccessDetails("Page", null, "view", 1, $userGroup = AclManager::DEFAULT_USER_GROUP);
+        $res=$this->acl->getAccessDetails("Page", null, "view", 1, $userGroup = PermissionsManager::DEFAULT_USER_GROUP);
 
         $this->assertEquals(true,$res[0]);
         $this->assertEquals(1,count($res[1]));

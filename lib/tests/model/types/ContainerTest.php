@@ -155,16 +155,33 @@ class ContainerTest extends TestCase
     function testMissing()
     {
         $cnt=$this->getDefinition2();
-        $this->expectException('\lib\model\types\BaseTypeException');
-        $this->expectExceptionCode(\lib\model\types\BaseTypeException::ERR_REQUIRED);
-        $cnt->setValue(["one"=>"tres"]);
+        $thrown=false;
+        try {
+            $cnt->setValue(["one" => "tres"]);
+        }catch(\Exception $e)
+        {
+            $this->assertEquals(true,is_a($e,'lib\model\types\BaseTypeException'));
+            $this->assertEquals(\lib\model\types\BaseTypeException::ERR_REQUIRED,$e->getCode());
+            $thrown=true;
+        }
+        $this->assertEquals(true,$thrown);
+        $this->assertEquals(true,$cnt->isErrored());
     }
     function testInvalid()
     {
         $cnt=$this->getDefinition1();
-        $this->expectException('\lib\model\types\_StringException');
-        $this->expectExceptionCode(\lib\model\types\_StringException::ERR_TOO_SHORT);
-        $cnt->setValue(["one"=>"a","two"=>"lalas"]);
+        $thrown=false;
+        try {
+            $cnt->setValue(["one"=>"a","two"=>"lalas"]);
+        }catch(\Exception $e)
+        {
+            $this->assertEquals(true,is_a($e,'lib\model\types\_StringException'));
+            $this->assertEquals(\lib\model\types\_StringException::ERR_TOO_SHORT,$e->getCode());
+            $thrown=true;
+        }
+        $this->assertEquals(true,$thrown);
+
+
     }
     function testValidateInvalid()
     {

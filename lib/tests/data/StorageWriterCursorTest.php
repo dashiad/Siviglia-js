@@ -34,7 +34,7 @@ class StorageWriterCursor extends TestCase
             $serializerService=\Registry::getService("storage");
             $serializerService->addSerializer("ADSManager-CSV",
                 [
-                    "MODEL"=>"/model/Ads/objects/AdManager",
+                    "MODEL"=>"/model/Ads/AdManager",
                     "CLASS"=>"/CSV/AdManagerCSVTypeSerializer",
                     "PARAMS"=>[]
                 ]
@@ -56,6 +56,7 @@ class StorageWriterCursor extends TestCase
 
     function test1()
     {
+        \Registry::getService("model")->addPackage(new \lib\tests\data\res\model\Ads\Package());
         $this->buildCustomSerializer();
 
         $fr=new \lib\data\Cursor\CSVFileReaderCursor();
@@ -67,7 +68,7 @@ class StorageWriterCursor extends TestCase
         $fr->init(["fileName"=>__DIR__."/res/simple.csv"]);
         $tC->init([
             "typeMap"=>[
-                "model"=>"/model/Ads/objects/AdManager",
+                "model"=>"/model/Ads/AdManager",
                 "serializer"=>"ADSManager-CSV"
             ]
         ]);
@@ -101,7 +102,7 @@ class StorageWriterCursor extends TestCase
 
         // Se deserializa de ES una instancia
         $modelService=\Registry::getService("model");
-        $sampleModel=$modelService->getModel("/model/Ads/objects/AdManager");
+        $sampleModel=$modelService->getModel("/model/Ads/AdManager");
         $es->unserialize($sampleModel, [
             "CONDITIONS"=>[
                 ["FILTER"=>["F"=>"HOUR","OP"=>"=","V"=>0]]

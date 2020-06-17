@@ -123,7 +123,7 @@ class ModelService extends \lib\service\Service
         $ins=ModelService::getModel($objectName,$serializer);
         foreach($fields as $k=>$v)
             $ins->{$k}=$v;
-        $ins->loadFromFields();
+        $ins->loadFromFields($serializer);
         return $ins;
     }
     static function getDataSource($objectName,$datasource,$serializer=null)

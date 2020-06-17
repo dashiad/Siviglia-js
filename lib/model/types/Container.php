@@ -24,6 +24,7 @@ class Container extends BaseType implements \ArrayAccess
     protected $__dirtyFields=array();
     protected $__pendingRequired=[];
     protected $__savedValidationMode;
+    protected $__errored=[];
     // Se declara una variable __empty, para saber si el campo esta vacio o no.
     // Un container puede que no este vacio, porque se han establecido campos, pero su valor solo va a estar a "set", si todos
     // los campos requeridos estan tambien "set".
@@ -33,6 +34,7 @@ class Container extends BaseType implements \ArrayAccess
     function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
         $this->__fields=[];
+        $this->__errored=[];
         $this->__fieldDef=$def["FIELDS"];
         if(isset($def["STATES"]) && $this->__stateDef==null) {
 
@@ -343,7 +345,9 @@ class Container extends BaseType implements \ArrayAccess
                 if(!$this->__stateDef->isEditable($varName) && $value!=$this->{$varName})
                 {
                     $this->__allowRead=false;
-                    throw new BaseTypedException(BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,array("field"=>$varName,"state"=>$this->__stateDef->getCurrentState()));
+                    $exception=new BaseTypedException(BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,array("field"=>$varName,"state"=>$this->__stateDef->getCurrentState()));
+                    $this->{"*".$varName}->__setErrored($exception);
+                    throw $exception;
                 }
             }
             // Ahora hay que tener cuidado.Si lo que se esta estableciendo es el campo que define el estado
@@ -517,21 +521,56 @@ class Container extends BaseType implements \ArrayAccess
 
     function addDirtyField($fieldObj)
     {
-        if($this->isDirty()==false)
-        $this->__setDirty(true);
+        $fieldName=$fieldObj->getFieldName();
+        unset($this->__errored[$fieldName]);
+        if($this->isDirty()==false) {
+            if(count($this->__errored)==0)
+                $this->__setDirty(true);
+        }
+
         if(!in_array($fieldObj,$this->__dirtyFields))
             $this->__dirtyFields[]=$fieldObj;
         if($this->__changingState)
             $this->__checkStateChangeCompleted();
     }
+    function addErroredField($fieldObj)
+    {
+        $this->__errored[]=$fieldObj;
+    }
+    function getErroredFields()
+    {
+        return $this->__errored;
+    }
+    function clearErroredField($fieldObj)
+    {
+        for($k=0;$k<count($this->__errored);$k++)
+        {
+            if($this->__errored[$k]==$fieldObj)
+            {
+                unset($this->__errored[$k]);
+                break;
+            }
+        }
+        if(count($this->__errored)==0 && count($this->__dirtyFields)>0)
+            $this->setDirty(true);
+    }
     function save()
     {
+        if(count($this->__errored)>0)
+            throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_CANT_SAVE_ERRORED_FIELD,["field"=>$this->__getFieldPath()]);
         // TODO : Estamos iterando solo sobre los objetos que han sido instanciados, no sobre todos los campos..
         foreach($this->__fields as $k=>$v)
         {
             $v->save();
         }
+        // Volvemos a chequear despues del save de los objetos, por si acaso.
+        if(count($this->__errored)>0)
+            throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_CANT_SAVE_ERRORED_FIELD,["field"=>$this->__getFieldPath()]);
         parent::save();
+    }
+    function isErrored()
+    {
+        return $this->__isErrored || count($this->__errored)>0;
     }
 
 

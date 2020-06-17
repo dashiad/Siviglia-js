@@ -297,15 +297,24 @@ class ModelTest extends TestCase
         $ins->id = 1;
         $ins->loadFromFields();
         // Se introduce un error, con un id_user no valido.
-        $this->expectException('\lib\model\BaseTypedException');
+
         //TODO: Cuando las excepciones soporten stacking, la excecpcion LOAD_DATA_FAILED deberia ser la
         // ultima, y deberia ser posible obtener la anterior, que deberia ser un fallo del source.
-        $this->expectExceptionCode(\lib\model\BaseTypedException::ERR_LOAD_DATA_FAILED);
 
-        $ins->comments = [
-            ["title" => "Uno Nuevo", "id_user" => 1000]
-        ];
-        $ins->save();
+        $thrown=false;
+        try {
+            $ins->comments = [
+                ["title" => "Uno Nuevo", "id_user" => 1000]
+            ];
+            $ins->save();
+        }catch(\Exception $e)
+        {
+            $thrown=true;
+            $this->assertEquals(true,is_a($e,'lib\model\types\BaseTypeException'));
+            $this->assertEquals(\lib\model\types\BaseTypeException::ERR_INVALID,$e->getCode());
+        }
+        $this->assertEquals(true,$thrown);
+
     }
 
 
@@ -466,7 +475,7 @@ class ModelTest extends TestCase
         $fieldErrors = $result->getFieldErrors();
         $this->assertEquals(1, count($fieldErrors));
         $keys = array_keys($fieldErrors);
-        $this->assertEquals("title", $keys[0]);
+        $this->assertEquals("/title", $keys[0]);
         $keys = array_keys($fieldErrors[$keys[0]]);
         $this->assertEquals('lib\model\types\_StringException::TOO_LONG', $keys[0]);
     }
@@ -490,7 +499,7 @@ class ModelTest extends TestCase
         $this->assertEquals(false, $result->isOk());
         $this->assertEquals(1, count($fieldErrors));
         $keys = array_keys($fieldErrors);
-        $this->assertEquals("creator_id", $keys[0]);
+        $this->assertEquals("/creator_id", $keys[0]);
         $keys = array_keys($fieldErrors[$keys[0]]);
         $this->assertEquals('lib\model\types\BaseTypeException::INVALID', $keys[0]);
     }
@@ -531,7 +540,7 @@ class ModelTest extends TestCase
         $fieldErrors = $result->getFieldErrors();
         $this->assertEquals(1, count($fieldErrors));
         $keys = array_keys($fieldErrors);
-        $this->assertEquals("Name", $keys[0]);
+        $this->assertEquals("/Name", $keys[0]);
         $keys = array_keys($fieldErrors[$keys[0]]);
         $this->assertEquals('lib\model\types\_StringException::TOO_LONG', $keys[0]);
     }
@@ -553,7 +562,7 @@ class ModelTest extends TestCase
         $fieldErrors = $result->getFieldErrors();
         $this->assertEquals(1, count($fieldErrors));
         $keys = array_keys($fieldErrors);
-        $this->assertEquals("adminrole", $keys[0]);
+        $this->assertEquals("/adminrole", $keys[0]);
         $keys = array_keys($fieldErrors[$keys[0]]);
         $this->assertEquals('lib\model\types\BaseTypeException::INVALID', $keys[0]);
     }
@@ -606,8 +615,37 @@ class ModelTest extends TestCase
     }
 
     /*
-     * Test de validacion con path 4: Establecimiento de una relacion inversa,con campos erroneos.
+     * No exactamente un test de validacion, ya que cargamos el valor directamente.
      */
+    function testValidate8()
+    {
+        $this->init();
+        $ins = new \model\tests\Post();
+        $result = $ins->loadFromArray(
+            [
+                "comments" => [
+                    [
+                        "id_user" => 2,
+                        "title" => "Primer Comentario pathPrimer Comentario pathPrimer Comentario pathPrimer Comentario path",
+                        "content" => "Contenido Primer Comentario path"
+                    ],
+                    [
+                        "id_user" => 2,
+                        "title" => "Segundo Comentario path",
+                        "content" => "Segundo Comentario path"
+                    ],
+                ]
+            ]
+        );
+
+
+        $this->assertEquals(false, $result->isOk());
+        $fieldErrors = $result->getFieldErrors();
+        $keys = array_keys($fieldErrors);
+        $this->assertEquals("/comments/0/title", $keys[0]);
+        $subKeys = array_keys($fieldErrors[$keys[0]]);
+        $this->assertEquals('lib\model\types\_StringException::TOO_LONG', $subKeys[0]);
+    }
     function testValidate7()
     {
         $this->init();
@@ -633,10 +671,11 @@ class ModelTest extends TestCase
         $this->assertEquals(false, $result->isOk());
         $fieldErrors = $result->getFieldErrors();
         $keys = array_keys($fieldErrors);
-        $this->assertEquals("title", $keys[0]);
+        $this->assertEquals("/comments/0/title", $keys[0]);
         $subKeys = array_keys($fieldErrors[$keys[0]]);
         $this->assertEquals('lib\model\types\_StringException::TOO_LONG', $subKeys[0]);
     }
+
 
     /*
      *  Test de guardado simple
@@ -1011,8 +1050,34 @@ class ModelTest extends TestCase
         $c->id=1;
         $c->loadFromFields();
         $this->assertEquals(3.0,$c->C2->C3->position->LON);
-
-
+    }
+    // Diferentes pruebas de loadFromArray, para comprobar que los errores se capturan correctamente, sin que se guarde nada en la base de datos.
+    function testLoadFromArray1()
+    {
+        $this->init();
+        $b=new \model\tests\ClassB();
+        $loadResult=new \lib\model\ModelFieldErrorContainer();
+        $b->loadFromArray(["C1"=>["a1"=>["a2"=>"aa","b2"=>1]]],false,false,$loadResult);
+        // Vemos que en loadResult hay 1 error
+        $errors=$loadResult->getFieldErrors();
+        $this->assertEquals(true,isset($errors["/C1/a1/a2"]));
+        $keys=array_keys($errors["/C1/a1/a2"]);
+        $this->assertEquals("lib\\model\\types\\_StringException::TOO_SHORT",$keys[0]);
+        // Intentamos guardar el objeto, y no nos deberia dejar
+        $thrown=false;
+        try {
+            $b->save();
+        }catch(\Exception $e)
+        {
+            $thrown=true;
+            $this->assertEquals(true,is_a($e,'lib\model\BaseTypedException'));
+            $this->assertEquals(\lib\model\BaseTypedException::ERR_CANT_SAVE_ERRORED_OBJECT,$e->getCode());
+        }
+        $this->assertEquals(true,$thrown);
+        // Arreglamos el problema, y ahora deberia guardar sin problemas.
+        $b->{"/C1/a1/a2"}="sss";
+        $b->save();
+        $h=11;
     }
 
 

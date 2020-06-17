@@ -895,8 +895,10 @@ class RelationValues extends \lib\datasource\TableDataSet
                             $curInstance->loadFromArray($srcValues[$k], false,!$fromCode, $errorContainer,true);
                             if (!$errorContainer->isOk()) {
                                 // Habia un error en esa especificacion.
-                                $errors = $errorContainer->getFieldErrors();
-                                throw $errors[0]["exception"];
+
+                                $path=$this->relField->__getFieldPath();
+                                $errorContainer->rethrow($path);
+
                             }
                         }
                         else

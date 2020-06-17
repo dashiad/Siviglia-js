@@ -62,8 +62,9 @@ abstract class TypeSerializer
         if($exploded[0]=="lib") {
             $type = $unNamespaced;
         }
-        else
-            $type=$className;
+        else {
+            $type = $className;
+        }
 
         $baseNamespace=$this->getTypeNamespace();
 
@@ -77,17 +78,18 @@ abstract class TypeSerializer
             $exploded=explode('\\',$typeList[$k]);
             $unNamespaced=$exploded[count($exploded)-1];
             $sName = $baseNamespace.'\\'.$unNamespaced;
-
-
-
-            if(@class_exists($sName))
-            {
-                $this->cache[$className]=$sName;
+            if($this->includeTypeSerializer($sName,$unNamespaced)) {
+                $this->cache[$className] = $sName;
                 return new $sName();
             }
+
         }
         //   clean_debug_backtrace(4);
         throw new TypeSerializerException(TypeSerializerException::ERR_TYPE_SERIALIZER_NOT_FOUND,array("name"=>$type,"typeserializer"=>get_class($this)));
+    }
+    function includeTypeSerializer($className,$forType)
+    {
+        return @class_exists($className);
     }
     function serializeType($name,$mixedType)
     {

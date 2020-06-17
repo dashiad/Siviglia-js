@@ -24,6 +24,8 @@ class BaseTypedException extends BaseException {
     const ERR_NO_CONTROLLER=18;
     const ERR_NO_STATE_CONTROLLER=19;
     const ERR_NOT_EDITABLE=20;
+    const ERR_CANT_SAVE_ERRORED_FIELD=21;
+    const ERR_CANT_SAVE_ERRORED_OBJECT=22;
 }
 
 class BaseTypedObject extends \lib\model\types\Container
@@ -32,13 +34,9 @@ class BaseTypedObject extends \lib\model\types\Container
         protected $__objectDef;
         protected $__loaded=0;
         protected $__serializer=null;
-
-
         protected $__newState=null;
         protected $__key=null;
         protected $__oldValidationMode=null;
-
-
 
         protected $__validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE;
 
@@ -168,64 +166,76 @@ class BaseTypedObject extends \lib\model\types\Container
         $relationships=[];
         $relationshipPaths=[];
         $invRelationships=[];
+
+        $indexFields=[];
         $referencedModel=$this;
         $stateField=$referencedModel->getStateField();
         $state=null;
+        $indexes=$this->getIndexFields();
         foreach($data as $k=>$v)
         {
-            if(strpos($k,"/")>0)
+            if(in_array($k,$indexes))
             {
-                $path=explode("/",$k);
-                $relation=array_shift($path);
-                $f=$referencedModel->__getField($relation);
-                if(is_a($f,'\lib\model\types\InverseRelation')) {
-                    $index = array_shift($path);
-                    if(!is_numeric($index))
-                        throw new BaseTypedException(BaseTypedException::ERR_INVALID_PATH,["path"=>$index."/".implode("/",$path)]);
-                    $subPath=implode("/",$path);
-                    $invRelationships[$relation][$index][$subPath]=$v;
-                }
-                else {
-                    $subPath = implode("/", $path);
-                    $relationshipPaths[$relation][$subPath] = $v;
-                }
-                continue;
+                $indexFields[$k]=$v;
             }
-            if($k==$stateField) {
-                $state = $k;
-                continue;
-            }
-            $f = $referencedModel->__getField($k,true);
-
-            if(!is_a($f,'\lib\model\types\Relationship'))
-                $localFields[$k]=$v;
             else {
-                // La siguiente linea significa:
-                // El campo a validar actual es una relacion inversa, pero no es un path.
-                // Es decir, el valor tiene que ser el asignable a una relacion inversa, es decir, un array
-                // de modelos.
-                // Al asignar directamente el valor, tenemos que lo que queremos es establecer el valor de la relacion,
-                // es decir, borrar los elementos relacionados actuales, y establecer los especificados.
-                // Pero, principalmente, hay que ver que como $v es un array, esta especificacion de relaciones inversas es
-                // compatible con la generada usando paths dentro del nombre de campo.
-                if(is_a($f,'\lib\model\types\InverseRelation'))
-                    $invRelationships[$k]=$v;
+                if (strpos($k, "/") > 0) {
+                    $path = explode("/", $k);
+                    $relation = array_shift($path);
+                    $f = $referencedModel->__getField($relation);
+                    if (is_a($f, '\lib\model\types\InverseRelation')) {
+                        $index = array_shift($path);
+                        if (!is_numeric($index))
+                            throw new BaseTypedException(BaseTypedException::ERR_INVALID_PATH, ["path" => $index . "/" . implode("/", $path)]);
+                        $subPath = implode("/", $path);
+                        $invRelationships[$relation][$index][$subPath] = $v;
+                    } else {
+                        $subPath = implode("/", $path);
+                        $relationshipPaths[$relation][$subPath] = $v;
+                    }
+                    continue;
+                }
+                if ($k == $stateField) {
+                    $state = $k;
+                    continue;
+                }
+                $f = $referencedModel->__getField($k, true);
 
-                else
-                    $relationships[$k] = $v;
+                if (!is_a($f, '\lib\model\types\Relationship'))
+                    $localFields[$k] = $v;
+                else {
+                    // La siguiente linea significa:
+                    // El campo a validar actual es una relacion inversa, pero no es un path.
+                    // Es decir, el valor tiene que ser el asignable a una relacion inversa, es decir, un array
+                    // de modelos.
+                    // Al asignar directamente el valor, tenemos que lo que queremos es establecer el valor de la relacion,
+                    // es decir, borrar los elementos relacionados actuales, y establecer los especificados.
+                    // Pero, principalmente, hay que ver que como $v es un array, esta especificacion de relaciones inversas es
+                    // compatible con la generada usando paths dentro del nombre de campo.
+                    if (is_a($f, '\lib\model\types\InverseRelation'))
+                        $invRelationships[$k] = $v;
+
+                    else
+                        $relationships[$k] = $v;
+                }
             }
         }
-        // Primero, se cambia el estado.
+        // Primero, los campos indice por si hay que deserializer.
+        foreach($indexFields as $key=>$value)
+        {
+            call_user_func($callback, 0, $key, $value, $referencedModel->__getField($key));
+        }
+        // Luego, se cambia el estado.
         if($state)
         {
             call_user_func($callback,1,$state,$data[$state],$this->__fieldDef["state"]);
         }
-        // Segundo, se itera por los campos que sean relaciones, y que estan tanto como campos simples, como paths.
+        // Luego, se itera por los campos que sean relaciones, y que estan tanto como campos simples, como paths.
         foreach($relationships as $key=>$value)
         {
             call_user_func($callback, 2, $key, $value, $referencedModel->__getField($key));
         }
-        // Tercero, todos los campos "finales" que pertenecen a este modelo.
+        // Luego, todos los campos "finales" que pertenecen a este modelo.
         // Esto es necesario para completar, en su caso, el cambio de estado.
         foreach($localFields as $key=>$value)
         {
@@ -247,10 +257,15 @@ class BaseTypedObject extends \lib\model\types\Container
         if($validationMode==null)
             $validationMode=$this->validationMode;
         $this->__oldValidationMode=$validationMode;
-        $this->loadFromarray($val,$this->validationMode==\lib\model\types\BaseType::VALIDATION_MODE_NONE?true:false,
+        $this->loadFromArray($val,$this->validationMode==\lib\model\types\BaseType::VALIDATION_MODE_NONE?true:false,
             false,null,true);
         $this->value=1;
         $this->valueSet=true;
+    }
+    // TODO: Que BaseTypedObject tenga un loadFromFields no es muy canonico...
+    function loadFromFields()
+    {
+
     }
 
     // Si raw es true, el valor se asigna incluso si la validacion da un error.
@@ -264,45 +279,93 @@ class BaseTypedObject extends \lib\model\types\Container
         // intentamos modificar B, primero hay que asignar la relacion en A, y luego modificar B,
         // ya que de otro modo, estariamos creando un nuevo B, y luego lo reasignariamos.
         // Por otro lado, primero hay que asignar el campo estado, si existe, y luego, el resto.
+        if($loadResult==null)
+            $loadResult=new \lib\model\ModelFieldErrorContainer();
         $data=$this->normalizeToAssociativeArray($data);
-        if(!$unserializing)
+      /*  if(!$unserializing)
         {
             $result=$this->__validateArray($data,$loadResult);
             if(!$result->isOk())
             {
                 throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_LOAD_DATA_FAILED);
             }
-        }
+        }*/
         if($unserializing)
             $this->beginUnserialize();
+        else {
+            $requiredFields = [];
+            $stateFieldName = $this->getStateField();
+            $oldState = null;
+            if ($stateFieldName) {
+                $oldState = $this->{"*" . $stateFieldName}->getLabel();
+                $nextState = $oldState;
+            }
+            $reqs=$this->__getRequiredFields();
+            for ($k = 0; $k < count($reqs); $k++)
+                $requiredFields[$reqs[$k]] = 1;
+        }
 
         $this->prioritizeChanges($data,function($fieldType,$fieldName,$fieldValue,$fieldDefinition)
         use ($raw,$unserializing,$loadResult,$dontSave)
         {
             switch($fieldType)
             {
+                case 0:{
+                    $this->{$fieldName}=$fieldValue;
+                    if($this->__key->is_set())
+                        $this->loadFromFields();
+                }break;
                 case 2: // Campo relacion, sin path
                     {
-                        if(is_array($fieldValue))
-                            $this->{$fieldName}[0]->loadFromArray($fieldValue,$raw,$unserializing,$loadResult,$dontSave);
-                        else
-                            $this->{$fieldName}=$fieldValue;
+                        try {
+                            if (is_array($fieldValue)) {
+                                $loadResult->pushPath($this->{"*".$fieldName}->__getFieldPath());
+                                $this->{$fieldName}[0]->loadFromArray($fieldValue, $raw, $unserializing, $loadResult, $dontSave);
+                                $loadResult->popPath();
+                            }
+                            else
+                                $this->{$fieldName} = $fieldValue;
+                        } catch (\Exception $e) {
+                            $loadResult->addFieldTypeError($fieldName, null, $e);
+                        }
                     }break;
                 case 1: // campo de estado.
 
                 case 4: // cualquier otro campo{
                     {
-                        $this->{$fieldName}=$fieldValue;
+                        try {
+                            $this->{$fieldName} = $fieldValue;
+                        } catch (\Exception $e) {
+                            if(isset($e->source)) {
+                                $name=$e->source->__getFieldPath();
+                                $loadResult->addFieldTypeError($name, null, $e);
+                            }
+                        }
                     }break;
 
                 case 3: //campo relacion, con un path
                     {
-                        $this->{$fieldName}[0]->loadFromArray($fieldValue,$raw,$unserializing,$loadResult,$dontSave);
+                        try {
+                            $loadResult->pushPath($this->{"*".$fieldName}->__getFieldPath());
+                            $this->{$fieldName}[0]->loadFromArray($fieldValue, $raw, $unserializing, $loadResult, $dontSave);
+                            $loadResult->popPath();
+                        }
+                        catch (\Exception $e) {
+                                $loadResult->addFieldTypeError($fieldName, null, $e);
+                            }
                     }break;
                 case 5:{ // relaciones inversas.
+
                     $n=count($fieldValue);
-                    for($k=0;$k<$n;$k++)
-                        $this->{$fieldName}[$k]->loadFromArray($fieldValue[$k],$raw,$unserializing,$loadResult,true);
+                    for($k=0;$k<$n;$k++) {
+                        try {
+                            $loadResult->pushPath($this->{"*".$fieldName}->__getFieldPath()."/".$k);
+                            $this->{$fieldName}[$k]->loadFromArray($fieldValue[$k], $raw, $unserializing, $loadResult, true);
+                            $loadResult->popPath();
+                        } catch (\Exception $e) {
+                            $loadResult->addFieldTypeError($fieldName, null, $e);
+                        }
+                    }
                 }break;
             }
         });
@@ -310,9 +373,26 @@ class BaseTypedObject extends \lib\model\types\Container
 
         if(!$unserializing)
         {
-            if( $dontSave==false)
-                $this->save();
-
+            $errored=false;
+            if(count($requiredFields)>0)
+            {
+                foreach($requiredFields as $f=>$v)
+                {
+                    $f=$this->__getField($f);
+                    if(!$f->is_set()) {
+                        if($loadResult) {
+                            $exception=new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, ["field" => $f]);
+                            $loadResult->addFieldTypeError($f->getFullPath(), null, $exception);
+                            $f->__setErrored($exception);
+                        }
+                        $errored=true;
+                    }
+                }
+            }
+            if(!$errored && (!$loadResult || $loadResult->isOk())) {
+                if ($dontSave == false)
+                    $this->save();
+            }
         }
         else {
             $this->endUnserialize();
@@ -539,8 +619,12 @@ class BaseTypedObject extends \lib\model\types\Container
              {
                  foreach($requiredFields as $f=>$v)
                  {
-                     if(!$targetModel->__getField($f)->is_set())
-                        $result->addFieldTypeError($f,null,new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD,["field"=>$f]));
+                     $f=$targetModel->__getField($f);
+                     if(!$f->is_set()) {
+                         $exception=new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, ["field" => $f]);
+                         $result->addFieldTypeError($f->getControllerPath(), null, $exception);
+                         $f->__setErrored($exception);
+                     }
                  }
              }
             // Finalmente, limpiamos campos sucios.

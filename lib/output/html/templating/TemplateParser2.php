@@ -1120,8 +1120,10 @@ class CLayoutManager
 
         $this->templateParams=$layoutDefinition["PARAMS"];
         $paramString="";
-        foreach($this->templateParams as $key=>$value)
-            $paramString.=($key.$value);
+        if($this->templateParams) {
+            foreach ($this->templateParams as $key => $value)
+                $paramString .= ($key . $value);
+        }
         $hash="";
         if($paramString!="")
             $hash="_".md5($paramString);
@@ -1205,8 +1207,10 @@ class CLayoutManager
                     $obj=new $cName(null,null,$this);
                     $result=$obj->postParse($result);
                 }
-                if($this->testing)
+                if($this->testing) {
+                    $lock->__destruct();
                     return $result;
+                }
 
                 file_put_contents($compiledFile,$result);
 
@@ -1229,7 +1233,7 @@ class CLayoutManager
 
             }
 
-            $lock->unlock();
+            $lock->__destruct();
 
         }
 

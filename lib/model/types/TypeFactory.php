@@ -85,14 +85,14 @@ include_once(LIBPATH."/model/types/BaseType.php");
                 if(isset($def["MODEL"]))
                 {
 
-                    $newType=TypeFactory::getType($name,TypeFactory::getObjectField($def["MODEL"],$def["FIELD"]),$parentType,$value,$validationMode);
-                    //$newType->setTypeReference($def["MODEL"],$def["FIELD"]);
-                    // En caso de que la referencia defina un DEFAULT, sobreescribe al que llega de la definicion de tipo.
-                    if(isset($def["DEFAULT"]) && !empty($def["DEFAULT"]))
+                    $remoteDefinition=TypeFactory::getObjectField($def["MODEL"],$def["FIELD"]);
+                    // Se copia cualquier otro campo que estuviera en la definicion original.
+                    foreach($def as $k=>$v)
                     {
-                        $newType->setDefaultValue($def["DEFAULT"]);
+                        if($k!=="MODEL" && $k!=="FIELD")
+                            $remoteDefinition[$k]=$v;
                     }
-                    return $newType;
+                    return TypeFactory::getType($name,$remoteDefinition,$parentType,$value,$validationMode);
                 }
                 throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_TYPE_NOT_FOUND,["type"=>$def["TYPE"]]);
             }

@@ -251,7 +251,9 @@ class StatedDefinition
                 $field=$this->model->__getField($cF);
                 if(!$field->is_set())
                 {
-                    throw new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD,array("field"=>$cF));
+                    $e=new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD,array("field"=>$cF));
+                    $field->__setErrored($e);
+                    throw $e;
                 }
             }
         }
@@ -413,10 +415,14 @@ class StatedDefinition
             $f=$definition["FIELDS"]["REQUIRED"];
             for($n=0;$n<count($f);$n++)
             {
-                if(!$this->model->{"*".$f[$n]}->hasValue()) {
+                $field=$this->model->{"*".$f[$n]};
+                if(!$field->hasValue()) {
                     $this->changingState=false;
                     $this->newState=null;
-                    throw new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, array("field" => $f[$n]));
+                    $e=new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, array("field" => $f[$n]));
+                    $field->__setErrored($e);
+                    throw $e;
+
                 }
             }
         }

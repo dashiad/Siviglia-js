@@ -26,7 +26,7 @@ class ExtendedModel extends MultipleModel
             return parent::__isNew();
         }
 
-    function loadFromFields()
+    function loadFromFields($serializer=null)
     {
         if($this->relatedModel)
         {

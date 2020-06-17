@@ -13,6 +13,7 @@
       protected $setOnEmpty;
       protected $fieldPath;
       protected $__onlyValidating;
+      protected $__isErrored=false;
       const TYPE_SET_ON_SAVE=0x1;
       const TYPE_SET_ON_ACCESS=0x2;
       const TYPE_IS_FILE=0x4;
@@ -33,6 +34,7 @@
       protected $__controllerPath=null;
       protected $__isDirty=false;
       protected $__name;
+      protected $__errorException=null;
       function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
           // Parent es el padre de este tipo, que puede ser otro tipo, o un bto.
@@ -91,6 +93,10 @@
       function getController()
       {
           return $this->__controller;
+      }
+      function getControllerPath()
+      {
+          return $this->__controllerPath;
       }
       function isAlias()
       {
@@ -163,18 +169,24 @@
       {
           if($this->isEditable()) {
               $this->apply($val, $this->validationMode);
-              $this->__setDirty(true);
           }
           else {
+
               if($this->__controller && $this->__controller->getStateDef()!==null)
-                throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE);
+                $e=new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE);
               else
-                  throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE);
+                  $e=new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE);
+              $this->__setErrored($e);
+              throw $e;
 
           }
       }
       function __setDirty($dirty)
       {
+          if($this->__isErrored)
+          {
+              $this->__clearErrored();
+          }
           if($dirty==$this->__isDirty)
               return;
           if($this->__controller) {
@@ -190,14 +202,41 @@
       {
           return $this->__isDirty;
       }
-
+      function __setErrored($exception)
+      {
+          $this->__isErrored=true;
+          $this->__errorException=$exception;
+          if($this->__controller)
+          {
+              $this->__controller->addErroredField($this);
+          }
+      }
+      function __getError()
+      {
+          return $this->__errorException;
+      }
+      function isErrored()
+      {
+          return $this->__isErrored;
+      }
+      function __clearErrored()
+      {
+          if($this->__isErrored==false)
+              return;
+          $this->__errorException=null;
+          $this->__isErrored=false;
+          if($this->__controller)
+              $this->__controller->clearErroredField($this);
+      }
       function apply($val,$validationMode=null)
       {
           $this->__onlyValidating=false;
           if($val===null || $this->isEmptyValue($val))
           {
-              if($this->value!=null)
+              if($this->value!=null) {
+                  $this->__clearErrored();
                   $this->setDirty(true);
+              }
               $this->value=null;
               $this->valueSet=false;
               $this->clear();
@@ -216,8 +255,14 @@
                   return;
               $this->_setValue($val,$validationMode);
               if ($validationMode !== BaseType::VALIDATION_MODE_NONE) {
-                  $this->validate($val, $this->validationMode);
-                  $this->__setDirty(true);
+                  try {
+                      $this->validate($val, $this->validationMode);
+                      $this->__setDirty(true);
+                  }catch(\Exception $e)
+                  {
+                      $this->__setErrored($e);
+                      throw $e;
+                  }
               }
               else
               {

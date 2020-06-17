@@ -210,10 +210,11 @@ class BaseModel extends BaseTypedModel
     /**
      * @throws BaseModelException
      */
-    function loadFromFields()
+    function loadFromFields($serializer=null)
     {
         $filters = array();
-        $serializer=$this->__getSerializer();
+        if(!$serializer)
+            $serializer=$this->__getSerializer();
         // Aqui solo interesan los campos a los que ya se haya accedido.
 
         foreach ($this->__fields as $key => $value)
@@ -299,6 +300,8 @@ class BaseModel extends BaseTypedModel
     {
         if($this->__saving || ($this->__stateDef && $this->__stateDef->isChangingState()))
             return;
+        if(count($this->__errored)>0)
+            throw new BaseTypedException(BaseTypedException::ERR_CANT_SAVE_ERRORED_OBJECT);
 
         $this->__saving=true;
         $this->__saveCounter=0;

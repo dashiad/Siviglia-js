@@ -60,19 +60,18 @@ class Action extends \lib\model\BaseTypedObject
 
             }
         }
-        $this->__validateArray($fields,$actionResult);
-	    if(!$actionResult->isOk())
-        {
-            return $this->onError(null, $fields, $actionResult, $user);
+
+	    try {
+            $this->loadFromArray($fields, true, false, $actionResult);
+        }catch(\Exception $e) {
+            if (!$actionResult->isOk()) {
+                return $this->onError(null, $fields, $actionResult, $user);
+            }
         }
 
-	    $this->loadFromArray($fields,true,false,$actionResult);
+	    $this->__loaded=true;
+	    $this->validateAction($actionResult);
 
-
-	    if($actionResult->isOk()) {
-            $this->__loaded=true;
-            $this->validateAction($actionResult);
-        }
 
 	    if ($actionResult->isOk()) {
 
@@ -82,6 +81,8 @@ class Action extends \lib\model\BaseTypedObject
                 if (isset($def["MODEL"])) {
                     $s=\Registry::getService("model");
                     $this->destModel = $s->getModel($def["MODEL"]);
+                    $val = $this->__transferFields($def["MODEL"]);
+                    $this->destModel->loadFromArray($val, false, false, $actionResult);
                     }
                 else
                 {
@@ -123,8 +124,7 @@ class Action extends \lib\model\BaseTypedObject
                     default:
                     {
                         if(isset($def["MODEL"])) {
-                            $val = $this->__transferFields($def["MODEL"]);
-                            $this->destModel->loadFromArray($val, false, false, $actionResult);
+
                             $actionResult->setModel($this->destModel);
                         }
                         else
