@@ -9,7 +9,7 @@ namespace model\reflection\MetaDefinition\html\forms;
 
 class Edit extends \lib\output\html\Form
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'NAME'=>'Edit',
                'MODEL'=>'\model\reflection\MetaDefinition',
                'ACTION'=>array(
@@ -40,7 +40,7 @@ class Edit extends \lib\output\html\Form
 	 function __construct( $actionResult=null)
 	{
 
-			parent::__construct(Edit::$definition,$actionResult);
+			parent::__construct(Edit::$_definition,$actionResult);
 
 	}
 

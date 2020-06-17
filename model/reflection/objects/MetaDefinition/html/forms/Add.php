@@ -9,7 +9,7 @@ namespace model\reflection\MetaDefinition\html\forms;
 
 class Add extends \lib\output\html\Form
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'NAME'=>'Add',
                'MODEL'=>'\model\reflection\MetaDefinition',
                'ACTION'=>array(
@@ -41,7 +41,7 @@ class Add extends \lib\output\html\Form
 	 function __construct( $actionResult=null)
 	{
 
-			parent::__construct(Add::$definition,$actionResult);
+			parent::__construct(Add::$_definition,$actionResult);
 
 	}
 

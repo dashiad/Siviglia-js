@@ -9,7 +9,7 @@ namespace model\reflection\MetaDefinition\actions;
 
 class Add extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\reflection\MetaDefinition',
                'ROLE'=>'Add',
                'PERMISSIONS'=>array(
@@ -47,7 +47,7 @@ class Add extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(Add::$definition);
+			parent::__construct(Add::$_definition);
 
 	}
 
