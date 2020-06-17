@@ -1,5 +1,5 @@
 <?php
-    $type=$model->__getField($name)->getType();
+    $type=$model->__getField($name);
     echo '<img src="'.WEBPATH."/".$model->{$name}.'"';
     if(!$description)
     {

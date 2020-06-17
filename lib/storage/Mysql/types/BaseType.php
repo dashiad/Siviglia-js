@@ -8,10 +8,9 @@
       }
       function unserialize($name,$type,$value,$serializer,$model=null)
       {
-          if(isset($value[$name]))
-            $model->{$name}=$value[$name];
-          else
-              $model->{$name}=null;
+          if(!isset($value[$name]))
+              $value[$name]=null;
+            $model->{"*".$name}->apply($value[$name],\lib\model\types\BaseType::VALIDATION_MODE_NONE);
       }
       abstract function getSQLDefinition($name,$definition,$serializer);
   }

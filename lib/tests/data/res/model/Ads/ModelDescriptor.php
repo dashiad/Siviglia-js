@@ -15,11 +15,13 @@ class ModelDescriptor extends \lib\model\ModelDescriptor
     {
         parent::__construct($name,null,$package);
     }
-    function getDestinationFile($extraPath = null)
+   /* function getDestinationFile($extraPath = null)
     {
+        if (!$this->isPrivate)
+            return $this->baseDir . "/model/" . $this->layer . "/objects/" . $this->className . "/" . ($extraPath ? $extraPath : "");
 
-        return $this->baseDir . "/model/" . $this->layer . "/".$this->namespaceClassName ."/". $this->className . "/" . ($extraPath ? $extraPath : "");
+        return $this->baseDir . "/model/" . $this->layer . "/objects/" . str_replace('\\', '/objects/', $this->namespaceClassName) . "/objects/" . $this->className . "/" . ($extraPath ? $extraPath : "");
 
-    }
+    }*/
 
 }

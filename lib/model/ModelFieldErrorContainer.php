@@ -29,13 +29,19 @@ class ModelFieldErrorContainer
         $this->isOk=false;
         $code=$exception->getCode();
   //      if(is_a($exception,'\lib\model\BaseTypedException'))
-            $path=$field;
+        $prefix="/";
+        if($this->path) {
+            $prefix = "/".implode("/", $this->path) . "/";
+        }
+        $path=$prefix.$field;
+        $path=preg_replace("#/+#","/",$path);
  //       else
  //           $path=$exception->getPath();
         $this->fieldErrors[$path][$exception->getCodeString()][$code]=array(
+            "exception"=>$exception,
             "value"=>$value,
             "code"=>$code,
-            "path"=>"/".$path,
+            "path"=>$path,
             "str"=>$exception->__toString()
         );
     }
@@ -64,6 +70,16 @@ class ModelFieldErrorContainer
     function getParsedFields()
     {
         return $this->parsedFields;
+    }
+    function rethrow($newPath)
+    {
+        $errors=$this->fieldErrors;
+        $fields=array_keys($errors);
+        $types=array_keys($errors[$fields[0]]);
+        $codes=array_keys($errors[$fields[0]][$types[0]]);
+        $exception=$errors[$fields[0]][$types[0]][$codes[0]]["exception"];
+        $exception->path=$newPath.$exception->path;
+        throw $exception;
     }
 }
 

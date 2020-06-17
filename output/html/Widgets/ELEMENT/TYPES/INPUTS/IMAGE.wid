@@ -1,6 +1,6 @@
 <?php
     $field=$form->__getField($name);
-    $type=$field->getType();
+    $type=$field;
     if($type->hasValue())
     {
 

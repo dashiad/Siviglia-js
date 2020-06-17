@@ -13,8 +13,8 @@ class Definition extends \lib\model\BaseModelDefinition
      */
     static  $definition=array(
         'ROLE'=>'ENTITY',
-        'DEFAULT_SERIALIZER'=>'web',
-        'DEFAULT_WRITE_SERIALIZER'=>'web',
+        'DEFAULT_SERIALIZER'=>'modeltests',
+        'DEFAULT_WRITE_SERIALIZER'=>'modeltests',
         'INDEXFIELDS'=>array('id'),
         'TABLE'=>'comment',
         'LABEL'=>'Comments',
@@ -68,7 +68,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 'ISLABEL'=>'true'
             ]
         ),
-
+        "OWNERSHIP"=>"id_post/creator_id",
         'PERMISSIONS'=>array(),
         'SOURCE'=>[
         'STORAGE'=>array(

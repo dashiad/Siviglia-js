@@ -9,6 +9,7 @@ class ExtendedModel extends MultipleModel
         //protected $parentModel;
         protected $mainIndex;
         protected $relatedModel;
+        protected $__forceNew=false;
 
         function __construct($serializer=null,$definition=null,$validationMode=null)
         {
@@ -18,8 +19,14 @@ class ExtendedModel extends MultipleModel
                 $this->__setRelatedModelName($this->__objectDef["EXTENDS"]);
         }
 
+        function __isNew()
+        {
+            if($this->__forceNew)
+                return true;
+            return parent::__isNew();
+        }
 
-    function loadFromFields()
+    function loadFromFields($serializer=null)
     {
         if($this->relatedModel)
         {
@@ -53,6 +60,7 @@ class ExtendedModel extends MultipleModel
             {
                 if(!$this->__key->is_set())
                 {
+                    $this->__forceNew=true;
                     $instance=$this->__getRelatedModel();
                     $instance->setDirty(true);
                     $instance->save();
@@ -68,6 +76,7 @@ class ExtendedModel extends MultipleModel
             }
 
             BaseModel::__saveMembers($serializer);
+            $this->__forceNew=false;
     }
     function __call($name,$arguments)
     {

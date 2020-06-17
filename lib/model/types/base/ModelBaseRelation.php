@@ -1,70 +1,41 @@
-<?php namespace lib\model;
-abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \ArrayAccess
+<?php namespace lib\model\types\Base;
+abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \ArrayAccess
 {
 
     const UN_SET=0;
     const SET=1;
-    const FUTURE_SET=2;
     const DIRTY=3;
     const PENDING_REMOTE_SAVE=4;
 
-    protected $name;
-    protected $model;
-
-    protected $localFields;
     protected $remoteObject;
     protected $remoteTable;
-    protected $remoteFields;
     protected $types;
     protected $isAlias=false;
-    protected $nFields;
-    protected $nResults=null;
     protected $relation;
-    protected $definition;
-
     protected $serializerData=array();
     protected $relationValues;
-    protected $normalizedName;
+
     protected $validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE;
-	function __construct($name,& $model, & $definition, $value=null)
+
+	function __construct($name,$definition, $parentType, $value=null, $validationMode=null)
 	{
-        $this->name=$name;
-        $this->normalizedName=str_replace("_","",$name);
-        $this->model=& $model;
-        $this->definition= $definition;
+	    $this->definition=$definition;
+	    parent::__construct($name,$definition,$parentType,null,$validationMode);
         $this->remoteObject=$definition["MODEL"];
-        if(!isset($this->definition["TABLE"]) && !isset($this->definition["REMOTE_MODEL"]))
+        if(!isset($definition["TABLE"]) && !isset($definition["REMOTE_MODEL"]))
         {
             // Solo se carga la definicion.
             $remoteDef=\lib\model\types\TypeFactory::getObjectDefinition($this->remoteObject);
-            if($remoteDef["TABLE"])
-                $this->definition["TABLE"]=$remoteDef["TABLE"];
-            else
-            {
-                $parts=explode("\\",$this->remoteObject);
-                $this->definition["TABLE"]=$parts[count($parts)-1];
-            }
+            $this->remoteTable=$remoteDef["TABLE"];
+            $definition["TABLE"] = $remoteDef["TABLE"];
         }
+        $this->definition=$definition;
+        //$this->__controller=$parentType;
         $this->relation=$this->createRelationFields();
         $this->relationValues=$this->createRelationValues();
-        if($value)
-        {
-            $this->relation->set($value);
-        }
+        if($value!==null)
+            $this->set($value,\lib\model\types\BaseType::VALIDATION_MODE_NONE);
 	}
-	function getModel()
-    {
-        return $this->model;
-    }
-    function setValidationMode($mode)
-    {
-        $this->validationMode=$mode;
-    }
-    function getValidationMode()
-    {
-        return $this->validationMode;
-    }
-
     abstract function createRelationValues();
 
     function createRelationFields()
@@ -77,19 +48,22 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     }
     function getRelation()
     {
-        return $this->relation;
+         return $this->relation;
     }
-
+    function getRaw()
+    {
+        $types=$this->relation->getTypes();
+        foreach($types as $k=>$v)
+            return $v->getValue();
+    }
     function reset()
     {
         $this->relationValues->reset();
-        $this->isLoaded=false;
     }
     function getRemoteTable()
     {
 		return $this->remoteTable;
     }
-
     function setAlias($alias)
     {
         $this-> isAlias=$alias;
@@ -98,34 +72,20 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     {
         return $this->isAlias;
     }
-    abstract function set($value);
+    function getReference()
+    {
+        return $this;
+    }
+    function _getValue(){return $this->get();}
+    function _setValue($val,$validationMode=null){return $this->set($val,$validationMode);}
+    abstract function set($value,$validationMode=null);
     abstract function get();
     //abstract function loadRemote();
     abstract function loadCount();
 
-    function getRaw()
-    {
-        return $this->relation->getRawVal();
-    }
-    function __rawSet($value)
-    {
-        $this->relation->setRawVal($value);
-    }
-    function getValue()
-    {
-        return $this->getRaw();
-    }
-
-
-    function getName()
-    {
-        return $this->name;
-    }
-
     function cleanState()
     {
         $this->relation->cleanState();
-
     }
     // Implementacion de metodos de DataSource
     function fetchAll()
@@ -161,7 +121,7 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     }
     function onDirty()
     {
-        $this->model->addDirtyField($this->name);
+        $this->__controller->addDirtyField($this);
     }
 
     function setSerializer($ser)
@@ -171,7 +131,7 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
 
     function getSerializer()
 	{
-		return $this->model->__getSerializer();
+		return $this->__controller->__getSerializer();
 	}
 
     public function offsetExists($offset)
@@ -196,17 +156,24 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
 
     public function offsetSet( $offset , $value )
     {
-        if(!is_numeric($offset))
-        {
-            $val=$this->relationValues->offsetGet(0);
-            $val->{$offset}=$value;
-            return;
+        if(!is_numeric($offset)) {
+            if ($offset === null) {
+                // Se esta añadiendo a la relacion (relaciones inversas)
+                $this->relationValues->add($value);
+
+            } else {
+                // se supone que se esta accediendo a un campo del primer valor de la relacion (relaciones directas)
+
+                $val = $this->relationValues->offsetGet(0);
+                $val->{$offset} = $value;
+            }
         }
-        return false;
+        else
+            $this->relationValues->{$offset}=$value;
     }
     public function offsetUnset($offset)
     {
-
+        $this->relationValues->offsetUnset($offset);
     }
     function getType($typeName=null)
     {
@@ -221,10 +188,14 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     {
         return $this->relation->getTypes();
     }
+    function getModel()
+    {
+        return $this->__controller;
+    }
 
     function getLocalModel()
     {
-        return $this->model;
+        return $this->__controller;
     }
     function isInverseRelation()
     {
@@ -237,10 +208,6 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     function getSerializerData($serializerName)
     {
         return $this->serializerData[$serializerName];
-    }
-    function getDefinition()
-    {
-        return $this->definition;
     }
     function getRemoteTableQuery()
     {
@@ -305,7 +272,6 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
 
     function loadRemote($itemIndex=0,$dontUseIndexes=false)
     {
-
         if(io($this->definition,"LOAD","")=="LAZY" && $itemIndex===null) {
             $this->relationValues->setLoaded();
             return true;
@@ -341,7 +307,8 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
         $nObjects=count($objects);
         if($nObjects > 0) {
             if($itemIndex===null) {
-                $this->relationValues->load($objects);
+                // Estamos cargando del remoto. Esto no debe poner relationValues a dirty
+                $this->relationValues->load($objects,false);
             }
             else {
                 $this->relationValues->loadItem($objects[0],$itemIndex);
@@ -387,14 +354,14 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
        if($this->isInverseRelation())
        {
             $fields=$this->definition["FIELDS"];
+            $model=$this->getModel();
             foreach($fields as $key=>$value)
             {
-                $cField=$this->model->__getField($key);
+                $cField=$model->__getField($key);
                 if($cField->is_set())
-                    $ins->{$value}=$this->model->{$key};
+                    $ins->{$value}=$model->{$key};
             }
        }
-
        return $ins;
     }
 
@@ -404,8 +371,13 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     }
     function setDirty($dirty=true)
     {
-      $this->__isDirty=true;
-        $this->model->addDirtyField($this->name);
+        $this->__isDirty=$dirty;
+        if($this->__controller) {
+            if ($dirty)
+                $this->__controller->addDirtyField($this);
+            else
+                $this->__controller->removeDirtyField($this);
+        }
     }
     function is_set()
     {
@@ -415,19 +387,8 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
     {
         return true;
     }
-    function __toString()
-    {
-        return $this->getRaw();
-    }
-    function is_valid()
-    {
-        if($this->model->isRequired($this->name))
-        {
-            if(!$this->type || !$this->type->is_set())
-                return false;
-        }
-        return true;
-    }
+
+
     function requiresUpdateOnNew()
     {
         // Para las relaciones "normales", es decir , A tiene una relacion con B, y estoy guardando A, siempre hay
@@ -442,8 +403,6 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
 }
 
 
-
-
 /**
  *  Class RelationFields
  *
@@ -455,7 +414,6 @@ abstract class ModelBaseRelation extends \lib\datasource\DataSource implements \
 
 class RelationFields
 {
-
     var $relObject;
     var $definition;
     var $state;
@@ -466,11 +424,13 @@ class RelationFields
     var $is_set=false;
     var $rawVal=null;
     var $relationValues=null;
+
     function __construct(& $relObject,$definition)
     {
         $this->relObject=$relObject;
         $this->definition=$definition;
         $fields=$definition["FIELDS"]?$definition["FIELDS"]:(array)$definition["FIELD"];
+
         if(!\lib\php\ArrayTools::isAssociative($fields))
         {
             $fields=array($this->relObject->getName()=>$fields[0]);
@@ -484,6 +444,7 @@ class RelationFields
             $this->types[$key]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance(
                     $modelClassName,
                     $value,
+                    $this->relObject->__getName(),
                     $this->relObject->getModel(),
                     null,
                     $relObject->getValidationMode());
@@ -498,15 +459,21 @@ class RelationFields
         $this->state=ModelBaseRelation::UN_SET;
 
     }
-    // Devuelve el valor raw del primer campo de la relacion.
-    function getRawVal()
+    function getFields()
     {
-        return $this->rawVal;
+        return $this->definition["FIELDS"]?$this->definition["FIELDS"]:(array)$this->definition["FIELD"];
     }
+
     function setRawVal($value)
     {
         $this->rawVal=$value;
         $this->state=ModelBaseRelation::SET;
+    }
+    function save()
+    {
+        foreach($this->types as $k=>$v)
+            $v->save();
+
     }
     function getTypes()
     {
@@ -518,8 +485,8 @@ class RelationFields
         $hv2=$type->hasOwnValue();
         foreach($this->types as $curType)
         {
-
-            $hv1=$curType->hasOwnValue();
+            // Aqui usamos __isEmpty porque aunque un container no este completo, tenemos que copiarlo.
+            $hv1=!$curType->__isEmpty();
             if(!$hv1 && !$hv2) // Ninguno de los dos is_set
                 return;
             if($hv1 && $hv2)
@@ -530,7 +497,6 @@ class RelationFields
                     return;
                 }
                 $this->relObject->getModel()->{$this->relObject->getName()}=$val;
-
             }
             else
             {
@@ -579,14 +545,20 @@ class RelationFields
         $this->state=ModelBaseRelation::SET;
     }
 
-    function setFieldFromType($field,$targetType)
+
+    function setFieldFromType($field,$targetType,$validationMode)
     {
 
         if($targetType->hasValue())
         {
              if(!$this->types[$field]->equals($targetType->getValue()))
              {
-                $this->types[$field]->apply($targetType->getValue());
+                $this->types[$field]->apply($targetType->getValue(),$validationMode);
+             }
+             else {
+                 // el valor remoto de la relacion, coincide con el valor local.No cambiamos nada, para
+                 // evitar en un bucle infinito
+                 return;
              }
         }
         else
@@ -604,17 +576,20 @@ class RelationFields
             $this->rawVal=$targetType->getValue();
 
         $v=$this->types[$field]->getValue();
-        $this->relObject->getModel()->__setRaw($this->relObject->getName(),$v);
-        $this->setDirty();
+        if(!$this->relObject->isInverseRelation()) {
+            $this->relObject->getModel()->{"*" . $this->relObject->__getFieldPath()}->apply($v, \lib\model\types\BaseType::VALIDATION_MODE_NONE);
+
+            $this->setDirty(true);
+        }
         return true;
     }
     // Se copian los valores del modelo, a la relacion.
-    function setFromModel($value)
+    function setFromModel($value,$validationMode=null)
     {
         foreach($this->types as $field=>$type)
         {
             // TODO : quitar esta absurdez de "if"
-            if(is_a($this->relObject,'\lib\model\InverseRelation1x1'))
+            if(is_a($this->relObject,'\lib\model\types\InverseRelation'))
             {
                 $targetField = $value->__getField($field);
             }
@@ -622,8 +597,8 @@ class RelationFields
                 $targetField = $this->definition["FIELDS"][$field];
                 $targetField = $value->__getField($targetField);
             }
-            $targetType=$targetField->getType();
-            if(!$this->setFieldFromType($field,$targetType))
+            $targetType=$targetField;
+            if(!$this->setFieldFromType($field,$targetType,$validationMode))
                 return false;
         }
     }
@@ -631,56 +606,39 @@ class RelationFields
     {
         foreach($this->definition["FIELDS"] as $key=>$value)
         {
-            $remObject->{$value}=$this->types[$key]->getValue();
+            $remObject->{"*".$value}->apply($this->types[$key]->getValue(),\lib\model\types\BaseType::VALIDATION_MODE_NONE);
         }
 
     }
 
-    function setFromType($type)
+    function setFromType($type,$validationMode=null)
     {
         if($this->nFields!=1)
             throw new BaseModelException(BaseModelException::ERR_INCOMPLETE_KEY,array("model"=>$this->relObject->model->__getObjectName()));
-        $this->setFieldFromType($this->fieldKey,$type);
+        $this->setFieldFromType($this->fieldKey,$type,$validationMode);
     }
 
-    function setFromTypeValue($typeField,$newVal)
+    function setFromTypeValue($typeField,$newVal,$validationMode=null)
     {
         if($typeField->equals($newVal))
            return;
-        $this->rawVal=$newVal;
+
         // Solo establecemos la relacion como dirty, si no es una relacion inversa.
         // Si es una relacion inversa, realmente, no hemos puesto dirty a nada, ya que no estamos asignando un valor
         // a un campo real del objeto.
         if(!$this->relObject->isInverseRelation())
         {
-
+            $typeField->setValue($newVal);
             $this->setDirty();
         }
         else
         {
             // Si se establece una relacion a null, y es una relacion inversa, lo que se debe hacer es eliminar
             // los campos apuntados.
-            if($newVal==null)
-            {
-                $q=$this->relObject->getRemoteTableQuery();
-                $this->getQueryConditions($q,"Mysql");
-                $remoteObject=\lib\model\BaseModel::getModelInstance($this->relObject->getRemoteObject());
-                $serializer=$remoteObject->__getSerializer("WRITE");
-                $qB=new \lib\storage\Mysql\QueryBuilder($q);
-                $conds=$qB->build(true);
-
-                if($conds!="")
-                {
-                    // TODO : ELIMINAR ESTO DE AQUI!!! UTILIZAR EL SERIALIZER!!
-                    $q="DELETE FROM ".$remoteObject->__getTableName().$conds;
-                    $serializer->getConnection()->insert($q);
-                }
-                $this->relObject->reset();
-            }
-            $this->state=ModelBaseRelation::SET;
+            $typeField->apply($newVal);
         }
+        $this->state=ModelBaseRelation::SET;
 
-        $typeField->apply($newVal);
     }
     function is_set()
     {
@@ -697,7 +655,7 @@ class RelationFields
         return false;
     }
 
-    function setFromValue($val)
+    function setFromValue($val,$validationMode=null)
     {
         if($this->nFields==1)
         {
@@ -705,7 +663,7 @@ class RelationFields
                 $val=$val[$this->fieldKey];
 
             $relType=$this->types[$this->fieldKey];
-            $this->setFromTypeValue($relType,$val);
+            $this->setFromTypeValue($relType,$val,$validationMode);
         }
         else
         {
@@ -721,13 +679,13 @@ class RelationFields
                 {
                     throw new BaseModelException(BaseModelException::ERR_INCOMPLETE_KEY,array("model"=>$this->relObject->model->__getObjectName(),"field"=>$field));
                 }
-                $this->setFromTypeValue($type,$val[$field]);
+                $this->setFromTypeValue($type,$val[$field],$validationMode);
 
             }
         }
     }
 
-    function set($value)
+    function set($value,$validationMode=null)
     {
 
         if($this->relationValues)
@@ -740,15 +698,15 @@ class RelationFields
             $remObjName=\lib\model\ModelService::getModelDescriptor($this->relObject->getRemoteObject());
             if($remObjName->className==$value->__getObjectName())
             {
-                $this->setFromModel($value);
+                $this->setFromModel($value,$validationMode);
             }
             else
             {
-                $this->setFromType($value);
+                $this->setFromType($value,$validationMode);
             }
         }
         else
-            $this->setFromValue($value);
+            $this->setFromValue($value,$validationMode);
     }
 
     function cleanState()
@@ -777,7 +735,6 @@ class RelationFields
     function getQueryConditions(& $q,$serializer)
     {
         $h=0;
-        $extraConds="true";
         $extra=$this->relObject->getExtraConditions();
         if($extra)
         {
@@ -788,10 +745,7 @@ class RelationFields
                     $econditionKeys[]="[%ec".$k."%]";
                     $q["CONDITIONS"]["ec".$k]=$extra[$k];
                 }
-                $extraConds=implode(" AND ",$econditionKeys);
             }
-            else
-                $extraConds=$extra;
         }
 
 
@@ -847,7 +801,7 @@ class RelationFields
     }
     function setDirty()
     {
-        $this->state=ModelField::DIRTY;
+        $this->state=ModelBaseRelation::DIRTY;
         $this->relObject->setDirty();
     }
 
@@ -872,7 +826,7 @@ class RelationValues extends \lib\datasource\TableDataSet
     protected  $nColumns;
     protected $currentIndex;
     protected $isDirty;
-    protected $newObjects;
+    protected $eraseBeforeInsert=false;
 
     function __construct($relField,$loadMode)
     {
@@ -884,12 +838,92 @@ class RelationValues extends \lib\datasource\TableDataSet
         $this->newObjects=array();
 
     }
-    public function load($values,$count=null)
+    public function load($srcValues,$fromCode=false,$adding=false)
     {
+        if($fromCode && !$adding && $this->relField->isInverseRelation())
+        {
+            // Si se ha establecido desde codigo, y no se esta aniadiendo, hay que marcar que la relacion
+            // hay que borrarla al salvar.
+            $this->eraseBeforeInsert=true;
+        }
         $this->isLoaded=true;
-        $this->relatedObjects=$values;
-        if(!$count)
-            $this->nResults=count($values);
+        if ($srcValues !== null && count($srcValues) > 0) {
+        if($fromCode==false)
+            $this->relatedObjects=$srcValues;
+        else
+        {
+            // Si estamos estableciendo desde codigo, nos pueden pasar
+            // diferentes cosas como valor.
+            // Pueden ser instancias del objeto remoto, o simples arrays.
+            $model = $this->relField->getModel();
+            $local = $this->relField->getRelation()->getTypes();
+            $fixedValues = [];
+            // Si estamos en una relacion inversa, y el modelo no es nuevo,
+            // mapeamos ya los campos locales del modelo, al remoto.
+
+            if($this->relField->isInverseRelation()) {
+                if (!$model->__isNew()) {
+                    $fields=$this->relField->getRelation()->getFields();
+                    // En las keys de local, tenemos el campo local..Tenemos que
+                    // asignar el remoto, que es $fields[$k]
+                    foreach ($local as $k => $v)
+                        $fixedValues[$fields[$k]] = $v->getValue();
+                }
+            }
+
+            // Se van a crear instancias del objeto relacion por cada uno de los $srcValues:
+            // Esto solo es necesario si count(srcValues)>0, ya que si no, se quiere solo limpiar la relacion.
+            $destRows = null;
+            $remoteModelName = $this->relField->getRemoteObject();
+            if($adding==false) {
+                $this->relatedObjects = [];
+                $this->accessedIndexes = [];
+            }
+
+                for ($k = 0; $k < count($srcValues); $k++) {
+                    if(!is_array($srcValues[$k]) && is_a($srcValues[$k],$remoteModelName))
+                    {
+                        $curInstance=$srcValues[$k];
+                    }
+                    else {
+                        if(is_array($srcValues[$k]) && \lib\php\ArrayTools::isAssociative($srcValues[$k])) {
+                            $curInstance = new $remoteModelName();
+                            // Se copian los valores fijos.
+                            foreach ($fixedValues as $k1 => $v1)
+                                $srcValues[$k][$k1] = $v1;
+                            $errorContainer = new \lib\model\ModelFieldErrorContainer();
+                            $curInstance->loadFromArray($srcValues[$k], false,!$fromCode, $errorContainer,true);
+                            if (!$errorContainer->isOk()) {
+                                // Habia un error en esa especificacion.
+
+                                $path=$this->relField->__getFieldPath();
+                                $errorContainer->rethrow($path);
+
+                            }
+                        }
+                        else
+                        {
+                            // TODO : lanzar error..Que nos han pasado en el array? No era ni instancia, ni asociativo..
+                        }
+                    }
+                    $this->relatedObjects[] = $curInstance;
+                    $this->accessedIndexes[count($this->relatedObjects)-1] = 1;
+                }
+            }
+        }
+        else
+        {
+            $this->relatedObjects=[];
+        }
+        if($fromCode==true)
+        {
+            $this->isDirty=true;
+            $this->relField->setDirty(true);
+        }
+
+        $this->currentIndex=0;
+
+        $this->nResults=count($this->relatedObjects);
     }
 
     public function loadItem($value,$index)
@@ -907,6 +941,7 @@ class RelationValues extends \lib\datasource\TableDataSet
     {
         return $this[$this->currentIndex]->{$field};
     }
+
 
     function getColumn($colName)
     {
@@ -972,13 +1007,32 @@ class RelationValues extends \lib\datasource\TableDataSet
     }
     public function offsetUnset($offset)
     {
-
+        // Hay que borrar el elemento indicado en el offset
+        if($offset> $this->nResults)
+        {
+            // TODO : Lanzar aqui una excepcion
+            return;
+        }
+        $this->relatedObjects[$offset]->delete();
+        // TODO: Reseteamos todo..Esto no es muy eficiente, pero hacerlo de otra forma
+        // puede ser peligroso..Hay que tener muchas cosas en cuenta..
+        $this->reset();
     }
     public function add($value)
     {
-        $this->relatedObjects[]=$value;
-        $this->accessedIndexes[$this->nResults]=1;
-        $this->nResults++;
+        if(is_array($value))
+        {
+            if(\lib\php\ArrayTools::isAssociative($value))
+                $v=[$value];
+            else
+                $v=$value;
+        }
+        else
+        {
+            $v=[$value];
+        }
+        // Se llama a load con los valores, aniadiendo (tercer parametro) en vez de sobreescribiendo.
+        $this->load($v,true,true);
     }
 
     function count()
@@ -1007,6 +1061,24 @@ class RelationValues extends \lib\datasource\TableDataSet
     {
         $this->isLoaded=true;
     }
+    function emptyRelation()
+    {
+        $serializer=$this->relField->getModel()->__getSerializer();
+        // Obtenemos la expresion a traves de los valores de la relacion
+        $conds=[];
+        $this->relField->getRelation()->getQueryConditions($conds,$serializer);
+        $conds["TABLE"]=$this->relField->getRemoteTable();
+        $serializer->deleteByQuery($conds);
+        $this->reset();
+    }
+    function getRelatedObjects()
+    {
+        return $this->relatedObjects;
+    }
+    function markAsAccessed($index)
+    {
+        $this->accessedIndexes[$index]=1;
+    }
 
 
     public function save()
@@ -1014,43 +1086,56 @@ class RelationValues extends \lib\datasource\TableDataSet
         // TODO: Si esta relacion impone condiciones sobre el objeto remoto, por ejemplo, inverserelations,
         // las condiciones deben ser copiadas a los objetos modificados.
 
-         $accessed=array_keys($this->accessedIndexes);
-         $nAccessed=count($accessed);
-         if($nAccessed==0)
-             return 0;
-            // Se guardan todos los accedidos.
-         $saved=0;
+        // Recogemos los accedidos, antes de que emptyRelation lo resetee todo.
+        $accessed=array_keys($this->accessedIndexes);
+        $nAccessed=count($accessed);
+        $relObjects=$this->relatedObjects;
 
-        $isInverse=$this->relField->isInverseRelation();
-        if($isInverse)
+        $saved = 0;
+
+        if($this->eraseBeforeInsert==true && $this->relField->isInverseRelation())
         {
-            $def=$this->relField->getDefinition();
-            $relFields=$def["FIELDS"];
-            $parentModel=$this->relField->getModel();
+            // Si se hizo un set de la relacion, (relaciones inversas) primero hay que borrar la
+            // relacion existente.
+            $this->emptyRelation();
         }
-         for($k=0;$k<$nAccessed;$k++)
-         {
-             $curObject=$this->relatedObjects[$accessed[$k]];
 
-             if($curObject->__isNew()) {
-                 if ($isInverse) {
-                     foreach ($relFields as $key => $value) {
-                         $f = $curObject->__getField($value);
-                         if (!$f->is_set())
-                             $curObject->{$value} = $parentModel->{$key};
 
+         if($nAccessed>0) {
+
+             // Se guardan todos los accedidos.
+
+             $isInverse = $this->relField->isInverseRelation();
+             if ($isInverse) {
+                 $def = $this->relField->getDefinition();
+                 $relFields = $def["FIELDS"];
+                 $parentModel = $this->relField->getModel();
+             }
+             for ($k = 0; $k < $nAccessed; $k++) {
+                 $curObject = $relObjects[$accessed[$k]];
+
+                 if ($curObject->__isNew()) {
+                     if ($isInverse) {
+                         foreach ($relFields as $key => $value) {
+                             $f = $curObject->__getField($value);
+                             if (!$f->is_set())
+                                 $curObject->{$value} = $parentModel->{$key};
+
+                         }
                      }
                  }
-             }
 
-             $curObject->save(); //$this->relField->getSerializer());
-             $saved++;
+                 $curObject->save(); //$this->relField->getSerializer());
+                 $saved++;
+
+             }
+             $this->accessedIndexes = array();
+             $this->newObjects = array();
+             $this->relField->cleanState();
 
          }
-         $this->accessedIndexes=array();
-        $this->newObjects=array();
-        $this->relField->cleanState();
-         return $saved;
+
+        return $saved;
     }
 
     public function isDirty()
@@ -1101,7 +1186,6 @@ class RelationValues extends \lib\datasource\TableDataSet
 
         }
         return 0;
-
     }
 
     public function getMetaData()
@@ -1113,6 +1197,4 @@ class RelationValues extends \lib\datasource\TableDataSet
         }
         return null;
     }
-
 }
-

@@ -26,7 +26,7 @@ class PathSourceTest extends TestCase
 
     function getContainer()
     {
-        $cnt=new \lib\model\types\Container([
+        $cnt=new \lib\model\types\Container("",[
             "TYPE"=>"Container",
             "FIELDS"=>[
                 "f0"=>[

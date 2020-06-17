@@ -4,12 +4,14 @@ class Lock
     protected $key   = null;  //user given value
     protected $file  = null;  //resource to lock
     protected $own   = FALSE; //have we locked resource
+    protected $filepath=null;
 
     function __construct( $path,$key )
     {
         $this->key = $key;
         //create a new resource or get exisitng with same key
-        $this->file = fopen("$path/$key.lockfile", 'w+');
+        $this->filepath="$path/$key.lockfile";
+        $this->file = fopen($this->filepath, 'w+');
         register_shutdown_function(array($this, "clearLocks"));
     }
 
@@ -25,6 +27,8 @@ class Lock
     function __destruct()
     {
         $this->clearLocks();
+        if(is_file($this->filepath))
+            unlink($this->filepath);
     }
 
 
@@ -60,6 +64,7 @@ class Lock
             //write something to just help debugging
             fwrite( $this->file, "Unlocked\n");
             fflush( $this->file );
+            fclose($this->file);
         }
         else
         {

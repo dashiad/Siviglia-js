@@ -113,7 +113,7 @@ abstract class PageDefinition extends \lib\model\BaseDefinition
                 $instance->disableStateChecks();
                 foreach ($value as $fieldKey) {
                     $curField = $this->__getField($fieldKey);
-                    $instance->{$fieldKey} = $curField->getType()->getValue();
+                    $instance->{$fieldKey} = $curField->getValue();
                 }
                 try {
                     $instance->loadFromFields();

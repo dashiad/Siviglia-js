@@ -1,6 +1,6 @@
 <?php
 
-namespace model\Ads\objects\AdManager;
+namespace model\Ads\AdManager;
 include_once(LIBPATH . "/data/DataTransform.php");
 
 /**
@@ -49,7 +49,7 @@ class Definition extends \lib\model\BaseModelDefinition
                 array(
                     'groupable' => true,
                     'filtrable' => true,
-                    "TYPE" => '\model\Ads\objects\AdManager\types\AdUnitName',
+                    "TYPE" => '\model\Ads\AdManager\types\AdUnitName',
                     'fieldgroup' => 'AD_UNIT',
                     'description' => 'Breaks down reporting data by ad unit. <a class="codelink" href="https://developers.google.com/doubleclick-publishers/docs/reference/v201605/InventoryService.AdUnit.html#name">AdUnit.name</a> and
                     <a class="codelink" href="https://developers.google.com/doubleclick-publishers/docs/reference/v201605/InventoryService.AdUnit.html#id">AdUnit.id</a> are automatically included as columns in the report. Can

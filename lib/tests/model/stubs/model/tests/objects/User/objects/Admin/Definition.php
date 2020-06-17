@@ -5,8 +5,8 @@ class Definition extends \lib\model\BaseModelDefinition
     static  $definition=array(
         'ROLE'=>'ENTITY',
         'EXTENDS'=>'\model\tests\User',
-        'DEFAULT_SERIALIZER'=>'web',
-        'DEFAULT_WRITE_SERIALIZER'=>'web',
+        'DEFAULT_SERIALIZER'=>'modeltests',
+        'DEFAULT_WRITE_SERIALIZER'=>'modeltests',
         'INDEXFIELDS'=>array('id_user'),
         'TABLE'=>'admin',
         'LABEL'=>'Admin',

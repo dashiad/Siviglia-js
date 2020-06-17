@@ -81,8 +81,9 @@ class _StringTest extends TestCase
         $v=$ins->getValue();
         $this->assertEquals("Hola",$v);
         $this->assertEquals(true,$ins->hasValue());
-        $ins->setValue("Adios");
-        $this->assertEquals("Hola",$v);
+        $this->expectException('lib\model\BaseTypedException');
+        $this->expectExceptionCode(\lib\model\BaseTypedException::ERR_NOT_EDITABLE);
+        $ins->setValue("AAA");
 
     }
     function testDefinition7()

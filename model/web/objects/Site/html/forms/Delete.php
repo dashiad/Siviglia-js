@@ -9,7 +9,7 @@ namespace model\web\Site\html\forms;
 
 class Delete extends \lib\output\html\Form
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'NAME'=>'Delete',
                'MODEL'=>'\model\web\Site',
                'ACTION'=>array(
@@ -45,7 +45,7 @@ class Delete extends \lib\output\html\Form
 	 function __construct( $actionResult=null)
 	{
 
-			parent::__construct(Delete::$definition,$actionResult);
+			parent::__construct(Delete::$_definition,$actionResult);
 
 	}
 

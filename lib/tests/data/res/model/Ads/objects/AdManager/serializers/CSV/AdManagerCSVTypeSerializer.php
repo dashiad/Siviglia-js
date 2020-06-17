@@ -4,7 +4,7 @@
  * @package model\ads\objects\AdManager\serializers
  *  (c) Smartclip
  */
-namespace model\Ads\objects\AdManager\serializers\CSV;
+namespace model\Ads\AdManager\serializers\CSV;
 
 
 
@@ -27,7 +27,15 @@ class AdManagerCSVTypeSerializer extends \lib\storage\TypeSerializer
     }
     function getTypeNamespace()
     {
-        return '\model\Ads\objects\AdManager\serializers\CSV\types';
+        return '\model\Ads\AdManager\serializers\CSV\types';
+    }
+    function includeTypeSerializer($className,$forType)
+    {
+        $target=__DIR__."/types/".$forType.".php";
+        if(!is_file($target))
+            return false;
+        include_once($target);
+        return true;
     }
 
 }

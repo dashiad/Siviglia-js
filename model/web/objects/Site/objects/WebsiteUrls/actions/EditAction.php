@@ -9,7 +9,7 @@ namespace model\web\Site\WebsiteUrls\actions;
 
 class EditAction extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\web\Site\WebsiteUrls',
                'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
@@ -64,7 +64,7 @@ class EditAction extends \lib\action\Action
 	function __construct( )
 	{
 
-			parent::__construct(EditAction::$definition);
+			parent::__construct(EditAction::$_definition);
 	
 	}
 
@@ -85,7 +85,7 @@ class EditAction extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate ( $actionResult )
+	function validateAction ( $actionResult )
 	{
 
 

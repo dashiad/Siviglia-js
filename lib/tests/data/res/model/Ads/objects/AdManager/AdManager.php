@@ -6,7 +6,7 @@
  */
 
 
-namespace model\Ads\objects;
+namespace model\Ads;
 
 
 class AdManager  extends \lib\model\BaseModel

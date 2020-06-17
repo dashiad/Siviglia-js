@@ -31,7 +31,7 @@ class SimpleTypedObject extends BaseTypedObject
     function check_five($value){if($value=="five")return true;return false;}
     function process_five($value){return "six";}
     function callback_one(){$this->__one="one";}
-    function callback_two($param){$this->__two=$param;}
+    function callback_two(){$this->__two="set";}
     function callback_three(){$this->__three="three";}
     function callback_four(){$this->__four="four";}
     function test_ok(){$this->__testedOk=true;return true;}
@@ -70,7 +70,7 @@ class BaseTypedObjectTest extends TestCase
                 'STATES' => array(
                     'None' => array(
                         'FIELDS' => array(
-                            'EDITABLE' => array('one','three')
+                            'EDITABLE' => array('one','three','five')
                         )
                     ),
                     'Other' => array(
@@ -120,7 +120,7 @@ class BaseTypedObjectTest extends TestCase
             'STATES' => array(
                 "LISTENER_TAGS"=>array(
                     "ONE"=>array("TYPE"=>"METHOD","METHOD"=>"callback_one"),
-                    "TWO"=>array("TYPE"=>"METHOD","METHOD"=>"callback_two","PARAMS"=>array("set")),
+                    "TWO"=>array("TYPE"=>"METHOD","METHOD"=>"callback_two"),
                     "THREE"=>array("TYPE"=>"METHOD","METHOD"=>"callback_three"),
                     "FAIL_TEST"=>array("TYPE"=>"METHOD","METHOD"=>"test_nok"),
                     "TEST_OK"=>array("TYPE"=>"METHOD","METHOD"=>"test_ok"),
@@ -149,7 +149,7 @@ class BaseTypedObjectTest extends TestCase
                             )
                         ),
                         'FIELDS' => array(
-                            'EDITABLE' => array('two'),
+                            'EDITABLE' => array('two','three'),
                             'FIXED' => array('one'))
                     ),
                     'Another' => array(
@@ -313,12 +313,13 @@ class BaseTypedObjectTest extends TestCase
                     "three"=>array("TYPE"=>"String"),
                     "four"=>array("TYPE"=>"String"),
                     "five"=>array("TYPE"=>"String"),
-                    "status"=>array('TYPE' => 'State',
+                    "status"=>array('TYPE' => 'Enum',
                         'VALUES' => array(
                             'None', 'Other', 'Another','Last'
                         ),
                         'DEFAULT' => 'None')
-                )
+                ),
+
             );
             return new SimpleTypedObject($def);
 
@@ -412,40 +413,38 @@ class BaseTypedObjectTest extends TestCase
         $this->assertEquals("hola",$ob->{"*one"}->getValue());
         $this->assertEquals(true,$ob->isDirty());
         $inf=$ob->getDirtyFields();
-        $keys=array_keys($inf);
-        $this->assertEquals("one",$keys[0]);
-        $this->assertEquals(1,count($keys));
+
+        $this->assertEquals("one",$inf[0]->getFieldName());
+        $this->assertEquals(1,count($inf));
     }
     function test2()
     {
         $obj=$this->getDefinition1();
         $obj->one="one";
-        $this->expectException('\lib\model\types\_StringException');
-        $this->expectExceptionCode(\lib\model\types\_StringException::ERR_TOO_SHORT);
-        $obj->one="w";
+        $thrown=false;
+        try{
+            $obj->one="w";
+        }catch(\Exception $e)
+        {
+            $thrown=true;
+            $this->assertEquals(true,is_a($e,'lib\model\types\_StringException'));
+            $this->assertEquals(\lib\model\types\_StringException::ERR_TOO_SHORT,$e->getCode());
+        }
+        $this->assertEquals(true,$thrown);
+        $this->assertEquals(true,$obj->isErrored());
+        $errored=$obj->getErroredFields();
+        $this->assertEquals(1,count($errored));
+        $this->assertEquals(true,$obj->{"*one"}->isErrored());
+        $this->assertEquals(true,$obj->{"*one"}->__getError()!==null);
+        $this->assertEquals("/one",$errored[0]->__getFieldPath());
+        // Le damos ahora un valor valido. Deberia borrarse el error.
+        $obj->one="ssss";
+        $this->assertEquals(false,$obj->{"*one"}->isErrored());
+        $this->assertEquals(null,$obj->{"*one"}->__getError());
+        $this->assertEquals(false,$obj->isErrored());
     }
 
-    /**
-     * Se prueba que funciona el metodo check: debe retornar falso, y lanzar una excepcion.
-     */
-    function test2_1()
-    {
-        $obj=$this->getDefinition3();
-        $this->expectException('\lib\model\BaseTypedException');
-        $this->expectExceptionCode(\lib\model\BaseTypedException::ERR_INVALID_VALUE);
-        $obj->five="four";
-    }
 
-    /**
-     * Se prueba que funciona el metodo check y el metodo process.En este caso, check debe devolver true.
-     */
-    function test2_2()
-    {
-        $obj=$this->getDefinition3();
-        $obj->five="five";
-        // El metodo "process" ha debido convertirlo en "six"
-        $this->assertEquals("six",$obj->five);
-    }
     function test3()
     {
         $obj=$this->getDefinition1();
@@ -457,7 +456,7 @@ class BaseTypedObjectTest extends TestCase
         $obj=$this->getDefinition1();
         $result=$obj->__validateArray(array("one"=>"h"));
         $this->assertEquals(false,$result->isOk());
-        $fieldErrors=$result->getFieldErrors("one");
+        $fieldErrors=$result->getFieldErrors("/one");
         $keys=array_keys($fieldErrors);
         $this->assertEquals(1,count($keys));
         $this->assertEquals('lib\model\types\_StringException::TOO_SHORT',$keys[0]);
@@ -468,26 +467,53 @@ class BaseTypedObjectTest extends TestCase
         $this->assertEquals("status",$obj->getStateField());
         $this->assertEquals('None',$obj->{"*status"}->getLabel());
         $obj->three="thr";
-        $obj->loadFromArray(array("status"=>"None","three"=>"qq","one"=>"lala"),"PHP");
-        $this->expectException('\lib\model\BaseTypedException');
-        $this->expectExceptionCode(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE);
-        $obj->two="hola";
+        $thrown=false;
+        $obj->loadFromArray(array("status" => "None", "three" => "qq", "one" => "lala"), "PHP");
+        try {
+            $obj->two="hola";
+        }catch(\Exception $e) {
+            $this->assertEquals(true,is_a($e,'lib\model\BaseTypedException'));
+            $this->assertEquals(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,$e->getCode());
+            $this->assertEquals(true,$obj->isErrored());
+            $erroredFields=$obj->getErroredFields();
+            $this->assertEquals(1, count($erroredFields));
+            $error=$erroredFields[0]->__getError();
+            $this->assertEquals(true,is_a($error,'lib\model\BaseTypedException'));
+            $this->assertEquals(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,$error->getCode());
+            $thrown=true;
+        }
+        $this->assertEquals(true,$thrown);
+        $obj->status="Other";
+
+
     }
+    /* Comprobacion de campos requeridos al cambiar de estado: el estado Another requiere el campo three */
     function test6()
     {
         $obj=$this->getDefinition2();
         $obj->status="Other";
-        $this->expectException('\lib\model\BaseTypedException');
-        $this->expectExceptionCode(\lib\model\BaseTypedException::ERR_DOUBLESTATECHANGE);
-        $obj->status="Another";
+        $thrown=false;
+        try{
+            $obj->status="Another";
+        }
+        catch(\Exception $e) {
+            $thrown=true;
+            $this->assertEquals(true,is_a($e,'lib\model\BaseTypedException'));
+            $this->assertEquals(\lib\model\BaseTypedException::ERR_REQUIRED_FIELD,$e->getCode());
+            $this->assertEquals(true,$obj->isErrored());
+            $errored=$obj->getErroredFields();
+            $this->assertEquals(1,count($errored));
+            $this->assertEquals("/three",$errored[0]->__getFieldPath());
+            $exception=$errored[0]->__getError();
+            $this->assertEquals(true,is_a($exception,'lib\model\BaseTypedException'));
+            $this->assertEquals(\lib\model\BaseTypedException::ERR_REQUIRED_FIELD,$exception->getCode());
+
+        }
+        $this->assertEquals(true,$thrown);
+
+
     }
-    function test6_1()
-    {
-        $obj=$this->getDefinition2();
-        $obj->status="Another";
-        $pending=$obj->__getPendingRequired();
-        $this->assertEquals(1,count($pending));
-    }
+
     function test6_2()
     {
         $obj=$this->getDefinition2();
@@ -495,15 +521,7 @@ class BaseTypedObjectTest extends TestCase
         $obj->status="Another";
         $this->assertEquals("Another",$obj->{"*status"}->getLabel());
     }
-    function test7()
-    {
-        $obj=$this->getDefinition2();
-        $obj->status="Other";
-        $obj->cleanDirtyFields();
-        $obj->three="Test";
-        $obj->status="Another";
-        $this->assertEquals("Another",$obj->{"*status"}->getLabel());
-    }
+
     function test8()
     {
         $obj=$this->getDefinition2();
@@ -528,7 +546,7 @@ class BaseTypedObjectTest extends TestCase
         );
         $res=$obj->__validateArray($data,null);
         $this->assertEquals(false,$res->isOk());
-        $ex=$res->getFieldErrors("two");
+        $ex=$res->getFieldErrors("/two");
         $this->assertEquals(true,isset($ex) && $ex!=null);
         $keys=array_keys($ex);
         $this->assertEquals(1,count($ex));
@@ -555,7 +573,7 @@ class BaseTypedObjectTest extends TestCase
         $errs=$res->getFieldErrors();
         $keys=array_keys($errs);
         $this->assertEquals(1,count($keys));
-        $this->assertEquals("status",$keys[0]);
+        $this->assertEquals("/status",$keys[0]);
         $subKeys=array_keys($errs[$keys[0]]);
         $this->assertEquals('lib\model\BaseTypedException::CANT_CHANGE_STATE_TO',$subKeys[0]);
     }
@@ -680,21 +698,7 @@ class BaseTypedObjectTest extends TestCase
         // Se ha tenido que ejecutar el callback "TWO" via el estado "*"
         $this->assertEquals("three",$obj->__three);
     }
-    /*
-     * Comprobacion de los metodos process_, check_ y get_. SimpleDefinedObject, tiene definidos metodos
-     * para modificar el set y get de estos campos.
-     */
-    function test18()
-    {
-        $obj=$this->getDefinition7();
-        $obj->seven="Pepito";
-        $this->assertEquals("seven",$obj->seven);
-        $obj->eight="Eight";
-        $this->assertEquals("Eight##",$obj->eight);
-        $this->expectException("\lib\model\BaseTypedException");
-        $this->expectExceptionCode(\lib\model\BaseTypedException::ERR_INVALID_VALUE);
-        $obj->eight="8";
-    }
+
     /*
      * one
         arr[""]
@@ -716,8 +720,9 @@ class BaseTypedObjectTest extends TestCase
         $obj=$this->getDefinition6();
         $obj->one="str_one";
         $obj->arr=["c1","c2"];
-        $obj->{"*dict"}->c1="f1";
-        $obj->{"*dict"}->c2=["first","second"];
+        $obj->dict=[];
+        $obj->dict->c1="f1";
+        $obj->dict->c2=["first","second"];
 
         $val=$obj->getPath("/arr/0");
         $this->assertEquals("c1",$val);
@@ -748,8 +753,7 @@ class BaseTypedObjectTest extends TestCase
         $obj=$this->getDefinition6();
         $obj->one="str_one";
         $obj->arr=["c1","c2"];
-        $obj->{"*dict"}->c1="f1";
-        $obj->{"*dict"}->c2=["first","second"];
+        $obj->dict=["c1"=>"f1","c2"=>["first","second"]];
         $obj2=$this->getDefinition6();
         $obj2->copy($obj);
         $this->assertEquals("first",$obj2->{"*dict"}->c2[0]);
@@ -761,7 +765,7 @@ class BaseTypedObjectTest extends TestCase
         $obj->one="str_one";
         $obj->arr=["c1","c2"];
         //$obj->{"*dict"}->c1="f1";
-        $obj->{"*dict"}->c2=["first","second"];
+        $obj->dict=["c2"=>["first","second"]];
         $data=$obj->normalizeToAssociativeArray();
         $this->assertEquals("second",$data["dict"]["c2"][1]);
         $this->assertEquals("str_one",$data["one"]);
@@ -781,7 +785,7 @@ class BaseTypedObjectTest extends TestCase
         $errors=$result->getFieldErrors();
         $fields=array_keys($errors);
         $this->assertEquals(1,count($fields));
-        $this->assertEquals("one",$fields[0]);
+        $this->assertEquals("/one",$fields[0]);
         $exceptions=array_keys($errors[$fields[0]]);
         $this->assertEquals('lib\model\types\_StringException::TOO_SHORT',$exceptions[0]);
         $exceptionDesc=array_keys($errors[$fields[0]][$exceptions[0]]);
@@ -806,9 +810,9 @@ class BaseTypedObjectTest extends TestCase
         $errors=$result->getFieldErrors();
         $fields=array_keys($errors);
         $this->assertEquals(1,count($fields));
-        $this->assertEquals(true,in_array("three",$fields));
+        $this->assertEquals(true,in_array("/three",$fields));
 
-        $exceptionThree=array_keys($errors["three"]);
+        $exceptionThree=array_keys($errors["/three"]);
         $this->assertEquals('lib\model\BaseTypedException::REQUIRED_FIELD',$exceptionThree[0]);
     }
     /* Nueva validacion de un objeto con estado.
@@ -826,8 +830,8 @@ class BaseTypedObjectTest extends TestCase
         $errors=$result->getFieldErrors();
         $fields=array_keys($errors);
         $this->assertEquals(1,count($fields));
-        $this->assertEquals(true,in_array("two",$fields));
-        $exceptionStatus=array_keys($errors["two"]);
+        $this->assertEquals(true,in_array("/two",$fields));
+        $exceptionStatus=array_keys($errors["/two"]);
         $this->assertEquals('lib\model\BaseTypedException::NOT_EDITABLE_IN_STATE',$exceptionStatus[0]);
     }
     /* Vemos que no podemos movernos de un estado final. */
@@ -835,8 +839,9 @@ class BaseTypedObjectTest extends TestCase
     {
 
         $obj2=$this->getDefinition4();
+        $obj2->three="aVal";
         $obj2->{"*status"}->setValue("Last");
-        $obj2->__setRaw("three","aVal");
+
         $obj2->save();
         $result=$obj2->__validateArray(["status"=>"Another"]);
         $this->assertEquals(false,$result->isOk());
@@ -844,8 +849,8 @@ class BaseTypedObjectTest extends TestCase
         $fields=array_keys($errors);
         $this->assertEquals(1,count($fields));
         // El campo three es requerido en el estado Another. A la vez, es no editable dado el estado de $obj2
-        $this->assertEquals(true,in_array("status",$fields));
-        $exceptions=array_keys($errors["status"]);
+        $this->assertEquals(true,in_array("/status",$fields));
+        $exceptions=array_keys($errors["/status"]);
         $this->assertEquals('lib\model\BaseTypedException::CANT_CHANGE_FINAL_STATE',$exceptions[0]);
     }
 
@@ -860,8 +865,6 @@ class BaseTypedObjectTest extends TestCase
     function testValidate6()
     {
         $obj2=$this->getDefinition4();
-        $this->expectException('\lib\model\BaseTypedException');
-        $this->expectExceptionCode(\lib\model\BaseTypedException::ERR_LOAD_DATA_FAILED);
         $res=$obj2->loadFromArray(["status"=>"Other","two"=>"aaa","three"=>"sss"],false,false);
         $obj2->save();
         $result=$obj2->__validateArray(["status"=>"Another"]);
@@ -870,10 +873,8 @@ class BaseTypedObjectTest extends TestCase
     function testValidateSubChangeState()
     {
         $obj2=$this->getDefinition9();
-        $obj2->status="Another";
-        // Aun no ha tenido que llamarse al metodo de cambio de estado, ya que el campo three es requerido.
-        $this->assertEquals(false,$obj2->__enteringCalled);
         $obj2->three="lala";
+        $obj2->status="Another";
         $this->assertEquals(true,$obj2->__enteringCalled);
     }
     // TESTS A REALIZAR:

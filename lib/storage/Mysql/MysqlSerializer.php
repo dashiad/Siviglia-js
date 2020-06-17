@@ -34,6 +34,33 @@ class MYSQLSerializer extends \lib\storage\StorageSerializer
 
     }
 
+    // Se sobreescribe _store para que en mysql, si esta sucio un campo interno de un container,
+    // dictionary, etc (es decir, la clave de dirtyFields es un path), lo que se marque como sucio
+    // sea el primer elemento del path, que es la columna para la tabla mysql.
+    function _store($object, $isNew, $dirtyFields=null)
+    {
+        $results = array();
+
+        $newDirty=[];
+        foreach($dirtyFields as $k=>$v)
+        {
+            $parts=explode("/",$k);
+            $f="";
+            if(count($parts)>1)
+            {
+                if($parts[0]=="")
+                    $f=$parts[1];
+
+                else
+                    $f=$parts[0];
+            }
+            else
+                $f=$k;
+            $newDirty[$f]=$object->{"*".$f};
+        }
+        parent::_store($object,$isNew,$newDirty);
+    }
+
     function unserialize($object, $queryDef = null, $filterValues = null)
     {
         $object->__setSerializer($this);
@@ -133,6 +160,8 @@ class MYSQLSerializer extends \lib\storage\StorageSerializer
 
     function deleteByQuery($q,$params=null)
     {
+        $table=$q["TABLE"];
+        $q["BASE"]="DELETE FROM ".$table." WHERE [%0%]";
         $qb=$this->getQueryBuilder($q,$params);
         $q=$qb->build();
         $this->conn->delete($q);
@@ -188,8 +217,9 @@ class MYSQLSerializer extends \lib\storage\StorageSerializer
         $q = "UPDATE $table SET ";
         foreach ($dirty as $key => $value)
         {
+            $fieldName=$value->getFieldName();
             // TODO : Eliminar el mysql_escape_string, cambiarlo por serializado
-            $serialized=$typeSerializers[$key]->serialize($key, $object->{"*" . $key}, $this);
+            $serialized=$typeSerializers[$fieldName]->serialize($fieldName, $value, $this);
             foreach($serialized as $k1=>$v1)
                 $parts[] = $k1 . "=" . $v1 ;
         }
@@ -225,42 +255,48 @@ class MYSQLSerializer extends \lib\storage\StorageSerializer
     }*/
     // El primer parametro es la tabla
     // El segundo, es un array asociativo de tipo {clave_fija=>valor}.Son las columnas que indican la parte de la relacion fija, con su valor.
-    // El tercero, es un array simple que indican los nombres de campo de la parte de relacion que estamos editando.
-    // El cuarto, es un array con los valores a establecer.Este array es asociativo, y dentro de cada key, hay un array de valores.
-    function setRelation($table,$fixedSide,$variableSides,$srcValues)
+    // El tercero, es un array con los valores a establecer.Este array es asociativo, y dentro de cada key, hay un array de valores.
+    // Ejemplo: tabla MxN con key "id", con ids remotos "id_a" e "id_b", y los campos "F","G","H" y lo estamos editando desde el objeto "A"
+    // en $fixedSide, esta "id_a"=>x , en $srcValues está ["id_b"=>[1,2,3,4],"F"=>[4,5,6,7],"G"=>...]
+
+    function setRelation($table,$fixedSide,$srcValues)
     {
         // Se tiene que crear una query de "DELETE" y otra de "INSERT IGNORE"
         $q="DELETE FROM ".$table." WHERE ";
         $n=0;
+        // Cogemos la lista de campos que llegan a establecer
+        $keys=array_keys($srcValues);
         foreach($fixedSide as $key=>$value)
         {
             if($n>0)$q.=" AND ";
             $q.=$key."=".$value;
-        }
-        if(count($variableSides)==1)
-        {
-            $variableSideName=$variableSides[0];
-            if(count($srcValues[$variableSideName])>0)
-                $q.=" AND ".$variableSides[0]." NOT IN (".implode(",",$srcValues[$variableSideName]).')';
-        }
-        else
-        {
-            // TODO : Para relaciones multiples donde la relacion con uno de los objetos, es a traves de mas de 1 campo.
+            // Cada clave de la parte fija, se aniade como columna, para agregar en los inserts:
+            $keys[]=$key;
         }
         $this->conn->doQ($q);
-        $k=0;
+        // Si no se han pasado valores, solo se queria borrar la relacion.
         if(!$srcValues)
             return;
-        $keys=array_keys($srcValues);
+
+        // Agregamos como key, la relacion fija:
+
         $insExpr="INSERT IGNORE INTO ".$table." (".implode(",",$keys).") VALUES ";
+        // Contamos el numero de inserts que hay que hacer, contando la longitud del array de la primera key
+        // que haya en $srcValues. Es de suponer que el resto de las keys tienen la misma longitud.
+        $nItems=count($srcValues[$keys[0]]);
         $doInsert=false;
-        while(isset($srcValues[$variableSideName][$k]))
+        for($k=0;$k<$nItems;$k++)
         {
             $parts=array();
             foreach($keys as $value)
             {
-                $parts[]=$srcValues[$value][$k];
+                // Si la key pertenece a la parte de relacion fija, tomamos el valor de ahi.
+                if(isset($fixedSide[$value]))
+                    $parts[]=$fixedSide[$value];
+                else
+                    $parts[]=$srcValues[$value][$k];
             }
+            // Ademas de los campos, aniadimos el valor de
             $insExpr.=($k>0?",":"")."(".implode(",",$parts).")";
             $k++;
             $doInsert=true;
@@ -331,7 +367,7 @@ class MYSQLSerializer extends \lib\storage\StorageSerializer
         foreach ($fields as $key => $value)
         {
 
-            $type = $value->getType();
+            $type = $value;
             $serializers = array();
             $serType = $this->getSerializerType();
 
@@ -525,8 +561,11 @@ class MYSQLSerializer extends \lib\storage\StorageSerializer
     {
         foreach($setOnSaveFields as $k=>$v)
         {
-            if($isNew && is_a($v->getType(),'\lib\model\types\AutoIncrement'))
-                $object->{$k}=$this->conn->lastId();
+            if($isNew && is_a($v,'\lib\model\types\AutoIncrement')) {
+                $object->{$k} = $this->conn->lastId();
+                // limpiamos su estado.
+                $object->{"*".$k}->save();
+            }
             else {
                 if(!$v->is_set())
                 $pending[] = $k;

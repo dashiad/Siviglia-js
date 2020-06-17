@@ -195,10 +195,10 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
     {
           return $this->definition["DEFAULT"];
     }
-    function getRelationshipType()
+    function getRelationshipType($name,$parent)
     {
         // TODO : Esto no tiene sentido (no tiene relationshiptype).
-          return $this;
+          return \lib\model\types\TypeFactory::getType($name,$this->definition,$parent);
     }
     function getDefinition()
     {

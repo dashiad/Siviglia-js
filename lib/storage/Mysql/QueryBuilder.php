@@ -105,7 +105,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         if($dsFields!==null) {
             foreach ($dsFields as $key => $value) {
                 $curField = $this->data->__getField($key);
-                if ($curField->getType()->hasOwnValue()) {
+                if ($curField->hasOwnValue()) {
                     $fdef = $curField->getDefinition();
 
                     if (isset($fdef["PARAMTYPE"]) && $fdef["PARAMTYPE"] == "DYNAMIC") {
@@ -123,15 +123,15 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                     // Sin embargo, aqui, lo que necesitamos es una lista de elementos separados por comas,
                     // ya que lo estamos usando en un IN (...).
                     // Asi que vamos a manejar ese caso por separado.
-                    $type = $curField->getType();
+                    $type = $curField;
                     if (!is_a($type, '\lib\model\types\_Array'))
-                        $serializedVal = $this->serializer->serializeType($key, $curField->getType());
+                        $serializedVal = $this->serializer->serializeType($key, $curField);
                     else {
                         $n = $type->count();
                         $def = $type->getDefinition();
                         $elementType = $def["ELEMENTS"];
 
-                        $subtype = \lib\model\types\TypeFactory::getType($key, $elementType,null,null,\lib\model\types\BaseType::VALIDATION_MODE_NONE);
+                        $subtype = \lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>"/"], $elementType,null,null,\lib\model\types\BaseType::VALIDATION_MODE_NONE);
                         $subVals = [];
                         for ($s = 0; $s < $n; $s++) {
                             $subtype->setValue($type[$s]->getValue());
@@ -165,9 +165,9 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                     continue;
                 }
 
-                if ($curField->getType()->hasOwnValue()) {
+                if ($curField->hasOwnValue()) {
                     //Tenemos que buscar si existe esa parte y substituirla
-                    $val = $curField->getType()->getValue();
+                    $val = $curField->getValue();
                     if(isset($curCondition["ENABLED"]))
                         $inEnable = in_array($val, (array)$curCondition["ENABLE_IF"]);
                         else
@@ -230,7 +230,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 // Nota: no queremos valores por defecto heredados del tipo.
                 try {
                     $curField = $this->data->__getField($tVar);
-                    if (!$curField->getType()->hasOwnValue()) {
+                    if (!$curField->hasOwnValue()) {
                         $notExisting[] = $pattern;
                         continue;
                     }

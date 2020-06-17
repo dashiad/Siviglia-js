@@ -62,7 +62,7 @@ class StorageSerializerServiceTest extends TestCase
      }
      function testSerializeType()
      {
-         $str=new \lib\model\types\_String(["TYPE"=>"String"]);
+         $str=new \lib\model\types\_String("None",["TYPE"=>"String"],null);
          $str->setValue('aa"bb');
          $s=$this->getDefaultService();
          $serializer=$s->getTypeSerializer($str,"default");
@@ -71,7 +71,7 @@ class StorageSerializerServiceTest extends TestCase
      }
      function testSerializeDerivedType()
      {
-         $str=new \lib\model\types\_String(["TYPE"=>"NIF"]);
+         $str=new \lib\model\types\_String("None",["TYPE"=>"NIF"],null);
          $str->setValue('aa"bb');
          $s=$this->getDefaultService();
          $serializer=$s->getTypeSerializer($str,"default");

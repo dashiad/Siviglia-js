@@ -5,7 +5,7 @@
       {
           if(!$type->hasValue())
               return NULL;
-			return [$name=>$type->value];
+			return [$name=>$type->getValue()];
       }
       function unserialize($name,$type,$value,$serializer,$model=null)
       {

@@ -3,7 +3,7 @@ namespace model\tests\Post\actions;
 
 class ComplexAction extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\tests\Post',
                'ROLE'=>'Add',
                'PERMISSIONS'=>array(
@@ -61,7 +61,7 @@ class ComplexAction extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(ComplexAction::$definition);
+			parent::__construct(ComplexAction::$_definition);
 
 	}
 
@@ -85,7 +85,7 @@ class ComplexAction extends \lib\action\Action
 	 *
 	 * RETURNS:
 	 */
-	 function validate ( $actionResult )
+	 function validateAction ( $actionResult )
 	{
 
 

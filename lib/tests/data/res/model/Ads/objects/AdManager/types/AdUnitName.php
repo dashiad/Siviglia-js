@@ -6,7 +6,7 @@
  */
 
 
-namespace model\Ads\objects\AdManager\types;
+namespace model\Ads\AdManager\types;
 
 
 class AdUnitName extends \lib\model\types\_String

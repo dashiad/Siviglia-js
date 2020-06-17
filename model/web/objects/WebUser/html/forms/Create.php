@@ -9,7 +9,7 @@ CLASS:Create
 
 class Create extends \lib\output\html\Form
 {
-	 static $definition=array(
+	 static $_definition=array(
                'NAME'=>'Create',
                'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
@@ -151,7 +151,7 @@ class Create extends \lib\output\html\Form
 	function __construct( $actionResult=null)
 	{
 
-		parent::__construct(Create::$definition,$actionResult);
+		parent::__construct(Create::$_definition,$actionResult);
 
 	}
 
@@ -170,7 +170,7 @@ class Create extends \lib\output\html\Form
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate ( $actionResult )
+	function validateAction ( $actionResult )
 	{
 
 

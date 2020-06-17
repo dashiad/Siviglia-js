@@ -263,7 +263,7 @@ class Relationship extends \model\reflection\Model\BaseRelation
                 echo implode(",",array_keys($f))."<br>";
                 var_dump($this->definition);
             }
-            $type=$remField->getType();
+            $type=$remField;
             // Se sobreescribe el nombre, con el actual.
             $type[$value]->setName($this->name);
             $returned[$this->name]=$type[$value];
@@ -273,11 +273,11 @@ class Relationship extends \model\reflection\Model\BaseRelation
     function getRawType()
     {
 
-        $type=$this->getType();
+        $type=$this;
 
         foreach($this->definition["FIELDS"] as $key=>$value)
         {
-            $type2= \lib\model\types\TypeFactory::getType(null,$type[$key]->getDefinition());
+            $type2= \lib\model\types\TypeFactory::getType(null,$this->{$key}->getDefinition());
         }
 
         return array($this->name=>$type2->getRelationshipType());

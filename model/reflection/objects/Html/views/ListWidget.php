@@ -66,7 +66,7 @@ WIDGET;
         foreach($metadata as $fName=>$fDef)
         {
             $def=\lib\model\types\TypeFactory::getObjectField($this->parentModel,$fName);
-            $type=\lib\model\types\TypeFactory::getType($fName,$def,null);
+            $type=\lib\model\types\TypeFactory::getType(["fieldName"=>$fName,"path"=>"/"],$def,null);
             $typeDef=$type->getDefinition();
             $typeClass=get_class($type);
             $pos=strrpos($typeClass,"\\");

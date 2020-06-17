@@ -9,7 +9,7 @@ namespace model\web\Site\WebsiteUrls\html\forms;
 
 class EditAction extends \lib\output\html\Form
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'NAME'=>'EditAction',
                'MODEL'=>'\model\web\Site\WebsiteUrls',
                'ACTION'=>array(
@@ -66,7 +66,7 @@ class EditAction extends \lib\output\html\Form
 	function __construct( $actionResult=null)
 	{
 
-			parent::__construct(EditAction::$definition,$actionResult);
+			parent::__construct(EditAction::$_definition,$actionResult);
 	
 	}
 
@@ -87,7 +87,7 @@ class EditAction extends \lib\output\html\Form
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate ( $actionResult )
+	function validateAction ( $actionResult )
 	{
 
 

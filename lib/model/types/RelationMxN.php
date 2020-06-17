@@ -1,11 +1,9 @@
 <?php
- namespace lib\model;
- class RelationMxN extends InverseRelation1x1
+ namespace lib\model\types;
+ class RelationMxN extends \lib\model\types\InverseRelation
  {
     protected $relationModelName;
     protected $remoteModelName;
-    protected $relationModelDefinition;
-    protected $interTableName;
     protected $relationFields;
     protected $relationModelInstance;
     protected $relationModelMapping;
@@ -14,7 +12,7 @@
     protected $relationIndexType;
     protected $relationModelIndexes;
     protected $uniqueRelations;
-    function __construct($name,& $model, $definition, $value=null)
+    function __construct($name,$definition, $parentType, $value=null, $validationMode=null)
     {
         $this->relationModelName=\lib\model\ModelService::getModelDescriptor($definition["MODEL"]);
         $this->remoteModelName=\lib\model\ModelService::getModelDescriptor($definition["REMOTE_MODEL"]);
@@ -29,7 +27,9 @@
         {
             $f=$rMD["FIELDS"][$value]["MODEL"];
             $ff=array_values($rMD["FIELDS"][$value]["FIELDS"]);
-            if($model->__getObjectNameObj()->equals($f))
+            // TODO: Aqui se supone que $parentType es un BaseModel, no simplemente un container!
+            // Esto habria que comprobarlo, y tirar une excepcion si no es asi!
+            if($parentType->__getObjectNameObj()->equals($f))
             {
                  $this->relationModelMapping["local"]=$value;
                  $this->localModelMapping[$ff[0]]=$value;
@@ -42,14 +42,19 @@
         }
         $indexes=$rMD["INDEXFIELDS"];
         $this->relationModelIndexes=$indexes;
-        $this->relationIndexType=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($this->relationModelName,$indexes[0],$model);
-        parent::__construct($name,$model,$definition,$value);
+        $this->relationIndexType=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($this->relationModelName,$indexes[0],$name,$parentType);
+        parent::__construct($name,$definition, $parentType, $value, $validationMode);
 
     }
     function createRelationValues()
     {
-        return new MultipleRelationValues($this,$this->definition["LOAD"]?$this->definition["LOAD"]:"LAZY");
+        return new MultipleRelationValues($this,isset($this->definition["LOAD"])?$this->definition["LOAD"]:"LAZY");
     }
+     function isAlias()
+     {
+         return true;
+     }
+
 
     function getRelationModelName()
     {
@@ -90,13 +95,13 @@
     }
     function onModelSaved()
     {
-        if(!$this->relation->is_set() && $this->model->__isNew())
+        if(!$this->relation->is_set() && $this->getModel()->__isNew())
         {
             // Tenemos los objetos A y B. B tiene una relacion con A, asi que A tiene una relacion inversa con B, y esta relacion es un alias, y esta clase es ese alias.
             // Aqui estamos en caso de que se ha creado un A, y, a traves de el, uno o varios B.Ahora se ha guardado A, asi que tenemos que copiar el campo relacion, de A, a todos
             // los B que se hayan creado.
             $nObjects=$this->relationValues->count();
-            $this->relation->setFromModel($this->model);
+            $this->relation->setFromModel($this->getModel());
             for($k=0;$k<$nObjects;$k++)
             {
                 $cObject=$this->relationValues[$k];
@@ -122,14 +127,9 @@
         $this->relationValues->add($value);
         $this->relationValues->reset();
     }
-    function set($values,$extra=null)
-    {
-        $this->relationValues->set($values,$extra);
-        $this->relationValues->reset();
-    }
 }
 
-class MultipleRelationValues extends RelationValues
+class MultipleRelationValues extends \lib\model\types\base\RelationValues
 {
     function delete($value)
     {
@@ -196,7 +196,6 @@ class MultipleRelationValues extends RelationValues
     {
         // TODO : Optimizar para hacer el minimo numero de queries posibles.
         // Al aniadir, hay 2 casos: que el objeto relacion sea nuevo, o que ya exista.
-        // Que ya exista es muy raro, pero por
         $relInstance=$this->relField->getRelationModelInstance();
         $serializer=$relInstance->__getSerializer();
         $uniques=$this->relField->relationsAreUnique();
@@ -281,133 +280,6 @@ class MultipleRelationValues extends RelationValues
             return $results;
         }
         return "value";
-    }
-    // $extra son campos extra (ademas de los exclusivamente referidos a la relacion) que hay que asignar a los objetos de
-    // relacion.
-    function set($srcValues,$extra=null)
-    {
-
-        // Set solo tiene sentido en caso de que las relaciones sean unicas.
-        // Ademas, set tiene que estar expresado en terminos de los campos relacionados, no segun los id's del modelo
-        // intermedio.
-        // Por lo tanto, los campos van a ser un array de id's de la tabla remota.
-        // Esto a su vez tiene el problema de que si las tablas relacion tienen que ser manualmente definidas, y tienen un id
-        // propio, y ese id no es autonumerico (ej, UUID), hay que generarlo tambien, para aquellos elementos que haya que crear.
-        // Porque ya no podemos borrar todo lo existente, y luego insertar lo que nos haya llegado,
-        // ya que si hay (por algun motivo) campos propios, habriamos perdido sus valores.Hay que hacer primero un delete where not in
-        // y un insert de las nuevas relaciones.
-
-        // Asi que, primero obtenemos el tipo de indice de la tabla relacion.
-        $relInstance=$this->relField->getRelationModelInstance();
-        $serializer=$relInstance->__getSerializer();
-        $def=$relInstance->getDefinition();
-        $index=$def["INDEXFIELDS"][0];
-        $type=\lib\model\types\TypeFactory::getType($index,
-                                                    $def["FIELDS"][$index],
-                                                    null
-            );
-        $type->setParent($this,$index);
-
-        // se obtiene el valor serializado de esta relacion.Este valor va a ser siempre fijo.
-        $local=$this->relField->getLocalMapping();
-
-        $localKeys=array_keys($local);
-        $localMap=$local[$localKeys[0]];
-        $curValueSer=$this->relField->serialize($serializer);
-
-        $curValue=$curValueSer[$localMap]=$curValueSer[$localKeys[0]];
-
-        // Se crea un array de serializadores, para el resto de los campos.
-        // Primero, para el indice remoto.
-        $serType=$serializer->getSerializerType();
-        $remoteMapping=$this->relField->getRemoteMapping();
-        $remoteName=$this->relField->getRemoteModelName();
-        foreach($remoteMapping as $key=>$value)
-        {
-            $types[$value]=\lib\model\types\TypeFactory::getFieldTypeInstance($remoteName,$key,$this->relField->model);
-            $serializers[$value]=\lib\model\types\TypeFactory::getSerializer($types[$value],$serType);
-        }
-        $relationName=$this->relField->getRelationModelName();
-        if($extra!=null && is_array($extra))
-        {
-            $extraIsAssoc=false;
-            // Se mira si los campos extra son un array asociativo, o normal.
-            // Si es un array asociativo, lo que haya en el, sera reutilizado para todos los registros que se hayan pasado en $values.
-            if(\lib\php\ArrayTools::isAssociative($extra))
-            {
-                $serRow=$extra;
-                $extraIsAssoc=true;
-            }
-            else
-            {
-                $serRow=$extra[0];
-            }
-            foreach($serRow as $key=>$value)
-            {
-                $types[$key]=\lib\model\types\TypeFactory::getFieldTypeInstance($relationName,$key,$this->relField->model);
-                $serializers[$key]=\lib\model\types\TypeFactory::getSerializer($types[$key],$serType);
-            }
-            // Si es asociativo, lo serializamos ahora.
-            if($extraIsAssoc)
-            {
-                foreach($extra as $eKey=>$eValue)
-                {
-                    $types[$eKey]->__rawSet($eValue);
-                    $eVals[$eKey]=$serializers[$eKey]->serialize($types[$eKey]);
-                }
-            }
-        }
-        $isUUID=false;
-        // Vemos si es un UUID.
-        if($type->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_ACCESS)
-        {
-            $isUUID=true;
-            $uuidSerializer=new \lib\model\types\UUIDMYSQLSerializer();
-        }
-
-        $nVals=count($srcValues);
-        for($k=0;$k<$nVals;$k++)
-        {
-            $curVal=$srcValues[$k];
-            $results[$localMap][]=$curValue;
-            // En su caso, se introduce el UUID
-            if($isUUID)
-            {
-                $newUUID=new \lib\model\types\UUID($type->getDefinition());
-                $results[$index][]=$uuidSerializer->serialize($newUUID);
-            }
-            foreach($remoteMapping as $key=>$value)
-            {
-                $types[$value]->__rawSet($curVal[$value]);
-                $results[$value][]=$serializers[$value]->serialize($types[$value]);
-            }
-            if($extra!=null)
-            {
-                if($extraIsAssoc)
-                {
-                    foreach($extra as $eKey=>$eValue)
-                    {
-                        $results[$eKey][]=$eVals[$eKey];
-                    }
-                }
-                else
-                {
-                    $curExtra=$extra[$k];
-                    foreach($curExtra as $eKey=>$eValue)
-                    {
-                        $types[$eKey]->__rawSet($eValue);
-                        $results[$eKey][]=$serializers[$eKey]->serialize($types[$eKey]);
-                    }
-                }
-            }
-        }
-        $serializer->setRelation($this->relField->getRelationModelInstance()->__getTableName(),
-                                 array($localMap=>$curValue),
-                                 array_values($remoteMapping),
-                                 $results
-                                 );
-     /*   DELETE FROM xx WHERE id NOT IN (SELECT id FROM zz WHERE a=b AND c IN (.....))
-        1) T*/
     }
 }
 

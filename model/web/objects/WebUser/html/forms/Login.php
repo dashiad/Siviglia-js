@@ -9,7 +9,7 @@ namespace model\web\WebUser\html\forms;
 
 class Login extends \lib\output\html\Form
 {
-	 static $definition=array(
+	 static $_definition=array(
                'NAME'=>'Login',
                'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
@@ -58,7 +58,7 @@ class Login extends \lib\output\html\Form
 	function __construct( $actionResult=null)
 	{
 
-			parent::__construct(Login::$definition,$actionResult);
+			parent::__construct(Login::$_definition,$actionResult);
 	
 	}
 
@@ -77,7 +77,7 @@ class Login extends \lib\output\html\Form
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate ( $actionResult )
+	function validateAction ( $actionResult )
 	{
         $actionResult=new \lib\action\ActionResult();
 

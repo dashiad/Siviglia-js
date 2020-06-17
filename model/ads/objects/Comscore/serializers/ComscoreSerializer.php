@@ -65,7 +65,7 @@ class ComscoreSerializer extends \lib\storage\StorageSerializer
         echo "update";
     }
     
-    function setRelation($table, $fixedSide, $variableSides, $srcValues)
+    function setRelation($table, $fixedSide, $srcValues)
     {
         //
     }
