@@ -8,6 +8,11 @@
                     destruct:function()
                     {
                         this.cleanUp();
+                        if(this.grid)
+                            this.grid.jqxGrid('destroy');
+                        if(this.contextMenu)
+                            this.contextMenu.jqxMenu('destroy');
+
                     },
                     methods:{
                         preInitialize:function(params)
@@ -51,7 +56,9 @@
                             this.futureWidgetData=[];
                             this.builtWidgets={};
                             this.actualColumns=[];
+                            this.contextualActions=[];
                             this.columnSpec=[];
+                            this.contextMenu=null;
                             this.formWidgetName=typeof params.filters==="undefined"?null:params.filters;
 
                             this.jqgrid=null;
@@ -87,6 +94,92 @@
                              */
                             this.gridOpts=Siviglia.issetOr(params.gridOpts,{});
 
+                            var modelFields={};
+                            // Iteramos para ver sobre que modelos tenemos todos los indices en la especificacion de columnas.
+                            for(var k in this.columnSpec)
+                            {
+                                var curIt=this.columnSpec[k];
+                                if(typeof curIt['visible']==="undefined" || curIt['visible']==true) {
+                                    // Primero se crea una configuracion por defecto, que luego es sobreescrita con lo
+                                    // que posiblemente nos enviara la clase derivada
+                                    var colSpec = null;
+
+                                    switch (curIt['Type']) {
+                                        default:
+                                        case "Field": {
+                                            // Obtenemos la definicion del campo a traves del ds.
+                                            var typeDef = this.ds["*data"].definition["ELEMENTS"].FIELDS[curIt.Field];
+                                            // Obtenemos una instancia del tipo de la columna
+                                            var ins = Siviglia.types.TypeFactory.getType(null, typeDef, null);
+                                            var processedDef = ins.definition;
+                                            if (typeof processedDef.references !== "undefined") {
+                                                var model = processedDef.references["MODEL"];
+                                                var field = processedDef.references["FIELD"];
+                                                if (typeof modelFields[model] === "undefined")
+                                                    modelFields[model] = {};
+                                                modelFields[model][field] = curIt.Field;
+                                                // Se mira si es una relacion.
+                                                // Si es una relacion, ademas del campo local, se guarda el campo apuntado por la relacion.
+                                                if (processedDef["TYPE"] == "Relationship") {
+                                                    if (typeof modelFields[processedDef["MODEL"]] == "undefined")
+                                                        modelFields[processedDef["MODEL"]] = {};
+                                                    for (var j in processedDef["FIELDS"]) {
+                                                        modelFields[processedDef["MODEL"]][processedDef["FIELDS"][j]] = curIt.Field;
+                                                    }
+                                                }
+                                            }
+                                        }break;
+                                    }
+                                }
+
+                            }
+                            // En este punto, tenemos los campos que hay en las columnas, y podemos buscar que
+                            // modelos hay, y si los campos indices de los modelos esta presente.
+                            for(var curModel in modelFields)
+                            {
+                                var def=Siviglia.model.loader.getModelDefinition(curModel);
+                                var indexes=typeof def["INDEXES"]!=="undefined"?def["INDEXES"]:null;
+                                if(indexes)
+                                {
+                                    // El modelo tiene indices.Vamos a ver si todos los indices estan incluidos en el listado
+                                    var complete=true;
+                                    var indexMap={};
+                                    for(var k=0;k<indexes.length;k++)
+                                    {
+                                        if(typeof modelFields[curModel][indexes[k]]===undefined){
+                                            complete=false;
+                                            break;
+                                        }
+                                        indexMap[indexes[k]]=modelField[curModel][indexes[k]];
+                                    }
+                                    if(complete) {
+
+                                        this.contextualActions.push({model: curModel, indexMap: indexMap});
+                                    }
+                                }
+                            }
+                            if(this.contextualActions.length == 0)
+                                return; // No habia acciones contextuales.
+                            // Si las habia, ahora hay que obtener la lista de acciones de los modelos
+                            var promiseArray=[];
+                            var completePromise=SMCPromise();
+
+                            var m=this;
+                            for(var k=0;k<this.contextualActions.length;k++)
+                            {
+                                promiseArray.push((function(index,curModel){
+                                    var localPromise=SMCPromise();
+                                    var actionDs=new Siviglia.Model.Datasource("/model/reflection/Model", "ModelIndexedActions", {model:curModel});
+                                    actionDs.refresh().then(function(result){
+                                        m.contextualActions[index].actions=result.data;
+                                        actionDs.destruct();
+                                        localPromise.resolve();
+                                    })
+                                    return localPromise;
+                                })(k,this.contextualActions[k].model));
+                            }
+                            Siviglia.all(promiseArray).then(function(){completePromise.resolve()});
+                            return completePromise;
                         },
                         initialize:function(params)
                         {
@@ -109,6 +202,7 @@
                                     return row[columnField];
                                 }
                             }
+
                             for(var k in this.columnSpec)
                             {
                                 var curIt=this.columnSpec[k];
@@ -134,6 +228,7 @@
                                                         var ctx = new Siviglia.Path.BaseObjectContext(rowdata, "*", stack);
                                                         var ps = new Siviglia.Path.ParametrizableString(curIt.str, stack);
                                                         var st = ps.parse();
+                                                        ps.destruct();
                                                         return st;
                                                     }
                                                 }
@@ -180,6 +275,8 @@
                                 this.actualColumns.__ev__.disableEvents(false);
                                 this.actualColumns.__ev__.fireEvent("CHANGE",{});
                             }
+
+
                         },
 
                         cleanUp:function()
@@ -311,6 +408,43 @@
                             {
                                 this.onRendered();
                             }.bind(this));
+                            // COMIENZO DE MENU CONTEXTUAL
+                            if(this.contextualActions.length > 1) {
+                                $("#jqxMenu").jqxMenu({
+                                    width: '120px',
+                                    height: '90px',
+                                    autoOpenPopup: false,
+                                    mode: 'popup',
+                                    theme: theme
+                                });
+                                $("#jqxgrid").mousedown(function (event) {
+                                    // get the clicked cell.
+                                    var cell = $("#jqxgrid").jqxGrid('getCellAtPosition', event.pageX, event.pageY);
+                                    //select row.
+                                    if (cell != null && cell.row) {
+                                        $("#jqxgrid").jqxGrid('selectrow', cell.row);
+                                    }
+                                    var rightClick = isRightClick(event);
+                                    if (rightClick) {
+                                        var scrollTop = $(window).scrollTop();
+                                        var scrollLeft = $(window).scrollLeft();
+                                        contextMenu.jqxMenu('open', parseInt(event.clientX) + 5 + scrollLeft, parseInt(event.clientY) + 5 + scrollTop);
+                                        return false;
+                                    }
+                                });
+                                // disable the default browser's context menu.
+                                $(document).bind('contextmenu', function (e) {
+                                    return false;
+                                });
+
+                                function isRightClick(event) {
+                                    var rightclick;
+                                    if (!event) var event = window.event;
+                                    if (event.which) rightclick = (event.which == 3);
+                                    else if (event.button) rightclick = (event.button == 2);
+                                    return rightclick;
+                                }
+                            }
 
 
                         },
@@ -391,7 +525,9 @@
                         {
                             if(this.formWidgetName===null)
                                 return;
+
                             var formNamespace=Siviglia.Utils.stringToContextAndObject(this.formWidgetName);
+
                             this.filterWidget=new formNamespace.context[formNamespace.object](this.formWidgetName,
                                 {bto:this.parameters},{},$("<div></div>"),this.__context);
                             this.filterWidget.__build().then(function(){
@@ -411,5 +547,31 @@
     <div data-sivWidget="Siviglia.lists.jqwidgets.BaseGrid" data-widgetCode="Siviglia.lists.jqwidgets.BaseGrid">
         <div data-sivId="filterNode"></div>
         <div data-sivId="grid"></div>
+    </div>
+    <div data-sivid='menuNode'>
+        <ul>
+            <div data-sivLoop="*contextualActions" data-contextIndex="current">
+                <li data-sivValue="@current"></li>
+                <div data-sivLoop="@current/actions" data-contextIndex="curAction"
+            </div>
+            <li><a href="#">Home</a></li>
+            <li>About Us
+                <ul>
+                    <li><a href="#">Clients</a></li>
+                    <li><a href="#">Testimonials</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">FAQs</a></li>
+                </ul>
+            </li>
+            <li>Services
+                <ul>
+                    <li><a href="#">Product Development</a></li>
+                    <li><a href="#">Delivery</a></li>
+                    <li><a href="#">Shop Online</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Training &amp; Consulting</a></li>
+                </ul>
+            </li>
+        </ul>
     </div>
 </div>

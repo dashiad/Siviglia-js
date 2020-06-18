@@ -49,10 +49,9 @@ if (typeof Siviglia === 'undefined') {
                                 b++ || d(!1, [e])
                             }
                         };
-                        f(c.apply(void 0, Siviglia.isset(l) ? (Siviglia.isArray(l) ? l : [l]) : []))
+                        f(c.apply(void 0, SMC.isset(l) ? (SMC.isArray(l) ? l : [l]) : []))
                     } else d(b, l)
                 } catch (k) {
-                    console.error(k);
                     d(!1, [k])
                 }
             }
@@ -348,11 +347,8 @@ Siviglia.Utils.buildClass = function (definition) {
                     var curBaseClass = c.context[c.object];
                     if (Siviglia.isset(definition.classes[k].construct))
                         contextObj[k] = definition.classes[k].construct;
-                    else {
-                        contextObj[k]=(function(curClass){return function(){curClass.apply(this,arguments)}})(curBaseClass);
-                        //contextObj[k]=new Function(baseClassName+".apply(arguments);");
-                        //eval(context + "." + k + "=function(){" + baseClassName + ".apply(this,arguments);};");
-                    }
+                    else
+                        eval(context + "." + k + "=function(){" + baseClassName + ".apply(this,arguments);};");
                     constructor = contextObj[k];
                     contextObj[k].prototype = (function (st) {
                         var c = Siviglia.Utils.stringToContextAndObject(st, null, contextObj);
@@ -530,7 +526,7 @@ Siviglia.Utils.buildClass({
                     }
                 },
                 _ev_notify: function (evType, data, target) {
-
+                    
                 },
                 destroyListeners: function () {
                     delete Siviglia.Dom.existingManagers[this._ev_id];
@@ -1024,8 +1020,8 @@ Siviglia.Utils.buildClass({
                         this._ps_id=Siviglia.Utils.parametrizableStringCounter;
                         Siviglia.Utils.parametrizableStringCounter++;
                         this.contextStack=contextStack;
-                        this.BASEREGEXP=/\[%(?:(?:([^: ,]*?)%\])|(?:([^: ,]*?)|([^:]*?)):(.*?(?=%\]))%\])/g;
-                        this.BODYREGEXP=/\{%(?:([^%:]*?)|(?:([^:]*?):(.*?(?=%\}))))%\}/g;
+                        this.BASEREGEXP=/\[%(?:(?:([^: ,]*)%\])|(?:([^: ,]*)|([^:]*)):(.*?(?=%\]))%\])/g;
+                        this.BODYREGEXP=/\{%(?:([^%:]*)|(?:([^:]*):(.*?(?=%\}))))%\}/g;
                         this.PARAMREGEXP=/([^|$ ]+)(?:\||$|(?: ([^|$]+)))/g;
                         this.SUBPARAMREGEXP=/('[^']*')|([^ ]+)/g;
                         this.paths={};
@@ -1508,20 +1504,19 @@ Siviglia.Utils.buildClass(
                                 var n=node[0];
 
                                 var nextNode=null;
-                                // Primero, se hace una pasada por los nodos, antes de procesarlos.
-                                // Nos quedamos con una referencia a los nodos que hay ANTES de ser procesados.
-                                // Y son estos los que hay que procesar, ignorando cualquier otro que se añada
-                                // durante el procesamiento.
-                                var actualNodes=[];
+
                                 for(var k=0;k<n.childNodes.length;k++) {
-                                    actualNodes.push(n.childNodes[k]);
-                                }
-
-
-                                //for(var k=0;k<n.childNodes.length;k++) {
-                                for(var k=0;k<actualNodes.length;k++) {
-                                        nextNode = actualNodes[k].nextElementSibling;
-                                        m.recurseHTML($(actualNodes[k]), applyFunc);
+                                    // Nos saltamos el texto
+                                    if(n.childNodes[k].nodeType!==3) {
+                                        // Nos quedamos con el siguiente nodo al actual.
+                                        nextNode = n.childNodes[k + 1];
+                                        m.recurseHTML($(n.childNodes[k]), applyFunc);
+                                        // Como es posible que el nodo actual (k), haya sido reemplazado por N nodes, que ya
+                                        // están parseados, el siguiente a parsear era el que estaba originalmente después del actual,
+                                        // saltándonos todos los que haya creados.
+                                        while (n.childNodes[k+1] !== nextNode && k < n.childNodes.length)
+                                            k++;
+                                    }
                                 }
 
                                 node.trigger("endChildren");
@@ -2137,8 +2132,8 @@ Siviglia.Utils.buildClass(
                 methods: {
                     __build: function () {
                         var widgetFactory = new Siviglia.UI.Expando.WidgetFactory();
-                       // var p=$.Deferred();
-                        var p=SMCPromise();
+                        var p=$.Deferred();
+                        //var p=new SMCPromise();
                         var f=(function (w) {
 
                             var returned=this.preInitialize(this.__params);
@@ -2179,17 +2174,9 @@ Siviglia.Utils.buildClass(
                             Siviglia.UI.viewStack.push(this);
                             var oldNode=this.__node;
                             this.__node=this.widgetNode;
-                            this.rootNode=this.__node;
                             this.oManager.parse(this.__node);
-                            $.each(oldNode,function(idx,value){
-                                if(idx==0)
-                                    value.replaceWith(this.widgetNode);
-                                else
-                                    value.remove();
-                            }.bind(this));
+                            oldNode.replaceWith(this.widgetNode);
                             Siviglia.UI.viewStack.pop();
-                            this.rootNode=this.widgetNode.children();
-
                         }catch(e)
                         {
                             console.dir(e);
@@ -2214,6 +2201,10 @@ Siviglia.Utils.buildClass(
                     this.params = null;
                     this.str=null;
                     this.altLayout=null;
+                    this.gotName=false;
+                    this.paramListeners=[];
+                    this.noContainer=false;
+                    this.currentNodeReference=null;
                 },
                 destruct: function () {
                     if (this.view !== null)
@@ -2235,8 +2226,7 @@ Siviglia.Utils.buildClass(
                             // Nota: Esto podria ser un array.
                             this.oldNode=null;
                             this.node = node;
-                            this.expandoNode=node;
-
+                            this.currentNodeReference=node;
                             this.params=typeof nodeExpandos["sivparams"]=="undefined"?null:nodeExpandos["sivparams"];
                             if (this.params)
                                 this.params.addListener("CHANGE", this, "updateParams", "ViewExpando:" + this.method);
@@ -2261,8 +2251,10 @@ Siviglia.Utils.buildClass(
 
                             this.node.removeData("sivview");
                             this.node.removeAttr("data-sivview");
+                            var oldNodes=null;
                             var oldView=null;
                             if (this.view) {
+                                oldNodes=this.node;
                                 oldView=this.view;
                                // oldView.getNode().css({"display":"none"})
                             }
@@ -2274,7 +2266,7 @@ Siviglia.Utils.buildClass(
                             var f=(function (w) {
                                 var className=w.getClass();
                                 var obj=Siviglia.Utils.stringToContextAndObject(className);
-                                var tempNode=$("<div class='inner'></div>");
+                                var tempNode=$("<div></div>");
                                 this.view = new obj.context[obj.object](
                                     this.altLayout==null?this.name:this.altLayout,
                                     this.currentParamsValues,null, tempNode,  this.stack);
@@ -2328,9 +2320,7 @@ Siviglia.Utils.load=function(assets)
     var loadJS=function(url){
         var promise=$.Deferred();
         var v=document.createElement("script");
-        v.onload=function(){
-            promise.resolve();
-        }
+        v.onload=function(){promise.resolve();}
         v.src=url;
         document.head.appendChild(v);
         return promise;
@@ -2390,7 +2380,7 @@ Siviglia.Utils.load=function(assets)
                     var promises=[];
                     promises.push(loadHTML(Siviglia.config.baseUrl+p.template,p.node));
                     promises.push(loadJS(Siviglia.config.baseUrl+p.js));
-                    $.when.apply($,promises).then(function(){
+                    SMCPromise.when.apply($,promises).then(function(){
                         var parser= new Siviglia.UI.HTMLParser(p.context);
                         parser.parse(p.node);
                         pr.resolve(p.node);
@@ -2409,10 +2399,7 @@ Siviglia.Utils.load=function(assets)
         }
     }
 
-    $.when.apply($, subpromises).done(function() {
-        console.dir(arguments);
-        curPromise.resolve();
-    });
+    SMCPromise.when.apply($, subpromises).done(function() {curPromise.resolve();});
     return curPromise;
 };
 

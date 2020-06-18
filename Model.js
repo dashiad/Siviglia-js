@@ -488,8 +488,8 @@ Siviglia.Utils.buildClass({
                     this.__model=model;
                     this.__name=name;
                     this.__params=params;
-                    this.__currentPromise=null;
-                    this.__nextPromise=null;
+                    this.currentPromise=null;
+                    this.nextPromise=null;
                     if(typeof response=="undefined" || response==null)
                     {
                         meta=Siviglia.Model.loader.getDatasourceMeta(model,name);
@@ -554,10 +554,10 @@ Siviglia.Utils.buildClass({
                     // Se aniaden listeners en todos los campos.
                     for(var k in definition.FIELDS.params.FIELDS)
                     {
-                        this.params["*"+k].addListener("CHANGE",this,"refresh");
+                        this.params["*"+k].addListener("CHANGE",this,"doRefresh");
                     }
                     for(var k in definition.FIELDS.settings.FIELDS)
-                        this.settings["*"+k].addListener("CHANGE",this,"refresh");
+                        this.settings["*"+k].addListener("CHANGE",this,"doRefresh");
 
                 },
                 destruct:function()
@@ -615,22 +615,22 @@ Siviglia.Utils.buildClass({
                         transport.doGet(location).then(
                             function (response) {
                                 if (response.error) {
-                                    this.currentPromise.reject(error);
+                                    m.currentPromise.reject(error);
                                 }else {
-                                    this.onResponse(response);
-                                    this.currentPromise.resolve();
+                                    m.onResponse(response);
+                                    m.currentPromise.resolve();
                                 }
                                 // indicamos que ya no tenemos promesa actual
-                                this.currentPromise=null;
+                                m.currentPromise=null;
                                 // Pero si tenemos una promesa proxima
-                                if(this.nextPromise!==null)
+                                if(m.nextPromise!==null)
                                 {
                                     // Hacemos que la promesa actual, sea la proxima.
-                                    this.currentPromise=this.nextPromise;
+                                    m.currentPromise=m.nextPromise;
                                     // Borramos la nextPromise
-                                    this.nextPromise=null;
+                                    m.nextPromise=null;
                                     // Y refrescamos.
-                                    this.refresh();
+                                    m.refresh();
                                 }
                             }.bind(this),
                             function (error) {

@@ -202,6 +202,10 @@ Siviglia.Utils.buildClass(
                     {
                         return this.__definedPromise;
                     },
+                    isRequired:function(field)
+                    {
+                          return false;
+                    },
 
 
                     __iterateOnFieldDefinitions:function(cb)
@@ -410,6 +414,8 @@ Siviglia.Utils.buildClass(
 
                         var propSpec={
                             set: function (x) {
+
+
                                 m.type.setValue(x)
                               //  m.parent.__onChange();
                             },
@@ -449,6 +455,7 @@ Siviglia.Utils.buildClass(
         }
     }
 );
+
 top.validations=0;
 Siviglia.Utils.buildClass(
     {
@@ -632,11 +639,11 @@ Siviglia.Utils.buildClass(
                             hasValue: function () {
                                 return (this.valueSet && typeof this.value != "undefined" && this.value !== null) || this.hasDefaultValue() || this.flags & this.TYPE_SET_ON_SAVE || this.flags & this.TYPE_SET_ON_ACCESS;
                             },
-                            hasOwnValue: function () {
+                            __hasOwnValue: function () {
                                 return this.valueSet;
                             },
                             copy: function (type) {
-                                if (type.hasValue()) {
+                                if (type.__hasValue()) {
                                     this.valueSet = true;
                                     this.setValue(type.getValue());
                                 } else {
@@ -2885,6 +2892,7 @@ Siviglia.Utils.buildClass(
                                             newDef[k]=def[k];
                                     }
                                     def=newDef;
+                                    def["references"]=referencedField;
                                     type=def["TYPE"];
                                 }
                             }

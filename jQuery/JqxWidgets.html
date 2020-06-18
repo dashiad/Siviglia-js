@@ -222,11 +222,13 @@
                         },
                         _setInputValue: function (toSet) {
                             this.changing = true;
-                            this.inputNode[this.getJqxWidgetName()]('val', toSet);
+                            //this.inputNode[this.getJqxWidgetName()]('val', toSet);
+                            $(this.inputNode).val(toSet);
                             this.changing = false;
                         },
                         getValue: function () {
-                            return this.inputNode[this.getJqxWidgetName()]('val');
+                            //return this.inputNode[this.getJqxWidgetName()]('val');
+                            return $(this.inputNode).val();
                         },
                         validate: function () {
                             var val = this.getValue();
@@ -785,6 +787,12 @@
                                // añadida propiedad para que el icono del calendario sea fluid 100%
                                return {width: '100%'};
                             },
+                            _setInputValue: function (toSet) {
+                                this.changing = true;
+                                //this.inputNode[this.getJqxWidgetName()]('val', toSet);
+                                $(this.inputNode).val(new Date(toSet));
+                                this.changing = false;
+                            },
                             getJqxWidgetName: function () {
                                 return "jqxDateTimeInput";
                             },
@@ -811,6 +819,12 @@
                     inherits:'Date',
                     methods:
                         {
+                            _setInputValue: function (toSet) {
+                                this.changing = true;
+                                //this.inputNode[this.getJqxWidgetName()]('val', toSet);
+                                $(this.inputNode).val(new Date(toSet));
+                                this.changing = false;
+                            },
                             getValue: function () {
                                 var val = this.inputNode.jqxDateTimeInput('value');
                                 if (val != null)
