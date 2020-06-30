@@ -9,23 +9,20 @@ class Scheduling extends  BaseType
 {
     
     public $definition = [
-        'ROLE' => 'ENTITY',
-        'DEFAULT_SERIALIZER' => 'smartconfig',
-        'DEFAULT_WRITE_SERIALIZER' => 'smartconfig',
+        "LABEL" => "Scheduling",
+        "TYPE" => "Container",
         'FIELDS' => [
-            "FIELDS" => [
-                "when" => [
-                    "TYPE" => "Enum",
-                    "LABEL" => "Inicio",
-                    "VALUES" => [
-                        "READY",
-                        "LOAD"
-                    ]
-                ],
-                "timeout" => [
-                    "TYPE" => "String",
-                    "LABEL" => "Retardo (en milisegundos)"
+            "when" => [
+                "TYPE" => "Enum",
+                "LABEL" => "Inicio",
+                "VALUES" => [
+                    "READY",
+                    "LOAD"
                 ]
+            ],
+            "timeout" => [
+                "TYPE" => "String",
+                "LABEL" => "Retardo (en milisegundos)"
             ]
         ]
     ];

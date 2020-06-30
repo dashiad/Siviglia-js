@@ -5,36 +5,23 @@ use lib\model\types\BaseType;
 
 require_once(__DIR__."/BaseType.php");
 
-class AolBidder extends BaseType
+class ImageLoaderUrl extends BaseType
 {
     
     public $definition = [
-        "TYPE" => "Container",
-        "DESCRIPTION" => "Bidder de AOL",
-        "LABEL" => "AOL Bidder",
-        "FIELDS" => [
-            "bidder" => [
-                "LABEL" => "Tipo",
-                "TYPE" => "String",
-//                 "PAINTER" => "FixedPainter"
+        'LABEL' => 'ImageLoaderUrl',
+        'TYPE' => 'Container',
+        'FIELDS' => [
+            'url' => [
+                'LABEL' => 'URL',
+                'TYPE' => 'String',
+                'REQUIRED' => true
             ],
-            "params" => [
-                "LABEL" => "Parametros",
-                "TYPE" => "Container",
-                "FIELDS" => [
-                    "placement" => [
-                        "LABEL" => "Placement",
-                        "TYPE" => "String"
-                    ],
-                    "network" => [
-                        "LABEL" => "Network",
-                        "TYPE" => "String"
-                    ],
-                    "server" => [
-                        "LABEL" => "Servidor",
-                        "TYPE" => "String"
-                    ]
-                ]
+            'throttle' => [
+                'LABEL' => 'Throttle',
+                'TYPE' => 'Integer',
+                'REQUIRED' => true,
+                'DEFAULT' => 1
             ]
         ]
     ];
@@ -74,4 +61,6 @@ class AolBidder extends BaseType
         $this->valueSet = true;
     }
 }
+
+
 

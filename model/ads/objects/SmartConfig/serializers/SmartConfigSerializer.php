@@ -52,27 +52,31 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
         
         $qb = $this->getQueryBuilder($this->definition, $queryDef);
         $q = $qb->build($params, true);
-        
         $result = $this->storageManager->request($q);
         $config = $this->parseConfig($result);
         
-        // busca regex
-        foreach ($config['actions'] as $value) {
-            if ($params['regex']==$value['regex'][0]) {
-                $regex=$value;
-                break;
-            }
-        }
-        // busca el plugin
-        if (isset($regex['actions'][$params['plugin']])) {
-            $data = $regex['actions'][$params['plugin']];
-        }
+//         // busca regex
+//         foreach ($config['actions'] as $value) {
+//             if ($params['regex']==$value['regex'][0]) {
+//                 $regex=$value;
+//                 break;
+//             }
+//         }
+//         // busca el plugin
+//         if (isset($regex['actions'][$params['plugin']])) {
+//             $data = $regex['actions'][$params['plugin']];
+//         }
         
-        if (is_null($data) || is_null($regex)) {
-            throw new SmartConfigSerializerException(SmartConfigSerializerException::ERR_PATH_NOT_FOUND);
-        }
+//         if (is_null($data) || is_null($regex)) {
+//             throw new SmartConfigSerializerException(SmartConfigSerializerException::ERR_PATH_NOT_FOUND);
+//         }
         
-        $object->config = [$params['plugin'] => $data];
+//         $object->config = [$params['plugin'] => $data];
+
+//          var_dump($config);
+
+//          var_dump($object);
+        $object->config = $config['config']; 
         
     }
 
@@ -83,38 +87,54 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
     {
         
     }
-
     public function destroyDataSpace($spaceDef)
     {}
 
     public function fetchAll($queryDef, &$data, &$nRows, &$matchingRows, $params, $pagingParams)
-    {         
+    { 
          $q = $this->buildQuery($queryDef, $params, $pagingParams);
          
          $this->storageManager->setUrl($q['url']);
          $this->storageManager->setMethod($q['method']);
          $result = $this->storageManager->request($q);
-         $config = $this->parseConfig($result);
          
-         // busca regex
-         foreach ($config['actions'] as $value) {
-             if ($params['regex']==$value['regex'][0]) {
-                 $result=$value;
-                 break;
+         if ($queryDef["BASE"]["action"]!="getFolderContent") {
+         
+             $config = $this->parseConfig($result);
+             
+             if (!empty($params['regex'])) { // devuelve solo las regex solicitadas
+                 foreach($config['config'] as $regex=>$plugins) {
+                     if (!in_array($regex, $params['regex'])) {
+                         unset($config['config'][$regex]);
+                     }
+                 }
              }
-         }
-         // busca el plugin
-         if (isset($result['actions'][$params['plugin']])) {
-             $result = $result['actions'][$params['plugin']];
+             if (!empty($params['plugin'])) {
+                 foreach($config['config'] as $regex=>$plugins) {
+                     foreach($plugins as $plugin=>$value) {
+                         if (!in_array($plugin, $params['plugin'])) {
+                             unset($config['config'][$regex][$plugin]);
+                         }
+                     }
+                 }
+             }                 
+             
+             $this->__returnedFields = array_keys($config);
+             $this->data = $config;
+             $this->nRows = 1;
+         
+         } else {
+             $this->__returnedFields = ["domain"];
+             $this->data = [];
+             foreach (explode(PHP_EOL, $result) as $filename) {
+                 if (!empty(trim($filename))) {
+                     $domain = explode(".", $filename);
+                     $this->data[] = ["domain" => $domain[0]];
+                 }
+             }
+             $this->nRows = count($this->data); 
          }
          
-         if (is_null($result)) {
-             throw new SmartConfigSerializerException(SmartConfigSerializerException::ERR_PATH_NOT_FOUND);
-         }
-         
-         $this->__returnedFields = array_merge(array_keys($this->definition['BASE']), ['values']);
-         $this->data = array_merge(array_values($params), [$result]);
-         $this->nRows = 1;
          
          $this->iterator = new \lib\model\types\DataSet(["FIELDS"=>$this->__returnedFields], $this->data, $this->nRows, $this->matchingRows, $this, $this->mapField);
          $this->loaded = true;
@@ -154,7 +174,17 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
                 if (json_last_error()!=FALSE) {
                     throw new SmartConfigSerializerException(SmartConfigSerializerException::ERR_BAD_FILE_FORMAT);
                 } else {
-                    return $result;
+                    $config = [
+                        'configType' => $result['configType'],
+                        'domain' => $result['domain'],
+                        'config' => [],
+                    ];
+                    
+                    foreach ($result['actions'] as $action)
+                    {
+                        $config['config'][$action['regex'][0]] = $action['actions'];
+                    }                    
+                    return $config;
                 }
             } else {
                 throw new SmartConfigSerializerException(SmartConfigSerializerException::ERR_BAD_FILE_FORMAT);
@@ -208,7 +238,6 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
         $qB = new storage\QueryBuilder($this, $definition, $parameters, $pagingParameters);
         $qB->findFoundRows($findRows);
         $query = [
-            'action'     => 'getFileContent',
             'definition' => $definition["BASE"],
             'parameters' => $parameters,
         ];

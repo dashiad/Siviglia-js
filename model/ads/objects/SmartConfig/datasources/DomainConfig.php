@@ -1,51 +1,40 @@
 <?php
 namespace model\ads\SmartConfig\datasources;
 /**
- FILENAME:/var/www/adtopy/model/ads/objects/SmartConfig/datasources/SingleConfig.php
+ FILENAME:/var/www/adtopy/model/ads/objects/SmartConfig/datasources/DomainConfig.php
  CLASS:Definition
  *
  *
  **/
 
-class SingleConfig
+class DomainConfig
 {
     static $definition = [
         'ROLE' => 'list', // posibles roles?
         'DATAFORMAT' => 'Table',
         'PARAMS' => [
             'domain' => [
+            //                 'TYPE' => 'model/ads/SmartConfig/types/Domain',
                 'TYPE' => 'String',
-                'LABEL' => 'Dominio',
+                'LABEL' => 'Mensaje',
                 'REQUIRED'=>'true',
-            ],
-            'regex' => [
-                'TYPE' => 'Array',
-                'LABEL' => 'Regex',
-                'REQUIRED' => 'false',
-                'ELEMENTS' => [
-                    'TYPE' => 'String',
-                ],
-            ],
-            'plugin' => [
-                'TYPE' => 'Array', 
-                'LABEL' => 'Plugin',
-                'REQUIRED' => 'false',
-                'ELEMENTS' => [
-                    'TYPE' => 'String',
-                ],
             ],
         ],
         'FIELDS' => [
             // TODO: revisar formato de cada campo
             'domain' => [
-                'LABEL' => 'Domain',
-                'TYPE' => 'String',
                 'MODEL' => '\model\ads\SmartConfig',
                 'FIELD' => 'domain',
             ],
+            'regex' => [
+                'MODEL' => '\model\ads\SmartConfig',
+                'FIELD' => 'regex',
+            ],
+            'plugin' => [
+                'MODEL' => '\model\ads\SmartConfig',
+                'FIELD' => 'plugin',
+            ],
             'config' => [
-                'LABEL' => 'Config',
-//                 'TYPE'  => 'model/ads/SmartConfig/types/SmartConfig',
                 'MODEL' => '\model\ads\SmartConfig',
                 'FIELD' => 'config',
             ],

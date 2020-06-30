@@ -1,40 +1,45 @@
 <?php
-namespace model\ads\SmartConfig\actions;
+namespace model\ads\Demo\actions;
 
 /**
- * FILENAME:/var/www/adtopy/model/ads/objects/SmartConfig/actions/EditAction.php
+ * FILENAME:/var/www/adtopy/model/ads/objects/Demo/actions/EditAction.php
  * CLASS:EditAction
  */
 class Edit extends \lib\action\Action
 {
-
+    
     static $definition = array(
-        'MODEL' => '\model\ads\SmartConfig',
+        'MODEL' => '\model\ads\Demo',
         'ROLE' => 'Edit',
         'PERMISSIONS' => array(
-//             array(
-//                 'MODEL' => '\model\ads\SmartConfig',
-//                 'PERMISSION' => 'edit'
-//             )
+        //             array(
+            //                 'MODEL' => '\model\ads\Demo',
+            //                 'PERMISSION' => 'edit'
+            //             )
         ),
         'IS_ADMIN' => false,
         'INDEXFIELDS' => array(
-            "domain"
+            "id"
         ),
         'FIELDS' => array(
+            'id' => array(
+                'REQUIRED' => 1,
+                'FIELD' => 'id',
+                'MODEL' => '\model\ads\Demo'
+            ),
             'domain' => array(
                 'REQUIRED' => 1,
                 'FIELD' => 'domain',
-                'MODEL' => '\model\ads\SmartConfig'
+                'MODEL' => '\model\ads\Demo'
             ),
             'config' => array(
                 'REQUIRED' => 0,
                 'FIELD' => 'config',
-                'MODEL' => '\model\ads\SmartConfig'
+                'MODEL' => '\model\ads\Demo'
             )
         )
     );
-
+    
     /**
      * NAME:__construct
      *
@@ -48,7 +53,7 @@ class Edit extends \lib\action\Action
     {
         parent::__construct(Edit::$definition);
     }
-
+    
     /**
      * NAME:validate
      *
@@ -68,11 +73,11 @@ class Edit extends \lib\action\Action
      */
     function validate($actionResult)
     {
-
+        
         /* Insert the validation code here */
         return $actionResult->isOk();
     }
-
+    
     /**
      * NAME:onSuccess
      *
@@ -88,11 +93,11 @@ class Edit extends \lib\action\Action
      */
     function onSuccess($model, $user)
     {
-
+        
         /* Insert callback code here */
         return true;
     }
-
+    
     /**
      * NAME:onError
      *
@@ -112,7 +117,7 @@ class Edit extends \lib\action\Action
      */
     function onError($keys, $params, $actionResult, $user)
     {
-
+        
         /* Insert callback code here */
         return true;
     }

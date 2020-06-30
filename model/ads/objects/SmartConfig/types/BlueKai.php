@@ -5,35 +5,22 @@ use lib\model\types\BaseType;
 
 require_once(__DIR__."/BaseType.php");
 
-class AolBidder extends BaseType
+class BlueKai extends BaseType
 {
     
     public $definition = [
         "TYPE" => "Container",
-        "DESCRIPTION" => "Bidder de AOL",
-        "LABEL" => "AOL Bidder",
+        "LABEL" => "Plugin Bluekai",
         "FIELDS" => [
-            "bidder" => [
-                "LABEL" => "Tipo",
-                "TYPE" => "String",
-//                 "PAINTER" => "FixedPainter"
+            "siteId" => [
+                "LABEL" => "Site Id",
+                "TYPE" => "String"
             ],
-            "params" => [
-                "LABEL" => "Parametros",
-                "TYPE" => "Container",
-                "FIELDS" => [
-                    "placement" => [
-                        "LABEL" => "Placement",
-                        "TYPE" => "String"
-                    ],
-                    "network" => [
-                        "LABEL" => "Network",
-                        "TYPE" => "String"
-                    ],
-                    "server" => [
-                        "LABEL" => "Servidor",
-                        "TYPE" => "String"
-                    ]
+            "segments" => [
+                "TYPE" => "Dictionary",
+                "LABEL" => "Segmentos",
+                "VALUETYPE" => [
+                    'TYPE' => "String"
                 ]
             ]
         ]
@@ -74,4 +61,3 @@ class AolBidder extends BaseType
         $this->valueSet = true;
     }
 }
-

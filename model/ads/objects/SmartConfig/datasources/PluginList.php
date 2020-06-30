@@ -1,53 +1,36 @@
 <?php
 namespace model\ads\SmartConfig\datasources;
 /**
- FILENAME:/var/www/adtopy/model/ads/objects/SmartConfig/datasources/SingleConfig.php
+ FILENAME:/var/www/adtopy/model/ads/objects/SmartConfig/datasources/PluginList.php
  CLASS:Definition
  *
  *
  **/
 
-class SingleConfig
+class PluginList
 {
     static $definition = [
-        'ROLE' => 'list', // posibles roles?
+        'ROLE' => 'list',
         'DATAFORMAT' => 'Table',
         'PARAMS' => [
             'domain' => [
+//                 'TYPE' => 'model/ads/SmartConfig/types/Domain',
                 'TYPE' => 'String',
-                'LABEL' => 'Dominio',
-                'REQUIRED'=>'true',
+                'LABEL' => 'Domain',
+                'REQUIRED'=> true,
             ],
             'regex' => [
-                'TYPE' => 'Array',
+//                 'TYPE' => 'model/ads/SmartConfig/types/Regex',
+                'TYPE' => 'String',
                 'LABEL' => 'Regex',
-                'REQUIRED' => 'false',
-                'ELEMENTS' => [
-                    'TYPE' => 'String',
-                ],
-            ],
-            'plugin' => [
-                'TYPE' => 'Array', 
-                'LABEL' => 'Plugin',
-                'REQUIRED' => 'false',
-                'ELEMENTS' => [
-                    'TYPE' => 'String',
-                ],
+                'REQUIRED' => true,
+                'DEFAULT' => '.*'
             ],
         ],
         'FIELDS' => [
-            // TODO: revisar formato de cada campo
             'domain' => [
-                'LABEL' => 'Domain',
-                'TYPE' => 'String',
                 'MODEL' => '\model\ads\SmartConfig',
                 'FIELD' => 'domain',
-            ],
-            'config' => [
-                'LABEL' => 'Config',
-//                 'TYPE'  => 'model/ads/SmartConfig/types/SmartConfig',
-                'MODEL' => '\model\ads\SmartConfig',
-                'FIELD' => 'config',
             ],
         ],
         'PERMISSIONS' => [],
@@ -59,18 +42,13 @@ class SingleConfig
                     'DEFINITION' => [
                         'BASE'   => [
                             'action' => 'getFileContent',
-                            'domain' => "[%domain%]",
-                            'regex'  => "[%regex%]",
-                            'plugin' => "[%plugin%]",
+                            'domain' => '[%domain]',
+                            'regex' => '[%regex]'
                         ],
                         'CONDITIONS' => [
                             [
                                 'FILTER' => '[%domain%]',
                                 'TRIGGER_VAR'=> 'domain',
-                            ],
-                            [
-                                'FILTER' => '[%plugin%]',
-                                'TRIGGER_VAR'=> 'plugin',
                             ],
                             [
                                 'FILTER' => '[%regex%]',

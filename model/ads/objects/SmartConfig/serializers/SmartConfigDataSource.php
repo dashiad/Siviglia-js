@@ -32,22 +32,34 @@ class SmartConfigDataSource extends TableDataSource {
 
     public function fetchAll()
     {
-        $params = [
-            'domain' => $this->__getField('domain')->getValue(),
-            'regex'  => $this->__getField('regex')->getValue(),
-            'plugin' => $this->__getField('plugin')->getValue(),
-        ];
+        $fields = array_keys($this->__fieldDef);
+        $params = [];
+        
+        foreach ($fields as $field) {
+            $params[$field] = $this->__getField($field)->getValue();
+        }
+        
         return $this->serializer->fetchAll($this->serializerDefinition, $this->data, $this->numRows, $this->matchingRows, $params, null);
     }
 
     public function count()
-    {}
+    {
+        return $this->numRows;
+    }
 
     public function getMetaData()
-    {}
+    {
+        //
+    }
 
     public function countColumns()
-    {}
+    {
+        return count(array_keys($this->__fieldDef));
+    }
 
+    public function getStartingRow() {
+        return 0;
+    }
+    
     
 }

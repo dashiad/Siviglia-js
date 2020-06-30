@@ -8,6 +8,12 @@ class Domain extends BaseType
     
     const REGEX = "/^(?!\-)(?:(?:[a-zA-Z\d][a-zA-Z\d\-]{0,61})?[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}$/m";
     
+    public $definition = [
+        "TYPE" => "String",
+        "DESCRIPTION" => "Dominio",
+        "LABEL" => "Dominio",
+    ];
+    
     public function _setValue($val, $validationMode = null)
     {
         $this->value = $val;

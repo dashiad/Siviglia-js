@@ -5,38 +5,15 @@ use lib\model\types\BaseType;
 
 require_once(__DIR__."/BaseType.php");
 
-class AolBidder extends BaseType
+class Exelate extends BaseType
 {
     
     public $definition = [
-        "TYPE" => "Container",
-        "DESCRIPTION" => "Bidder de AOL",
-        "LABEL" => "AOL Bidder",
-        "FIELDS" => [
-            "bidder" => [
-                "LABEL" => "Tipo",
-                "TYPE" => "String",
-//                 "PAINTER" => "FixedPainter"
-            ],
-            "params" => [
-                "LABEL" => "Parametros",
-                "TYPE" => "Container",
-                "FIELDS" => [
-                    "placement" => [
-                        "LABEL" => "Placement",
-                        "TYPE" => "String"
-                    ],
-                    "network" => [
-                        "LABEL" => "Network",
-                        "TYPE" => "String"
-                    ],
-                    "server" => [
-                        "LABEL" => "Servidor",
-                        "TYPE" => "String"
-                    ]
-                ]
-            ]
-        ]
+        'TYPE' => 'Dictionary',
+        'LABEL' => 'Plugin Exelate',
+        "VALUETYPE" => [
+            'TYPE' => "String",
+        ],
     ];
     
     public function __construct($name, $parentType=null, $value=null, $validationMode=null) {

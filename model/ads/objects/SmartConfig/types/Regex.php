@@ -8,6 +8,12 @@ class Regex extends BaseType
     // TODO: regex para validar regex de rutas SmartConfig
     const REGEX = "";
     
+    public $definition = [
+        "TYPE" => "String",
+        "DESCRIPTION" => "Regex",
+        "LABEL" => "Regex",
+    ];
+    
     public function _setValue($val, $validationMode = null)
     {
         $this->value = $val;

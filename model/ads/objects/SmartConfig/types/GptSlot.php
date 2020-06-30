@@ -9,17 +9,21 @@ class GptSlot extends  BaseType
 {
     
     public $definition = [
-        //'ROLE' => 'ENTITY',
-        'DEFAULT_SERIALIZER' => 'smartconfig',
-        'DEFAULT_WRITE_SERIALIZER' => 'smartconfig',
+        'ROLE' => 'ENTITY',
+        "LABEL" => "Gpt Slot",
+        "DESCRIPTION" => "Slot GPT",
+        "TYPE" => "Container",
+//         'DEFAULT_SERIALIZER' => 'smartconfig',
+//         'DEFAULT_WRITE_SERIALIZER' => 'smartconfig',
         "FIELDS" => [
             "schedule" => [
                 "LABEL" => "Prioridad",
                 "TYPE"  => "\\model\\ads\\SmartConfig\\types\\Scheduling"
             ],
             "headerBidding" => [
-                "DESCRIPTION" => "Para activar header bidding en este slot, asigna un tiempo de espera para las pujas",
                 "TYPE" => "Container",
+                "LABEL" => "Header Bidding",
+                "DESCRIPTION" => "Para activar header bidding en este slot, asigna un tiempo de espera para las pujas",
                 "FIELDS" => [
                     "timeout" => [
                         "LABEL" => "Timeout",
@@ -28,14 +32,14 @@ class GptSlot extends  BaseType
                 ]
             ],
             "reload" => [
-                "DESCRIPTION" => "Tiempo en milisegundos entre recargas del slot",
                 "TYPE" => "String",
-                "LABEL" => "Reload"
+                "LABEL" => "Reload",
+                "DESCRIPTION" => "Tiempo en milisegundos entre recargas del slot",
             ],
             "relocate" => [
-                "DESCRIPTION" => "Tiempo en milisegundos antes de mostrar anuncios compatibles de otros slots, en este slot.",
                 "TYPE" => "String",
-                "LABEL" => "Relocate"
+                "LABEL" => "Relocate",
+                "DESCRIPTION" => "Tiempo en milisegundos antes de mostrar anuncios compatibles de otros slots, en este slot.",
             ],
             "log" => [
                 "TYPE" => "Boolean",

@@ -5,35 +5,18 @@ use lib\model\types\BaseType;
 
 require_once(__DIR__."/BaseType.php");
 
-class AolBidder extends BaseType
+class AdnSegments extends BaseType
 {
     
     public $definition = [
         "TYPE" => "Container",
-        "DESCRIPTION" => "Bidder de AOL",
-        "LABEL" => "AOL Bidder",
+        "LABEL" => "Segmentos de AppNexus.Introducir los ids de segmentos asociados a la url actual",
         "FIELDS" => [
-            "bidder" => [
-                "LABEL" => "Tipo",
-                "TYPE" => "String",
-//                 "PAINTER" => "FixedPainter"
-            ],
-            "params" => [
-                "LABEL" => "Parametros",
-                "TYPE" => "Container",
-                "FIELDS" => [
-                    "placement" => [
-                        "LABEL" => "Placement",
-                        "TYPE" => "String"
-                    ],
-                    "network" => [
-                        "LABEL" => "Network",
-                        "TYPE" => "String"
-                    ],
-                    "server" => [
-                        "LABEL" => "Servidor",
-                        "TYPE" => "String"
-                    ]
+            "segments" => [
+                "TYPE" => "Array",
+                "LABEL" => "Ids de segmentos",
+                "ELEMENTS" => [
+                    "TYPE" => "String"
                 ]
             ]
         ]
@@ -74,4 +57,3 @@ class AolBidder extends BaseType
         $this->valueSet = true;
     }
 }
-
