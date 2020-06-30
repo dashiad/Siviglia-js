@@ -9,7 +9,7 @@ namespace model\web\WebUser\actions;
 
 class Add extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\web\WebUser',
                'ROLE'=>'Add',
                'PERMISSIONS'=>array(
@@ -57,7 +57,7 @@ class Add extends \lib\action\Action
 	function __construct( )
 	{
 
-			parent::__construct(Add::$definition);
+			parent::__construct(Add::$_definition);
 
 	}
 
@@ -78,7 +78,7 @@ class Add extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate ( $actionResult )
+	function validateAction ( $actionResult )
 	{
 
 

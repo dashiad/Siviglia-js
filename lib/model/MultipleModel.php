@@ -33,7 +33,8 @@ class MultipleModel extends BaseModel
 
         function __getField($fieldName,$inAliases=false)
         {
-
+            if($fieldName[0]=="/")
+                $fieldName=substr($fieldName,1);
             if(isset($this->__fieldDef[$fieldName]) || $this->__relayAllowed==false)
             {
                 return parent::__getField($fieldName,$inAliases);
@@ -89,7 +90,7 @@ class MultipleModel extends BaseModel
                 return $related->__getFieldDefinition($fieldName);
             }
        }
-       function copy(& $remoteModel)
+       function copy($remoteModel)
        {
            parent::copy($remoteModel);
            if($this->__relayAllowed==false)
@@ -178,7 +179,7 @@ class MultipleModel extends BaseModel
              if(!isset($this->__objectDef["STATES"]))
                  throw new BaseModelException(BaseModelException::ERR_NO_STATUS_FIELD);
 
-             return $this->__getField($this->__objectDef["STATES"]["FIELD"])->getType()->getLabel();
+             return $this->__getField($this->__objectDef["STATES"]["FIELD"])->getLabel();
          }
      }
 

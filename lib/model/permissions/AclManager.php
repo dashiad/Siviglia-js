@@ -143,7 +143,7 @@ class AclManager
             else
             {
                 $expr="'".(is_array($curVal["GROUP"])?implode("','", $curVal["GROUP"]):$curVal["GROUP"])."'";
-                if($curVal["GROUP"][0]==="/")
+                if($curVal["GROUP"][0][0]==="/")
                     $q = "SELECT 1 as type,id FROM _permission_groups WHERE group_type=" . $k . " AND group_charPath IN (" . $expr . ")";
                 else
                     $q = "SELECT 1 as type,id FROM _permission_groups WHERE group_type=" . $k . " AND group_name IN (" . $expr . ")";
@@ -903,13 +903,14 @@ class AclManager
             $objName = \lib\model\ModelService::getModelDescriptor($model);
         }
         $objLayer = $objName->layer;
+        $prefix="/AllModules/Sys/model/" . $objLayer;
         if ($onlyParent)
-            return "/AllObjects/Sys/" . $objLayer . "/" . $objLayer . "Modules";
+            return $prefix;
 
         $objClass = $objName->className;
         $objClass=str_replace('\\',"_",$objClass);
 
-        return "/AllModules/Sys/" . $objLayer . "/" .str_replace('\\','/',$objClass);
+        return $prefix."/" .str_replace('\\','/',$objClass);
     }
 
     public function getModelId($model)
@@ -985,7 +986,7 @@ class AclManager
     {
 
         $this->add_acl(
-                array("ITEM" => is_array($permissions) ? $permissions : array($permissions)), array("ITEM" => array($userId)), array("GROUP" => array($moduleName)));
+                array("ITEM" => is_array($permissions) ? $permissions : array($permissions)), array("ITEM" => array($userId)), array("GROUP" => array($this->getModulePath($moduleName))));
     }
     function addModule($modelClass)
     {

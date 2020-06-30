@@ -102,7 +102,7 @@ class BaseRelation extends \model\reflection\Model\ModelComponent
      function getRelationTypes() {
          $targetObj=\lib\model\ModelService::getModelDescriptor($this->getTargetObject());
          foreach($this->definition["FIELDS"] as $key=>$value)
-             $types[$key]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($targetObj->className, $value);
+             $types[$key]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($targetObj->className, $value,$key,$this->parentModel);
          return $types;
      }
 

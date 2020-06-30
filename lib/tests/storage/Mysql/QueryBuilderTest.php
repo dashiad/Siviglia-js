@@ -421,7 +421,7 @@ class QueryBuilderTest extends TestCase
                     "MIN_IMPRESSIONS"=>array("TYPE"=>"Integer"),
                     "MAX_IMPRESSIONS"=>array("TYPE"=>"Integer"),
                     'Unified_pricing_rule'=>array("TYPE"=>"String","REQUIRED"=>true),
-                    'Ad_unit'=>array("TYPE"=>"STRING")
+                    'Ad_unit'=>array("TYPE"=>"String")
                 )
             )
         );

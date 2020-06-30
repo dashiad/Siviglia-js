@@ -165,10 +165,11 @@ class WebUser extends \lib\model\BaseModel
     {
         return WebUser::$currentUser;
     }
-    static function createAdminUser()
+    static function createAdminUser($serializer=null)
     {
         $serializerService=\Registry::getService("storage");
-        $serializer=$serializerService->getSerializerByName("default");
+        if($serializer===null)
+            $serializer=$serializerService->getSerializerByName("default");
         $user=new \model\web\WebUser($serializer);
         $user->LOGIN="admin";
         try
@@ -180,7 +181,7 @@ class WebUser extends \lib\model\BaseModel
             $user->EMAIL = "admin@admin.com";
             $user->active = true;
             $user->{"*last_passwd_gen"}->setAsNow();
-            $user->save();
+            $user->save($serializer);
         }
         return $user->USER_ID;
 

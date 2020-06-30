@@ -11,7 +11,6 @@ include_once(LIBPATH."/model/types/BaseType.php");
       static function includeType($type,$suffix="")
       {
 
-
           $parts=explode('\\',$type);
           $n=count($parts);
           if($n>1)
@@ -86,14 +85,14 @@ include_once(LIBPATH."/model/types/BaseType.php");
                 if(isset($def["MODEL"]))
                 {
 
-                    $newType=TypeFactory::getType($name,TypeFactory::getObjectField($def["MODEL"],$def["FIELD"]),$parentType,$value,$validationMode);
-                    //$newType->setTypeReference($def["MODEL"],$def["FIELD"]);
-                    // En caso de que la referencia defina un DEFAULT, sobreescribe al que llega de la definicion de tipo.
-                    if(isset($def["DEFAULT"]) && !empty($def["DEFAULT"]))
+                    $remoteDefinition=TypeFactory::getObjectField($def["MODEL"],$def["FIELD"]);
+                    // Se copia cualquier otro campo que estuviera en la definicion original.
+                    foreach($def as $k=>$v)
                     {
-                        $newType->setDefaultValue($def["DEFAULT"]);
+                        if($k!=="MODEL" && $k!=="FIELD")
+                            $remoteDefinition[$k]=$v;
                     }
-                    return $newType;
+                    return TypeFactory::getType($name,$remoteDefinition,$parentType,$value,$validationMode);
                 }
                 throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_TYPE_NOT_FOUND,["type"=>$def["TYPE"]]);
             }
@@ -116,8 +115,6 @@ include_once(LIBPATH."/model/types/BaseType.php");
                     {
                         include_once($info["file"]);
                         return new $info["class"]($name,$parentType,$value,$validationMode);
-                            throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type),null);
-                        return $instance;
                     }
 
                 throw new BaseTypeException(BaseTypeException::ERR_TYPE_NOT_FOUND,array("name"=>$type),null);
@@ -171,13 +168,13 @@ include_once(LIBPATH."/model/types/BaseType.php");
       static function getFieldTypeInstance($objectName,$fieldName,$model,$value=null,$validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE)
       {
           $definition=\lib\model\types\TypeFactory::getObjectField($objectName,$fieldName);
-          return TypeFactory::getType($fieldName,$definition,$model,null,$model->getValidationMode());
+          return TypeFactory::getType($fieldName,$definition,$model,null,$model?$model->getValidationMode():\lib\model\types\BaseType::VALIDATION_MODE_NONE);
       }
 
-      static function getRelationFieldTypeInstance($objectName,$fieldName,$model,$value=null,$validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE)
+      static function getRelationFieldTypeInstance($objectName,$fieldName,$destName,$destModel,$value=null,$validationMode=\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE)
       {
-          $type=\lib\model\types\TypeFactory::getFieldTypeInstance($objectName,$fieldName,$model,$value,null);
-          return $type->getRelationshipType();
+          $type=\lib\model\types\TypeFactory::getFieldTypeInstance($objectName,$fieldName,$destModel,$value,$validationMode);
+          return $type->getRelationshipType($destName,$destModel);
       }
 
        static function getObjectDefinition($objName,$layer=null)

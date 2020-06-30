@@ -183,8 +183,8 @@ class CookieSerializer extends \lib\storage\StorageSerializer
                 {
                     continue;
                 }
-                if($isNew && $value->getType()->hasDefaultValue())
-                    $value->getType()->setValue($value->getType()->getValue());
+                if($isNew && $value->hasDefaultValue())
+                    $value->setValue($value->getType()->getValue());
             }
             if($value->isAlias())
                 continue;

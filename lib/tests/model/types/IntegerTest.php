@@ -51,19 +51,7 @@ class IntegerTest extends TestCase
 
     }
 
-    function testDefinition6()
-    {
-        $ins=new \lib\model\types\Integer("",[
-            "TYPE"=>"Integer",
-            "FIXED"=>8
-        ]);
-        $v=$ins->getValue();
-        $this->assertEquals(8,$v);
-        $this->assertEquals(true,$ins->hasValue());
-        $ins->setValue(4);
-        $this->assertEquals(8,$v);
 
-    }
 
     function testDefinition8()
     {

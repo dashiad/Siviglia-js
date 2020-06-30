@@ -106,7 +106,7 @@ abstract class DataSource extends \lib\model\BaseTypedObject
             {
                 try{
                     $field=$this->__getField($tKey);
-                    $field->copyField($tValue);
+                    $field->copy($tValue);
                 }
                 catch(\lib\model\BaseTypedException $e)
                 {

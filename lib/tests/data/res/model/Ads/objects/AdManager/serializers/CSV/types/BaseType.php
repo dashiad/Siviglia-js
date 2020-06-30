@@ -6,7 +6,7 @@
  */
 
 
-namespace model\Ads\objects\AdManager\serializers\CSV\types;
+namespace model\Ads\AdManager\serializers\CSV\types;
 
 class BaseType {
     function serialize($name,$type,$serializer,$model=null)

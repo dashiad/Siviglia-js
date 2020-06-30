@@ -3,7 +3,7 @@ namespace model\tests\User\actions;
 
 class AddAction extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\tests\User',
                'ROLE'=>'Add',
                'PERMISSIONS'=>array(
@@ -36,7 +36,7 @@ class AddAction extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(AddAction::$definition);
+			parent::__construct(AddAction::$_definition);
 
 	}
 
@@ -60,7 +60,7 @@ class AddAction extends \lib\action\Action
 	 *
 	 * RETURNS:
 	 */
-	 function validate ( $actionResult )
+	 function validateAction ( $actionResult )
 	{
 
 

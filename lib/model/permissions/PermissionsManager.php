@@ -41,14 +41,18 @@ class PermissionsManager {
     const PERM_SPEC_OWNER="OWNER";
     const PERM_SPEC_LOGGED="LOGGED";
 
+
+
     var $currentUserProfiles;
     static $permCache=array();
     var $effectiveProfiles;
     var $userService;
     var $siteService;
+    var $serializer;
 
     function __construct($serializer) {
 
+        $this->serializer=$serializer;
         if(!PermissionsManager::$aclManager)
             PermissionsManager::$aclManager=new \lib\model\permissions\AclManager($serializer);
         }
@@ -77,7 +81,7 @@ class PermissionsManager {
         $permissions=PermissionsManager::$aclManager->getUserPermissions(
             PermissionsManager::$aclManager->getModulePath($model),
             ($loaded?PermissionsManager::$aclManager->getModelId($model):null),
-            "USER_".$user->getId());
+            $user->getId());
 
 
         PermissionsManager::$permCache[$user->getId()][$objName][$keyPart]=$permissions;
@@ -260,7 +264,7 @@ class PermissionsManager {
                 break;
             case PermissionsManager::PERM_TYPE_USER: {
                 $fgroup = "/AllUsers/Sys";
-                $name="USER";
+                $name="";
             }
                 break;
         }
@@ -309,7 +313,7 @@ class PermissionsManager {
                       $it=str_replace('\\','_',$it);
                 }break;
                 case PermissionsManager::PERM_TYPE_USER:{
-                    $it="USER_".$it;
+                    $it=$it;
                 }break;
             }
             try
@@ -330,7 +334,7 @@ class PermissionsManager {
     function addPermissions($user,$module,$permissions,$allow=1)
     {
         if(isset($user["ITEM"])) {
-            $uid = "USER_" . $user["ITEM"]->getId();
+            $uid = $user["ITEM"]->getId();
             $user["ITEM"]=$uid;
         }
         else
@@ -384,7 +388,7 @@ class PermissionsManager {
         ),"/AllPermissions/Sys",PermissionsManager::PERM_TYPE_PERMISSIONS,true,true);
 
 
-        $AdminUserId=\model\web\WebUser::createAdminUser();
+        $AdminUserId=\model\web\WebUser::createAdminUser($this->serializer);
         $this->addToGroup(array($AdminUserId),"/AllUsers",\lib\model\permissions\PermissionsManager::PERM_TYPE_USER,true,true);
         $this->addPermissions(array("GROUP"=>"/AllUsers","RAW"=>true),array("GROUP"=>"/AllModules","RAW"=>true),array("GROUP"=>"/AllPermissions","RAW"=>true));
 
@@ -451,7 +455,7 @@ class PermissionsManager {
      *
      */
 
-    function canAccess($permsDefinition, $user=null, $model = null)
+    function canAccess($permsDefinition, $user=null, $model = null,$skipLoggedTest=false)
     {
         if($user==null)
             $user=\Registry::getService("user");
@@ -465,7 +469,7 @@ class PermissionsManager {
                     return true;
                 }break;
                 case PermissionsManager::PERMISSIONSPEC_OWNER:{
-                    if(!$user->isLogged())
+                    if(!$user->isLogged() && !$skipLoggedTest)
                         return false;
                     $owner = $model->getOwnershipField();
                     if ($owner->getValue() == $user->getId())
@@ -474,14 +478,14 @@ class PermissionsManager {
                     // "admin" no tendria permisos sobre algo declarado con permisos "OWNER".
                     // Por lo tanto, se comprueba aqui directamente
                     $prefix=$this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_USER);
-                    return PermissionsManager::$aclManager->userBelongsToGroup("/AllUsers",$prefix["name"]."_".$user->getId());
+                    return PermissionsManager::$aclManager->userBelongsToGroup("/AllUsers",$user->getId());
                 }break;
                 case PermissionsManager::PERMISSIONSPEC_LOGGED:{
-                    return $user->isLogged();
+                    return ($user->isLogged() && !$skipLoggedTest);
                 }break;
                 case PermissionsManager::PERMISSIONSPEC_ACL:
                     {
-                        if(!$user->isLogged())
+                        if(!$user->isLogged() && !$skipLoggedTest)
                             return false;
                         $axoPrefix=$this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_MODULE);
 
@@ -492,17 +496,21 @@ class PermissionsManager {
                             $aKeys=$keys->get();
                             $axoParam["ITEM"]=implode("_", $aKeys);
                         }
-                        if(isset($curDef["REQUIRES"]["GROUP"]) && !isset($curDef["REQUIRES"]["RAW"])) {
-                            $prefix=$this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_PERMISSIONS);
-                            $curDef["REQUIRES"]["GROUP"] =  $prefix["group"]. $curDef["REQUIRES"]["GROUP"];
+                        if(!is_array($curDef["REQUIRES"]))
+                            $curDef["REQUIRES"]=["ITEM"=>$curDef["REQUIRES"]];
+                        else {
+                            if (isset($curDef["REQUIRES"]["GROUP"]) && !isset($curDef["REQUIRES"]["RAW"])) {
+                                $prefix = $this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_PERMISSIONS);
+                                $curDef["REQUIRES"]["GROUP"] = $prefix["group"] . $curDef["REQUIRES"]["GROUP"];
+                            }
                         }
 
-                        return PermissionsManager::$aclManager->acl_check($curDef["REQUIRES"], array("ITEM" => "USER_".$user->getId()), $axoParam);
+                        return PermissionsManager::$aclManager->acl_check($curDef["REQUIRES"], array("ITEM" => $user->getId()), $axoParam);
 
                     }break;
                 case PermissionsManager::PERMISSIONSPEC_ROLE:
                     {
-                        if(!$user->isLogged())
+                        if(!$user->isLogged() && !$skipLoggedTest)
                             return false;
                         $role=$curDef["ROLE"];
                         $prefix=$this->getDefaultPrefixes(PermissionsManager::PERM_TYPE_USER);
@@ -511,7 +519,7 @@ class PermissionsManager {
 
                             $role=$prefix["group"].$role;
                         }
-                        return PermissionsManager::$aclManager->userBelongsToGroup($role,$prefix["name"]."_".$user->getId());
+                        return PermissionsManager::$aclManager->userBelongsToGroup($role,$user->getId());
                     }break;
             }
         }

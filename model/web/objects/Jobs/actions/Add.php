@@ -11,7 +11,7 @@ use model\web\Jobs\App\Jobs\JobManager;
 
 class Add extends \lib\action\Action
 {
-    static  $definition = [
+    static  $_definition = [
         //'MODEL' => '\model\web\Jobs', // no se asocia a un modelo
         'ROLE'  => 'Add',
         //'ROLE'  => 'Static', // usar y cargar con onSuccess
@@ -59,7 +59,7 @@ class Add extends \lib\action\Action
      */
     function __construct( )
     {
-        parent::__construct(Add::$definition);
+        parent::__construct(Add::$_definition);
     }
 
 
@@ -82,7 +82,7 @@ class Add extends \lib\action\Action
      *
      * RETURNS:
      */
-    function validate ( $actionResult )
+    function validateAction ( $actionResult )
     {
         /* Insert the validation code here */
         return $actionResult->isOk();

@@ -9,7 +9,7 @@ namespace model\web\WebUser\html\forms;
 
 class Add2 extends \lib\output\html\Form
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'NAME'=>'Add2',
                'MODEL'=>'\model\web\WebUser',
                'ACTION'=>array(
@@ -39,7 +39,7 @@ class Add2 extends \lib\output\html\Form
 	function __construct( $actionResult=null)
 	{
 
-			parent::__construct(Add2::$definition,$actionResult);
+			parent::__construct(Add2::$_definition,$actionResult);
 
 	}
 
@@ -60,7 +60,7 @@ class Add2 extends \lib\output\html\Form
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate ( $actionResult )
+	function validateAction ( $actionResult )
 	{
 
 

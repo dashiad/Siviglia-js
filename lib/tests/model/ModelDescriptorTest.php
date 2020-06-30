@@ -81,7 +81,7 @@ class ModelDescriptorTest extends TestCase
         $this->assertEquals(realpath($formPath),realpath(PROJECTPATH."/model/web/objects/Page/html/forms/AddAction.php"));
 
         $namespacedForm=$obj->getNamespacedForm("AddAction");
-        $this->assertEquals('\model\web\Page\html\forms\Add',$namespacedForm);
+        $this->assertEquals('\model\web\Page\html\forms\AddAction',$namespacedForm);
     }
 
     function testPrivateDefaultPaths()

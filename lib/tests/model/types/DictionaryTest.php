@@ -70,8 +70,7 @@ class DictionaryTest extends TestCase
         $val=$cnt->getValue();
         $this->assertEquals("uno",$val["probando"]["one"]);
         $c1=$this->getContainerInstance();
-        $c1->one="lala";
-        $c1->two="lolo";
+        $c1=["one"=>"lala","two"=>"lolo"];
         $cnt->probando2=$c1;
         $val=$cnt->getValue();
         $this->assertEquals("lolo",$val["probando2"]["two"]);
@@ -81,7 +80,7 @@ class DictionaryTest extends TestCase
         $cnt=$this->getDefinition1();
         $cnt->probando=["one"=>null,"two"=>null];
         $is_set=$cnt->hasOwnValue();
-        $this->assertEquals(false,$is_set);
+        $this->assertEquals(true,$is_set);
     }
     function testRemove()
     {

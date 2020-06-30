@@ -13,8 +13,7 @@
           $value=$val[$name];
           if($value!==null)
           {
-            $type->validate($value);
-            $type->setValue($value);
+              $type->setValue($value);
           }
       }
   }

@@ -9,7 +9,7 @@ namespace model\tests\User\html\forms;
 
 class DeleteAction extends \lib\output\html\Form
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'NAME'=>'DeleteAction',
                'MODEL'=>'\model\tests\User',
                'ACTION'=>array(
@@ -39,7 +39,7 @@ class DeleteAction extends \lib\output\html\Form
 	function __construct( $actionResult=null)
 	{
 
-			parent::__construct(DeleteAction::$definition,$actionResult);
+			parent::__construct(DeleteAction::$_definition,$actionResult);
 
 	}
 
@@ -60,7 +60,7 @@ class DeleteAction extends \lib\output\html\Form
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate ( $actionResult )
+	function validateAction ( $actionResult )
 	{
 
 

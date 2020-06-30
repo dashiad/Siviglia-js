@@ -185,7 +185,7 @@ abstract class StorageDataSource extends TableDataSource
             $val=$this->iterator->getColumn($value);
             if(!(count($val)==1 && $val[0]==null))
             {
-                $newField->setValue($val);
+                $newField->apply($val,\lib\model\types\BaseType::VALIDATION_MODE_NONE);
                 $nJoins++;
             }
         }
@@ -206,7 +206,7 @@ abstract class StorageDataSource extends TableDataSource
         return $subDs;
     }
     // Se sobreescribe este metodo de BaseTypedObject
-    function isRequired($fieldName)
+    function isFieldRequired($fieldName)
     {
         $fieldDef=$this->__getField($fieldName)->getDefinition();
         return isset($fieldDef["REQUIRED"])?$fieldDef["REQUIRED"]:false;

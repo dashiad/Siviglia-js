@@ -119,7 +119,7 @@ class Action extends \model\reflection\base\ConfiguredObject
             $fieldInstance=$classInstance->getFieldOrAlias($fieldName);
             if(!$fieldInstance->isAlias())
             {
-                $ftype=$fieldInstance->getType();
+                $ftype=$fieldInstance;
                 $k1=array_keys($ftype);
                 if(!$ftype[$k1[0]]->isEditable())
                 {
@@ -190,7 +190,7 @@ class Action extends \model\reflection\base\ConfiguredObject
 
                 if(!$fieldInstance->isAlias())
                 {
-                    $ftype=$fieldInstance->getType();         
+                    $ftype=$fieldInstance;
                     if(!$ftype[$value->name]->isEditable())
                     {
                         unset($req[$value->name]);

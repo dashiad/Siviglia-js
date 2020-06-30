@@ -9,7 +9,7 @@ namespace model\reflection\Model\actions;
 
 class Edit extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\reflection\Model',
                'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
@@ -48,7 +48,7 @@ class Edit extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(Add::$definition);
+			parent::__construct(Add::$_definition);
 
 	}
 
@@ -72,7 +72,7 @@ class Edit extends \lib\action\Action
 	 *
 	 * RETURNS:
 	 */
-	 function validate ( $actionResult )
+	 function validateAction ( $actionResult )
 	{
 	/* Insert the validation code here */
 			return $actionResult->isOk();

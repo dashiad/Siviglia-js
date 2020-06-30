@@ -9,7 +9,7 @@ namespace model\web\WebUser\actions;
 
 class Add2 extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\web\WebUser',
                'ROLE'=>'Add',
                'IS_ADMIN'=>false,
@@ -36,7 +36,7 @@ class Add2 extends \lib\action\Action
 	function __construct( )
 	{
 
-			parent::__construct(Add2::$definition);
+			parent::__construct(Add2::$_definition);
 
 	}
 
@@ -57,7 +57,7 @@ class Add2 extends \lib\action\Action
 	 * $user: User executing this request	 *
 	 * RETURNS:
 	 */
-	function validate ( $actionResult )
+	function validateAction ( $actionResult )
 	{
 
 

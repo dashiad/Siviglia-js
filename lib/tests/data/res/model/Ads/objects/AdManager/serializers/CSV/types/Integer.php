@@ -6,8 +6,8 @@
  */
 
 
-namespace model\Ads\objects\AdManager\serializers\CSV\types;
-
+namespace model\Ads\AdManager\serializers\CSV\types;
+include_once(__DIR__."/BaseType.php");
 
 class Integer extends BaseType
 {

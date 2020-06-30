@@ -6,9 +6,9 @@
  */
 
 
-namespace model\Ads\objects\AdManager\serializers\CSV\types;
+namespace model\Ads\AdManager\serializers\CSV\types;
 
-
+include_once(__DIR__."/BaseType.php");
 class Date extends BaseType
 {
     function unserialize($name,$type,$value,$serializer,$model=null)

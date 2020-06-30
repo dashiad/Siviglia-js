@@ -14,7 +14,7 @@ class FullList
                'DATAFORMAT'=>'Table',
                'PARAMS'=>array(
                    "id"=>["MODEL"=>"/model/ads/AdManager/LineItemSummary","FIELD"=>"id","TRIGGER_VAR"=>"id"],
-                   "name"=>["MODEL"=>"/model/ads/AdManager/LineItemSummary","FIELD"=>"name","TRIGGER_VAR"=>"name"],
+                   "name"=>["MODEL"=>"/model/ads/AdManager/LineItemSummary","FIELD"=>"name","TRIGGER_VAR"=>"name","PARAMTYPE"=>"DYNAMIC"],
                    "orderName"=>["MODEL"=>"/model/ads/AdManager/LineItemSummary","FIELD"=>"orderName","TRIGGER_VAR"=>"orderName"],
                    "startDateTime"=>["MODEL"=>"/model/ads/AdManager/LineItemSummary","FIELD"=>"startDateTime","TRIGGER_VAR"=>"startDateTime"],
                    "startDateTimeType"=>["MODEL"=>"/model/ads/AdManager/LineItemSummary","FIELD"=>"startDateTimeType","TRIGGER_VAR"=>"startDateTimeType"],

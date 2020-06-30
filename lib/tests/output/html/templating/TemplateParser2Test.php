@@ -17,6 +17,7 @@ class TemplateParser2Test extends TestCase
 
     function render($layout,$include=false)
     {
+
         $this->clearCache(__DIR__."/cache");
         $widgetPath=array(__DIR__."/widgets");
 
@@ -24,10 +25,11 @@ class TemplateParser2Test extends TestCase
         $oManager=new \CLayoutManager(PROJECTPATH."../","html",$widgetPath,array());
         $definition=array("LAYOUT"=>__DIR__."/layouts/".$layout.".php",
             "CACHE_SUFFIX"=>"php",
-            "TARGET"=>"./cache",
+            "TARGET"=>__DIR__."/cache",
             true);
         ob_start();
         $output=$oManager->renderLayout($definition,$oLParser,$include);
+        $level=ob_get_level();
         if($include)
         {
             include(__DIR__."/cache/".$layout.".php");
@@ -35,14 +37,17 @@ class TemplateParser2Test extends TestCase
         }
         else
         {
-            ob_clean();
+            ob_end_clean();
         }
-
+        $level2=ob_get_level();
 
         $okResult=file_get_contents(__DIR__."/results/".$layout.".php");
         $trimmedOutput=str_replace("\r\n","",$output);
+        $trimmedOutput=str_replace("\t"," ",$trimmedOutput);
         $trimmedOkResult=str_replace("\r\n","",$okResult);
+        $trimmedOkResult=str_replace("\t"," ",$trimmedOkResult);
         $this->assertEquals($trimmedOkResult,$trimmedOutput);
+        $this->clearCache(__DIR__."/cache");
     }
 
     function testSimple1()
@@ -108,16 +113,25 @@ class TemplateParser2Test extends TestCase
                 $dir_handle = opendir($dirname);
             if (!$dir_handle)
                 return false;
+
             while($file = readdir($dir_handle)) {
-                if ($file != "." && $file != "..") {
+                if ($file !== "." && $file !== "..") {
                     if (!is_dir($dirname."/".$file)) {
-                        if (is_writable($dirname . "/" . $file))
+
+                            echo "BORRANDO ".$dirname."/".$file."\n";
                             @unlink($dirname . "/" . $file);
+
                     }
                     else
                         $this->clearCache($dirname.'/'.$file);
                 }
             }
+            closedir($dir_handle);
+        $dir_handle = opendir($dirname);
+        while($file = readdir($dir_handle)) {
+                echo "QUEDA $file\n";
+
+        }
             closedir($dir_handle);
             rmdir($dirname);
             return true;

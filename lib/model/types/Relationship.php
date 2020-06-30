@@ -1,7 +1,9 @@
 <?php namespace lib\model\types;
-
+use \lib\model\types\base\ModelBaseRelation;
+use \lib\model\types\base\RelationValues;
+use \lib\model\types\base\RelationFields;
 // El tipo Relacion solo existe para poder "redireccionar" columnas de tipo Relationship, a su tipo padre.
-class Relationship extends BaseType {
+class Relationship extends \lib\model\types\base\ModelBaseRelation {
     function getRemoteFields()
     {
         $f=$this->definition["FIELDS"];
@@ -12,25 +14,108 @@ class Relationship extends BaseType {
         $f=$this->definition["FIELDS"];
         return array_keys($f);
     }
-    function getRelationshipType()
+    function createRelationValues()
+    {
+        return new RelationValues($this, isset($this->definition["LOAD"]) ? $this->definition["LOAD"] : "LAZY");
+    }
+    function getRelationValues()
+    {
+        return $this->relationValues;
+    }
+    function hasOwnValue()
+    {
+        return $this->relation->is_set();
+    }
+    function set($value,$validationMode=null)
+    {
+        $this->relation->set($value);
+        $this->relationValues->reset();
+
+        if(is_object($value))
+        {
+            if (is_subclass_of($value, "\\lib\\model\\BaseModel"))
+            {
+                $this->relationValues->load(array($value), true);
+            }
+        }
+        if(is_array($value))
+        {
+            if(\lib\php\ArrayTools::isAssociative($value))
+                $this->relationValues->load([$value], true);
+            else
+                $this->relationValues->load($value, true);
+        }
+        $this->valueSet=true;
+    }
+    function clear()
+    {
+        // LLamado en caso de que $value sea nulo.
+        $this->relation->set(null);
+        $this->relationValues->load([],true);
+    }
+    function get()
+    {
+        return $this;
+    }
+
+    function __get($varName)
+    {
+        if(is_numeric($varName))
+            return $this->relationValues[$varName];
+        return $this->relationValues[0]->{$varName};
+    }
+
+    function __set($varName, $value)
+    {
+        return $this->relationValues[0]->{$varName} = $value;
+    }
+    function loadCount()
+    {
+
+        if ($this->relation->state == ModelBaseRelation::UN_SET)
+            return 0;
+
+        if (isset($this->definition["LOAD"]) && $this->definition["LOAD"] == "LAZY")
+            $this->relationValues->setCount($this->getSerializer()->count($this->getRelationQueryConditions(), $this->model));
+
+        else
+            return $this->loadRemote(null);
+    }
+
+    function save()
+    {
+        $nSaved = $this->relationValues->save();
+        $this->relation->save();
+        if ($nSaved == 1)
+        {
+            $this->relation->setFromModel($this->relationValues[0]);
+            $this->relation->save();
+        }
+        $this->__setDirty(false);
+    }
+
+    function count()
+    {
+        return $this->relationValues->count();
+    }
+
+
+    function getRelationshipType($name,$parent)
       {
           $obj=$this->definition["MODEL"];
 
           $fields=$this->definition["FIELDS"];
-          $flist=array_values($fields);
           $subTypes=array();
-          for($k=0;$k<count($flist);$k++)
-              {
-                $subTypes[$flist[$k]]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($obj,$flist[$k],$this->parent);
-              }
+          // TODO: Aun no se soportan, pero si la relacion tuviera mas de un campo, $name tendria que ser un diccionario con todos los nombres necesarios.
+          foreach($fields as $k=>$v)
+              $subTypes[]=\lib\model\types\TypeFactory::getRelationFieldTypeInstance($obj,$v,$k,$parent);
 
-          if(count($subTypes)>1)
-              return $subTypes;
-          return $subTypes[$flist[0]];
+          return $subTypes[0];
       }
       function _setValue($val,$validationMode=null)
       {
           $this->value=$val;
+          $this->set($val,$validationMode);
           $this->valueSet=true;
       }
       function getRemoteModel()
@@ -86,6 +171,35 @@ class Relationship extends BaseType {
     {
         include_once(PROJECTPATH."/model/reflection/objects/Types/Relationship.php");
         return '\model\reflection\Types\meta\Relationship';
+    }
+    function onModelSaved()
+    {
+        $this->relation->cleanState();
+    }
+
+    function isDirty()
+    {
+        if ($this->relation->isDirty())
+        {
+            return true;
+        }
+
+        if ($this->relationValues->isLoaded())
+        {
+            return $this->relationValues->isDirty();
+        }
+        return false;
+    }
+
+    function serialize($serializer)
+    {
+        return $this->relation->serialize($serializer);
+    }
+
+    function copyField($type)
+    {
+        $this->relation->copyField($type);
+
     }
 }
 

@@ -21,6 +21,8 @@ class ImageTest extends TestCase
     function initialize()
     {
         chmod(__DIR__."/res/tmp",0777);
+        if(!is_file(__DIR__."/res/img.png"))
+            copy(__DIR__."/res/_img.png",__DIR__."/res/img.png");
         copy(__DIR__."/res/img.png",__DIR__."/res/test.png");
         if(is_file(__DIR__."/res/tmp/destFile.png"))
             unlink(__DIR__."/res/tmp/destFile.png");

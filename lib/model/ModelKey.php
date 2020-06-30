@@ -82,9 +82,8 @@ class ModelKey
         {
             foreach($this->indexFields as $key=>$value)
             {
-                
-                $val=$value->serialize($serializer);
-                
+
+                $val=$serializer->serializeType($value->getFieldName(),$value);
                 if(is_array($val))
                 {
                     foreach($val as $key2=>$value2)
@@ -101,7 +100,7 @@ class ModelKey
         {
             foreach($this->indexFields as $key=>$field)
             {
-                $fType=$field->getType();
+                $fType=$field;
                 if(is_a($fType,'\lib\model\types\AutoIncrement'))
                 {
                     // Important to note: This is done accessing the underlying type directly, on purpose, to avoid
@@ -119,7 +118,7 @@ class ModelKey
             {
                 if($k>0)
                     $result.="#";
-                $fType=$field->getType();
+                $fType=$field;
                 if($fType->hasValue())
                     $result.=$fType->getValue($value);
                 $k++;

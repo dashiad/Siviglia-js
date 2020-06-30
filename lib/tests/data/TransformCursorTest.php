@@ -32,7 +32,7 @@ class TransformCursorTest extends TestCase
             $serializerService=\Registry::getService("storage");
             $serializerService->addSerializer("ADSManager-CSV",
                 [
-                    "MODEL"=>"/model/Ads/objects/AdManager",
+                    "MODEL"=>"/model/Ads/AdManager",
                     "CLASS"=>"/CSV/AdManagerCSVTypeSerializer",
                     "PARAMS"=>[]
                 ]
@@ -49,7 +49,7 @@ class TransformCursorTest extends TestCase
         $tC=new \lib\data\Cursor\TransformCursor();
         $tC->init([
             "typeMap"=>[
-                "model"=>"/model/Ads/objects/AdManager",
+                "model"=>"/model/Ads/AdManager",
                 "serializer"=>"ADSManager-CSV"
             ]
         ]);

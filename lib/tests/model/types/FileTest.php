@@ -23,6 +23,8 @@ class FileTest extends TestCase
         if(!is_dir(__DIR__."/res/tmp"))
             mkdir(__DIR__."/res/tmp");
         chmod(__DIR__."/res/tmp",0777);
+        if(!is_file(__DIR__)."/res/img.png")
+            copy(__DIR__."/res/_img.png",__DIR__."/res/img.png");
         copy(__DIR__."/res/img.png",__DIR__."/res/test.png");
         if(is_file(__DIR__."/res/tmp/destFile.png"))
             unlink(__DIR__."/res/tmp/destFile.png");
@@ -158,6 +160,7 @@ class FileTest extends TestCase
                 ]
             ]
         ]);
+        $c->setValue([]);
         $c->id1="aa";
         $c->id2="bb";
         $c->{"*file"}->importFile(__DIR__."/res/img.png");

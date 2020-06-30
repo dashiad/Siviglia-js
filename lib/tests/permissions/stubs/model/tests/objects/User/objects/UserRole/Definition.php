@@ -4,8 +4,8 @@ class Definition extends \lib\model\BaseModelDefinition
 {
     static  $definition=array(
         'ROLE'=>'MULTIPLE_RELATION',
-        'DEFAULT_SERIALIZER'=>'web',
-        'DEFAULT_WRITE_SERIALIZER'=>'web',
+        'DEFAULT_SERIALIZER'=>'modeltests',
+        'DEFAULT_WRITE_SERIALIZER'=>'modeltests',
         'MULTIPLE_RELATION'=>array(
             'FIELDS'=>array(
                 'id_user',

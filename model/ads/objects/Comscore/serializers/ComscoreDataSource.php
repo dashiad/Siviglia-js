@@ -55,7 +55,7 @@ class ComscoreDataSource extends CsvDataSource
         $params = [];
         if (isset($this->__fields)) {
             foreach ($this->__fields as $field=>$data) {
-                $params[$field] = $this->serializer->serializeType($field, $data->getType());
+                $params[$field] = $this->serializer->serializeType($field, $data);
             }
         }
 

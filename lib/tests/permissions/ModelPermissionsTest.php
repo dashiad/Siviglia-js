@@ -23,7 +23,7 @@ class ModelPermissionsTest extends TestCase
 
     function getTestPackage()
     {
-        return new \lib\tests\permissions\stubs\model\tests\Package();
+        return new \lib\tests\model\stubs\model\tests\Package();
     }
 
     function init()
@@ -47,6 +47,7 @@ class ModelPermissionsTest extends TestCase
                 ]
 
             );
+
             $serializer = $serService->getSerializerByName("modeltests");
 
             $conn = $serializer->getConnection();
@@ -65,11 +66,11 @@ class ModelPermissionsTest extends TestCase
 
             $user1->LOGIN="User1";
             $user1->PASSWORD="User1";
-            $user1->save();
+            $user1->save($serializer);
             $user2=$modelService->getModel("/model/web/WebUser");
             $user2->LOGIN="User1";
             $user2->PASSWORD="User1";
-            $user2->save();
+            $user2->save($serializer);
             return ["manager"=>$permsManager,"user1"=>$user1,"user2"=>$user2];
 
         }
@@ -95,22 +96,22 @@ class ModelPermissionsTest extends TestCase
 
 
         // El usuario 1 puede acceder:
-        $this->assertEquals(true,$perms->canAccess($def,$u1));
+        $this->assertEquals(true,$perms->canAccess($def,$u1,null,true));
 
         // El usuario 2 no puede acceder:
-        $this->assertEquals(false,$perms->canAccess($def,$u2));
+        $this->assertEquals(false,$perms->canAccess($def,$u2,null, true));
 
 
         // El usuario admin puede acceder
         $modelService=\Registry::getService("model");
         $admin=$modelService->loadModel("/model/web/WebUser",["LOGIN"=>"admin"]);
-        $this->assertEquals(true,$perms->canAccess($def,$admin));
+        $this->assertEquals(true,$perms->canAccess($def,$admin,null,true));
 
         // Se añade el usuario 2 al grupo "God"
         $perms->addToGroup(array($u2->USER_ID),"/AllUsers",\lib\model\permissions\PermissionsManager::PERM_TYPE_USER,true,true);
 
         // Ahora deberia poder acceder
-        $this->assertEquals(true,$perms->canAccess($def,$u2));
+        $this->assertEquals(true,$perms->canAccess($def,$u2,null,true));
     }
 
     function testACL2()
@@ -148,7 +149,7 @@ class ModelPermissionsTest extends TestCase
         ]];
 
         // El usuario 1 puede acceder:
-        $this->assertEquals(true,$perms->canAccess($def,$u1));
+        $this->assertEquals(true,$perms->canAccess($def,$u1,null,true));
 
         // Pero no puede acceder a la siguiente especificacion:
         // Se crea una especificacion de permisos de tipo ACL,
@@ -158,17 +159,17 @@ class ModelPermissionsTest extends TestCase
             "REQUIRES"=>["ITEM"=>\lib\model\permissions\PermissionsManager::PERMS_VIEW],
             "ON"=>"/model/tests/ClassB"
         ]];
-        $this->assertEquals(false,$perms->canAccess($def,$u1));
+        $this->assertEquals(false,$perms->canAccess($def,$u1,null,true));
 
 
         // El usuario 2 no puede acceder:
-        $this->assertEquals(false,$perms->canAccess($def,$u2));
+        $this->assertEquals(false,$perms->canAccess($def,$u2,null,true));
 
         // Se agrega el usuario 2 al grupo TESTGROUP:
         $perms->addToGroup(array($u2->USER_ID),"/TESTGROUP",\lib\model\permissions\PermissionsManager::PERM_TYPE_USER);
 
         // Y ahora debe poder acceder:
-        $this->assertEquals(true,$perms->canAccess($def,$u2));
+        $this->assertEquals(true,$perms->canAccess($def,$u2,null,true));
 
     }
 
@@ -196,21 +197,21 @@ class ModelPermissionsTest extends TestCase
         ]];
 
         // El usuario 1 puede acceder a $def
-        $this->assertEquals(true,$perms->canAccess($def,$u1));
+        $this->assertEquals(true,$perms->canAccess($def,$u1,null,true));
         // Pero no a $def_2
-        $this->assertEquals(false,$perms->canAccess($def_2,$u1));
+        $this->assertEquals(false,$perms->canAccess($def_2,$u1,null,true));
 
         // Lo contrario para el usuario 2
-        $this->assertEquals(false,$perms->canAccess($def,$u2));
+        $this->assertEquals(false,$perms->canAccess($def,$u2,null,true));
         // Pero no a $def_2
-        $this->assertEquals(true,$perms->canAccess($def_2,$u2));
+        $this->assertEquals(true,$perms->canAccess($def_2,$u2,null,true));
 
 
         // El usuario admin puede acceder a cualquiera
         $modelService=\Registry::getService("model");
         $admin=$modelService->loadModel("/model/web/WebUser",["LOGIN"=>"admin"]);
-        $this->assertEquals(true,$perms->canAccess($def,$admin));
-        $this->assertEquals(true,$perms->canAccess($def_2,$admin));
+        $this->assertEquals(true,$perms->canAccess($def,$admin,null,true));
+        $this->assertEquals(true,$perms->canAccess($def_2,$admin,null,true));
 
 
     }
@@ -229,21 +230,23 @@ class ModelPermissionsTest extends TestCase
         $u1=$values["user1"]; // NOTA, ESTE USUARIO, AUNQUE SE LLAME "user1", ES EL ID 2, DUEÑO DEL POST
         $u2=$values["user2"];
         $perms=$values["manager"];
+        $serService = \Registry::getService("storage");
+        $serializer = $serService->getSerializerByName("modeltests");
 
         $modelService=\Registry::getService("model");
-        $comment=$modelService->loadModel("/model/tests/Post/Comment",["id"=>10]);
+        $comment=$modelService->loadModel("/model/tests/Post/Comment",["id"=>10],$serializer);
 
         $def=[[
             "TYPE"=>PermissionsManager::PERMISSIONSPEC_OWNER
         ]];
-        $this->assertEquals(true,$perms->canAccess($def,$u1,$comment));
-        $this->assertEquals(false,$perms->canAccess($def,$u2,$comment));
+        $this->assertEquals(true,$perms->canAccess($def,$u1,$comment,true));
+        $this->assertEquals(false,$perms->canAccess($def,$u2,$comment,true));
 
         // Se comprueba que el usuario admin sigue teniendo permisos, porque se
         // comprueba que el usuario sea el dueño, o que tenga el grupo "/AllUsers".
         $modelService=\Registry::getService("model");
         $admin=$modelService->loadModel("/model/web/WebUser",["LOGIN"=>"admin"]);
-        $this->assertEquals(true,$perms->canAccess($def,$admin,$comment));
+        $this->assertEquals(true,$perms->canAccess($def,$admin,$comment,true));
 
     }
 

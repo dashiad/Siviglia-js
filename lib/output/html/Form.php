@@ -35,7 +35,7 @@ class Form extends \lib\model\BaseTypedObject
             $clName=$obj->getNamespacedAction($definition["ACTION"]["ACTION"]);
             include_once($obj->getActionFileName($definition["ACTION"]["ACTION"]));
 
-            $actDef=$clName::$definition;
+            $actDef=$clName::$_definition;
             if(!isset($definition["FIELDS"]))
                 $definition["FIELDS"]=array();
             if(isset($actDef["FIELDS"]))
@@ -137,6 +137,7 @@ class Form extends \lib\model\BaseTypedObject
         if (!$this->actionResult->isOk()) {
             throw new FormException(FormException::ERR_INVALID);
         }
+        // TODO : SETUP DE TOKENS.
 
         include_once(LIBPATH . "/output/html/InputFactory.php");
         $formData = $request->getActionData();
@@ -170,7 +171,7 @@ class Form extends \lib\model\BaseTypedObject
                 $currentInputValue=null;
                 if($isKey)
                 {
-                    $currentInputValue=$formData["keys"][$key];
+                    $currentInputValue=$formData["KEYS"][$key];
                 }
                 else
                 {
@@ -197,7 +198,7 @@ class Form extends \lib\model\BaseTypedObject
                     $htmlSerializer->unserializeType($key, $this->{"*" . $key}, $unserializedFields, $this);
                 }catch(\Exception $e)
                 {
-                    $this->actionResult->addFieldInputError($key,$unserializedFields[$key],$e);
+                    $this->actionResult->addFieldInputError($e->source->getFullPath(),$unserializedFields[$key],$e);
                 }
             }
         }
@@ -216,7 +217,7 @@ class Form extends \lib\model\BaseTypedObject
             $this->__loaded=true;
         }
         if($this->actionResult->isOk())
-            $this->validate($this->actionResult);
+            $this->validateForm($this->actionResult);
 
         if ($this->actionResult->isOk()) {
             if ($this->processAction($this->actionResult)) {
@@ -244,7 +245,7 @@ class Form extends \lib\model\BaseTypedObject
     {
 
         $fieldInstance=$this->__getField($field);
-        $type=$fieldInstance->getType();
+        $type=$fieldInstance;
         try
         {
             $iVal=$inputObj->getValue();
@@ -266,7 +267,7 @@ class Form extends \lib\model\BaseTypedObject
 
 
     // Los siguientes metodos son para ser sobreescritos en las clases de formulario.
-    function validate( $actionResult)
+    function validateForm( $actionResult)
     {
         return $actionResult->isOk();
     }
@@ -285,18 +286,6 @@ class Form extends \lib\model\BaseTypedObject
     {
         if( $this->formDefinition["MODEL"] )
         {
-             if($this->formDefinition["INDEXFIELDS"])
-             {
-                 for($k=0;$k<count($this->formDefinition["INDEXFIELDS"]);$k++)
-                 {
-                     $c=$this->formDefinition["INDEXFIELDS"][$k];
-                     if($this->{"*".$c}->hasOwnValue())
-                        $keys[$c]=$this->{$c};
-                 }
-             }
-             else
-                 $keys=null;
-
             $user=\Registry::getService("user");
             $action=\lib\action\Action::getAction($this->formDefinition["ACTION"]["MODEL"],$this->formDefinition["ACTION"]["ACTION"]);
             $action->process($this,$this->actionResult,$user);

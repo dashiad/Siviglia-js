@@ -9,7 +9,7 @@ namespace model\web\Site\actions;
 
 class Delete extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\web\Site',
                'ROLE'=>'Delete',
                'PERMISSIONS'=>array(
@@ -42,7 +42,7 @@ class Delete extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(Delete::$definition);
+			parent::__construct(Delete::$_definition);
 
 	}
 
@@ -66,7 +66,7 @@ class Delete extends \lib\action\Action
 	 *
 	 * RETURNS:
 	 */
-	 function validate ( $actionResult )
+	 function validateAction ( $actionResult )
 	{
 
 

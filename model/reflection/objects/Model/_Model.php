@@ -623,7 +623,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
             if(!$stateField)
                 return null;
             $vals=array_values($stateField);
-            $types=array_values($vals[0]->getType());
+            $types=array_values($vals[0]);
             return $types[0]->getDefaultState();
 
         }

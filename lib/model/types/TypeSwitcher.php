@@ -11,7 +11,7 @@ class TypeSwitcherException extends \lib\model\types\BaseTypeException
     const TXT_INVALID_TYPE="Type [%type%] is not allowed";
     const TXT_MISSING_CONTENT_FIELD="Content field [%field%] is missing";
 }
-class TypeSwitcher extends BaseContainer implements \ArrayAccess
+class TypeSwitcher extends BaseType implements \ArrayAccess
 {
 
     var $currentType;
@@ -52,7 +52,12 @@ class TypeSwitcher extends BaseContainer implements \ArrayAccess
         $typeInfo=$this->getTypeFromValue($val);
         if($typeInfo["def"]===null)
             throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$typeInfo["name"]]);
-        $instance=\lib\model\types\TypeFactory::getType($this->fieldName,$typeInfo["def"],$this->parent,$val,$this->validationMode);
+        $instance=\lib\model\types\TypeFactory::getType(
+            ["fieldName"=>$this->fieldName,"path"=>$this->parent?$this->parent->__getFieldPath():null],
+            $typeInfo["def"],
+            $this->parent,
+            $val,
+            $this->validationMode);
 
         $this->currentType=$typeInfo["name"];
         if($instance->hasOwnValue()) {
@@ -159,7 +164,7 @@ class TypeSwitcher extends BaseContainer implements \ArrayAccess
 
     function _validate($val)
     {
-        if($this->subNode)
+        if($this->subNode && $this->__onlyValidating)
             return $this->subNode->validate($val,$this->validationMode);
         return true;
 
@@ -170,6 +175,10 @@ class TypeSwitcher extends BaseContainer implements \ArrayAccess
         if($this->subNode==null)
                 return null;
         return $this->subNode->getValue();
+    }
+    function getReference()
+    {
+        return $this->subNode;
     }
 
     function hasValue()

@@ -71,7 +71,7 @@ class Add extends \lib\action\Action
 	 *
 	 * RETURNS:
 	 */
-	 function validate ( $actionResult )
+	 function validateAction ( $actionResult )
 	{
 	/* Insert the validation code here */
 			return $actionResult->isOk();
