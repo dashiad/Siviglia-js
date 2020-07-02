@@ -521,7 +521,7 @@ Siviglia.Utils.buildClass({
                     for (k in this._ev_listeners) {
                         for (j = 0; j < this._ev_listeners[k].length; j++) {
                             if (this._ev_listeners[k][j].obj == object) {
-                                console.debug("Removing listener " + this._ev_listeners[k][j].id);
+                               // console.debug("Removing listener " + this._ev_listeners[k][j].id);
                                 delete Siviglia.Dom.existingListeners[this._ev_listeners[k][j].id];
                                 this._ev_listeners[k].splice(j, 1);
                                 j--;
@@ -714,16 +714,15 @@ Siviglia.Utils.buildClass(
                     },
                     reset:function()
                     {
-                        this.__lastTyped=null;
                         this.pointer=this.objRoot;
+                        this.__lastTyped=(typeof this.pointer.__getParent==="function");
                     },
                     moveTo:function(spec)
                     {
-
                         //this.__lastTyped=false;
-                        if(spec===".." && typeof this.pointer.getParent==="function")
+                        if(spec===".." && typeof this.pointer.__getParent==="function")
                         {
-                            cVal=this.pointer.getParent();
+                            cVal=this.pointer.__getParent();
                             if(this.prefix!=='@') {
                                 cVal.addListener("CHANGE", this, "onChange", "BaseCursor:" + spec);
                                 this.remListeners.push(cVal);
@@ -1118,13 +1117,23 @@ Siviglia.Utils.buildClass({
                             {
 
                                 if(typeof this.paths[path]!=="undefined") {
-                                    if(!this.paths[path].isValid())
+                                     if(!this.paths[path].isValid())
                                         this.valid=false;
                                     else {
                                         var v=this.paths[path].getValue();
-                                        if(typeof v=="object")
-                                            return JSON.stringify(v);
-                                        return v;
+
+                                            if (v === null) {
+                                                this.parsing = false;
+                                                throw new Siviglia.Path.ParametrizableStringException("Null value::" + path);
+                                            }
+                                            else
+                                            {
+                                                if(typeof v=="object")
+                                                    return JSON.stringify(v);
+                                                else
+                                                    return v;
+                                            }
+
                                     }
                                 }
 
@@ -1319,13 +1328,37 @@ Siviglia.Path.eventize=function(obj,propName) {
             enumerable: false
         });
     }
+    if (!obj.hasOwnProperty("__evmanagers__")) {
+        var evManagers=[];
+        Object.defineProperty(obj, "__evmanagers__", {
+            get: function () {
+                return evManagers;
+            },
+            set: function (val) {
+                evManagers = val;
+            },
+            enumerable: false
+        });
+    }
+    if (!obj.hasOwnProperty("__destroy__")) {
+        var evManagers=[];
+        Object.defineProperty(obj, "__destroy__", {
+            get: function () {
+                return function(){for(var k=0;k<evManagers.length;k++)evManagers[k].destruct()}
+            },
+            set: function (val) {
+
+            },
+            enumerable: false
+        });
+    }
 
 
     if (!obj.hasOwnProperty("*" + propName)) {
 
         var v = obj[propName];
         var ev = new Siviglia.Dom.EventManager();
-
+        obj.__evmanagers__.push(ev);
 
         Object.defineProperty(obj, "*" + propName, {
             get: function () {
@@ -1534,11 +1567,13 @@ Siviglia.Utils.buildClass(
                             parse: function (node) {
 
                                 var cb = function (node) {
+                                    if(node.length ==0)
+                                        return;
                                     var newExpandos = {};
                                     var dataset = node.data();
                                     var k;
                                     var retValue = true;
-                                    if (dataset["sivid"]) {
+                                    if (dataset && dataset["sivid"]) {
 
                                         var curRoot = this.stack.getRoot("*");
                                         if (curRoot)
@@ -1864,11 +1899,9 @@ Siviglia.Utils.buildClass(
                                 }
                             }
                             var newChildren=$(newNode).children();
-                            this.node.each(function(index){
-                                if(index>0)
-                                    $(this).remove();
-                            })
-                            this.node.replaceWith(newChildren)
+                            newChildren.insertBefore(this.node[0]);
+                            this.node.remove();
+
                             //$(newNode).children().appendTo(this.node);
                             this.node=newChildren;
                             this.childNodes=newNodes;
@@ -2251,6 +2284,7 @@ Siviglia.Utils.buildClass(
                         },
                         updateParams:function(event,params){
 
+
                               this.rebuild();
                         },
                         rebuild:function()
@@ -2281,7 +2315,8 @@ Siviglia.Utils.buildClass(
                                 this.view.__build().then(function(){
 
                                         m.rootNode = m.view.getNode().children();
-                                        m.node.replaceWith(m.rootNode);
+                                        m.rootNode.insertAfter($(m.node[0]));
+                                        m.node.remove();
                                         m.node = m.rootNode;
                                         if(oldView)
                                             oldView.destruct();
@@ -2410,7 +2445,7 @@ Siviglia.Utils.load=function(assets)
     }
 
     $.when.apply($, subpromises).done(function() {
-        console.dir(arguments);
+
         curPromise.resolve();
     });
     return curPromise;

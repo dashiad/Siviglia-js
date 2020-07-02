@@ -70,7 +70,7 @@
                                 "definition":{"LABEL":"Definition","TYPE":"/model/reflection/Types/types/BaseTypedObject"}
                             }
                         })
-                        var t=Siviglia.types.TypeFactory.getType(null,"/model/reflection/Model/types/ModelType",null);
+                        var t=Siviglia.types.TypeFactory.getType(null,"/model/reflection/Model/types/ModelType",null,null);
                         bto.file="Test";
                         bto.definition=t.definition;
                         //var t=Siviglia.types.TypeFactory.getType(null,"/model/reflection/Model/ModelType",null);

@@ -469,7 +469,7 @@ Siviglia.Utils.buildClass({
             inherits: 'Siviglia.model.BaseTypedObject',
             construct: function (model, name, keys,definition,value) {
                 this.__model=model;
-                this.__name=name;
+                this.__fname=name;
                 this.__keys=keys;
                 this.BaseTypedObject(definition,value,false);
             },
@@ -486,7 +486,7 @@ Siviglia.Utils.buildClass({
                     var meta;
                     this.__frozen=false;
                     this.__model=model;
-                    this.__name=name;
+                    this.__dsname=name;
                     this.__params=params;
                     this.currentPromise=null;
                     this.nextPromise=null;
@@ -544,8 +544,9 @@ Siviglia.Utils.buildClass({
                     if(typeof meta.TYPES !=="undefined")
                         definition["TYPES"]=meta.TYPES;
                     this.BaseTypedObject(definition,null,true);
-
-                    this["*params"]._setValue(params);
+                    if(params===null)
+                        params={};
+                    this["*params"].setValue(params);
 
                     if(typeof response!=="undefined" && response!==null) {
                         this.onResponse(response);
@@ -554,10 +555,11 @@ Siviglia.Utils.buildClass({
                     // Se aniaden listeners en todos los campos.
                     for(var k in definition.FIELDS.params.FIELDS)
                     {
-                        this.params["*"+k].addListener("CHANGE",this,"doRefresh");
+                        this.params["*"+k].addListener("CHANGE",this,"refresh");
                     }
+                    this.settings={};
                     for(var k in definition.FIELDS.settings.FIELDS)
-                        this.settings["*"+k].addListener("CHANGE",this,"doRefresh");
+                        this.settings["*"+k].addListener("CHANGE",this,"refresh");
 
                 },
                 destruct:function()
@@ -588,6 +590,8 @@ Siviglia.Utils.buildClass({
                     refresh:function()
                     {
 
+                        if(this.__frozen)
+                            return;
                         // Si ahora mismo estamos refrescando, y alguien vuelve a pedir un refresco
                         if(this.currentPromise)
                         {
@@ -605,7 +609,7 @@ Siviglia.Utils.buildClass({
                         // Un datasource va a ser simplemente un BaseTypedObject con una definicion fija
                         // de datos, total de elementos, criterios de ordenacion, etc,etc.
                         var mName = new Siviglia.Model.ModelDescriptor(this.__model);
-                        var location = mName.getDataSourceUrl(this.__name, null, this.params,this.settings);
+                        var location = mName.getDataSourceUrl(this.__dsname, null, this.params,this.settings);
                         var transport = new Siviglia.Model.Transport();
                         var m=this;
 

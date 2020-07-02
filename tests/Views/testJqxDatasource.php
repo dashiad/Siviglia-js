@@ -64,11 +64,13 @@
                 "methods":{
                     preInitialize:function(params)
                     {
+                        this.description="LALAL";
                         this.modelSelector=new Siviglia.model.BaseTypedObject(
                             {
                                 "FIELDS":{
                                     "model":{
                                         "LABEL":"Select Model",
+                                        "description":"qqqq",
                                         "TYPE":"String",
                                         "SOURCE":{
                                             "TYPE":"DataSource",
@@ -120,7 +122,7 @@
                             this.ds.settings.__count = 3;
                             this.ds.addListener("CHANGE", this, "refreshGrid");
 
-                            this.parameters = this.ds["*params"].toBaseTypedObject();
+                            this.parameters = this.ds["*params"];
                             this.parameters.__definition.INPUTPARAMS={
                                 "/":{
                                     "INPUT": "FlexContainer"

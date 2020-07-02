@@ -1,3 +1,4 @@
+<script src="../Model.js"></script>
 <style>
     .remove, .NewItemString .add {
         font-family:'IcoMoon'
@@ -59,16 +60,16 @@
                     methods:{
                         getInput:function(type,params,form)
                         {
-                            var stype=type.type;
+                            var stype=type.__definition["TYPE"];
                             var d=$.Deferred();
                             if(!Siviglia.isset(params))
                                 params={};
-                            if(Siviglia.isset(params.controller))
-                                type.setController(params.controller);
+                            //if(Siviglia.isset(params.controller))
+                            //    type.setController(params.controller);
                             var dv=$('<div></div>');
                             var p=params || {};
                             if(typeof form!=="undefined") {
-                                var formParams = form.getFormParams(type.getFullPath());
+                                var formParams = form.getFormParams(type.__getFieldPath());
                                 if (formParams) {
                                     for (var k in formParams)
                                         p[k] = formParams[k];
@@ -83,7 +84,7 @@
                                 switch (stype) {
                                     case "Integer":
                                     case "String": {
-                                        if (type.hasSource())
+                                        if (type.__hasSource())
                                             input = "ComboBox";
                                         else
                                             input=stype;
@@ -107,7 +108,8 @@
                             }
                             var stack = new Siviglia.Path.ContextStack();
                             var instance=new Siviglia.inputs.jqwidgets[input](
-                                "Siviglia.inputs.jqwidgets."+input,
+                                //"Siviglia.inputs.jqwidgets."+input,
+                                input.indexOf(".")>-1?input:"Siviglia.inputs.jqwidgets."+input,
                                 p,
                                 {},
                                 dv,
@@ -161,11 +163,13 @@
                             this.controller = this.parentView;
                             this.tooltipNode=null;
                             this.changing=false;
+                            this.hasGlobalErrors=false;
+                            this.description="";
                             this.errorMessage = "";
                             this.form=Siviglia.issetOr(params.form,null);
                             this.type = params.type;
                             this.type.addListener("CHANGE",this,"onTypeChanged");
-                            this.helpMessage = Siviglia.issetOr(this.type.definition.HELP, null);
+                            this.helpMessage = Siviglia.issetOr(this.type.__definition.HELP, null);
                             this.hasHelpMessage = (this.helpMessage != null ? true : false);
                             this.inputParams = Siviglia.issetOr(params.inputParams, {});
                             this.formParams=Siviglia.issetOr(params.formParams,{});
@@ -356,7 +360,7 @@
                     inherits: "Siviglia.inputs.jqwidgets.BaseInput",
                     methods: {
                         getDefaultInputOptions: function () {
-                            var d = this.type.definition;
+                            var d = this.type.__definition;
 
                             var opts = {
 
@@ -369,7 +373,7 @@
                         },
                         createInput:function(opts)
                         {
-                            var d=this.type.definition;
+                            var d=this.type.__definition;
                             if(typeof d.PARAMTYPE!=="undefined" && d.PARAMTYPE==='DYNAMIC')
                             {
                                 // Poner callback de keyup, con debouncer
@@ -384,7 +388,7 @@
                     methods: {
                         getDefaultInputOptions: function () {
                             var finalOpts = [];
-                            var d = this.type.definition;
+                            var d = this.type.__definition;
                             for (var k = 0; k < d.VALUES.length; k++) {
                                 var c = d.VALUES[k];
                                 var label, value;
@@ -452,7 +456,7 @@
                     inherits: 'BaseInput',
                     methods: {
                         getDefaultInputOptions: function () {
-                            var d = this.type.definition;
+                            var d = this.type.__definition;
                             return {decimalDigits: d.NDECIMALS, digits: d.NINTEGERS};
                         },
                         getJqxWidgetName: function () {
@@ -519,7 +523,7 @@
                     inherits: 'BaseInput',
                     destruct:function()
                     {
-                        var s = this.type.getSource();
+                        var s = this.type.__getSource();
                         s.removeListeners(this);
                     },
                     methods: {
@@ -576,7 +580,7 @@
                         },
                         preprocessParams: function (params) {
                             this.type=params.type;
-                            var s=this.type.getSource();
+                            var s=this.type.__getSource();
                             this.labelField = s.getLabelExpression()?"LABEL_EXPRESSION":s.getLabelField();
                             this.valueField = s.getValueField();
                         },
@@ -666,7 +670,7 @@
                             if(this.source==null) {
                                 //this.type.clear();
                                 var plainCtx = new Siviglia.Path.BaseObjectContext(this.controller, "*");
-                                var s = this.type.getSource();
+                                var s = this.type.__getSource();
                                 s.addContext(plainCtx);
                                 s.addListener("CHANGE", this, "onSourceChanged");
 
@@ -905,6 +909,7 @@
                                 preInitialize:function(params)
                                 {
                                     this.title="";
+                                    this.self=this;
                                     this.hasSimpleType=false;
                                     this.description="";
                                     this.BaseInput$preInitialize(params);
@@ -945,20 +950,20 @@
                                 {
                                     // Hacemos esto para evitar doble repintado del widget, ya que hay
                                     // listeners para ambas variables.
+                                    console.log("CLICK");
                                     this.currentKey=params.key;
                                     this.hasCurrentKey=true;
 
                                 },
-                                getInputFor:function(node,params)
+                                displayInput:function(node,key)
                                 {
-
                                     if(this.currentWidget!=null) {
 
                                         this.currentWidget.destruct();
                                         this.currentWidget = null;
                                         node.html("");
                                     }
-                                    var key=this.currentKey;
+
                                     if(key==null)
                                         return;
 
@@ -982,19 +987,26 @@
 
                                     }.bind(this));
                                 },
+                                getInputFor:function(node,params)
+                                {
+
+                                    var key=this.currentKey;
+                                    this.displayInput(node,key);
+
+                                },
                                 __getInputFor:function(key)
                                 {
 
                                     var factory=new Siviglia.inputs.jqwidgets.Factory()
                                     //this.curType=this.type.getField(key);
                                     this.curType=this.type.getValue()["*"+key];
-                                    return factory.getInput(this.curType,{controller:this.type.controller},this.form)
+                                    return factory.getInput(this.curType,{controller:null},this.form)
 
                                 },
                                 getLabel:function(node,params,event)
                                 {
                                     var curKey=params.key;
-                                    node.html(this.type.definition.FIELDS[curKey].LABEL || curKey);
+                                    node.html(this.type.__definition.FIELDS[curKey].LABEL || curKey);
                                 },
                                 onRemoveClicked:function(node,params,event)
                                 {
@@ -1053,14 +1065,15 @@
                             {
                                 this.subwidgets={};
                                 this.description="";
+                                this.hasGlobalErrors = false;
                                 this.Dictionary$preInitialize(params);
                                 this.globalErrors = [];
-                                this.hasGlobalErrors = false;
+
 
                             },
                             getInputFor: function (node, params) {
 
-                                if(typeof this.type.definition.FIELDS[params.key]=="undefined") {
+                                if(typeof this.type.__definition.FIELDS[params.key]=="undefined") {
                                     console.error("ERROR:LLamado getInputFor de Container con un campo no valido:" + params.key);
                                     return;
                                 }
@@ -1157,7 +1170,33 @@
                     }
 
                 },
+                TabsContainer:{
+                    inherits:"Container",
+                    methods:{
+                        preInitialize:function(params)
+                        {
+                            this.Container$preInitialize(params);
+                            this.containerGroups=this.getGroups();
+                            for(var k in this.containerGroups)
+                            {
+                                this.containerGroups[k].ICON=Siviglia.issetOr(this.containerGroups[k].ICON,"");
+                            }
+                        },
+                        initialize:function(params)
+                        {
+                            this.Container$initialize(params);
+                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ width: 'auto', height: '300'});
+
+                            this.jqxTabs.jqxTabs(iParams);
+                        }
+
+                    }
+            
+                },
                 FlexContainer:{
+                    inherits:"Container"
+                },
+                GridContainer:{
                     inherits:"Container"
                 },
                 MenuContainer:{
@@ -1277,7 +1316,7 @@
                                 onNewItem:function()
                                 {
                                     if(this.hasSimpleType) {
-                                        if (!this.newInstance.isEmpty()) {
+                                        if (!this.newInstance.__isEmpty()) {
                                             var newInstance=this.newInstance.getValue();
                                             var curVal=this.type.getValue();
                                             if(curVal===null)
@@ -1358,10 +1397,11 @@
                             };
 
                             var currentType=params.type.getCurrentType();
-                            this.typeSelector=Siviglia.types.TypeFactory.getType(null,{
+
+                            this.typeSelector=Siviglia.types.TypeFactory.getType ({fieldName:"selector",fieldPath:"/"}, {
                                 "TYPE":"String",
                                 "SOURCE":source
-                            },currentType);
+                            }, null,currentType);
 
                         },
 
@@ -1400,7 +1440,7 @@
 
                                 if(this.curType) {
                                     var curTypeObj=this.type.getCurrentTypeObj();
-                                    factory.getInput(curTypeObj, {controller: this.type.controller},this.form).then(function(instance){
+                                    factory.getInput(curTypeObj, {controller: null},this.form).then(function(instance){
                                         if(this.subNode) {
                                             this.subNode.destruct();
                                             this.fieldContainer.html("");
@@ -1506,12 +1546,13 @@
                                     var typeDefinition={
                                         "TYPE":"String"
                                     };
-                                    if(Siviglia.isset(params.type.definition.SOURCE))
-                                        typeDefinition["SOURCE"]=params.type.definition.SOURCE;
+                                    if(Siviglia.isset(params.type.__definition.SOURCE))
+                                        typeDefinition["SOURCE"]=params.type.__definition.SOURCE;
 
                                     // Sea el tipo que sea el que nos llega, lo convertimos a una String.
                                     typeDefinition["TYPE"]="String";
-                                    this.type=Siviglia.types.TypeFactory.getType(params.type.getParent(),typeDefinition,null);
+
+                                    this.type=Siviglia.types.TypeFactory.getType({fieldName:"selector",fieldPath:"/"}, typeDefinition,null,null);
                                     this.parent=params.parent;
                                     this.subInput=null;
                                     this.params=params;
@@ -1550,11 +1591,9 @@
                             }
                     },
                 Form:{
-                    inherits:"BaseInput",
+                    inherits:"Container",
                     destruct:function()
                     {
-                        if(this.__bto)
-                            this.__bto.destruct();
                         if(this.type)
                             this.type.destruct();
                         if(this.__containerWidget)
@@ -1567,20 +1606,18 @@
                                 //En los params puede haber o un campo model/form/value , o un bto
                                 // Si es un bto, el formulario no esta asociado a un model/form, sino que simplemente se edita
                                 // un basetypedobject, cuando, por ejemplo, es un filtro para un datasource, o un test.
-
                                 var loadedPromise = $.Deferred();
                                 var containerPromise=$.Deferred();
-
                                 var m=this;
-                                this.__bto=null;
                                 this.__model=null;
                                 this.type=null;
+
                                 this.__erroredInputs={};
                                 this.__containerWidget=null;
                                 if(typeof params.model==="undefined") {
-                                    this.__bto = params.bto;
+                                    this.type = params.bto;
                                     this.setupBto();
-                                    loadedPromise.resolve(this.bto);
+                                    loadedPromise.resolve(this.type);
                                 }
                                 else {
                                     this.__model = params.model;
@@ -1591,43 +1628,25 @@
 
                                     transport.doGet(formUrl).then(function (result) {
                                         if (result.error == 0) {
-                                            this.__bto = new Siviglia.Model.Form(params.model, params.name, params.keys, result.form.definition, result.form.value);
+                                            this.type = new Siviglia.Model.Form(params.model, params.name, params.keys, result.form.definition, result.form.value);
                                             this.setupBto();
-                                            loadedPromise.resolve(this.bto);
+                                            loadedPromise.resolve(this.type);
 
                                         } else
                                             loadedPromise.reject();
                                     }.bind(this))
                                 }
-
                                 $.when(loadedPromise).then(function(bto){
-                                var factory=new Siviglia.inputs.jqwidgets.Factory();
-                                    factory.getInput(this.type,{controller:this.__bto},this).then(
-                                  function(instance)
-                                  {
-                                      this.__containerWidget=instance;
-                                            containerPromise.resolve(this.__bto);
-
-                                        }.bind(this)
-                                    );
-
+                                    this.Container$preInitialize({type:bto});
+                                    this.form=this;
+                                    containerPromise.resolve();
                                 }.bind(this));
                                 return containerPromise;
                             },
-                            initialize:function()
-                            {
-                                if(this.formNode)
-                                      this.formNode.append(this.__containerWidget.rootNode);
-                                //this.curType=this.type.getField(key);
-
-
-
-
-                            },
                             setupBto:function()
                             {
-                                this.type = new Siviglia.types.Container(this.__bto);
-                                var ip = Siviglia.issetOr(this.__bto.__definition.INPUTPARAMS, {});
+
+                                var ip = Siviglia.issetOr(this.type.__definition.INPUTPARAMS, {});
                                 this.__ip = [];
                                 for (var k in ip) {
                                     var t = k.replace(/\+/gm, '.*')
@@ -1636,10 +1655,6 @@
                                     var r = new RegExp("^" + t + "$");
                                     this.__ip.push({reg: r, ip: ip[k]});
                                 }
-                            },
-                            getInputFor:function(node,params)
-                            {
-                                return this.__containerWidget.getInputFor(node,params);
                             },
                             getFormParams:function(typePath)
                             {
@@ -1690,7 +1705,7 @@
                                 var vals = this.__bto.getPlainValue();
                                 if(i!=null) {
                                     for (var k = 0; k < i.length; k++) {
-                                        if (!this.__bto["*" + i[k]].isEmpty()) {
+                                        if (!this.__bto["*" + i[k]].__isEmpty()) {
                                             myIndexes[i[k]] = this.__bto[i[k]];
                                         } else {
                                             myIndexes = null;
@@ -1851,6 +1866,12 @@
          data-widgetCode="Siviglia.inputs.jqwidgets.String">
          <input type="text" placeholder="" class="form-control" data-sivId="inputNode">
     </div>
+    <!-- nuevo para jqxwidgets-json.String -->
+    <div data-sivWidget="Siviglia.inputs.jqwidgets-json.String" 
+         data-widgetCode="Siviglia.inputs.jqwidgets.String">
+        <input type="text" placeholder="" class="form-control-json" data-sivId="inputNode">
+    </div>
+
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Enum" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Enum">
         <div data-sivId="inputNode"></div>
@@ -1940,21 +1961,23 @@
                     <!--<div class="container-fluid">-->
                     <p class="text-info description" data-sivValue="/*description"></p>
                     <div data-sivIf="[%/*hasSimpleType%] == false" >
-
                         <div class="row-form Dictionary-row" style="margin-left:0px">
                             <div>
-
                                 <div class="Dictionary-keyList" width="150px">
                                     <div class="Dictionary-mainKeyList">
                                         <!-- añade el boton + -->
-                                        <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
-
+                                        <div class="Dictionary-newItemWidget">
+                                            <div data-sivView="Siviglia.inputs.jqwidgets.NewItem" data-sivParams='{"parent":"/*self","type":"/*type"}'></div>
+                                        </div>
                                         <!-- añade las claves introducidas -->
                                         <ul class="Dictionary-row Dictionary-keyList">
-                                            <div data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
+                                            <div data-sivLoop="/*type" data-contextIndex="current">
                                                 <li class="Dictionary-item">
-                                                    <a class="mainKeyList" id="tab-/@current/LABEL" data-toggle="pill" href="#/@current/LABEL">
-                                                        <span data-sivValue="/@current/LABEL" data-sivParams='{"key":"/@current/LABEL"}' data-sivEvent="click" data-sivCallback="onLabelClicked" data-sivValue="title|/@current/LABEL"></span> <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}' title="Eliminar"></i>
+                                                    <a class="mainKeyList"  data-toggle="pill" href="#/@current-index">
+                                                        <span style="display:block"  data-sivValue="title|[%/@current-index%]::[%/@current-index%]"
+                                                              data-sivParams='{"key":"/@current-index"}'
+                                                              data-sivEvent="click" data-sivCallback="onLabelClicked"></span>
+                                                        <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current-index"}' title="Eliminar"></i>
                                                     </a>
                                                 </li>
                                             </div>
@@ -1973,7 +1996,8 @@
                                 <!-- contenido añadido en add.html -->
                                 <div class="Dictionary-current">
                                     <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
-                                        <div data-sivValue="/*type/definition/LABEL"></div>
+                                        AA
+                                        <div data-sivValue="/*type/__definition/LABEL"></div>
                                         <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
                                         </div>
                                     </div>
@@ -2097,7 +2121,7 @@
                         </div>
                     </div>
                     <div class="inputs container">
-                        <div data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+                        <div data-sivLoop="/*type/__definition/FIELDS" data-contextIndex="current">
                             <div class="col col-sm-12" data-sivValue="/@current/LABEL"></div>
                             <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
                         </div>
@@ -2111,9 +2135,21 @@
 -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.FlexContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.FlexContainer">
         <div class="ContainerType">
-            <div style="display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start" data-sivLoop="/*type/definition/FIELDS" data-contextIndex="current">
+            <div style="display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start" data-sivLoop="/*type/__definition/FIELDS" data-contextIndex="current">
                 <div style="margin:4px" data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
             </div>
+        </div>
+    </div>
+<!--
+    --------------------------------------------------------------------------------------------
+-->
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.GridContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.GridContainer">
+        <div class="Grid2ContainerType">            
+                <div data-sivLoop="/*type/__definition/FIELDS" data-contextIndex="current">
+                    <div class="GridItem">
+                        <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
+                    </div>
+                </div>
         </div>
     </div>
 <!--
@@ -2125,7 +2161,7 @@
         <div class="arrayValues" style="min-height:20px;margin-bottom:5px">
             <div data-sivLoop="/*type" data-contextIndex="current">
                 <span style="border:2px solid red;margin:3px;padding:2px;border-radius:5px">
-                    <span  data-sivValue="/@current"></span>
+                    <span  data-sivValue="[%/@current%]"></span>
                     <button style="color:red" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"/@current-index"}'>x</button>
                 </span>
             </div>
@@ -2137,7 +2173,7 @@
         </div>
         <div data-sivIf="[%/*hasSimpleType%] == false" >
             <div style="display:flex;flex-direction:row;flex-wrap:nowrap">
-                <div class="arrayValues" style="width:100px min-height:20px;margin-bottom:5px">
+                <div class="arrayValues" style="width:100px;min-height:20px;margin-bottom:5px">
                     <div data-sivLoop="/*type" data-contextIndex="current">
                         <a data-sivEvent="click" data-sivParams='{"key":"@current-index"}' data-sivCallback="getInputFor" class="label label-primary" style="margin-right:4px;font-size:14px" data-sivValue="[%/@current-index%]"></a>
                             <span class="remove ion-close-circled " style="color:red;padding-left:5px" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"[%@current-index%]"}'></span>
@@ -2245,13 +2281,36 @@
             <div data-sivValue="[%@current/LABEL%]"></div>
             <div>
                 <div data-sivLoop="@current/FIELDS" data-contextIndex="current2">
-                    <div data-sivValue="[%*type/definition/FIELDS/{%@current2%}/LABEL%]"></div>
+                    <div data-sivValue="[%*type/__definition/FIELDS/{%@current2%}/LABEL%]"></div>
                     <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2"}'></div>
                 </div>
             </div>
         </div>
         </div>
     </div>
+    <!--
+            ---------------------------------------------------------------------------------------
+            -->
+
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.TabsContainer" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.TabsContainer">
+        <div data-sivId='jqxTabs'>
+            <ul>
+                <div data-sivLoop="*containerGroups" data-contextIndex="current">
+                    <li data-sivValue="[%@current/LABEL%]"></li>
+                </div>
+            </ul>
+
+            <div data-sivLoop="*containerGroups" data-contextIndex="current">
+                <div>
+                    <div data-sivLoop="@current/FIELDS" data-contextIndex="current2">
+                        <div data-sivValue="[%*type/__definition/FIELDS/{%@current2%}/LABEL%]"></div>
+                        <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2"}'></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
     <!--
             ---------------------------------------------------------------------------------------
             -->

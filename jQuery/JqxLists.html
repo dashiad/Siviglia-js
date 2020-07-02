@@ -75,7 +75,7 @@
                             this.ds.settings.__count = typeof params.ds.settings.pageSize=="undefined"?20:params.ds.settings.pageSize;
                             this.ds.addListener("CHANGE", this, "refreshGrid");
 
-                            this.parameters = this.ds["*params"].toBaseTypedObject();
+                            this.parameters = this.ds["*params"];
                             /*
                                 Inicializacion de las columnas a mostrar
                             */
@@ -110,7 +110,8 @@
                                             // Obtenemos la definicion del campo a traves del ds.
                                             var typeDef = this.ds["*data"].definition["ELEMENTS"].FIELDS[curIt.Field];
                                             // Obtenemos una instancia del tipo de la columna
-                                            var ins = Siviglia.types.TypeFactory.getType(null, typeDef, null);
+
+                                            var ins = Siviglia.types.TypeFactory.getType({fieldName:curIt.Field,fieldPath:"/"}, typeDef, null,null);
                                             var processedDef = ins.definition;
                                             if (typeof processedDef.references !== "undefined") {
                                                 var model = processedDef.references["MODEL"];
