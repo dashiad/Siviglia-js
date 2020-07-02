@@ -3833,6 +3833,7 @@ Siviglia.Utils.buildClass(
                                         if (!Siviglia.empty(cDef["PATH"]))
                                             target = dest.findPath(cDef["PATH"], true);
                                         var params = Siviglia.issetOr(cDef["PARAMS"], []);
+                                        params=params.slice();
                                         params.unshift(dest);
                                         var result;
                                         if(cDef["TYPE"]==="METHOD") {

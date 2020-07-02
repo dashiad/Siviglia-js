@@ -49,17 +49,18 @@
         .testDiv {
             border: 2px solid black;
             padding: 5px;
-            background-color:#6a7592
+            background-color:#6a7592;
+            margin:5px 20px;
         }
         .resultOk {
             background-color: green;
 
         }
         .testResult {
-
+            margin-top:30px;
         }
         .testCont {
-            height:200px;
+            height:300px;
             overflow-y:scroll;
         }
         .testDef {
@@ -109,7 +110,7 @@
 
 
 <script>
-    var DEVELOP_MODE=-1;
+    var DEVELOP_MODE=0;
     var Siviglia=Siviglia || {};
     Siviglia.config={
         baseUrl:'http://reflection.adtopy.com/',
@@ -203,7 +204,7 @@
                 if (DEVELOP_MODE === -1)
                     cbStack = [cbStack.pop()];
                 else
-                    cbStack = [cbStack[DEVELOP_MODE]];
+                    cbStack = [cbStack[DEVELOP_MODE-1]];
             }
         }
         var parser = new Siviglia.UI.HTMLParser();

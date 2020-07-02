@@ -25,13 +25,13 @@
         }
         .testDef {
             background-color:white;color:black;
-            height:150px;
+            height:250px;
             float:left;
             width:300px;
         }
         .testCode {
             background-color:black;
-            height:150px;
+            height:250px;
             overflow-y:scroll;
         }
     </style>
@@ -74,7 +74,7 @@
 
 <script>
     hljs.initHighlightingOnLoad();
-    var DEVELOP_MODE=33;
+    var DEVELOP_MODE=0;
 
     var def1={
         "TYPE":"Container",
@@ -304,7 +304,7 @@
                 if (DEVELOP_MODE === -1)
                     cbStack = [cbStack.pop()];
                 else
-                    cbStack = [cbStack[DEVELOP_MODE]];
+                    cbStack = [cbStack[DEVELOP_MODE-1]];
             }
         }
         while(cbStack.length>0)
