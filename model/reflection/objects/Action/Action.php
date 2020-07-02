@@ -117,11 +117,11 @@ class Action extends \model\reflection\base\ConfiguredObject
                 $classInstance=$this->parentModel;
             }
             $fieldInstance=$classInstance->getFieldOrAlias($fieldName);
-            if(!$fieldInstance->isAlias())
+            if(!$fieldInstance->__isAlias())
             {
                 $ftype=$fieldInstance;
                 $k1=array_keys($ftype);
-                if(!$ftype[$k1[0]]->isEditable())
+                if(!$ftype[$k1[0]]->__isEditable())
                 {
                     unset($req[$key]);
                     continue;
@@ -153,7 +153,7 @@ class Action extends \model\reflection\base\ConfiguredObject
 
             // Si el campo es una relacion, hay que definir un datasource de validacion.
             // Hay que propagarlo tambien al form.
-            if($value->isRelation())
+            if($value->__isRelation())
             {
                 if(!isset($paths[$key]))
                 {
@@ -188,10 +188,10 @@ class Action extends \model\reflection\base\ConfiguredObject
                 //$fieldInstance=$classInstance->getFieldOrAlias($key);
             $fieldInstance=$value;
 
-                if(!$fieldInstance->isAlias())
+                if(!$fieldInstance->__isAlias())
                 {
                     $ftype=$fieldInstance;
-                    if(!$ftype[$value->name]->isEditable())
+                    if(!$ftype[$value->name]->__isEditable())
                     {
                         unset($req[$value->name]);
                         continue;
@@ -208,7 +208,7 @@ class Action extends \model\reflection\base\ConfiguredObject
            }
            // Si el campo es una relacion, hay que definir un datasource de validacion.
            // Hay que propagarlo tambien al form.
-           if($value->isRelation())
+           if($value->__isRelation())
            {
                // Pero el ds de validacion, en todo caso, debe provenir del ultimo objeto de la cadena "a/b/c"
                //$sourceField=

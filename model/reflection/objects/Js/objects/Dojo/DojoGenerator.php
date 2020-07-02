@@ -290,7 +290,7 @@ CLASSCODE;
         }
 
         $paramData.=" data-siviglia-input-definition='".json_encode($definition)."'";
-       // if(!$def->isRelation()) {
+       // if(!$def->__isRelation()) {
             $type=$def->getRawType();
             $keys=array_keys($type);
             $realType=$type[$keys[0]];
@@ -486,7 +486,7 @@ CLASSCODE;
                     foreach($indexFields as $indexField) {
                         if ($indexField) {
                             $fDef = $indexField->getDefinition();
-                            if($indexField->isRelation()) {
+                            if($indexField->__isRelation()) {
                                 $pointedField=$indexField->getRemoteFieldNames();
                                 $pointedField=$pointedField[0];
                                 $remoteObject=$indexField->getRemoteModel();
@@ -552,7 +552,7 @@ TEMPLATE;
                 //echo $value["FIELD"]."<br>";
 
 
-                if($field->isRelation())
+                if($field->__isRelation())
                 {
                     $pointedField=$field->getRemoteFieldNames();
                     $pointedField=$pointedField[0];
@@ -697,7 +697,7 @@ TEMPLATE;
         }
 
         $paramData.=" data-siviglia-input-definition='".json_encode($definition)."'";
-        // if(!$def->isRelation()) {
+        // if(!$def->__isRelation()) {
 
         $realType=$type;
         $class=get_class($realType);

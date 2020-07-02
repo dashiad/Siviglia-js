@@ -78,11 +78,5 @@ class Link extends _String
             unset($match[$k]);
         return $match;
     }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/Link.php");
-        return '\model\reflection\Types\meta\Link';
-    }
-
 
 }

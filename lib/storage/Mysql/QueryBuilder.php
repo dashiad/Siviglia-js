@@ -105,7 +105,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         if($dsFields!==null) {
             foreach ($dsFields as $key => $value) {
                 $curField = $this->data->__getField($key);
-                if ($curField->hasOwnValue()) {
+                if ($curField->__hasOwnValue()) {
                     $fdef = $curField->getDefinition();
 
                     if (isset($fdef["PARAMTYPE"]) && $fdef["PARAMTYPE"] == "DYNAMIC") {
@@ -165,7 +165,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                     continue;
                 }
 
-                if ($curField->hasOwnValue()) {
+                if ($curField->__hasOwnValue()) {
                     //Tenemos que buscar si existe esa parte y substituirla
                     $val = $curField->getValue();
                     if(isset($curCondition["ENABLED"]))
@@ -230,7 +230,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                 // Nota: no queremos valores por defecto heredados del tipo.
                 try {
                     $curField = $this->data->__getField($tVar);
-                    if (!$curField->hasOwnValue()) {
+                    if (!$curField->__hasOwnValue()) {
                         $notExisting[] = $pattern;
                         continue;
                     }

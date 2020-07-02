@@ -15,11 +15,11 @@
 
       function _setValue($val,$validationMode=null)
       {
-          if(isset($this->definition["TRIM"]) && $this->definition["TRIM"]==true)
+          if(isset($this->__definition["TRIM"]) && $this->__definition["TRIM"]==true)
           {
                 $val=trim($val);
           }
-          if(isset($this->definition["NORMALIZE"]) && $this->definition["NORMALIZE"]==true)
+          if(isset($this->__definition["NORMALIZE"]) && $this->__definition["NORMALIZE"]==true)
           {
               $val=_String::normalize($val);
           }
@@ -37,40 +37,34 @@
       function _copy($val){
           $this->apply($val->getValue());
       }
-      function getMetaClassName()
-      {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/_String");
-          return '\model\reflection\Types\meta\_String';
-      }
-
       function _validate($val)
       {
 
          $len=strlen($val);
-         if(isset($this->definition["MINLENGTH"]))
+         if(isset($this->__definition["MINLENGTH"]))
          {
-            if($len < $this->definition["MINLENGTH"])
+            if($len < $this->__definition["MINLENGTH"])
             {
-                throw new _StringException(_StringException::ERR_TOO_SHORT,["val"=>$len,"min"=>$this->definition["MINLENGTH"]],$this);
+                throw new _StringException(_StringException::ERR_TOO_SHORT,["val"=>$len,"min"=>$this->__definition["MINLENGTH"]],$this);
             }
          }
 
-         if(isset($this->definition["MAXLENGTH"]))
+         if(isset($this->__definition["MAXLENGTH"]))
          {
-            if($len > $this->definition["MAXLENGTH"])
-                throw new _StringException(_StringException::ERR_TOO_LONG,["val"=>$len,"max"=>$this->definition["MAXLENGTH"]],$this);
+            if($len > $this->__definition["MAXLENGTH"])
+                throw new _StringException(_StringException::ERR_TOO_LONG,["val"=>$len,"max"=>$this->__definition["MAXLENGTH"]],$this);
 
          }
-         if(isset($this->definition["REGEXP"]))
+         if(isset($this->__definition["REGEXP"]))
          {
-             if(!preg_match($this->definition["REGEXP"],$val))
+             if(!preg_match($this->__definition["REGEXP"],$val))
              {
                 throw new _StringException(_StringException::ERR_INVALID_CHARACTERS,null,$this);
              }
          }
-         if(isset($this->definition["EXCLUDE"]))
+         if(isset($this->__definition["EXCLUDE"]))
          {
-             if(in_array($val,$this->definition["EXCLUDE"]))
+             if(in_array($val,$this->__definition["EXCLUDE"]))
                  throw new _StringException(_StringException::ERR_EXCLUDED_VALUE,["value"=>$val],$this);
          }
 
@@ -89,7 +83,7 @@
       {
           return \lib\php\Encoding::fixUTF8($cad);
       }
-      function getEmptyValue()
+      function __getEmptyValue()
       {
           return "";
       }

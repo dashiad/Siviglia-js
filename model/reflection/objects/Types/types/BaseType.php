@@ -34,7 +34,7 @@ class BaseType extends \lib\model\types\TypeSwitcher
         }
 
         $instance=\lib\model\types\TypeFactory::getType($this,$this->allowed_types[$type]);
-        $instance->setParent($this,$type);
+        $instance->__setParent($this,$type);
         return $instance;
     }
 

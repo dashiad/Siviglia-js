@@ -15,7 +15,7 @@
           if($value!==null && $value!="NULL" && $value!="null")
           {
           // Habria que ver tambien si esta en UTF-8
-           if(isset($type->definition["TRIM"]))
+           if(isset($type->__definition["TRIM"]))
                $value=trim($value);
 
             // Escapeado -- Anti-Xss?

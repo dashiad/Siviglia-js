@@ -9,15 +9,15 @@ namespace lib\model;
        var $ancestorDs;
        var $name;
        var $model;
-       var $definition;       
+       var $__definition;
        var $separator;
        function __construct($name,& $model, $definition,$value=false)
        {
-          $this->definition=$definition;
+          $this->__definition=$definition;
           $this->name=$name;
           $this->model=$model;
-          $this->treeFieldName=$this->definition["FIELD"];
-          $this->definition=$definition;
+          $this->treeFieldName=$this->__definition["FIELD"];
+          $this->__definition=$definition;
           $treeFieldDef=$model->__getFieldDefinition($this->treeFieldName);
           if(!isset($treeFieldDef["SEPARATOR"]))
               $this->separator='#';

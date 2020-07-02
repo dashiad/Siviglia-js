@@ -191,7 +191,7 @@ class MetaDataProvider
                 $formField=$this->getForm(MetaDataProvider::GET_FIELD,$modelName,$targetName,$field,MetaDataProvider::MODE_RESOLVED);
                 $type=\lib\model\types\TypeFactory::getType(null,$formField,null);
                 if($path!="")
-                    $type=$type->getTypeFromPath($path);
+                    $type=$type->__getTypeFromPath($path);
                 $type->validate($value);
             }break;
         }

@@ -230,7 +230,7 @@
           $fields=$model->getFields();
           foreach($fields as $key=>$value)
           {
-                  if(!$value->isRelation())
+                  if(!$value->__isRelation())
                       continue;
                   $role=$value->getRole();
                   $remModelName=$value->getRemoteModelName();

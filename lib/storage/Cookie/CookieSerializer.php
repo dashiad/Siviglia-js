@@ -158,7 +158,7 @@ class CookieSerializer extends \lib\storage\StorageSerializer
         $tFields=$object->__getFields();
         foreach($tFields as $key=>$value)
         {
-            if($value->isAlias())
+            if($value->__isAlias())
                 continue;
             if(isset($data[$key]))
             {
@@ -183,10 +183,10 @@ class CookieSerializer extends \lib\storage\StorageSerializer
                 {
                     continue;
                 }
-                if($isNew && $value->hasDefaultValue())
+                if($isNew && $value->__hasDefaultValue())
                     $value->setValue($value->getType()->getValue());
             }
-            if($value->isAlias())
+            if($value->__isAlias())
                 continue;
 
             $subVals = $value->serialize($this->getSerializerType());

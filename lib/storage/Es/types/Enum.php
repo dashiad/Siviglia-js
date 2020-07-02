@@ -7,7 +7,7 @@ namespace lib\storage\ES\types;
   {
       function serialize($name,$type,$serializer,$model=null)
       {
-          if($type->hasValue())
+          if($type->__hasValue())
           {
               return array($name=>$type->getLabel());
           }

@@ -170,7 +170,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         }
         array_shift($parts);
         $newPath=implode("/",$parts);
-        if($first->isRelation() || $first->isAlias())
+        if($first->__isRelation() || $first->isAlias())
         {
             $m=$first->getRemoteModel();
             $rdef=$first->getDefinition();
@@ -250,12 +250,12 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         $rels=array();
         foreach($this->fields as $key=>$value)
         {
-            if($value->isRelation())
+            if($value->__isRelation())
                 $rels[$key]=$value;
         }
         foreach($this->aliases as $key=>$value)
         {
-            if($value->isRelation())
+            if($value->__isRelation())
                 $rels[$key]=$value;
         }
         return $rels;
@@ -265,7 +265,7 @@ class Model extends \model\reflection\base\SimpleModelDefinition
         $rels=array();
         foreach($this->fields as $key=>$value)
         {
-            if($value->isRelation())
+            if($value->__isRelation())
                 $rels[$key]=$value;
         }
         return $rels;

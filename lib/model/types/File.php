@@ -66,8 +66,8 @@
           // Ojo..En caso de que estemos en un upload de HTML, este val es el fichero temporal PHP.Esto es asi, porque este tipo de dato,
           // usa el contexto para decidir el nombre y el path de fichero.Y ese contexto no estara listo hasta que se haya hecho save() del
           // modelo.Por ejemplo, esto ocurre cuando en el nombre del fichero debe ir un id autogenerado.
-          if(isset($this->definition["TARGET_FILEPATH"]))
-              $val=str_replace($this->definition["TARGET_FILEPATH"],"",$val);
+          if(isset($this->__definition["TARGET_FILEPATH"]))
+              $val=str_replace($this->__definition["TARGET_FILEPATH"],"",$val);
           $this->value=$val;
       }
 
@@ -77,9 +77,9 @@
               return true;
           $normalizedV=File::normalizePath($value);
           $normalizedVV=File::normalizePath($this->value);
-          if(isset($this->definition["TARGET_FILEPATH"]))
+          if(isset($this->__definition["TARGET_FILEPATH"]))
           {
-              $normalizedBase=File::normalizePath($this->definition["TARGET_FILEPATH"]);
+              $normalizedBase=File::normalizePath($this->__definition["TARGET_FILEPATH"]);
               $normalizedV=str_replace($normalizedBase,"",$normalizedV);
               $normalizedVV=str_replace($normalizedBase,"",$normalizedVV);
           }
@@ -97,19 +97,19 @@
               throw new FileException(FileException::ERR_FILE_DOESNT_EXISTS,array("path"=>$fileName),$this);
           }
           $fsize=filesize($fileName);
-          if(isset($this->definition["MINSIZE"]) && $this->definition["MINSIZE"] > $fsize)
-              throw new FileException(FileException::ERR_FILE_TOO_SMALL,array("minsize"=>$this->definition["MINSIZE"],"actualsize"=>$fsize),$this);
+          if(isset($this->__definition["MINSIZE"]) && $this->__definition["MINSIZE"] > $fsize)
+              throw new FileException(FileException::ERR_FILE_TOO_SMALL,array("minsize"=>$this->__definition["MINSIZE"],"actualsize"=>$fsize),$this);
 
-          if(isset($this->definition["MAXSIZE"]) && $this->definition["MAXSIZE"] < $fsize)
-              throw new FileException(FileException::ERR_FILE_TOO_BIG,array("minsize"=>$this->definition["MAXSIZE"],"actualsize"=>$fsize),$this);
+          if(isset($this->__definition["MAXSIZE"]) && $this->__definition["MAXSIZE"] < $fsize)
+              throw new FileException(FileException::ERR_FILE_TOO_BIG,array("minsize"=>$this->__definition["MAXSIZE"],"actualsize"=>$fsize),$this);
 
 
-          if(isset($this->definition["EXTENSIONS"]))
+          if(isset($this->__definition["EXTENSIONS"]))
           {
-              if(!is_array($this->definition["EXTENSIONS"]))
-                  $allowedExtensions=array($this->definition["EXTENSIONS"]);
+              if(!is_array($this->__definition["EXTENSIONS"]))
+                  $allowedExtensions=array($this->__definition["EXTENSIONS"]);
               else
-                  $allowedExtensions=$this->definition["EXTENSIONS"];
+                  $allowedExtensions=$this->__definition["EXTENSIONS"];
 
               $extension=array_pop(explode(".",$fileName));
 
@@ -150,24 +150,24 @@
 
       function calculateFinalPath($filename)
       {
-          $filePath=$this->definition["TARGET_FILEPATH"];
+          $filePath=$this->__definition["TARGET_FILEPATH"];
           // Si esta establecido TARGET_FILENAME, no especifica una extension, asi que hay que copiarla de $filename.
 
-          if(isset($this->definition["TARGET_FILENAME"]))
+          if(isset($this->__definition["TARGET_FILENAME"]))
           {
-                 $filePath.="/".$this->definition["TARGET_FILENAME"].".".(array_pop(explode(".",$filename)));
+                 $filePath.="/".$this->__definition["TARGET_FILENAME"].".".(array_pop(explode(".",$filename)));
           }
              else
                  $filePath.="/".$filename;
-             if($this->parent!==null) {
-                 return \lib\php\ParametrizableString::getParametrizedString($filePath, $this->parent->getValue());
+             if($this->__parent!==null) {
+                 return \lib\php\ParametrizableString::getParametrizedString($filePath, $this->__parent->getValue());
              }
              return $filePath;
       }
 
-      function postValidate($value)
+      function __postValidate($value)
       {
-          if(!$this->hasValue())
+          if(!$this->__hasValue())
           {
               return;
           }
@@ -205,20 +205,20 @@
       }
       function getFullFilePath()
       {
-          if(!$this->hasOwnValue())
+          if(!$this->__hasOwnValue())
               return null;
-          if(isset($this->definition["TARGET_FILEPATH"]))
-              return $this->definition["TARGET_FILEPATH"]."/".$this->value;
+          if(isset($this->__definition["TARGET_FILEPATH"]))
+              return $this->__definition["TARGET_FILEPATH"]."/".$this->value;
           return $this->value;
 
       }
 
-      function clear()
+      function __clear()
       {
-          if($this->hasOwnValue())
+          if($this->__hasOwnValue())
           {
               // Tenia valor, pero ahora se pone a null=>puede haber que borrar el fichero.
-              if(!isset($this->definition["AUTODELETE"]) || $this->definition["AUTODELETE"]==true)
+              if(!isset($this->__definition["AUTODELETE"]) || $this->__definition["AUTODELETE"]==true)
               {
                  if(file_exists($this->value))
                       @unlink($this->value);
@@ -226,7 +226,7 @@
           }
           $this->srcFile=null;
           $this->isUpload=null;
-          parent::clear();
+          parent::__clear();
       }
 
       function save()
@@ -257,23 +257,23 @@
               // Establecemos de nuevo el valor.
               // Por defecto, se va a almacenar un path relativo al projectPath
 
-              if(!isset($this->definition["PATHTYPE"]) || $this->definition["PATHTYPE"]=="RELATIVE")
+              if(!isset($this->__definition["PATHTYPE"]) || $this->__definition["PATHTYPE"]=="RELATIVE")
               {
-                  $nrm=File::normalizePath($this->definition["TARGET_FILEPATH"]);
+                  $nrm=File::normalizePath($this->__definition["TARGET_FILEPATH"]);
                   $filePath=trim(str_replace($nrm,"",$filePath),"/");
               }
               $this->valueSet=true;
               $this->value=$filePath;
           }
-          $this->postValidate(null);
+          $this->__postValidate(null);
       }
 
       function _copy($type)
       {
-          if($type->hasValue())
+          if($type->__hasValue())
           {
               $remVal=$type->getValue();
-              if($this->hasOwnValue() && $remVal==$this->value)
+              if($this->__hasOwnValue() && $remVal==$this->value)
                   return;
 
               $this->valueSet=true;
@@ -285,7 +285,7 @@
           }
           else
           {
-              if(!$this->hasValue())
+              if(!$this->__hasValue())
                   return;
               $this->valueSet=false;
               $this->value=null;
@@ -293,12 +293,6 @@
               $this->isUpload=false;
           }
 
-      }
-
-      function getMetaClassName()
-      {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/File.php");
-          return '\model\reflection\Types\meta\File';
       }
 
   }

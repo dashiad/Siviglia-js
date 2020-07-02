@@ -310,8 +310,8 @@ class ModelTest extends TestCase
         }catch(\Exception $e)
         {
             $thrown=true;
-            $this->assertEquals(true,is_a($e,'lib\model\types\BaseTypeException'));
-            $this->assertEquals(\lib\model\types\BaseTypeException::ERR_INVALID,$e->getCode());
+            $this->assertEquals(true,is_a($e,'lib\model\BaseTypedException'));
+            $this->assertEquals(\lib\model\BaseTypedException::ERR_INVALID_VALUE,$e->getCode());
         }
         $this->assertEquals(true,$thrown);
 
@@ -488,7 +488,7 @@ class ModelTest extends TestCase
     {
         $this->init();
         $ins = new \model\tests\Post();
-        $ins->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_STRICT);
+        $ins->__setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_STRICT);
         $result = $ins->__validateArray(
             ["title" => "hola",
                 "content" => "adios",
@@ -501,7 +501,7 @@ class ModelTest extends TestCase
         $keys = array_keys($fieldErrors);
         $this->assertEquals("/creator_id", $keys[0]);
         $keys = array_keys($fieldErrors[$keys[0]]);
-        $this->assertEquals('lib\model\types\BaseTypeException::INVALID', $keys[0]);
+        $this->assertEquals('lib\model\BaseTypedException::INVALID_VALUE', $keys[0]);
     }
 
     /*

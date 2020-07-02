@@ -22,7 +22,7 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
         }
         $nSet=0;
         foreach ($val as $key => $value) {
-            $subType = \lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>$this->fieldNamePath], $this->definition["VALUETYPE"],$this,null,$this->validationMode);
+            $subType = \lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>$this->fieldNamePath], $this->__definition["VALUETYPE"],$this,null,$this->validationMode);
             // Es necesario asignarnos antes el tipo, y luego darle el valor, ya que
             // al darle valor, se va a buscar el campo dentro del diccionario. Si no se ha asignado ya, no se encontrara
             $this->valueSet=true;
@@ -40,20 +40,20 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
             return true;
         if($this->__onlyValidating==true) {
             foreach ($val as $key => $value) {
-                $subType = \lib\model\types\TypeFactory::getType(["fieldName" => $key, "path" => $this->fieldNamePath], $this->definition["VALUETYPE"], $this, null, $this->validationMode);
+                $subType = \lib\model\types\TypeFactory::getType(["fieldName" => $key, "path" => $this->fieldNamePath], $this->__definition["VALUETYPE"], $this, null, $this->validationMode);
                 $subType->validate($value);
             }
         }
         return true;
     }
-    function checkSource($value)
+    function __checkSource($value)
     {
-        if(!$this->hasSource())
+        if(!$this->__hasSource())
             return true;
 
         // El diccionario chequea sus keys contra el source
         foreach($value as $k=>$v) {
-            $s=$this->getSource(true);
+            $s=$this->__getSource(true);
             if(!$s->contains($k))
                 return false;
         }
@@ -65,16 +65,16 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
         $this->value=[];
         foreach($val as $key=>$value)
         {
-            $subType = \lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>$this->fieldNamePath],$this->definition["VALUETYPE"],$this,$value->getValue,$this->validationMode);
+            $subType = \lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>$this->fieldNamePath],$this->__definition["VALUETYPE"],$this,$value->getValue,$this->validationMode);
             $this->value[$key]=$subType;
         }
     }
-    function setValidationMode($mode)
+    function __setValidationMode($mode)
     {
         $this->validationMode=$mode;
         if($this->value!==null) {
             foreach ($this->value as $k => $v)
-                $v->setValidationMode($mode);
+                $v->__setValidationMode($mode);
         }
     }
     function _getValue()
@@ -97,16 +97,16 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
         }
         return $result;
     }
-    function getReference()
+    function __getReference()
     {
         return $this;
     }
 
-    function hasValue()
+    function __hasValue()
     {
         return $this->valueSet;
     }
-    function hasOwnValue()
+    function __hasOwnValue()
     {
         return $this->valueSet;
     }
@@ -135,11 +135,11 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
     {
         if(!is_a($value,'\model\reflection\Types\meta\BaseType'))
         {
-            $this->value[$key]=\lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>$this->fieldNamePath], $this->definition["VALUETYPE"],$this,$value,$this->validationMode);
+            $this->value[$key]=\lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>$this->fieldNamePath], $this->__definition["VALUETYPE"],$this,$value,$this->validationMode);
         }
         else {
-            $value->setParent($this,$key);
-            $value->setValidationMode($this->validationMode);
+            $value->__setParent($this,$key);
+            $value->__setValidationMode($this->validationMode);
             $this->value[$key] = $value;
         }
         $this->valueSet=true;
@@ -168,12 +168,12 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
     {
         $this->valueSet = false;
         if ($val === null) {
-            $this->clear();
+            $this->__clear();
             return;
         }
         $nSet=0;
         foreach ($val as $key => $value) {
-            $subType = \lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>$this->fieldNamePath], $this->definition["VALUETYPE"],$this,null,$this->validationMode);
+            $subType = \lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>$this->fieldNamePath], $this->__definition["VALUETYPE"],$this,null,$this->validationMode);
             $subType->__rawSet($value);
             $this->value[$key] = $subType;
             $nSet++;
@@ -194,7 +194,7 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
         return $this->valueSet;
     }
 
-    function clear()
+    function __clear()
     {
         $this->valueSet=false;
         $this->value=null;
@@ -216,12 +216,12 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
     }
     function __set($fieldName,$value)
     {
-        $subType = \lib\model\types\TypeFactory::getType(["fieldName"=>$fieldName,"path"=>$this->fieldNamePath], $this->definition["VALUETYPE"],$this,null,$this->validationMode);
+        $subType = \lib\model\types\TypeFactory::getType(["fieldName"=>$fieldName,"path"=>$this->fieldNamePath], $this->__definition["VALUETYPE"],$this,null,$this->validationMode);
         if(is_object($value))
         {
             if(get_class($subType)==get_class($value)) {
                 $this->value[$fieldName] = $value;
-                if($value->hasOwnValue())
+                if($value->__hasOwnValue())
                     $this->valueSet=true;
             }
             else
@@ -231,7 +231,7 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
         {
             $subType->apply($value);
 
-            if($subType->hasOwnValue()) {
+            if($subType->__hasOwnValue()) {
                 $this->value[$fieldName]=$subType;
                 $this->valueSet = true;
             }
@@ -259,14 +259,14 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
         }
         if(!isset($this->value[$fieldName]))
             throw new DictionaryException(DictionaryException::ERR_INVALID_KEY,["key"=>$fieldName],$this);
-        return $this->value[$fieldName]->getReference();
+        return $this->value[$fieldName]->__getReference();
     }
-    function getEmptyValue()
+    function __getEmptyValue()
     {
         return [];
     }
     // Un diccionario, indepenedientemente de la key, siempre tiene el mismo tipo.
-    function getTypeFromPath($path)
+    function __getTypeFromPath($path)
     {
         if(!is_array($path))
         {
@@ -278,13 +278,8 @@ class Dictionary extends \lib\model\types\BaseType implements \ArrayAccess
             return $this;
         // Consumimos un field, que deberia ser la key.
         $field=array_shift($path);
-        $type = \lib\model\types\TypeFactory::getType(["fieldName"=>$path[0],"path"=>$this->fieldNamePath], $this->definition["VALUETYPE"],$this,null,$this->validationMode);
-        return $type->getTypeFromPath($path);
-    }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/Dictionary.php");
-        return '\model\reflection\Types\meta\Dictionary';
+        $type = \lib\model\types\TypeFactory::getType(["fieldName"=>$path[0],"path"=>$this->fieldNamePath], $this->__definition["VALUETYPE"],$this,null,$this->validationMode);
+        return $type->__getTypeFromPath($path);
     }
 
     public function offsetExists ( $offset ){

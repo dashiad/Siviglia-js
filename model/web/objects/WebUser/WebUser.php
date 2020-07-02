@@ -192,7 +192,7 @@ class WebUser extends \lib\model\BaseModel
         if($this->__isNew())
         {
             $this->{"*date_add"}->setAsNow();
-            if($this->{"*PASSWORD"}->hasValue())
+            if($this->{"*PASSWORD"}->__hasValue())
             {
                 $this->{"*PASSWORD"}->encode();
             }
@@ -203,8 +203,7 @@ class WebUser extends \lib\model\BaseModel
 
     function createUser($userFields){
 
-        global $oCurrentUser;
-        $uDef=$oCurrentUser->definition;
+
         $this->cleanErrors();
 
         $params=array();

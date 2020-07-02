@@ -18,11 +18,7 @@
       function _copy($val){
           $this->value=$val->getValue();
       }
-      function getMetaClassName()
-      {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/Boolean");
-          return '\model\reflection\Types\meta\Boolean';
-      }
+
       function _validate($val)
       {
           return true;

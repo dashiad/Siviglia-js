@@ -6,23 +6,23 @@ use \lib\model\types\base\RelationFields;
 class Relationship extends \lib\model\types\base\ModelBaseRelation {
     function getRemoteFields()
     {
-        $f=$this->definition["FIELDS"];
+        $f=$this->__definition["FIELDS"];
         return array_values($f);
     }
     function getLocalFields()
     {
-        $f=$this->definition["FIELDS"];
+        $f=$this->__definition["FIELDS"];
         return array_keys($f);
     }
     function createRelationValues()
     {
-        return new RelationValues($this, isset($this->definition["LOAD"]) ? $this->definition["LOAD"] : "LAZY");
+        return new RelationValues($this, isset($this->__definition["LOAD"]) ? $this->__definition["LOAD"] : "LAZY");
     }
     function getRelationValues()
     {
         return $this->relationValues;
     }
-    function hasOwnValue()
+    function __hasOwnValue()
     {
         return $this->relation->is_set();
     }
@@ -47,7 +47,7 @@ class Relationship extends \lib\model\types\base\ModelBaseRelation {
         }
         $this->valueSet=true;
     }
-    function clear()
+    function __clear()
     {
         // LLamado en caso de que $value sea nulo.
         $this->relation->set(null);
@@ -75,7 +75,7 @@ class Relationship extends \lib\model\types\base\ModelBaseRelation {
         if ($this->relation->state == ModelBaseRelation::UN_SET)
             return 0;
 
-        if (isset($this->definition["LOAD"]) && $this->definition["LOAD"] == "LAZY")
+        if (isset($this->__definition["LOAD"]) && $this->__definition["LOAD"] == "LAZY")
             $this->relationValues->setCount($this->getSerializer()->count($this->getRelationQueryConditions(), $this->model));
 
         else
@@ -100,11 +100,11 @@ class Relationship extends \lib\model\types\base\ModelBaseRelation {
     }
 
 
-    function getRelationshipType($name,$parent)
+    function __getRelationshipType($name,$parent)
       {
-          $obj=$this->definition["MODEL"];
+          $obj=$this->__definition["MODEL"];
 
-          $fields=$this->definition["FIELDS"];
+          $fields=$this->__definition["FIELDS"];
           $subTypes=array();
           // TODO: Aun no se soportan, pero si la relacion tuviera mas de un campo, $name tendria que ser un diccionario con todos los nombres necesarios.
           foreach($fields as $k=>$v)
@@ -121,22 +121,24 @@ class Relationship extends \lib\model\types\base\ModelBaseRelation {
       function getRemoteModel()
       {
           $s=\Registry::getService("model");
-          return $s->getModel($this->definition["MODEL"]);
+          return $s->getModel($this->__definition["MODEL"]);
 
       }
       function _validate($val)
       {
-          $s=$this->getSource();
-          return $s->contains($val);
+          $s=$this->__getSource();
+          if(!$s->contains($val))
+              throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_INVALID_VALUE,array("value"=>$val));
+          return true; // El source se valida aparte.
       }
       function hasSource()
       {
           return true;
       }
-      function getSource($validating=false)
+      function __getSource($validating=false)
       {
-          $keys=array_keys($this->definition["FIELDS"]);
-          $metadata=isset($this->definition["SOURCE"])?$this->definition["SOURCE"]:null;
+          $keys=array_keys($this->__definition["FIELDS"]);
+          $metadata=isset($this->__definition["SOURCE"])?$this->__definition["SOURCE"]:null;
           if($metadata!==null && isset($metadata["LABEL"])) {
               $label = $metadata["LABEL"];
           }
@@ -146,13 +148,13 @@ class Relationship extends \lib\model\types\base\ModelBaseRelation {
               $label="[%".$descriptive[0]."%]";
           }
           $param=["TYPE"=>"DataSource",
-              "MODEL"=>$this->definition["MODEL"],
+              "MODEL"=>$this->__definition["MODEL"],
               "DATASOURCE"=>isset($metadata["DATASOURCE"])?$metadata["DATASOURCE"]:"FullList",
-              "VALUE"=>$this->definition["FIELDS"][$keys[0]],
+              "VALUE"=>$this->__definition["FIELDS"][$keys[0]],
               "LABEL"=>$label
           ];
-          if(isset($this->definition["PARAMS"]))
-              $param["PARAMS"]=$this->definition["PARAMS"];
+          if(isset($this->__definition["PARAMS"]))
+              $param["PARAMS"]=$this->__definition["PARAMS"];
           return \lib\model\types\sources\SourceFactory::getSource($this,$param, false);
       }
       function _getValue()
@@ -167,12 +169,7 @@ class Relationship extends \lib\model\types\base\ModelBaseRelation {
       {
           return $this->value==$v;
       }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/Relationship.php");
-        return '\model\reflection\Types\meta\Relationship';
-    }
-    function onModelSaved()
+    function __onModelSaved()
     {
         $this->relation->cleanState();
     }
@@ -196,10 +193,6 @@ class Relationship extends \lib\model\types\base\ModelBaseRelation {
         return $this->relation->serialize($serializer);
     }
 
-    function copyField($type)
-    {
-        $this->relation->copyField($type);
 
-    }
 }
 

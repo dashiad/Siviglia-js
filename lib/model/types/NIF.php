@@ -28,11 +28,4 @@ class NIF extends _String{
             throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_INVALID,null,$this);
         return true;
     }
-
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/NIF.php");
-        return '\model\reflection\Types\meta\NIF';
-    }
-
 }

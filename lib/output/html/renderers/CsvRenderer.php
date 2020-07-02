@@ -7,7 +7,7 @@ class CsvRenderer
     {
         global $oCurrentUser;
 
-        $sources=$page->definition["SOURCES"];
+        $sources=$page->__definition["SOURCES"];
 
         //Output params
         if (isset($outputParams['separator'])) {
@@ -88,7 +88,7 @@ class CsvRenderer
 
                     /*
                     $paging=$obj->getPagingParameters();
-                    if(!$paging->{"*__count"}->hasOwnValue()) {
+                    if(!$paging->{"*__count"}->__hasOwnValue()) {
                         $paging->__count=3000; // Maximo de 3000 elementos
                     }
                     */

@@ -4,7 +4,7 @@
   {
       function serialize($name,$type,$serializer,$model=null)
       {
-          if($type->hasValue())
+          if($type->__hasValue())
           {
               $val=$type->getValue();
               if($val===true || $val==="true" || $val==1)

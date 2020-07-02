@@ -17,11 +17,11 @@ class UpdateAction extends DataSourceAction{
        {
            foreach($this->definition["PARAMS"] as $key=>$value)
            {
-               if($this->{"*".$key}->hasValue())
+               if($this->{"*".$key}->__hasValue())
                    $replacements["{%".$key."%}"]=array("k"=>$key,"v"=>$this->{$key});
            }
        }
-       $this->source->getValue()
+       $this->source->getValue();
        // Se obtiene la lista de campos
        $fixedFields=array();
        $paramFields=array();

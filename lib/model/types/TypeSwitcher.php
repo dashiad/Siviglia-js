@@ -31,11 +31,11 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
         $this->content_field=isset($def["CONTENT_FIELD"])?$def["CONTENT_FIELD"]:null;
         parent::__construct($name,$def,$parentType, $value,$validationMode);
     }
-    function setValidationMode($mode)
+    function __setValidationMode($mode)
     {
         $this->validationMode=$mode;
         if($this->currentType!==null)
-            $this->currentType->setValidationMode($this->validationMode);
+            $this->currentType->__setValidationMode($this->validationMode);
     }
 
     function _setValue($val,$validationMode=null)
@@ -53,14 +53,14 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
         if($typeInfo["def"]===null)
             throw new TypeSwitcherException(TypeSwitcherException::ERR_INVALID_TYPE,["type"=>$typeInfo["name"]]);
         $instance=\lib\model\types\TypeFactory::getType(
-            ["fieldName"=>$this->fieldName,"path"=>$this->parent?$this->parent->__getFieldPath():null],
+            ["fieldName"=>$this->fieldName,"path"=>$this->__parent?$this->__parent->__getFieldPath():null],
             $typeInfo["def"],
-            $this->parent,
+            $this->__parent,
             $val,
             $this->validationMode);
 
         $this->currentType=$typeInfo["name"];
-        if($instance->hasOwnValue()) {
+        if($instance->__hasOwnValue()) {
             $this->valueSet = true;
             $instance->apply($val,$validationMode);
             $this->value=$instance;
@@ -73,7 +73,7 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
     }
     function getTypeFromValue($val)
     {
-        $byType=io($this->definition,"TYPE_FIELD",null);
+        $byType=io($this->__definition,"TYPE_FIELD",null);
         if($byType) {
             $typeField = $byType;
             $curType=null;
@@ -81,29 +81,29 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
                 $curType=$val[$typeField];
             }
             else {
-                $curType = io($this->definition, "IMPLICIT_TYPE", null);
+                $curType = io($this->__definition, "IMPLICIT_TYPE", null);
                 if (!$curType)
                     throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD);
             }
-            $t=$this->definition["ALLOWED_TYPES"][$curType];
-            if(!isset($this->definition["CONTENT_FIELD"]))
+            $t=$this->__definition["ALLOWED_TYPES"][$curType];
+            if(!isset($this->__definition["CONTENT_FIELD"]))
             {
                 return ["name"=>$curType,"def"=>$t];
             }
             else
                 {
                     $baseDef=["TYPE"=>"Container","FIELDS"=>[]];
-                    $baseDef["FIELDS"][$this->definition["TYPE_FIELD"]]=["TYPE"=>"String"];
-                    $baseDef["FIELDS"][$this->definition["CONTENT_FIELD"]]=$t;
+                    $baseDef["FIELDS"][$this->__definition["TYPE_FIELD"]]=["TYPE"=>"String"];
+                    $baseDef["FIELDS"][$this->__definition["CONTENT_FIELD"]]=$t;
                     return ["name"=>$curType,"def"=>$baseDef];
                 }
         }
-        $byType=io($this->definition,"ON",null);
+        $byType=io($this->__definition,"ON",null);
         if($byType)
         {
-            for($k=0;$k<count($this->definition["ON"]);$k++)
+            for($k=0;$k<count($this->__definition["ON"]);$k++)
             {
-                $cur=$this->definition["ON"][$k];
+                $cur=$this->__definition["ON"][$k];
                 $f=io($cur,"FIELD",null);
                 $op=$cur["IS"];
                 $then=$cur["THEN"];
@@ -126,7 +126,7 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
                         if(!$cnd)
                             break;
                         if(is_string($v))
-                            return ["name"=>$then,"def"=>$this->definition["ALLOWED_TYPES"][$then]];
+                            return ["name"=>$then,"def"=>$this->__definition["ALLOWED_TYPES"][$then]];
                     }break;
                     case "Array":{
                         if(!$cnd)
@@ -134,7 +134,7 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
                         if($arrayCheck===null)
                             $arrayCheck=\lib\php\ArrayTools::isAssociative($v);
                         if(is_array($v) && !$arrayCheck)
-                            return ["name"=>$then,"def"=>$this->definition["ALLOWED_TYPES"][$then]];
+                            return ["name"=>$then,"def"=>$this->__definition["ALLOWED_TYPES"][$then]];
                     }break;
                     case "Object":{
                         if(!$cnd)
@@ -142,22 +142,22 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
                         if($arrayCheck===null)
                             $arrayCheck=\lib\php\ArrayTools::isAssociative($v);
                         if(is_array($v) && $arrayCheck)
-                            return ["name"=>$then,"def"=>$this->definition["ALLOWED_TYPES"][$then]];
+                            return ["name"=>$then,"def"=>$this->__definition["ALLOWED_TYPES"][$then]];
                     }break;
                     case "Present":{
                         if(!$cnd)
                             break;
-                        return ["name"=>$then,"def"=>$this->definition["ALLOWED_TYPES"][$then]];
+                        return ["name"=>$then,"def"=>$this->__definition["ALLOWED_TYPES"][$then]];
                     }break;
                     case "Not Present":{
                         if(!$cnd)
-                            return ["name"=>$then,"def"=>$this->definition["ALLOWED_TYPES"][$then]];
+                            return ["name"=>$then,"def"=>$this->__definition["ALLOWED_TYPES"][$then]];
                     }break;
                 }
             }
-            if ($this->definition["IMPLICIT_TYPE"])
-                return ["name"=>$this->definition["IMPLICIT_TYPE"],
-                    "def"=>$this->definition["ALLOWED_TYPES"][$this->definition["IMPLICIT_TYPE"]]];
+            if ($this->__definition["IMPLICIT_TYPE"])
+                return ["name"=>$this->__definition["IMPLICIT_TYPE"],
+                    "def"=>$this->__definition["ALLOWED_TYPES"][$this->__definition["IMPLICIT_TYPE"]]];
         }
         throw new TypeSwitcherException(TypeSwitcherException::ERR_MISSING_TYPE_FIELD);
     }
@@ -176,16 +176,16 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
                 return null;
         return $this->subNode->getValue();
     }
-    function getReference()
+    function __getReference()
     {
         return $this->subNode;
     }
 
-    function hasValue()
+    function __hasValue()
     {
         return $this->valueSet;
     }
-    function hasOwnValue()
+    function __hasOwnValue()
     {
         return $this->valueSet;
     }
@@ -200,7 +200,7 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
         return $this->valueSet;
     }
 
-    function clear()
+    function __clear()
     {
         $this->valueSet=true;
         $this->value=null;
@@ -228,13 +228,13 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
     function __set($fieldName,$value)
     {
         $mustCheck=false;
-        $typeField=io($this->definition,"TYPE_FIELD",null);
+        $typeField=io($this->__definition,"TYPE_FIELD",null);
 
         if($typeField && $fieldName===$typeField)
             $mustCheck=true;
         else {
-            for($k=0;$k<count($this->definition["ON"]);$k++) {
-                if($this->definition["ON"][$k]["FIELD"]==$fieldName)
+            for($k=0;$k<count($this->__definition["ON"]);$k++) {
+                if($this->__definition["ON"][$k]["FIELD"]==$fieldName)
                     $mustCheck=true;
             }
         }
@@ -271,13 +271,8 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
     {
         $this->__rawSet($ins->getValue());
     }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/TypeSwitcher.php");
-        return '\model\reflection\Types\meta\TypeSwitcher';
-    }
 
-    function getTypeFromPath($path)
+    function __getTypeFromPath($path)
     {
         if(!is_array($path))
         {
@@ -292,7 +287,7 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
         // estamos interesados en el tipo de dato)
         $field=array_shift($path);
         $type = $this->getTypeInstance($field);
-        return $type->getTypeFromPath($path);
+        return $type->__getTypeFromPath($path);
     }
     public function offsetExists ( $offset ){
         return $this->subNode && is_a($this->subNode,'\ArrayAccess') && $this->subNode->offsetExists($offset);

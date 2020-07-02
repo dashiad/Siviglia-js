@@ -4,7 +4,7 @@
   {
       function serialize($name,$type,$serializer,$model=null)
       {
-          if($type->hasValue())return [$name=>$type->getValue()];
+          if($type->__hasValue())return [$name=>$type->getValue()];
 		  return [$name=>""];
       }
       function unserialize($name,$type,$val,$serializer)

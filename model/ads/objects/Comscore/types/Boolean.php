@@ -8,7 +8,7 @@ class Boolean extends BaseType
     
     function serialize($name, $type, $serializer, $model=null)
     {
-        if($type->hasValue()) {
+        if($type->__hasValue()) {
             return [$name=>$type->getValue()?true:false];
         } else {
             return [$name => "NULL"];
@@ -39,11 +39,6 @@ class Boolean extends BaseType
     public function _equals($value)
     {
         return $this->value===$value;
-    }
-
-    public function getMetaClassName()
-    {
-        return self::class;
     }
 
     public function _copy($val)

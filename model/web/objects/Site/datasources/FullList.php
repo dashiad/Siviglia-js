@@ -90,7 +90,7 @@ class FullList
                                              'FILTER'=>array(
                                                    'F'=>'id_site',
                                                    'OP'=>'=',
-                                                   'V'=>'[%id_site%]'
+                                                   'V'=>'[%/id_site%]'
                                                    ),
                                              'TRIGGER_VAR'=>'id_site',
                                              'DISABLE_IF'=>'0',

@@ -45,8 +45,8 @@ class BaseTypeException extends \lib\model\BaseException{
             $source=$this->source;
             while(is_a($source,'\lib\model\types\BaseType'))
             {
-                $pathParts[]=$source->getFieldName();
-                $source=$source->getParent();
+                $pathParts[]=$source->__getFieldName();
+                $source=$source->__getParent();
             }
         }
         return implode("/",array_reverse($pathParts));

@@ -128,7 +128,7 @@ class BaseModel extends BaseTypedModel
             include_once(PROJECTPATH."/lib/model/BaseModel.php");
             throw new BaseModelException(BaseModelException::ERR_NOT_A_FIELD,array("name"=>$fieldName));
    }
-    function getPathPrefix()
+    function __getPathPrefix()
     {
         return "/";
     }
@@ -161,7 +161,7 @@ class BaseModel extends BaseTypedModel
             {
                 $varName=substr($varName,1);
                 $f=$this->__getField($varName);
-                if($f->isRelation())
+                if($f->__isRelation())
                 {
                     return $f->getRaw();
                 }
@@ -197,7 +197,7 @@ class BaseModel extends BaseTypedModel
                 {
                     $field=$this->__getAlias($tKey);
                 }
-                $field->copyField($tValue);
+                $field->copy($tValue);
             }
         }
         //$this->__dirtyFields=$remoteObject->__dirtyFields;
@@ -219,7 +219,7 @@ class BaseModel extends BaseTypedModel
 
         foreach ($this->__fields as $key => $value)
         {
-            if ($value->hasOwnValue())
+            if ($value->__hasOwnValue())
             {
                 $serialized=$serializer->serializeType($key,$value);
                 if(!is_array($serialized))
@@ -238,10 +238,10 @@ class BaseModel extends BaseTypedModel
         }
         try
         {
-            $oldValidationMode=$this->getValidationMode();
-            $this->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_NONE);
+            $oldValidationMode=$this->__getValidationMode();
+            $this->__setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_NONE);
             $this->__serializer->unserialize($this, array("CONDITIONS" => $filters));
-            $this->setValidationMode($oldValidationMode);
+            $this->__setValidationMode($oldValidationMode);
         }
         catch(\Exception $e)
         {
@@ -426,7 +426,7 @@ class BaseModel extends BaseTypedModel
         // volvera a llamar a esta funcion.
         for($k=0;$k<count($this->__postSaveFields);$k++) {
             $this->__postSaveFields[$k]->save();
-            $this->__postSaveFields[$k]->onModelSaved();
+            $this->__postSaveFields[$k]->__onModelSaved();
         }
     }
 
@@ -552,7 +552,7 @@ class BaseModel extends BaseTypedModel
     }
     function __getOwner()
     {
-        return $this->getPath($this->definition->getOwnerPath());
+        return $this->getPath($this->__definition->getOwnerPath());
     }
     function __isOwner(BaseModel $model)
     {
@@ -580,7 +580,7 @@ class BaseModel extends BaseTypedModel
             $field=$curModel->{"*".$parts[$k]};
             $def=$field->getDefinition();
             $r=array("TABLE"=>$curModel->__getTableName());
-            if($field->isRelation())
+            if($field->__isRelation())
             {
                 $keys=array_keys($def["FIELDS"]);
                 // TODO: Soportar relaciones por mas de 1 campo.
@@ -606,7 +606,7 @@ class BaseModel extends BaseTypedModel
     {
         try
         {
-            return $this->__getFieldByPath($this->definition->getOwnerPath());
+            return $this->__getFieldByPath($this->__definition->getOwnerPath());
 
         }catch(BaseModelDefinitionException $e)
         {

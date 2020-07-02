@@ -114,7 +114,7 @@ class FileTest extends TestCase
         $ins->importFile(__DIR__."/res/test2.png");
         $ex=is_file(__DIR__."/res/tmp/destFile.png");
         $this->assertEquals(true,$ex);
-        $ins->clear();
+        $ins->__clear();
         $ex=is_file(__DIR__."/res/tmp/destFile.png");
         $this->assertEquals(false,$ex);
     }

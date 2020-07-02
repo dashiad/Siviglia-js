@@ -65,7 +65,7 @@ class ModelKey
         {
             foreach($this->indexFields as $key=>$value)
             {
-                if(!$value->hasOwnValue())
+                if(!$value->__hasOwnValue())
                     return false;
             }
             return true;
@@ -83,7 +83,7 @@ class ModelKey
             foreach($this->indexFields as $key=>$value)
             {
 
-                $val=$serializer->serializeType($value->getFieldName(),$value);
+                $val=$serializer->serializeType($value->__getFieldName(),$value);
                 if(is_array($val))
                 {
                     foreach($val as $key2=>$value2)
@@ -119,7 +119,7 @@ class ModelKey
                 if($k>0)
                     $result.="#";
                 $fType=$field;
-                if($fType->hasValue())
+                if($fType->__hasValue())
                     $result.=$fType->getValue($value);
                 $k++;
             }

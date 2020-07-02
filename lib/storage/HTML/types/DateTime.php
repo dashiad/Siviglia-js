@@ -6,7 +6,7 @@
       {
           // Unserialize always will return UTC dates.
 
-          switch($type->definition["TIMEZONE"])
+          switch($type->__definition["TIMEZONE"])
           {
           case "SERVER":
               {
@@ -31,7 +31,7 @@
           if($value[$name]=='')
           {
 
-             return $type->clear();
+             return $type->__clear();
           }
 
           // Unserialize a date coming from the client.
@@ -47,7 +47,7 @@
           if(!checkdate($result["month"],$result["day"],$result["year"]))
               throw new \lib\model\types\BaseTypeException(\lib\model\types\BaseTypeException::ERR_INVALID);
 
-          $timeZone=isset($type->definition["TIMEZONE"])?$type->definition["TIMEZONE"]:"CLIENT";
+          $timeZone=isset($type->__definition["TIMEZONE"])?$type->__definition["TIMEZONE"]:"CLIENT";
           switch($timeZone)
           {
           case "SERVER":

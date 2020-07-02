@@ -23,35 +23,35 @@ class Image extends File
 
         // Se realizan las comprobaciones
         $size=getImageSize($value);
-        $minWidth=isset($this->definition["MINWIDTH"]);
-        $minHeight=isset($this->definition["MINHEIGHT"]);
-        $maxWidth=isset($this->definition["MAXWIDTH"]);
-        $maxHeight=isset($this->definition["MAXHEIGHT"]);
+        $minWidth=isset($this->__definition["MINWIDTH"]);
+        $minHeight=isset($this->__definition["MINHEIGHT"]);
+        $maxWidth=isset($this->__definition["MAXWIDTH"]);
+        $maxHeight=isset($this->__definition["MAXHEIGHT"]);
 
-        if($minWidth && $size[0] < $this->definition["MINWIDTH"])
-            throw new ImageException(ImageException::ERR_TOO_SMALL,array("min"=>$this->definition["MINWIDTH"],"current"=>$size[0]),$this);
-        if($maxWidth && $size[0] > $this->definition["MAXWIDTH"])
-            throw new ImageException(ImageException::ERR_TOO_WIDE,array("max"=>$this->definition["MAXWIDTH"],"current"=>$size[0]),$this);
-        if($minHeight && $size[1] < $this->definition["MINHEIGHT"])
-            throw new ImageException(ImageException::ERR_TOO_SHORT,array("min"=>$this->definition["MINHEIGHT"],"current"=>$size[1]),$this);
-        if($maxHeight && $size[1] > $this->definition["MAXHEIGHT"])
-            throw new ImageException(ImageException::ERR_TOO_TALL,array("max"=>$this->definition["MAXHEIGHT"],"current"=>$size[1]),$this);
+        if($minWidth && $size[0] < $this->__definition["MINWIDTH"])
+            throw new ImageException(ImageException::ERR_TOO_SMALL,array("min"=>$this->__definition["MINWIDTH"],"current"=>$size[0]),$this);
+        if($maxWidth && $size[0] > $this->__definition["MAXWIDTH"])
+            throw new ImageException(ImageException::ERR_TOO_WIDE,array("max"=>$this->__definition["MAXWIDTH"],"current"=>$size[0]),$this);
+        if($minHeight && $size[1] < $this->__definition["MINHEIGHT"])
+            throw new ImageException(ImageException::ERR_TOO_SHORT,array("min"=>$this->__definition["MINHEIGHT"],"current"=>$size[1]),$this);
+        if($maxHeight && $size[1] > $this->__definition["MAXHEIGHT"])
+            throw new ImageException(ImageException::ERR_TOO_TALL,array("max"=>$this->__definition["MAXHEIGHT"],"current"=>$size[1]),$this);
     }
 
     function save()
     {
 
         parent::save();
-        if(isset($this->definition["THUMBNAIL"]))
-          $this->makeThumbNail($this->definition["THUMBNAIL"]);
-        if(isset($this->definition["WATERMARK"]))
-          $this->addWatermark($this->definition["WATERMARK"]);
+        if(isset($this->__definition["THUMBNAIL"]))
+          $this->makeThumbNail($this->__definition["THUMBNAIL"]);
+        if(isset($this->__definition["WATERMARK"]))
+          $this->addWatermark($this->__definition["WATERMARK"]);
 
     }
 
     public function makeThumbNail($def)
     {
-        if(!$this->hasOwnValue())
+        if(!$this->__hasOwnValue())
             return;
 
         $srcImage=$this->getFullFilePath();
@@ -110,7 +110,7 @@ class Image extends File
 
     public function addWatermark($def)
     {
-        if(!$this->hasOwnValue())
+        if(!$this->__hasOwnValue())
             return;
         $dstFile=$this->value;
         $wtSize=getimagesize($def["FILE"]); // Fichero del watermark.
@@ -155,38 +155,34 @@ class Image extends File
     }
     function hasThumbnail()
     {
-        return isset($this->definition["THUMBNAIL"]);
+        return isset($this->__definition["THUMBNAIL"]);
     }
     function getThumbnailWidth()
     {
-        return $this->definition["THUMBNAIL"]["WIDTH"];
+        return $this->__definition["THUMBNAIL"]["WIDTH"];
     }
     function getThumbnailHeight()
     {
-        return $this->definition["THUMBNAIL"]["HEIGHT"];
+        return $this->__definition["THUMBNAIL"]["HEIGHT"];
     }
     function hasDescription()
     {
-        return isset($this->definition["DESCRIPTION"]);
+        return isset($this->__definition["DESCRIPTION"]);
     }
     function getDescription()
     {
-        return $this->definition["DESCRIPTION"];
+        return $this->__definition["DESCRIPTION"];
     }
     function getThumbnailPath()
     {
-        if($this->hasValue())
+        if($this->__hasValue())
         {
-            $prefix=isset($this->definition["THUMBNAIL"]["PREFIX"])?$this->definition["THUMBNAIL"]["PREFIX"]:"th_";
+            $prefix=isset($this->__definition["THUMBNAIL"]["PREFIX"])?$this->__definition["THUMBNAIL"]["PREFIX"]:"th_";
             $info=pathinfo($this->value);
             return $info["dirname"]."/".$prefix.$info['filename'].".".$info["extension"];
         }
         return '';
     }
 
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/Image.php");
-        return '\model\reflection\Types\meta\Image';
-    }
+
 }

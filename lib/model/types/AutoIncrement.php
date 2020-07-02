@@ -11,13 +11,9 @@
       {
           return true;
       }
-      function getRelationshipType($name,$parent)
+      function __getRelationshipType($name,$parent)
       {
           return new Integer($name,array("MIN"=>0,"MAX"=>9999999999),$parent,$this->value,$this->validationMode);
       }
-      function getMetaClassName()
-      {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/AutoIncrement.php");
-          return '\model\reflection\Types\meta\AutoIncrement';
-      }
+
   }

@@ -12,6 +12,11 @@ parent::__construct($name, "Container", [
                     "LABEL"=>"Campos",
                     "TYPE"=>"Dictionary",
                     "VALUETYPE"=>"/model/reflection/Model/types/TypeReference",
+                ],
+                "STATES" => [
+                    "LABEL" => "Estados",
+                    "TYPE" => "/model/reflection/Model/types/StateSpec",
+                    "KEEP_ON_EMPTY" => false
                 ]
             ],$parentType,$value,$validationMode);
 

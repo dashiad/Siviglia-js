@@ -14,7 +14,7 @@ abstract class AliasDefinition extends \model\reflection\Model\ModelComponent
         {
             return $this->name;
         }        
-        function isRelation(){ return true;}
+        function __isRelation(){ return true;}
         function isAlias(){ return true;}
         abstract function getDataSourceCreationCallback();
         function getDataSources($targetModel=null,$baseName=null)

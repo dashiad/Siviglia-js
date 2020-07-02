@@ -9,7 +9,7 @@ namespace lib\storage\Mysql\types;
   {
       function serialize($name,$type,$serializer,$model=null)
       {
-         $v= $type->hasValue()?"'".mysql_escape_string($type->getValue())."'":"NULL";
+         $v= $type->__hasValue()?"'".mysql_escape_string($type->getValue())."'":"NULL";
          return [$name=>$v];
       }
       function getSQLDefinition($name,$definition,$serializer)

@@ -29,7 +29,7 @@ class XlsxRenderer
 
                     /*
                     $paging=$obj->getPagingParameters();
-                    if(!$paging->{"*__count"}->hasOwnValue())
+                    if(!$paging->{"*__count"}->__hasOwnValue())
                     {
                         $paging->__count=5000; // Maximo de 5000 elementos
                     }

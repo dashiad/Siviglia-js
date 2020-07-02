@@ -21,7 +21,7 @@ class BaseRelation extends \model\reflection\Model\ModelComponent
              }
      }
 
-     function isRelation()
+     function __isRelation()
      {
           return true;
      }

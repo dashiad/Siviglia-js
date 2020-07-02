@@ -6,9 +6,5 @@ class City extends _String {
 		$definition['MAXLENGTH']=128;
         parent::__construct($name,$definition,$parentType,$value,$validationMode);
     }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/City.php");
-        return '\model\reflection\Types\meta\City';
-    }
+
 }

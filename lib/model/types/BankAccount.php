@@ -112,10 +112,6 @@ class BankAccount extends _String
         return true;
 
     }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/BankAccount.php");
-        return '\model\reflection\Types\meta\BankAccount';
-    }
+
 
 }

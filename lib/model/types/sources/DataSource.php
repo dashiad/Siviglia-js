@@ -32,7 +32,7 @@ class DataSource extends BaseSource
     function buildDataSource()
     {
         $actualParams=[];
-        if(isset($this->definition["PARAMS"]))
+        if(isset($this->__definition["PARAMS"]))
         {
 
             $ctxStack = new \lib\model\ContextStack();
@@ -40,7 +40,7 @@ class DataSource extends BaseSource
             // $this->parent->parent apunta al container que contiene al tipo al que pertenece el source.
             $ctx = new \lib\model\BaseObjectContext($this->parent->parent, "#", $ctxStack);
 
-            foreach($this->definition["PARAMS"] as $k=>$v)
+            foreach($this->__definition["PARAMS"] as $k=>$v)
             {
 
 
@@ -57,11 +57,11 @@ class DataSource extends BaseSource
             }
         }
         $ser=null;
-        if(isset($this->definition["SERIALIZER"]))
+        if(isset($this->__definition["SERIALIZER"]))
         {
-            $ser=\Registry::getService("storage")->getSerializerByName($this->definition["SERIALIZER"]);
+            $ser=\Registry::getService("storage")->getSerializerByName($this->__definition["SERIALIZER"]);
         }
-        $datasource=\lib\datasource\DataSourceFactory::getDataSource($this->definition["MODEL"],$this->definition["DATASOURCE"],$ser);
+        $datasource=\lib\datasource\DataSourceFactory::getDataSource($this->__definition["MODEL"],$this->__definition["DATASOURCE"],$ser);
         foreach($actualParams as $k=>$v)
         {
             $datasource->{$k}=$v;
@@ -74,10 +74,10 @@ class DataSource extends BaseSource
         $datasource=$this->buildDataSource();
         $it=$datasource->fetchAll();
         $data=$it->getFullData();
-        if(isset($this->definition["PREPEND"]))
-            $data=array_merge($this->definition["PREPEND"],$data);
-        if(isset($this->definition["APPEND"]))
-            $data=array_merge($data,$this->definition["APPEND"]);
+        if(isset($this->__definition["PREPEND"]))
+            $data=array_merge($this->__definition["PREPEND"],$data);
+        if(isset($this->__definition["APPEND"]))
+            $data=array_merge($data,$this->__definition["APPEND"]);
         return $data;
     }
 }

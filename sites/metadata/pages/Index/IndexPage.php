@@ -101,7 +101,7 @@ class IndexPage extends \model\web\Page
         if($out!==null)
             return $out;
     }
-    function validate()
+    function validateField()
     {
 
         $mDProv=new MetaDataProvider();

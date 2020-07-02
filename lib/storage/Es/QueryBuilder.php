@@ -245,7 +245,7 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
                     continue;
                 }
 
-                if ($curField->hasOwnValue()) {
+                if ($curField->__hasOwnValue()) {
                     //Tenemos que buscar si existe esa parte y substituirla
                     $val = $curField->getValue();
                     // Val puede ser un array.

@@ -116,10 +116,10 @@ abstract class StorageSerializer extends TypeSerializer
                 {
                     continue;
                 }
-                if($isNew && $value->hasDefaultValue())
+                if($isNew && $value->__hasDefaultValue())
                     $value->setValue($value->getType()->getValue());
             }
-            if($value->isAlias())
+            if($value->__isAlias())
                 continue;
             if(($isNew && ($value->getFlags() & \lib\model\types\BaseType::TYPE_SET_ON_SAVE))) {
                 $setOnSaveFields[$key]=$value;
@@ -131,7 +131,7 @@ abstract class StorageSerializer extends TypeSerializer
            // $subVals = $value->serialize($this);
             try
             {
-                $subVals=$this->serializeType($value->getFieldName(),$value);
+                $subVals=$this->serializeType($value->__getFieldName(),$value);
             }catch(\lib\model\types\BaseTypeException $e)
             {
                 _d($e);
@@ -205,7 +205,7 @@ abstract class StorageSerializer extends TypeSerializer
         $func=function($item) use ($indexField,$typeSerializers,$targetFields,$ser){
             $data=[];
             foreach($targetFields as $k=>$v) {
-                if($item->{"*".$v}->hasValue())
+                if($item->{"*".$v}->__hasValue())
                     $data = array_merge($data, $typeSerializers[$v]->serialize($v, $item->{"*" . $v}, $ser));
             }
             return $data;

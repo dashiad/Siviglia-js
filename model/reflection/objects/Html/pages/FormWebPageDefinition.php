@@ -34,7 +34,7 @@
               $fields=$parentModel->getFields();
               foreach($fields as $key=>$value)
               {
-                  if(!$value->isRelation())
+                  if(!$value->__isRelation())
                       continue;
                   if($value->getRole()=="BELONGS_TO")
                   {

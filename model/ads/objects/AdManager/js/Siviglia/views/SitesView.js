@@ -59,7 +59,7 @@
                         this.ds.settings.__count = 15;
                         this.ds.addListener("CHANGE", this, "refreshGrid");
 
-                        this.parameters = this.ds["*params"].toBaseTypedObject();
+                        this.parameters = this.ds["*params"];
                         this.parameters.__definition.INPUTPARAMS={
                             "/":{
                                 "INPUT": "FlexContainer"

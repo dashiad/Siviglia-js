@@ -24,10 +24,5 @@ class Percentage extends Decimal
             return false;
         return true;
     }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/Percentage.php");
-        return '\model\reflection\Types\meta\Percentage';
-    }
 
 }

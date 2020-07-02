@@ -22,14 +22,8 @@ class Container extends BaseType implements \ArrayAccess
     protected $__changingState=false;
     protected $__isDirty=false;
     protected $__dirtyFields=array();
-    protected $__pendingRequired=[];
     protected $__savedValidationMode;
     protected $__errored=[];
-    // Se declara una variable __empty, para saber si el campo esta vacio o no.
-    // Un container puede que no este vacio, porque se han establecido campos, pero su valor solo va a estar a "set", si todos
-    // los campos requeridos estan tambien "set".
-    // Sin embargo, si tiene al menos 1 campo set, no puede considerarse vacio.Cuando al menos 1 campo esta relleno, __empty es false.
-    protected $__empty;
 
     function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
     {
@@ -46,32 +40,44 @@ class Container extends BaseType implements \ArrayAccess
         if($this->__stateDef!==null)
             $this->__stateDef->enable();
     }
+    function reset()
+    {
+        if ($this->__isDirty) {
+            $this->__setDirty(false);
+        }
+        $this->__dirtyFields = [];
+        $this->__clearErrored();
+
+        foreach($this->__fields as $k=>$v) {
+            unset($this->__fields[$k]);
+        }
+    }
+    function __clearErrored()
+    {
+        if($this->__isErrored==false && count($this->__errored) === 0)
+            return;
+        $this->__errored = [];
+        $this->__errorException=null;
+        $this->__isErrored=false;
+        if($this->__controller)
+            $this->__controller->clearErroredField($this);
+    }
 
     function _setValue($val,$validationMode=null)
     {
         if($validationMode===null)
             $validationMode=$this->validationMode;
 
-        $curDef=$this->definition["FIELDS"];
-        $nSet=0;
+        $this->reset();
+        $curDef=$this->__definition["FIELDS"];
         $self=$this;
-        $assign=function($key,$value,$val) use ($self,& $nSet,$validationMode)
+        $assign=function($key,$value,$val) use ($self,$validationMode)
         {
             if(!isset($self->__fields[$key]))
                 $self->__fields[$key] = \lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>$self->fieldNamePath],$value,$self,null,$validationMode);
-            $wasEmpty=true;
             if(isset($val[$key])) {
                 $self->__fields[$key]->apply($val[$key],$validationMode);
-                if($self->__fields[$key]->hasValue())
-                    $wasEmpty=false;
             }
-            if($wasEmpty==true)
-            {
-                if(isset($value["KEEP_KEY_ON_EMPTY"]))
-                    $nSet++;
-            }
-            else
-                $nSet++;
         };
 
         $stateField=null;
@@ -85,17 +91,18 @@ class Container extends BaseType implements \ArrayAccess
             // No podemos tener un objeto sin estado. Si no se especifica, se va a disparar una excepcion
             if(!isset($val[$stateField])) {
                 $statusField=$this->__getField($stateField);
-                if(!$statusField->hasValue())
+                if(!$statusField->__hasValue())
                     throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_INVALID_STATE, array("state" => "[]"));
             }
 
-            $assign($stateField,$this->definition["FIELDS"][$stateField],$val);
+            $assign($stateField,$this->__definition["FIELDS"][$stateField],$val);
         }
 
         foreach($curDef as $key=>$value) {
-            if($key===$stateField)
-                $assign($key,$value,null);
-            else
+            //if($key===$stateField)
+            //    $assign($key,$value,null);
+            //else
+            if($key!==$stateField)
                 $assign($key,$value,$val);
         }
 
@@ -106,35 +113,33 @@ class Container extends BaseType implements \ArrayAccess
 
     }
 
-    function __isEmpty()
-    {
-        return $this->__empty;
-    }
-    function setValidationMode($mode)
+
+    function __setValidationMode($mode)
     {
         $this->validationMode=$mode;
         foreach($this->__fields as $k=>$v)
-            $v->setValidationMode($mode);
+            $v->__setValidationMode($mode);
     }
 
     function _validate($value)
     {
-        foreach($this->definition["FIELDS"] as $key=>$type)
+        foreach($this->__definition["FIELDS"] as $key=>$type)
         {
-            $curDef=$this->definition["FIELDS"][$key];
+            $curDef=$this->__definition["FIELDS"][$key];
             if(!isset($this->__fields[$key]))
             {
                 $this->__fields[$key] = \lib\model\types\TypeFactory::getType(["fieldName"=>$key,"path"=>$this->fieldNamePath],$type,$this,null,$this->validationMode);
             }
-            if($this->__fields[$key]->isRequired() && !isset($value[$key]))
-                throw new BaseTypeException(BaseTypeException::ERR_REQUIRED,array("field"=>$key),$this);
+            if($this->__fields[$key]->__isRequired() && $this->__fields[$key]->__hasValue()===false) {
+                $e=new BaseTypeException(BaseTypeException::ERR_REQUIRED, array("field" => $key), $this);
+                $this->__fields[$key]->__setErrored($e);
+                throw $e;
+
+            }
             // Validamos hacia abajo solo si
             if($this->__onlyValidating==true) {
                 $this->__fields[$key]->validate($value[$key]);
             }
-
-            if($curDef["REQUIRED"] && $this->__fields[$key]->hasValue()===false)
-                throw new BaseTypeException(BaseTypeException::ERR_REQUIRED,array("field"=>$key),$this);
         }
         // Finalmente, si este objeto tiene estado, se comprueba el estado.
         if($this->__stateDef!==null) {
@@ -167,7 +172,7 @@ class Container extends BaseType implements \ArrayAccess
             else
             {
                 // Caso de "path"
-                if(strpos($fieldName,$this->getPathPrefix())!==false)
+                if(strpos($fieldName,$this->__getPathPrefix())!==false)
                 {
                     $remField=$this->__findField($fieldName);
                     if($remField)
@@ -181,25 +186,23 @@ class Container extends BaseType implements \ArrayAccess
     function __findField($varName)
     {
         // Quitamos la primera barra, en caso de que existiera.
-        if($varName[0]===$this->getPathPrefix())
+        if($varName[0]===$this->__getPathPrefix())
         {
             $varName=substr($varName,1);
         }
         // Si ya no hay mas barras, devolvemos el nombre del campo.
-        $p=strpos($varName,"/");
-        if($p===false) {
+        $parts = explode("/", $varName);
+        if(count($parts)==1) {
 
             return $this->__getField($varName, true);
         }
-
-        $parts = explode("/", $varName);
         if ($parts[0] == "") {
             array_splice($parts, 0, 1);
         }
         // Si el path es, por ejemplo, a/b/c, queremos encontrar a/b , y pedirle el campo c.
         // Por eso se extrae y se guarda el ultimo elemento.
         $lastField=array_splice($parts,-1,1);
-        $result=$this->getPath($this->getPathPrefix().implode("/",$parts));
+        $result=$this->getPath($this->__getPathPrefix().implode("/",$parts));
         if(!is_object($result)) {
             throw new BaseTypedException(BaseTypedException::ERR_INVALID_PATH,array("path"=>$varName));
         }
@@ -220,7 +223,7 @@ class Container extends BaseType implements \ArrayAccess
     // padre de este objeto.
     function __getControllerForChild()
     {
-        if(isset($this->definition["STATES"]))
+        if(isset($this->__definition["STATES"]))
             return $this;
         return $this->__controller;
     }
@@ -244,20 +247,20 @@ class Container extends BaseType implements \ArrayAccess
     function _getValue()
     {
         /*if($this->valueSet==false) {
-            $fields=array_keys($this->definition["FIELDS"]);
+            $fields=array_keys($this->__definition["FIELDS"]);
             if(count($fields)==0)
                 return [];
             return null;
         }*/
 
-        $curDef=$this->definition["FIELDS"];
+        $curDef=$this->__definition["FIELDS"];
         $nSet=0;
         $result=[];
         foreach($curDef as $key=>$value)
         {
             $field=$this->__fields[$key];
             if($field===null) continue;
-            if(!$field->hasValue())
+            if(!$field->__hasValue())
             {
                 if($value["KEEP_KEY_ON_EMPTY"])
                    $result[$key]=null;
@@ -269,23 +272,23 @@ class Container extends BaseType implements \ArrayAccess
         }
         if($nSet==0)
         {
-            if(!isset($this->definition["SET_ON_EMPTY"]) || $this->definition["SET_ON_EMPTY"]==false) {
+            if(!isset($this->__definition["SET_ON_EMPTY"]) || $this->__definition["SET_ON_EMPTY"]==false) {
                 return null;
             }
             return [];
         }
         return $result;
     }
-    function getReference()
+    function __getReference()
     {
         return $this;
     }
     function _equals($value)
     {
         foreach($this->__fields as $key=>$type) {
-            if(!isset($value[$key]) && $this->__fields[$key]->hasOwnValue())
+            if(!isset($value[$key]) && $this->__fields[$key]->__hasOwnValue())
                 return false;
-            $curDef = $this->definition["FIELDS"][$key];
+            $curDef = $this->__definition["FIELDS"][$key];
             $tempType=\lib\model\types\TypeFactory::getType(
                 ["fieldName"=>$key,"path"=>$this->fieldNamePath],
                 $curDef,
@@ -303,15 +306,13 @@ class Container extends BaseType implements \ArrayAccess
         return $this->valueSet;
     }
 
-    function clear()
+    function __clear()
     {
-        parent::clear();
+        parent::__clear();
         foreach($this->__fields as $k=>$v)
         {
-            $this->__fields[$k]->clear();
+            $this->__fields[$k]->__clear();
         }
-        // En caso de que limpiemos todo, empty es true
-        $this->__empty=true;
     }
 
     function __toString()
@@ -321,16 +322,21 @@ class Container extends BaseType implements \ArrayAccess
 
     function getDefinition()
     {
-        if(!isset($this->definition["TYPE"]))
+        if(!isset($this->__definition["TYPE"]))
         {
             $parts=explode("\\",get_class($this));
-            $this->definition["TYPE"]=$parts[count($parts)-1];
+            $this->__definition["TYPE"]=$parts[count($parts)-1];
         }
-        return $this->definition;
+        return $this->__definition;
     }
     function isTypeReference()
     {
         return false;
+    }
+    // Un container no tiene errores propios.
+    function __setErrored($exception)
+    {
+        return;
     }
 
     function __set($varName,$value) {
@@ -340,7 +346,9 @@ class Container extends BaseType implements \ArrayAccess
         $this->__allowRead=true;
         if(isset($this->__fieldDef[$varName]))
         {
-            if($this->__stateDef->hasState)
+            // Que yo sepa, esto lo hace el setValue de los campos..No hace falta volver a
+            // hacerlo aqui...
+           /* if($this->__stateDef && $this->__stateDef->hasState)
             {
                 if(!$this->__stateDef->isEditable($varName) && $value!=$this->{$varName})
                 {
@@ -349,7 +357,7 @@ class Container extends BaseType implements \ArrayAccess
                     $this->{"*".$varName}->__setErrored($exception);
                     throw $exception;
                 }
-            }
+            }*/
             // Ahora hay que tener cuidado.Si lo que se esta estableciendo es el campo que define el estado
             // de este objeto, no hay que copiarlo.Hay que meterlo en una variable temporal, hasta que se haga SAVE
             // del objeto.El nuevo estado aplicará a partir del SAVE.Asi, podemos cambiar otros campos que era posible
@@ -371,24 +379,29 @@ class Container extends BaseType implements \ArrayAccess
         $this->__allowRead=false;
 
     }
-    function hasValue(){
+    function __hasValue(){
         if($this->value===null)
-            return null;
+            return false;
         return $this->__isComplete();
     }
-    function hasOwnValue(){
-        return $this->hasValue();
+    function __hasOwnValue(){
+        return $this->__hasValue();
     }
-    function __isComplete()
+    function __isComplete($markErrored=false)
     {
         $haveValue=false;
         foreach($this->__fieldDef as $k=>$v)
         {
             $f=$this->__getField($k);
-            if(!$f->hasOwnValue())
+            if(!$f->__hasOwnValue())
             {
-                if($f->isRequired())
+                if($this->isFieldRequired($k)) {
+                    if($markErrored)
+                    {
+                        $e=new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_REQUIRED_FIELD,["field"=>$f->__getFieldName()]);
+                    }
                     return false;
+                }
                 // Si no era requerido, vemos si se mantiene la key o no.
                 $def=$f->getDefinition();
                 if(isset($def["KEEP_KEY_ON_EMPTY"]))
@@ -405,44 +418,23 @@ class Container extends BaseType implements \ArrayAccess
     {
         $this->__changingState=true;
         $this->__newState=$newState;
-        $this->__pendingRequired=$this->__stateDef->getRequiredFields($newState);
         $this->__checkStateChangeCompleted();
     }
     function __checkStateChangeCompleted($field=null)
     {
+        if(!$this->__stateDef)
+            return true;
         if($this->__dirtyFields==null)
             return;
-        $newPending=[];
-        for($k=0;$k<count($this->__pendingRequired);$k++)
-        {
-            $reqField=$this->__pendingRequired[$k];
-            $f=$this->__getField($reqField);
-            if($f->is_set())
-                continue;
-            if(isset($this->__dirtyFields[$reqField]))
-                continue;
-            $newPending[]=$reqField;
-        }
-        if(count($newPending)==0)
-        {
-            $this->__changingState=false;
-            $this->__stateDef->getStateField()->onStateChangeComplete();
-            $this->__stateDef->changeState($this->__newState);
-        }
-        $this->__pendingRequired=$newPending;
+        return $this->__isComplete();
     }
 
 
     function _copy($ins)
     {
-        $ins->setParent($this->parent,$this->fieldName);
-        $ins->setValidationMode($this->validationMode);
+        $this->__setParent($ins->__parent,$ins->__name);
+        $this->__setValidationMode($ins->validationMode);
         $this->apply($ins->getValue());
-    }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/Container.php");
-        return '\model\reflection\Types\meta\Container';
     }
 
     function __get($varName)
@@ -458,7 +450,7 @@ class Container extends BaseType implements \ArrayAccess
         {
             $varName=substr($varName,1);
             $f=$this->__getField($varName);
-            if($f->isRelation())
+            if($f->__isRelation())
             {
                 return $f->getRaw();
             }
@@ -470,14 +462,14 @@ class Container extends BaseType implements \ArrayAccess
             return $field;
         if($field)
         {
-            return $field->getReference();
+            return $field->__getReference();
         }
 
         throw new BaseTypedException(BaseTypedException::ERR_NOT_A_FIELD,array("field"=>$varName));
     }
 
 
-    function getTypeFromPath($path)
+    function __getTypeFromPath($path)
     {
         if(!is_array($path))
         {
@@ -489,7 +481,7 @@ class Container extends BaseType implements \ArrayAccess
             return $this;
         $field=array_shift($path);
         $type=$this->{"*".$field};
-        return $type->getTypeFromPath($path);
+        return $type->__getTypeFromPath($path);
     }
 
     public function offsetExists ( $offset ){
@@ -521,7 +513,7 @@ class Container extends BaseType implements \ArrayAccess
 
     function addDirtyField($fieldObj)
     {
-        $fieldName=$fieldObj->getFieldName();
+        $fieldName=$fieldObj->__getFieldName();
         unset($this->__errored[$fieldName]);
         if($this->isDirty()==false) {
             if(count($this->__errored)==0)
@@ -535,43 +527,52 @@ class Container extends BaseType implements \ArrayAccess
     }
     function addErroredField($fieldObj)
     {
-        $this->__errored[]=$fieldObj;
+        $this->__errored[$fieldObj->__getFieldPath()]=$fieldObj;
+        if($this->__controller)
+            $this->__controller->addErroredField($this);
     }
     function getErroredFields()
     {
-        return $this->__errored;
+        return array_values($this->__errored);
     }
     function clearErroredField($fieldObj)
     {
-        for($k=0;$k<count($this->__errored);$k++)
-        {
-            if($this->__errored[$k]==$fieldObj)
-            {
-                unset($this->__errored[$k]);
-                break;
+        if(isset($this->__errored[$fieldObj->__getFieldPath()])) {
+            unset($this->__errored[$fieldObj->__getFieldPath()]);
+
+            if (count($this->__errored) == 0) {
+                if($this->__controller)
+                    $this->__controller->clearErroredField($this);
+                if (count($this->__dirtyFields) > 0)
+                    $this->setDirty(true);
             }
         }
-        if(count($this->__errored)==0 && count($this->__dirtyFields)>0)
-            $this->setDirty(true);
     }
     function save()
     {
         if(count($this->__errored)>0)
             throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_CANT_SAVE_ERRORED_FIELD,["field"=>$this->__getFieldPath()]);
         // TODO : Estamos iterando solo sobre los objetos que han sido instanciados, no sobre todos los campos..
+
+
         foreach($this->__fields as $k=>$v)
         {
             $v->save();
         }
+
+        $this->__isComplete(true);
+        if($this->__stateDef)
+            $this->__stateDef->checkState();
         // Volvemos a chequear despues del save de los objetos, por si acaso.
         if(count($this->__errored)>0)
             throw new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_CANT_SAVE_ERRORED_FIELD,["field"=>$this->__getFieldPath()]);
         parent::save();
     }
-    function isErrored()
+    function __isErrored()
     {
         return $this->__isErrored || count($this->__errored)>0;
     }
+
 
 
 
@@ -604,8 +605,8 @@ class Container extends BaseType implements \ArrayAccess
     }
     function isFieldRequired($fieldName)
     {
-        $fieldDef=$this->__getField($fieldName)->getDefinition();
-        if(isset($fieldDef["REQUIRED"]) && $fieldDef["REQUIRED"])
+        $field=$this->__getField($fieldName);
+        if($field->__isDefinedAsRequired())
             return true;
         if($this->__stateDef!==null)
             return $this->__stateDef->isRequired($fieldName);
@@ -642,24 +643,21 @@ class Container extends BaseType implements \ArrayAccess
     }
     function getStateDef()
     {
-        if($this->definition["STATES"] && $this->__stateDef==null)
-            $this->__stateDef=new \lib\model\states\StatedDefinition($this);
         return $this->__stateDef;
-
     }
 
     function getStateId($stateName)
     {
         if(!$this->__stateDef)
             return null;
-        return array_search($stateName, array_keys($this->definition["STATES"]["STATES"]));
+        return array_search($stateName, array_keys($this->__definition["STATES"]["STATES"]));
     }
 
     function getStateLabel($stateId)
     {
         if (!$this->__stateDef)
             return null;
-        $statekeys = array_keys($this->definition["STATES"]["STATES"]);
+        $statekeys = array_keys($this->__definition["STATES"]["STATES"]);
         return $statekeys[$stateId];
     }
 
@@ -669,18 +667,15 @@ class Container extends BaseType implements \ArrayAccess
             return null;
         return $this->__stateDef->getCurrentState();
     }
-    function __getPendingRequired()
-    {
-        return $this->__pendingRequired;
-    }
 
 
-    function onModelSaved()
+
+    function __onModelSaved()
     {
         // LLamado cuando el modelo donde esta ese tipo, se ha almacenado. Se llama hacia abajo a todos los campos.
         // Esto se hace con todos los campos, se hayan utilizado, o no.
         foreach($this->__fieldDef as $k=>$v)
-            $this->__getField($k)->onModelSaved();
+            $this->__getField($k)->__onModelSaved();
     }
 
     // Funciones de puente con Model. Las funciones de controller

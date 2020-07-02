@@ -26,6 +26,7 @@ class BaseTypedException extends BaseException {
     const ERR_NOT_EDITABLE=20;
     const ERR_CANT_SAVE_ERRORED_FIELD=21;
     const ERR_CANT_SAVE_ERRORED_OBJECT=22;
+    const ERR_CANT_COPY_ERRORED_FIELD=23;
 }
 
 class BaseTypedObject extends \lib\model\types\Container
@@ -85,13 +86,13 @@ class BaseTypedObject extends \lib\model\types\Container
         {
             $this->disableStateChecks();
             $this->__savedValidationMode=$this->__validationMode;
-            $this->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_NONE);
+            $this->__setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_NONE);
         }
         function endUnserialize()
         {
             $this->enableStateChecks();
             $this->__loaded=true;
-            $this->setValidationMode($this->__savedValidationMode);
+            $this->__setValidationMode($this->__savedValidationMode);
             $this->cleanDirtyFields();
         }
         function __setSerializer($serializer)
@@ -149,7 +150,7 @@ class BaseTypedObject extends \lib\model\types\Container
             $required=[];
             foreach($this->__fieldDef as $k=>$v)
             {
-                if($this->__getField($k)->isDefinedAsRequired()==true)
+                if($this->__getField($k)->__isDefinedAsRequired()==true)
                     $required[]=$k;
             }
             return $required;
@@ -256,6 +257,7 @@ class BaseTypedObject extends \lib\model\types\Container
     {
         if($validationMode==null)
             $validationMode=$this->validationMode;
+        $this->reset();
         $this->__oldValidationMode=$validationMode;
         $this->loadFromArray($val,$this->validationMode==\lib\model\types\BaseType::VALIDATION_MODE_NONE?true:false,
             false,null,true);
@@ -382,7 +384,7 @@ class BaseTypedObject extends \lib\model\types\Container
                     if(!$f->is_set()) {
                         if($loadResult) {
                             $exception=new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, ["field" => $f]);
-                            $loadResult->addFieldTypeError($f->getFullPath(), null, $exception);
+                            $loadResult->addFieldTypeError($f->__getFieldPath(), null, $exception);
                             $f->__setErrored($exception);
                         }
                         $errored=true;
@@ -407,7 +409,7 @@ class BaseTypedObject extends \lib\model\types\Container
     {
         return $this;
     }
-    function getPathPrefix()
+    function __getPathPrefix()
     {
         return "/";
     }
@@ -499,7 +501,7 @@ class BaseTypedObject extends \lib\model\types\Container
 
              for($k=0;$k<count($reqs);$k++)
                 $requiredFields[$reqs[$k]]=1;
-+             $validationMode=$this->getValidationMode();
++             $validationMode=$this->__getValidationMode();
 
              $this->prioritizeChanges($fieldArray,function($fieldType,$fieldName,$fieldValue,$fieldDefinition)
              use (&$nextState,$stateFieldName,&$result,$targetModel,$fromArray,&$requiredFields,$oldState,$validationMode)
@@ -543,7 +545,7 @@ class BaseTypedObject extends \lib\model\types\Container
                                     $result->addFieldTypeError($fieldName,$fieldValue,new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,["field"=>$fieldName]));
                              }
                              else {
-                                 if (!$type->isEditable()) {
+                                 if (!$type->__isEditable()) {
                                      $result->addFieldTypeError($fieldName, $fieldValue, new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE, ["field" => $fieldName]));
                                      break;
                                  }
@@ -558,8 +560,7 @@ class BaseTypedObject extends \lib\model\types\Container
                                     $localField->validate($fieldValue);
                                  else
                                  {
-                                     $relType=\lib\model\types\TypeFactory::getType(null,$localField->getDefinition(),null,null,$validationMode);
-                                     $relType->setParent($this,$fieldName);
+                                     $relType=\lib\model\types\TypeFactory::getType($fieldName,$localField->getDefinition(),$this,null,$validationMode);
                                      $relType->validate($fieldValue);
                                  }
                              }catch(\Exception $e)
@@ -622,7 +623,7 @@ class BaseTypedObject extends \lib\model\types\Container
                      $f=$targetModel->__getField($f);
                      if(!$f->is_set()) {
                          $exception=new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, ["field" => $f]);
-                         $result->addFieldTypeError($f->getControllerPath(), null, $exception);
+                         $result->addFieldTypeError($f->__getControllerPath(), null, $exception);
                          $f->__setErrored($exception);
                      }
                  }
@@ -679,8 +680,8 @@ class BaseTypedObject extends \lib\model\types\Container
             if($sDef!==null)
                 return $sDef;
         }
-        if(isset($this->definition["PERMISSIONS"]) && isset($this->definition["PERMISSIONS"][$action]))
-            return $this->definition["PERMISSIONS"][$action];
+        if(isset($this->__definition["PERMISSIONS"]) && isset($this->__definition["PERMISSIONS"][$action]))
+            return $this->__definition["PERMISSIONS"][$action];
         return [["TYPE"=>\lib\model\permissions\AclManager::PERMISSIONSPEC_PUBLIC]];
     }
 }

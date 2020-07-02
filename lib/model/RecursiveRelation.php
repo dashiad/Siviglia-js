@@ -15,7 +15,7 @@ class RecursiveRelation extends ModelBaseRelation
 
     function createRelationValues()
     {
-        return new RelationValues($this, $this->definition["LOAD"] ? $this->definition["LOAD"] : "LAZY");
+        return new RelationValues($this, $this->__definition["LOAD"] ? $this->__definition["LOAD"] : "LAZY");
     }
     function getRelationValues()
     {
@@ -69,7 +69,7 @@ class RecursiveRelation extends ModelBaseRelation
             return $this->relationValues->count();
         if ($this->relation->state == ModelBaseRelation::UN_SET)
             return 0;
-        if ($this->definition["LOAD"] == "LAZY")
+        if ($this->__definition["LOAD"] == "LAZY")
             $this->relationValues->setCount($this->getSerializer()->count($this->getRelationQueryConditions(), $this->model));
 
         else
@@ -81,7 +81,7 @@ class RecursiveRelation extends ModelBaseRelation
         return $this->relation->__toString();
     }
 
-    function onModelSaved()
+    function __onModelSaved()
     {
         $this->relation->cleanState();
     }
@@ -107,10 +107,6 @@ class RecursiveRelation extends ModelBaseRelation
 
     }
 
-    function copyField($type)
-    {    
-        $this->relation->copyField($type);
-        
-     }
+
 }
 

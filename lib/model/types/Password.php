@@ -40,8 +40,8 @@
               return $this->value;
 
 
-          $passwordEncoding=io($this->definition,"PASSWORD_ENCODING","BCRYPT");
-          $options["cost"]=io($this->definition,"COST","12");
+          $passwordEncoding=io($this->__definition,"PASSWORD_ENCODING","BCRYPT");
+          $options["cost"]=io($this->__definition,"COST","12");
 
           switch($passwordEncoding)
           {
@@ -88,9 +88,4 @@
           return password_verify($enc,$this->value);
       }
 
-      function getMetaClassName()
-      {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/Password.php");
-          return '\model\reflection\Types\meta\Password';
-      }
   }

@@ -52,7 +52,7 @@ class DictionaryTest extends TestCase
     {
         $cnt=$this->getDefinition1();
         $cnt->setValue(null);
-        $this->assertEquals(false,$cnt->hasOwnValue());
+        $this->assertEquals(false,$cnt->__hasOwnValue());
     }
     function testGet()
     {
@@ -79,17 +79,17 @@ class DictionaryTest extends TestCase
     {
         $cnt=$this->getDefinition1();
         $cnt->probando=["one"=>null,"two"=>null];
-        $is_set=$cnt->hasOwnValue();
+        $is_set=$cnt->__hasOwnValue();
         $this->assertEquals(true,$is_set);
     }
     function testRemove()
     {
         $cnt=$this->getDefinition1();
         $cnt->probando=["one"=>"lala","two"=>"cucu"];
-        $is_set=$cnt->hasOwnValue();
+        $is_set=$cnt->__hasOwnValue();
         $this->assertEquals(true,$is_set);
         $cnt->remove("probando");
-        $is_set=$cnt->hasOwnValue();
+        $is_set=$cnt->__hasOwnValue();
         $this->assertEquals(false,$is_set);
     }
 }

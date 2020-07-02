@@ -31,9 +31,4 @@ class Street extends _String {
         }
         return $cad;
     }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/Street.php");
-        return '\model\reflection\Types\meta\Street';
-    }
 }

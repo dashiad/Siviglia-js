@@ -67,15 +67,15 @@ class ContainerTest2 extends TestCase
         ]);
         //$t->apply(["one"=>"a","two"=>"b"],\lib\model\types\BaseType::VALIDATION_MODE_NONE);
         $this->assertEquals(false,$t->isDirty());
-        $this->assertEquals(false,$t->hasOwnValue());
+        $this->assertEquals(false,$t->__hasOwnValue());
         $t->setValue(["one"=>"aa","two"=>"bbb"]);
         $this->assertEquals(true,$t->{"*one"}->isDirty());
         $dFields=$t->getDirtyFields();
         $keys=array_keys($dFields);
         $this->assertEquals(2,count($keys));
-        $this->assertEquals("one",$dFields[0]->getFieldName());
-        $this->assertEquals(true,$t->hasOwnValue());
-        $this->assertEquals("two",$dFields[1]->getFieldName());
+        $this->assertEquals("one",$dFields[0]->__getFieldName());
+        $this->assertEquals(true,$t->__hasOwnValue());
+        $this->assertEquals("two",$dFields[1]->__getFieldName());
     }
     /* En este test se comprueban 2 controladores a la vez, anidados */
     function testNestedDirtyFields()
@@ -102,9 +102,9 @@ class ContainerTest2 extends TestCase
         //$t->apply(["one"=>"a","two"=>"b"],\lib\model\types\BaseType::VALIDATION_MODE_NONE);
         // Tanto el container interno, como el externo, ni estan sucios, ni tienen valor.
         $this->assertEquals(false,$t->isDirty());
-        $this->assertEquals(false,$t->hasOwnValue());
+        $this->assertEquals(false,$t->__hasOwnValue());
         $this->assertEquals(false,$t->{"*inner"}->isDirty());
-        $this->assertEquals(false,$t->{"*inner"}->hasOwnValue());
+        $this->assertEquals(false,$t->{"*inner"}->__hasOwnValue());
 
         // Asignamos un campo del container interno.
         // Esto tiene que hacer que ambos containers se pongan a sucio, pero ninguno de los dos tiene valor
@@ -117,7 +117,7 @@ class ContainerTest2 extends TestCase
         $dFields=$t->getDirtyFields();
         $foundInner=false;
         for($k=0;$k<count($dFields);$k++){
-            if($dFields[$k]->getFieldName()=="inner")
+            if($dFields[$k]->__getFieldName()=="inner")
                 $foundInner=true;
         }
         $this->assertEquals(3,count($dFields));
@@ -128,9 +128,9 @@ class ContainerTest2 extends TestCase
         $foundOne=false;
         $foundTwo=false;
         for($k=0;$k<count($dFields);$k++){
-            if($dFields[$k]->getFieldName()=="one")
+            if($dFields[$k]->__getFieldName()=="one")
                 $foundOne=true;
-            if($dFields[$k]->getFieldName()=="two")
+            if($dFields[$k]->__getFieldName()=="two")
                 $foundTwo=true;
         }
         $this->assertEquals(2,count($dFields));
@@ -281,7 +281,7 @@ class ContainerTest2 extends TestCase
             $thrown=true;
         }
         $this->assertEquals(0, $thrown);
-
+        $thrown=false;
         // Ahora estamos en un estado final. No deberia ser posible movernos de este estado, por dos motivos:
         // porque ningun otro estado lo tiene en el ALLOW_FROM, y porque es un estado final. Pero es esta
         // condicion la que debe saltar primero.
