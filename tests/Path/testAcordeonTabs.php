@@ -1,10 +1,9 @@
 <html>
 <!--
-  Ejemplo actualizado de Tabs mezclado en un Grupo, un layout de GridContainer.
-  Para que dentro de cada tab, tuviera un estilo de formulario normal, y otro, con grid.
+  Ejemplo actualizado de Acordeon mezclado con Tabs.
 
-  - El Layout: TabsContainer, se usa para el Path "/" (todo el formulario)
-  - Los Layout GridContainer, se aplican a los grupos creados
+  - El Layout: AccordionContainer, se usa para el Path "/" (todo el formulario), se usan grupos.
+  - Los Layout TabsContainer, se aplican a los grupos creados de cada acordeon.
 -->
 <head>
     <script src="/node_modules/jquery/dist/jquery.js"></script>
@@ -81,7 +80,8 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                                             "LABEL": "Field 3",
                                             "TYPE": "String"
                                         },
-                                    }
+                                    },
+                                    
                                 },
 
                                 "GRUPO_2":
@@ -98,7 +98,7 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                                             "LABEL": "Field 5",
                                             "TYPE": "Integer"
                                         },
-                                    }
+                                    },
                                 },
 
                                 "GRUPO_3":
@@ -150,8 +150,12 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                             },
 
                             GROUPS: {
-                                "G1": {"LABEL": "Tab 1", "FIELDS": ["GRUPO_1", "GRUPO_2"]},
-                                "G2": {"LABEL": "Grupo 2", "FIELDS": ["GRUPO_3"]},
+                                "G1": {"LABEL": "Tab 1", "FIELDS": ["GRUPO_1", "GRUPO_2", "GRUPO_3"], "INPUTPARAMS": {
+                                        "/": {
+                                            "INPUT": "AccordionContainer"
+                                        }
+                                    }},
+                                "G2": {"LABEL": "Grupo 2", "FIELDS": ["GRUPO_3", "GRUPO_5"]},
                                 "G3": {"LABEL": "Grupo 33", "FIELDS": ["Field6"]},
                                 "G4": {"LABEL": "Grupo 44", "FIELDS": ["Field7"]},
                                 "G5": {"LABEL": "Grupo 5", "FIELDS": ["GRUPO_5"]},
@@ -159,17 +163,11 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
 
                             "INPUTPARAMS":{
                                 "/": {
-                                    "INPUT": "TabsContainer"                                    
+                                    "INPUT": "AccordionContainer"                                    
                                 },
-                                "/GRUPO_1": {
-                                    "INPUT": "GridContainer"
+                                "/Fielda7": {
+                                    "INPUT": "TabsContainer"
                                 },
-
-                                "/GRUPO_2":
-                                {
-                                    "INPUT": "GridContainer"
-                                }
-
 
                             }
                         });

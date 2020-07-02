@@ -1,10 +1,8 @@
 <html>
 <!--
-  Ejemplo actualizado de Tabs mezclado en un Grupo, un layout de GridContainer.
-  Para que dentro de cada tab, tuviera un estilo de formulario normal, y otro, con grid.
+  Ejemplo de Docking de jqxwidgets: https://www.jqwidgets.com/jquery-widgets-documentation/documentation/jqxdocking/jquery-docking-styling-and-appearance.htm?search=
 
-  - El Layout: TabsContainer, se usa para el Path "/" (todo el formulario)
-  - Los Layout GridContainer, se aplican a los grupos creados
+  Donde se puede ver la implementacion de widgets en forma de ventana.
 -->
 <head>
     <script src="/node_modules/jquery/dist/jquery.js"></script>
@@ -41,19 +39,19 @@
 <body>
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 <div style="display:none">
-    <div data-sivWidget="TestTabs.test"></div>
+    <div data-sivWidget="TestDocking.test"></div>
 </div>
 
 <!-- con class="widget" se define un espacio con margenes, estilos, etc., que define lo que es un widget. 
 Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
 <!-- class="widget-content" crea el estilo para ese widget (fondo blanco, bordes, etc..) -->
 <div class="widget">
-    <div data-sivView="TestTabs.test" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
+    <div data-sivView="TestDocking.test" data-sivlayout="Siviglia.inputs.jqwidgets.Form"></div>
 </div>
 
 <script>
     Siviglia.Utils.buildClass({
-        "context":"TestTabs",
+        "context":"TestDocking",
         "classes":{
             test:{
                 "inherits":"Siviglia.inputs.jqwidgets.Form",
@@ -118,7 +116,7 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                                             "TYPE": "Integer"
                                         }
                                     }
-                                },                                
+                                },
                                 
                                 "Field6": {
                                     "LABEL": "Field 6",
@@ -127,49 +125,21 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                                 "Field7": {
                                     "LABEL": "Field 7",
                                     "TYPE": "String"
-                                },
-
-                                "GRUPO_5":
-                                {
-                                    "TYPE": "Container",
-                                    "LABEL": "Grupo 5 normal",
-                                    "FIELDS":
-                                    {
-                                        "Field9":
-                                        {
-                                            "LABEL": "Field 9",
-                                            "TYPE": "String"
-                                        },
-                                        "Field10":
-                                        {
-                                            "LABEL": "Field 10",
-                                            "TYPE": "Integer"
-                                        }
-                                    }
-                                },
+                                }  
                             },
 
                             GROUPS: {
                                 "G1": {"LABEL": "Tab 1", "FIELDS": ["GRUPO_1", "GRUPO_2"]},
-                                "G2": {"LABEL": "Grupo 2", "FIELDS": ["GRUPO_3"]},
-                                "G3": {"LABEL": "Grupo 33", "FIELDS": ["Field6"]},
-                                "G4": {"LABEL": "Grupo 44", "FIELDS": ["Field7"]},
-                                "G5": {"LABEL": "Grupo 5", "FIELDS": ["GRUPO_5"]},
+                                "G2": {"LABEL": "Grupo 3", "FIELDS": ["GRUPO_3"]},
+                                "G3": {"LABEL": "Grupo 44", "FIELDS": ["Field6"]},
+                                "G4": {"LABEL": "Grupo 55", "FIELDS": ["Field7"]}
                             },
 
                             "INPUTPARAMS":{
                                 "/": {
-                                    "INPUT": "TabsContainer"                                    
+                                    "INPUT": "DockingContainer"                                    
                                 },
-                                "/GRUPO_1": {
-                                    "INPUT": "GridContainer"
-                                },
-
-                                "/GRUPO_2":
-                                {
-                                    "INPUT": "GridContainer"
-                                }
-
+                                
 
                             }
                         });

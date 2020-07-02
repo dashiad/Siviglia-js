@@ -1119,7 +1119,7 @@
                         {
                             this.Container$initialize(params);
                             this.jqxTabs.append(this.groups.children())
-                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ width: 600, height: 250, position: 'top'});
+                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ width: auto, height: auto, position: 'top'});
                             this.jqxTabs.jqxTabs(iParams);
                         },
                         addError:function(path,exception)
@@ -1162,7 +1162,7 @@
 
 
                             // var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ width: 600, height: 250});
-                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ width: 'auto', height: 'auto'});
+                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ expandMode: 'multiple', width: 'auto', height: 'auto'});
 
                             this.jqxAccordion.jqxNavigationBar(iParams);
                         }
@@ -1185,13 +1185,36 @@
                         initialize:function(params)
                         {
                             this.Container$initialize(params);
-                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ width: 'auto', height: '300'});
+                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ position: 'top', width: 'auto', height: '450', selectionTracker: true /* reorder: true */ });
 
                             this.jqxTabs.jqxTabs(iParams);
                         }
 
                     }
             
+                },
+                DockingContainer:{
+                    inherits:"Container",
+                    methods:{
+                        preInitialize:function(params)
+                        {
+                            this.Container$preInitialize(params);
+                            this.containerGroups=this.getGroups();
+                            for(var k in this.containerGroups)
+                            {
+                                this.containerGroups[k].ICON=Siviglia.issetOr(this.containerGroups[k].ICON,"");
+                            }
+                        },
+                        initialize:function(params)
+                        {
+                            this.Container$initialize(params);
+                            var iParams=Siviglia.issetOr(this.formParams["JQXPARAMS"],{ });
+
+                            this.jqxDocking.jqxDocking(iParams);
+                        }
+
+                    }
+
                 },
                 FlexContainer:{
                     inherits:"Container"
@@ -1860,7 +1883,7 @@
 <div style="display:none">
     <div data-sivWidget="Siviglia.inputs.jqwidgets.AutoIncrement" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.AutoIncrement">
-        <input type="text" data-sivId="inputNode"></input>
+        <input type="text" class="form-control" data-sivId="inputNode"></input>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.String" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.String">
@@ -1886,7 +1909,7 @@
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Text" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Text">
-        <input type="text" data-sivId="inputNode"></input>
+        <input type="text" class="form-control" data-sivId="inputNode"></input>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Boolean" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Boolean">
@@ -1926,7 +1949,7 @@
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Password" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Password">
-        <input type="password" data-sivId="inputNode"></input>
+        <input type="password" class="form-control" data-sivId="inputNode"></input>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.State" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.State">
@@ -2305,12 +2328,75 @@
                 <div>
                     <div data-sivLoop="@current/FIELDS" data-contextIndex="current2">
                         <div data-sivValue="[%*type/__definition/FIELDS/{%@current2%}/LABEL%]"></div>
-                        <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2"}'></div>
+                        <div class="ContainerType" data-sivCall="getInputFor" data-sivParams='{"key":"@current2"}'></div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>    
+    </div>
+    <!------------------------------------------------------------------------------------------->
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.DockingContainer" data-widgetParams="type,inputParams"
+            data-widgetCode="Siviglia.inputs.jqwidgets.DockingContainer">
+           <div data-sivId='jqxDocking'>
+
+            <!-- <div>
+                <div id="window1">
+                    <div>Header 1</div>
+                    <div>Content 1</div>
+                </div>
+                <div id="window2">
+                    <div>Header 2</div>
+                    <div>Content 2</div>
+                </div>
+            </div>
+                 -->
+                <div>
+                    <div data-sivLoop="*containerGroups" data-contextIndex="current">
+                       <div data-sivId="[%@current/LABEL%]">
+                            <div data-sivValue="[%@current/LABEL%]"></div> <!-- titulo de la venta -->
+                            <div>
+                                <div data-sivLoop="*containerGroups" data-contextIndex="current2">
+                                    <div>
+                                        <div data-sivLoop="@current2/FIELDS" data-contextIndex="current2">
+                                            <div data-sivValue="[%*type/definition/FIELDS/{%@current2%}/LABEL%]"></div>
+                                            <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2"}'></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div><!-- contenido de la ventana -->
+
+
+                        </div>
+                   </div>
+                </div>
+
+                <!-- <div data-sivLoop="*containerGroups" data-contextIndex="current">
+                    <div>
+                        <div data-sivLoop="@current/FIELDS" data-contextIndex="current2">
+                            <div data-sivValue="[%*type/definition/FIELDS/{%@current2%}/LABEL%]"></div>
+                            <div data-sivCall="getInputFor" data-sivParams='{"key":"@current2"}'></div>
+                        </div>
+                    </div>
+                </div> -->
+
+            </div>
+    </div>
+
+
+
+       <!-- <div id="docking">
+        <div>
+            <div id="window1">
+                <div>Header 1</div>
+                <div>Content 1</div>
+            </div>
+            <div id="window2">
+                <div>Header 2</div>
+                <div>Content 2</div>
+            </div>
+        </div>
+        </div>        -->
     <!--
             ---------------------------------------------------------------------------------------
             -->

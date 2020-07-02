@@ -150,7 +150,7 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                             },
 
                             GROUPS: {
-                                "G1": {"LABEL": "Tab 1", "FIELDS": ["GRUPO_1", "GRUPO_2"]},
+                                "G1": {"LABEL": "Tab 1", "FIELDS": ["GRUPO_1", "GRUPO_2", "GRUPO_3"]},
                                 "G2": {"LABEL": "Grupo 2", "FIELDS": ["GRUPO_3"]},
                                 "G3": {"LABEL": "Grupo 33", "FIELDS": ["Field6"]},
                                 "G4": {"LABEL": "Grupo 44", "FIELDS": ["Field7"]},
