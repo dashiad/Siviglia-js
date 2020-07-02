@@ -95,7 +95,7 @@ abstract class DataSource extends \lib\model\BaseTypedObject
 
                 foreach($types as $tKey=>$tValue)
                 {
-                    $this->pagingParameters->__getField($key)->copyField($tValue);
+                    $this->pagingParameters->{"*".$key}->copy($tValue);
                 }
                 continue;
             }

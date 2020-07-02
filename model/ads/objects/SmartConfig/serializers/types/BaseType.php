@@ -6,7 +6,7 @@ namespace model\ads\SmartConfig\serializers\types;
   {
       function serialize($name,$type,$serializer,$model=null)
       {
-          if($type->hasValue())
+          if($type->__hasValue())
           {
               return [$name=>$type->value];
           }

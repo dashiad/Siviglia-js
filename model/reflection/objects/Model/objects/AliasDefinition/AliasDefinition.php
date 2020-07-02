@@ -22,7 +22,7 @@ class AliasDefinition extends \model\reflection\base\BaseDefinition
             return $this->type->getDefinition();
         }
 
-        function isRelation()
+        function __isRelation()
         {
             return false;
         }

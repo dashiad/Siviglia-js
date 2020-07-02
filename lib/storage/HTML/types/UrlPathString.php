@@ -18,7 +18,7 @@ class UrlPathString extends _String
       {
           $value=$val[$name];
           // Habria que ver tambien si esta en UTF-8
-           if($type->definition["TRIM"])
+           if($type->__definition["TRIM"])
                $value=trim($value);
           // Escapeado -- Anti-Xss?
            $type->validate($value);

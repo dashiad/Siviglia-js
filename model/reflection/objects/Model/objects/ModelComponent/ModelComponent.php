@@ -35,7 +35,7 @@ class ModelComponent
 
         $curType=\lib\model\types\TypeFactory::getType($this->parentModel,$this->definition);
 
-        if($curType->flags & $notRequiredFlags && $curType->isEditable())
+        if($curType->flags & $notRequiredFlags && $curType->__isEditable())
             return false;
 
         return $this->required;
@@ -64,7 +64,7 @@ class ModelComponent
         $errors=array();
         if($type)
         {
-            $type=$type->getRelationshipType(); // So autoincrements return ints.
+            $type=$type->__getRelationshipType(); // So autoincrements return ints.
             // Se obtienen las cadenas de errores por defecto para este campo.
             $errors=array();
             $this->fillTypeErrors($type,$definition,$errors);

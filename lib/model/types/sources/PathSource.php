@@ -10,7 +10,7 @@ class PathSource extends BaseSource
 {
     function getData()
     {
-        $raw=$this->parent->getPath($this->definition["PATH"]);
+        $raw=$this->parent->getPath($this->__definition["PATH"]);
         // Si lo que se ha devuelto es un array simple, se construye uno por defecto.
         if(is_scalar($raw[0]))
         {
@@ -22,10 +22,10 @@ class PathSource extends BaseSource
         }
         else
             $data=$raw;
-        if(isset($this->definition["PREPEND"]))
-            $data=array_merge($this->definition["PREPEND"],$data);
-        if(isset($this->definition["APPEND"]))
-            $data=array_merge($data,$this->definition["APPEND"]);
+        if(isset($this->__definition["PREPEND"]))
+            $data=array_merge($this->__definition["PREPEND"],$data);
+        if(isset($this->__definition["APPEND"]))
+            $data=array_merge($data,$this->__definition["APPEND"]);
         return $data;
     }
 }

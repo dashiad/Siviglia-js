@@ -116,8 +116,12 @@ function getModel($objName,$fields=null)
     $m=\Registry::getService("model")->getModel($objName);
     if($fields!==null)
     {
-        foreach($fields as $k=>$v)
-            $m->{$k}=$v;
+        foreach($fields as $k=>$v) {
+            if(is_a($v,'lib\model\types\BaseType'))
+                $m->{$k}=$v->getValue();
+            else
+                $m->{$k} = $v;
+        }
         $m->loadFromFields();
     }
     return $m;

@@ -22,32 +22,32 @@ class ArraySource extends BaseSource
     function __construct($parent,$definition,$useValidatingData=false)
     {
         parent::__construct($parent,$definition);
-        if(isset($this->definition["DATA"]))
-            $this->source=$this->definition["DATA"];
-        if(isset($this->definition["VALUES"])) {
+        if(isset($this->__definition["DATA"]))
+            $this->source=$this->__definition["DATA"];
+        if(isset($this->__definition["VALUES"])) {
             $idx=-1;
-            $this->source=array_map(function($item) use (&$idx) {$idx++;return ["VALUE"=>$idx,"LABEL"=>$item];},$this->definition["VALUES"]);
-            if(!isset($this->definition["LABEL"]))
-                $this->definition["LABEL"]="LABEL";
-            if(!isset($this->definition["VALUE"]))
-                $this->definition["VALUE"]="VALUE";
+            $this->source=array_map(function($item) use (&$idx) {$idx++;return ["VALUE"=>$idx,"LABEL"=>$item];},$this->__definition["VALUES"]);
+            if(!isset($this->__definition["LABEL"]))
+                $this->__definition["LABEL"]="LABEL";
+            if(!isset($this->__definition["VALUE"]))
+                $this->__definition["VALUE"]="VALUE";
             }
     }
     function getData()
     {
-        if(isset($this->definition["PATH"])) {
+        if(isset($this->__definition["PATH"])) {
             $ctxStack=new \lib\model\ContextStack();
-            $ctx=new \lib\model\BaseObjectContext($this->definition["DATA"],"/",$ctxStack);
+            $ctx=new \lib\model\BaseObjectContext($this->__definition["DATA"],"/",$ctxStack);
             $ctx=new \lib\model\BaseObjectContext($this->parent,"#",$ctxStack);
-            $path=new \lib\model\PathResolver($ctxStack,$this->definition["PATH"]);
+            $path=new \lib\model\PathResolver($ctxStack,$this->__definition["PATH"]);
             $data=$path->getPath();
         }
         else
             $data=$this->source;
-        if(isset($this->definition["PREPEND"]))
-            $data=array_merge($this->definition["PREPEND"],$data);
-        if(isset($this->definition["APPEND"]))
-            $data=array_merge($data,$this->definition["APPEND"]);
+        if(isset($this->__definition["PREPEND"]))
+            $data=array_merge($this->__definition["PREPEND"],$data);
+        if(isset($this->__definition["APPEND"]))
+            $data=array_merge($data,$this->__definition["APPEND"]);
         return $data;
 
     }

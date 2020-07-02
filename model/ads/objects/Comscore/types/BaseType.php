@@ -10,7 +10,7 @@ abstract class BaseType extends \lib\model\types\BaseType {
 
     public function serialize($name, $type, $serializer, $model=null)
     {
-        if($type->hasValue()) {
+        if($type->__hasValue()) {
             return [$name => $type->getValue()];
         } else {
             return [$name => "NULL"];

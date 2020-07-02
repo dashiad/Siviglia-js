@@ -3,7 +3,7 @@
   abstract class BaseType {
       function serialize($name,$type,$serializer,$model=null)
       {
-          if($type->hasValue())return [$name=>$type->getValue()];
+          if($type->__hasValue())return [$name=>$type->getValue()];
           return [$name=>"NULL"];
       }
       function unserialize($name,$type,$value,$serializer,$model=null)

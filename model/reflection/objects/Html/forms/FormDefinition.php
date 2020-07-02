@@ -76,7 +76,7 @@ class FormDefinition extends \model\reflection\base\ConfiguredObject //ClassFile
                 // pertenece, se incluye el campo de la relacion como parametro requerido.
                 if($fromPrivateObject)
                 {
-                    if($origField->isRelation())
+                    if($origField->__isRelation())
                     {
                         $targetObject=$origField->getRemoteModel();
 

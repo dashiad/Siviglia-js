@@ -68,7 +68,7 @@ class Field extends \model\reflection\Model\ModelComponent
             return $res;
         }
 
-        function isAlias()
+        function __isAlias()
         {
             return false;
         }

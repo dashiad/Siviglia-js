@@ -75,7 +75,7 @@ class Definition extends \lib\model\BaseModelDefinition
                     ),
                     'STATES' => [
                         'E1' => [
-                            'FIELDS' => ['EDITABLE' => ['one','two']],
+                            'FIELDS' => ['EDITABLE' => ['one','two','C3']],
                             'LISTENERS'=>[
                             "ON_LEAVE"=>array(
                                 "STATES"=>array("E2"=>array("ONE")),

@@ -249,7 +249,7 @@ class Package
                 return [
                     "package"=>$matches["package"],
                     "model"=>$matches["model"],
-                    "submodel"=>$matches["submodel"],
+                    "submodel"=>isset($matches["submodel"])?$matches["submodel"]:null,
                     "resource"=>$c["resource"],
                     "item"=>$matches["item"],
                     "class"=>$startClass,

@@ -97,9 +97,9 @@ class Form extends \lib\model\BaseTypedObject
             {
                 $instance->{$k}=$v;
             }
-            $instance->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_NONE);
+            $instance->__setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_NONE);
             $instance->loadFromFields();
-            $instance->setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE);
+            $instance->__setValidationMode(\lib\model\types\BaseType::VALIDATION_MODE_COMPLETE);
         }
         $curValue=[];
         foreach($this->__fieldDef as $key=>$value)
@@ -198,7 +198,7 @@ class Form extends \lib\model\BaseTypedObject
                     $htmlSerializer->unserializeType($key, $this->{"*" . $key}, $unserializedFields, $this);
                 }catch(\Exception $e)
                 {
-                    $this->actionResult->addFieldInputError($e->source->getFullPath(),$unserializedFields[$key],$e);
+                    $this->actionResult->addFieldInputError($e->source->__getFieldPath(),$unserializedFields[$key],$e);
                 }
             }
         }

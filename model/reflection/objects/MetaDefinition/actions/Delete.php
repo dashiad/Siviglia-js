@@ -9,7 +9,7 @@ namespace model\reflection\MetaDefinition\actions;
 
 class Delete extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\reflection\MetaDefinition',
                'ROLE'=>'Delete',
                'PERMISSIONS'=>array(
@@ -42,7 +42,7 @@ class Delete extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(Delete::$definition);
+			parent::__construct(Delete::$_definition);
 
 	}
 

@@ -17,7 +17,7 @@ class UUID extends BaseType
       {
             return true;
       }
-      function hasValue()
+      function __hasValue()
       {
           return true;
       }
@@ -39,7 +39,7 @@ class UUID extends BaseType
           }
           include_once(LIBPATH."/model/types/libs/uuid.php");
 
-          switch(intval($this->definition["LEVEL"]))
+          switch(intval($this->__definition["LEVEL"]))
           {
             default:
           case 1:
@@ -71,10 +71,4 @@ class UUID extends BaseType
       {
           return $this->valueSet && $this->value==$v;
       }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/UUID.php");
-        return '\model\reflection\Types\meta\UUID';
-    }
-
 }

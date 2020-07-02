@@ -9,7 +9,7 @@ namespace model\reflection\MetaDefinition\actions;
 
 class Edit extends \lib\action\Action
 {
-	 static  $definition=array(
+	 static  $_definition=array(
                'MODEL'=>'\model\reflection\MetaDefinition',
                'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
@@ -48,7 +48,7 @@ class Edit extends \lib\action\Action
 	 function __construct( )
 	{
 
-			parent::__construct(Edit::$definition);
+			parent::__construct(Edit::$_definition);
 
 	}
 

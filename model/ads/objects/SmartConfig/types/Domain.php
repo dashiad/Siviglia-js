@@ -34,12 +34,7 @@ class Domain extends BaseType
     {
         return $this->value===$value;
     }
-    
-    public function getMetaClassName()
-    {
-        return self::class;
-    }
-    
+
     public function _copy($val)
     {
         $this->value = $val->getValue();

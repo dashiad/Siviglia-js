@@ -146,7 +146,7 @@
         {
             return $this->definition["CARDINALITY"];
         }
-        function isRelation()
+        function __isRelation()
         {
             return true;
         }

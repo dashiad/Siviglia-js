@@ -4,7 +4,7 @@
   {
       function serialize($name,$type,$serializer,$model=null)
       {
-          $v= $type->hasValue()?$type->getValue():null;
+          $v= $type->__hasValue()?$type->getValue():null;
           return array($name=>$v);
       }
 

@@ -34,18 +34,13 @@ class PHPVariable extends \lib\model\types\BaseType {
         // No hay en principio un criterio de validacion...
         return true;
     }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/PHPVariable.php");
-        return '\model\reflection\Types\meta\PHPVariable';
-    }
 
     function getUnserializedValue()
     {
         if($this->valueSet)
             return unserialize($this->value);
-        if($this->hasDefaultValue())
-            return unserialize($this->getDefaultValue());
+        if($this->__hasDefaultValue())
+            return unserialize($this->__getDefaultValue());
         return null;
     }
 }

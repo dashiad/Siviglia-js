@@ -217,7 +217,7 @@ class MYSQLSerializer extends \lib\storage\StorageSerializer
         $q = "UPDATE $table SET ";
         foreach ($dirty as $key => $value)
         {
-            $fieldName=$value->getFieldName();
+            $fieldName=$value->__getFieldName();
             // TODO : Eliminar el mysql_escape_string, cambiarlo por serializado
             $serialized=$typeSerializers[$fieldName]->serialize($fieldName, $value, $this);
             foreach($serialized as $k1=>$v1)

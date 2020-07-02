@@ -5,7 +5,7 @@ class Timestamp extends BaseType
 {
     function serialize($name,$type,$serializer,$model=null)
     {
-        if($type->hasValue()) {
+        if($type->__hasValue()) {
             $curVal=$type->getValue();
             $formatted=date("c",$curVal);
             return array($name => $formatted);

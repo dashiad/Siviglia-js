@@ -3,7 +3,7 @@
   class File extends BaseType{
       function serialize($name,$type,$serializer,$model=null)
       {
-          if($type->hasValue())
+          if($type->__hasValue())
               return [$name=>"'".mysql_escape_string($type->getValue())."'"];
           return [$name=>"NULL"];
       }

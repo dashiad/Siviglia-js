@@ -18,7 +18,7 @@ class Timestamp
         $value=$val;
         if($value[$name]=='')
         {
-            return $type->clear();
+            return $type->__clear();
         }
         $parsed=intval($val[$name]/1000);
         $type->validate($parsed);

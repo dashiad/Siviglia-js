@@ -5,7 +5,7 @@ class TypeSwitcher extends BaseType
 {
     function serialize($name,$type,$serializer,$model=null)
     {
-        if($type->hasValue())
+        if($type->__hasValue())
         {
             return [$name=>$type->value];
         }

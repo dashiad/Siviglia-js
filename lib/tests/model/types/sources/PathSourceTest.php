@@ -69,7 +69,7 @@ class PathSourceTest extends TestCase
     {
         $n=$this->getContainer();
         $n->setValue(["f1"=>["aa"=>["q1"=>"uno","q2"=>4],"bb"=>["q1"=>"dos","q2"=>6]]]);
-        $s=$n->{"*f0"}->getSource();
+        $s=$n->{"*f0"}->__getSource();
         $data=$s->getData();
         $this->assertEquals(2,count($data));
         $this->assertEquals("aa",$data[0]["VALUE"]);

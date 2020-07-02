@@ -19,7 +19,7 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
 
 	function __construct($name,$definition, $parentType, $value=null, $validationMode=null)
 	{
-	    $this->definition=$definition;
+	    $this->__definition=$definition;
 	    parent::__construct($name,$definition,$parentType,null,$validationMode);
         $this->remoteObject=$definition["MODEL"];
         if(!isset($definition["TABLE"]) && !isset($definition["REMOTE_MODEL"]))
@@ -29,7 +29,7 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
             $this->remoteTable=$remoteDef["TABLE"];
             $definition["TABLE"] = $remoteDef["TABLE"];
         }
-        $this->definition=$definition;
+        $this->__definition=$definition;
         //$this->__controller=$parentType;
         $this->relation=$this->createRelationFields();
         $this->relationValues=$this->createRelationValues();
@@ -40,7 +40,7 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
 
     function createRelationFields()
     {
-        return new RelationFields($this,$this->definition);
+        return new RelationFields($this,$this->__definition);
     }
     function getRemoteObject()
     {
@@ -68,11 +68,11 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
     {
         $this-> isAlias=$alias;
     }
-    function isAlias()
+    function __isAlias()
     {
         return $this->isAlias;
     }
-    function getReference()
+    function __getReference()
     {
         return $this;
     }
@@ -211,7 +211,7 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
     }
     function getRemoteTableQuery()
     {
-        $table=$this->definition["TABLE"];
+        $table=$this->__definition["TABLE"];
         if(!$table)
         {
             $table=$this->remoteTable;
@@ -222,23 +222,23 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
             //"BASE"=>"SELECT * FROM ".$table
         );
 
-        if(isset($this->definition["CONDITION"]))
+        if(isset($this->__definition["CONDITION"]))
         {
-            if(is_array($this->definition["CONDITION"][0]))
-                $conditions=$this->definition["CONDITION"];
+            if(is_array($this->__definition["CONDITION"][0]))
+                $conditions=$this->__definition["CONDITION"];
             else
-                $conditions=array($this->definition["CONDITION"]);
+                $conditions=array($this->__definition["CONDITION"]);
         }
         else
             $conditions=array();
 
         $q["CONDITIONS"]=$conditions;
 
-        if(isset($this->definition["ORDERBY"]))
+        if(isset($this->__definition["ORDERBY"]))
         {
-            $q["ORDERBY"]=$this->definition["ORDERBY"];
-            if(isset($this->definition["ORDERTYPE"]))
-                 $q["ORDERTYPE"]=$this->definition["ORDERTYPE"];
+            $q["ORDERBY"]=$this->__definition["ORDERBY"];
+            if(isset($this->__definition["ORDERTYPE"]))
+                 $q["ORDERTYPE"]=$this->__definition["ORDERTYPE"];
         }
 
         return $q;
@@ -258,13 +258,13 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
     }
     function getExtraConditions()
     {
-        if(isset($this->definition["CONDITIONS"]))
-            return $this->definition["CONDITIONS"];
+        if(isset($this->__definition["CONDITIONS"]))
+            return $this->__definition["CONDITIONS"];
         return null;
     }
     function setExtraConditions($conditions)
     {
-        $this->definition["CONDITIONS"]=$conditions;
+        $this->__definition["CONDITIONS"]=$conditions;
         // Para permitir encadenado
         return $this;
     }
@@ -272,7 +272,7 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
 
     function loadRemote($itemIndex=0,$dontUseIndexes=false)
     {
-        if(io($this->definition,"LOAD","")=="LAZY" && $itemIndex===null) {
+        if(io($this->__definition,"LOAD","")=="LAZY" && $itemIndex===null) {
             $this->relationValues->setLoaded();
             return true;
         }
@@ -320,14 +320,14 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
 
     function getRemoteTableIterator()
     {
-        $oldLoad=$this->definition["LOAD"];
-        $this->definition["LOAD"]="FULL";
+        $oldLoad=$this->__definition["LOAD"];
+        $this->__definition["LOAD"]="FULL";
         $oldValues=$this->relationValues;
         $this->relationValues=$this->createRelationValues();
         $this->loadRemote(null,true);
         $newVals=$this->relationValues;
         $this->relationValues=$oldValues;
-        $this->definition["LOAD"]=$oldLoad;
+        $this->__definition["LOAD"]=$oldLoad;
         return $newVals;
     }
 
@@ -353,7 +353,7 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
 
        if($this->isInverseRelation())
        {
-            $fields=$this->definition["FIELDS"];
+            $fields=$this->__definition["FIELDS"];
             $model=$this->getModel();
             foreach($fields as $key=>$value)
             {
@@ -383,7 +383,7 @@ abstract class ModelBaseRelation extends \lib\model\types\BaseType implements \A
     {
         return $this->relation->is_set() || $this->relation->state==ModelBaseRelation::PENDING_REMOTE_SAVE;
     }
-    function isRelation()
+    function __isRelation()
     {
         return true;
     }
@@ -428,7 +428,7 @@ class RelationFields
     function __construct(& $relObject,$definition)
     {
         $this->relObject=$relObject;
-        $this->definition=$definition;
+        $this->__definition=$definition;
         $fields=$definition["FIELDS"]?$definition["FIELDS"]:(array)$definition["FIELD"];
 
         if(!\lib\php\ArrayTools::isAssociative($fields))
@@ -447,7 +447,7 @@ class RelationFields
                     $this->relObject->__getName(),
                     $this->relObject->getModel(),
                     null,
-                    $relObject->getValidationMode());
+                    $relObject->__getValidationMode());
 
             if(isset($definition["DEFAULT"]))
             {
@@ -455,13 +455,13 @@ class RelationFields
             }
 
         }
-        $this->definition["FIELDS"]=$fields;
+        $this->__definition["FIELDS"]=$fields;
         $this->state=ModelBaseRelation::UN_SET;
 
     }
     function getFields()
     {
-        return $this->definition["FIELDS"]?$this->definition["FIELDS"]:(array)$this->definition["FIELD"];
+        return $this->__definition["FIELDS"]?$this->__definition["FIELDS"]:(array)$this->__definition["FIELD"];
     }
 
     function setRawVal($value)
@@ -479,10 +479,10 @@ class RelationFields
     {
         return $this->types;
     }
-    function copyField($type)
+    function copy($type)
     {
 
-        $hv2=$type->hasOwnValue();
+        $hv2=$type->__hasOwnValue();
         foreach($this->types as $curType)
         {
             // Aqui usamos __isEmpty porque aunque un container no este completo, tenemos que copiarlo.
@@ -513,7 +513,7 @@ class RelationFields
                 foreach($this->types as $key=>$value)
                 {
 
-                         $value->clear();
+                         $value->__clear();
                 }
             }
         }
@@ -532,7 +532,7 @@ class RelationFields
             // Al deserializar una relacion, lo hacemos con validaciones segun especifique el modelo padre:
 
             if($rawModelData[$key])
-                $value->apply($rawModelData[$key],$this->relObject->getModel()->getValidationMode());
+                $value->apply($rawModelData[$key],$this->relObject->getModel()->__getValidationMode());
             else
                 continue;
             if($k==0)
@@ -549,7 +549,7 @@ class RelationFields
     function setFieldFromType($field,$targetType,$validationMode)
     {
 
-        if($targetType->hasValue())
+        if($targetType->__hasValue())
         {
              if(!$this->types[$field]->equals($targetType->getValue()))
              {
@@ -568,7 +568,7 @@ class RelationFields
             else
             {
                      foreach($this->types as $key=>$value)
-                         $value->clear();
+                         $value->__clear();
                      //throw new BaseModelException(BaseModelException::ERR_INCOMPLETE_KEY,array("model"=>$this->relObject->model->__getObjectName()));
             }
         }
@@ -594,7 +594,7 @@ class RelationFields
                 $targetField = $value->__getField($field);
             }
             else {
-                $targetField = $this->definition["FIELDS"][$field];
+                $targetField = $this->__definition["FIELDS"][$field];
                 $targetField = $value->__getField($targetField);
             }
             $targetType=$targetField;
@@ -604,7 +604,7 @@ class RelationFields
     }
     function setToModel($remObject)
     {
-        foreach($this->definition["FIELDS"] as $key=>$value)
+        foreach($this->__definition["FIELDS"] as $key=>$value)
         {
             $remObject->{"*".$value}->apply($this->types[$key]->getValue(),\lib\model\types\BaseType::VALIDATION_MODE_NONE);
         }
@@ -757,7 +757,7 @@ class RelationFields
                 $vals = array_values($curVal);
                 $curVal=$vals[0];
             }
-            $q["CONDITIONS"][]=array("FILTER"=>array("F"=>$this->definition["FIELDS"][$key],"OP"=>"=","V"=>$curVal));
+            $q["CONDITIONS"][]=array("FILTER"=>array("F"=>$this->__definition["FIELDS"][$key],"OP"=>"=","V"=>$curVal));
             $h++;
             $conditionKeys[]=$curKey;
         }

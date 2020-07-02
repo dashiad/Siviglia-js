@@ -60,7 +60,7 @@
           }
       }
 
-      function hasValue()
+      function __hasValue()
       {
           if(!$this->valueSet)
               return false;
@@ -79,24 +79,24 @@
           if($asArr===false)
               throw new BaseTypeException(BaseTypeException::ERR_INVALID,["val"=>$value],$this);
 
-          if(isset($this->definition["STARTYEAR"]))
+          if(isset($this->__definition["STARTYEAR"]))
           {
-              if(intval($year)<intval($this->definition["STARTYEAR"]))
-                  throw new DateException(DateException::ERR_START_YEAR,array("val"=>$year,"year"=>$this->definition["STARTYEAR"]),$this);
+              if(intval($year)<intval($this->__definition["STARTYEAR"]))
+                  throw new DateException(DateException::ERR_START_YEAR,array("val"=>$year,"year"=>$this->__definition["STARTYEAR"]),$this);
           }
-          if(isset($this->definition["ENDYEAR"]))
+          if(isset($this->__definition["ENDYEAR"]))
           {
-              if(intval($year)>intval($this->definition["ENDYEAR"]))
-                  throw new DateException(DateException::ERR_END_YEAR,array("val"=>$year,"year"=>$this->definition["ENDYEAR"]),$this);
+              if(intval($year)>intval($this->__definition["ENDYEAR"]))
+                  throw new DateException(DateException::ERR_END_YEAR,array("val"=>$year,"year"=>$this->__definition["ENDYEAR"]),$this);
           }
           $timestamp=$this->getTimestamp($value,$asArr);
           $curTimestamp=time();
-          if(isset($this->definition["STRICTLYPAST"]) && $curTimestamp < $timestamp)
+          if(isset($this->__definition["STRICTLYPAST"]) && $curTimestamp < $timestamp)
               throw new DateException(DateException::ERR_STRICTLY_PAST,["val"=>$value],$this);
-          if(isset($this->definition["STRICTLYFUTURE"]) && $curTimestamp > $timestamp)
+          if(isset($this->__definition["STRICTLYFUTURE"]) && $curTimestamp > $timestamp)
               throw new DateException(DateException::ERR_STRICTLY_FUTURE,["val"=>$value],$this);
 
-          BaseType::postValidate($value);
+          BaseType::__postValidate($value);
 
           return true;
       }
@@ -124,7 +124,7 @@
       public function getTimestamp($value=null) {
 
          try {
-             if (isset($this->definition["TIMEZONE"]) && $this->definition["TIMEZONE"] == "UTC") {
+             if (isset($this->__definition["TIMEZONE"]) && $this->__definition["TIMEZONE"] == "UTC") {
                  $utcTz = new \DateTimeZone("UTC");
                  $date = new \DateTime($value, $utcTz);
              } else
@@ -186,10 +186,6 @@
       {
           return $this->value==$value;
       }
-      function getMetaClassName()
-      {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/Date.php");
-          return '\model\reflection\Types\meta\Date';
-      }
+
 
   }

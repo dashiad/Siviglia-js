@@ -25,7 +25,7 @@
                     foreach($def["FIELDS"] as $keyR=>$valueR)
                     {
                         $newFields[$valueR]=$keyR;
-                        if($parentType->{"*".$valueR}->hasOwnValue())
+                        if($parentType->{"*".$valueR}->__hasOwnValue())
                             $cValue=$parentType->{$valueR};
                     }
                 }
@@ -40,27 +40,27 @@
         if(is_array($val))
         {
             $service=\Registry::getService("model");
-            $instance=$service->getModel($this->definition["MODEL"]);
+            $instance=$service->getModel($this->__definition["MODEL"]);
             for($k=0;$k<count($val);$k++)
             {
                 $instance->validate($val[$k]);
             }
         }
      }
-     function checkSource($value)
+     function __checkSource($value)
      {
          return true;
      }
      function createRelationFields()
      {
-         return new InverseRelationFields($this,$this->definition);
+         return new InverseRelationFields($this,$this->__definition);
      }
-     function isAlias()
+     function __isAlias()
      {
          return true;
      }
 
-     function clear()
+     function __clear()
      {
          // LLamado en caso de que $value sea nulo.
          $this->relationValues->load([],true);
@@ -127,8 +127,8 @@
      // va a tener en cuenta lo que hay en sus relatedObjects, y 2) Los indices accedidos estan limpios.
      // Esta funcion está usando una puerta trasera (getRelatedObjects, markAsAccessed), para conseguir guardar
      // esos objetos pendientes. Lo que hay que hacer, es que el estado no se resetee, que un count() no intente
-     // hacer queries, y que los accessedIndexes no desaparezcan antes de haber llamado a onModelSaved
-     function onModelSaved()
+     // hacer queries, y que los accessedIndexes no desaparezcan antes de haber llamado a __onModelSaved
+     function __onModelSaved()
      {
          if(!$this->relation->is_set() && $this->getModel()->__isNew())
          {
@@ -154,7 +154,7 @@
      }
      function getRemoteField()
      {
-         $vals=array_values($this->definition["FIELDS"]);
+         $vals=array_values($this->__definition["FIELDS"]);
         return $vals[0];
      }
      function save()
@@ -174,7 +174,7 @@
      function __construct(&$relObject, $definition)
      {
          $this->relObject = $relObject;
-         $this->definition = $definition;
+         $this->__definition = $definition;
          $fields = $definition["FIELDS"] ? $definition["FIELDS"] : (array)$definition["FIELD"];
          if (!\lib\php\ArrayTools::isAssociative($fields)) {
              $fields = array($this->relObject->getName() => $fields[0]);
@@ -191,14 +191,14 @@
                  $this->relObject->__getName(),
                  $this->remoteInstance,
                  null,
-                 $relObject->getValidationMode());
+                 $relObject->__getValidationMode());
 
              if (isset($definition["DEFAULT"])) {
                  $this->types[$key]->apply($definition["DEFAULT"]);
              }
 
          }
-         $this->definition["FIELDS"] = $fields;
+         $this->__definition["FIELDS"] = $fields;
          $this->state = \lib\model\types\base\ModelBaseRelation::UN_SET;
      }
      function getRemoteInstance($value)

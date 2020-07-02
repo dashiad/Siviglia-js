@@ -78,7 +78,7 @@ class TransformCursor extends Cursor
             if(count($dirty)) {
 
                 for ($k = 0; $k < count($dirty); $k++) {
-                    $fieldName=$dirty[$k]->getFieldName();
+                    $fieldName=$dirty[$k]->__getFieldName();
                     $result[$fieldName] = $this->sampleModel->{$fieldName};
                 }
             }

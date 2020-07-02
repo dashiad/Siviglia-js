@@ -94,7 +94,7 @@ class SimpleModelDefinition extends ClassFileGenerator
             return null; // Podria ser un alias.Esto es capturado en ModelDefinition
            // die("Campo $name desconocido en ".$this->name);
         }
-        if($this->fields[$curField[0]]->isRelation())
+        if($this->fields[$curField[0]]->__isRelation())
         {
             return $this->fields[$curField[0]]->getRelated(implode("/",$parts));
         }

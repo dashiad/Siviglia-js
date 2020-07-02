@@ -59,8 +59,8 @@ class _StringTest extends TestCase
             "SET_ON_EMPTY"=>false
         ]);
         $ins->setValue("");
-        $v=$ins->hasValue();
-        $this->assertEquals(false,$ins->hasValue());
+        $v=$ins->__hasValue();
+        $this->assertEquals(false,$ins->__hasValue());
     }
     function testDefinition5()
     {
@@ -70,7 +70,7 @@ class _StringTest extends TestCase
         ]);
         $v=$ins->getValue();
         $this->assertEquals("",$v);
-        $this->assertEquals(true,$ins->hasValue());
+        $this->assertEquals(true,$ins->__hasValue());
     }
     function testDefinition6()
     {
@@ -80,7 +80,7 @@ class _StringTest extends TestCase
         ]);
         $v=$ins->getValue();
         $this->assertEquals("Hola",$v);
-        $this->assertEquals(true,$ins->hasValue());
+        $this->assertEquals(true,$ins->__hasValue());
         $this->expectException('lib\model\BaseTypedException');
         $this->expectExceptionCode(\lib\model\BaseTypedException::ERR_NOT_EDITABLE);
         $ins->setValue("AAA");
@@ -105,7 +105,7 @@ class _StringTest extends TestCase
             "DEFAULT"=>"NOne"
         ]);
         $this->assertEquals("NOne",$ins->getValue());
-        $this->assertEquals(true,$ins->hasValue());
+        $this->assertEquals(true,$ins->__hasValue());
     }
     function testDefinition9()
     {

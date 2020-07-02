@@ -22,10 +22,5 @@ class Decimal extends BaseType
     {
         return $this->value==$v->value;
     }
-    function getMetaClassName()
-    {
-        include_once(PROJECTPATH."/model/reflection/objects/Types/Decimal.php");
-        return '\model\reflection\Types\meta\Decimal';
-    }
 
 }

@@ -7,7 +7,7 @@ namespace lib\storage\Mysql\types;
   {
       function serialize($name,$type,$serializer,$model=null)
       {
-          if($type->hasValue())
+          if($type->__hasValue())
           {
               $def=$type->getDefinition();
               if(isset($def["MYSQL"]) && isset($def["MYSQL"]["STORE_AS_INTEGER"]))

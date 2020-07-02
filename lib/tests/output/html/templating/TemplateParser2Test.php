@@ -42,10 +42,12 @@ class TemplateParser2Test extends TestCase
         $level2=ob_get_level();
 
         $okResult=file_get_contents(__DIR__."/results/".$layout.".php");
-        $trimmedOutput=str_replace("\r\n","",$output);
-        $trimmedOutput=str_replace("\t"," ",$trimmedOutput);
-        $trimmedOkResult=str_replace("\r\n","",$okResult);
-        $trimmedOkResult=str_replace("\t"," ",$trimmedOkResult);
+        $trimmedOutput=str_replace("\r","",$output);
+        $trimmedOutput=str_replace("\t","",$trimmedOutput);
+        $trimmedOutput=str_replace("\n","",$trimmedOutput);
+        $trimmedOkResult=str_replace("\r","",$okResult);
+        $trimmedOkResult=str_replace("\t","",$trimmedOkResult);
+        $trimmedOkResult=str_replace("\n","",$trimmedOkResult);
         $this->assertEquals($trimmedOkResult,$trimmedOutput);
         $this->clearCache(__DIR__."/cache");
     }

@@ -60,7 +60,7 @@ class IntegerTest extends TestCase
             "DEFAULT"=>"122"
         ]);
         $this->assertEquals(122,$ins->getValue());
-        $this->assertEquals(true,$ins->hasValue());
+        $this->assertEquals(true,$ins->__hasValue());
     }
 
     function testDefinition11()

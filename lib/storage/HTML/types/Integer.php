@@ -5,7 +5,7 @@
       function serialize($name,$type,$serializer,$model=null)
       {
           // Aqui habria que meter escapeado si la definition lo indica.
-          if($type->hasValue())
+          if($type->__hasValue())
               return [$name=>htmlentities($type->getValue(),ENT_NOQUOTES,"UTF-8")];
           return "";
       }

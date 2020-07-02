@@ -118,7 +118,7 @@ class DataSource extends \model\reflection\base\ConfiguredObject
         {
             if(is_object($value))
             {
-                if($value->isRelation())
+                if($value->__isRelation())
                     $relationFields[$key]=$value;
             }
         }
@@ -211,7 +211,7 @@ class DataSource extends \model\reflection\base\ConfiguredObject
             $aliases=$this->parentModel->getAliases();
             foreach($aliases as $key=>$value)
             {
-                if($value->isRelation())
+                if($value->__isRelation())
                 {
                         // En el caso de una inverseRelation
                         $subDsName=$key;

@@ -1,7 +1,7 @@
 <?php
     $field=$form->__getField($name);
     $type=$field;
-    if($type->hasValue())
+    if($type->__hasValue())
     {
 
 

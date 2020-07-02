@@ -165,7 +165,7 @@ class ContainerTest extends TestCase
             $thrown=true;
         }
         $this->assertEquals(true,$thrown);
-        $this->assertEquals(true,$cnt->isErrored());
+
     }
     function testInvalid()
     {
@@ -201,7 +201,7 @@ class ContainerTest extends TestCase
     {
         $cnt=$this->getDefinition1();
         $cnt->setValue(null);
-        $this->assertEquals(false,$cnt->hasOwnValue());
+        $this->assertEquals(false,$cnt->__hasOwnValue());
     }
     function testGetValue()
     {
@@ -234,14 +234,14 @@ class ContainerTest extends TestCase
     {
         $cnt=$this->getDefinition3();
         $cnt->setValue(["one"=>null,"two"=>null]);
-        $this->assertEquals(false,$cnt->hasOwnValue());
+        $this->assertEquals(false,$cnt->__hasOwnValue());
         $this->assertEquals(null,$cnt->getValue());
     }
     function testNotNullOnPreserveNullKey()
     {
         $cnt=$this->getDefinition4();
         $cnt->setValue(["one"=>null,"two"=>null]);
-        $this->assertEquals(true,$cnt->hasOwnValue());
+        $this->assertEquals(true,$cnt->__hasOwnValue());
         $this->assertEquals(null,$cnt->one);
     }
     function testDefaultValue()
@@ -281,9 +281,9 @@ class ContainerTest extends TestCase
         $dict=$cnt2->{"*f1"};
         $cnt3=$dict->{"*k1-1"};
         $field=$cnt3->{"*q1"};
-        $v1=$field->getParent()->getPath("#../k1-2/q1");
+        $v1=$field->__getParent()->getPath("#../k1-2/q1");
         $this->assertEquals("3",$v1);
-        $v2=$field->getParent()->getPath("#../../f2/Value");
+        $v2=$field->__getParent()->getPath("#../../f2/Value");
         $this->assertEquals("hola",$v2);
     }
 

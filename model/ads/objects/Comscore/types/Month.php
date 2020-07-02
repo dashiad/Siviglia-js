@@ -16,7 +16,7 @@ class Month extends BaseType
     
     function serialize($name, $type, $serializer, $model=null)
     {
-        if($type->hasValue()) {
+        if($type->__hasValue()) {
             return [$name=>$type->getValue()];
         } else {
             return [$name => "NULL"];
@@ -76,11 +76,6 @@ class Month extends BaseType
     public function _equals($value)
     {
         return $this->value===$this->monthToInt($value);
-    }
-
-    public function getMetaClassName()
-    {
-        return self::class;
     }
 
     public function _copy($val)

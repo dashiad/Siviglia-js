@@ -60,7 +60,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
 
     function __construct($definition,$value=null,$count=-1,$fullCount=-1,$parentDs=null,$reIndexField=null)
     {
-        $this->definition=$definition;
+        $this->__definition=$definition;
         $this->parentDs=$parentDs;
 
         if($count == -1)
@@ -113,16 +113,16 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
     {
             return true;
     }
-    function postValidate($value)
+    function __postValidate($value)
     {
             return true;
     }
 
-    function hasValue()
+    function __hasValue()
     {
           return $this->valueSet;
     }
-    function hasOwnValue()
+    function __hasOwnValue()
     {
           return $this->valueSet;
     }
@@ -134,7 +134,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         $this->fullCount=$type->fullCount;
         $this->parentDs=$type->parentDs;
         $this->reIndexField=$type->reIndexField;
-        $this->definition=$type->definition;
+        $this->__definition=$type->__definition;
     }
 
     function getDiff($value)
@@ -142,8 +142,8 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         if($value->count!=$this->count || $value->fullCount!=$this->fullCount)
             return false;
 
-        $localDef=$this->definition;
-        $remoteDef=$value->definition;
+        $localDef=$this->__definition;
+        $remoteDef=$value->__definition;
         if($localDef!=$remoteDef)
             return false;
         if($localDef)
@@ -168,7 +168,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         return count($this->getDiff($value))==0;
     }
 
-    function clear()
+    function __clear()
     {
         $this->valueSet=true;
         $this->initialize(array(),0,0,null);
@@ -187,27 +187,27 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
           }
           return (string)$this->value;
     }
-    function hasDefaultValue()
+    function __hasDefaultValue()
     {
-          return isset($this->definition["DEFAULT"]);
+          return isset($this->__definition["DEFAULT"]);
     }
-    function getDefaultValue()
+    function __getDefaultValue()
     {
-          return $this->definition["DEFAULT"];
+          return $this->__definition["DEFAULT"];
     }
-    function getRelationshipType($name,$parent)
+    function __getRelationshipType($name,$parent)
     {
         // TODO : Esto no tiene sentido (no tiene relationshiptype).
-          return \lib\model\types\TypeFactory::getType($name,$this->definition,$parent);
+          return \lib\model\types\TypeFactory::getType($name,$this->__definition,$parent);
     }
     function getDefinition()
     {
-          if(!$this->definition["TYPE"])
+          if(!$this->__definition["TYPE"])
           {
               $parts=explode("\\",get_class($this));
-              $this->definition["TYPE"]=$parts[count($parts)-1];
+              $this->__definition["TYPE"]=$parts[count($parts)-1];
           }
-          return $this->definition;
+          return $this->__definition;
     }
     function isEmpty()
     {
@@ -394,11 +394,7 @@ class DataSet extends BaseType implements \ArrayAccess // TableDataSet
         $min=$this->rangeStart;
         $max=$this->rangeEnd;
     }
-    // Este tipo de dato no va a permitir que se use su meta.
-    function getMetaClassName()
-    {
-        return null;
-    }
+
 
 }
 

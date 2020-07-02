@@ -11,11 +11,5 @@
             _String::__construct($name,$def,$parentType,$value,$validationMode);
       }
 
-      function getMetaClassName()
-      {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/Email.php");
-          return '\model\reflection\Types\meta\Email';
-      }
-
   }
 ?>

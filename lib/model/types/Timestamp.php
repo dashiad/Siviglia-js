@@ -28,11 +28,6 @@ class Timestamp extends BaseType
                 return time();
             return $this->value;
         }
-        function getMetaClassName()
-        {
-            include_once(PROJECTPATH."/model/reflection/objects/Types/Timestamp.php");
-            return '\model\reflection\Types\meta\Timestamp';
-        }
         function _equals($value)
         {
             return $this->value==$value;

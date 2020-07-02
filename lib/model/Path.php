@@ -131,7 +131,7 @@ class BaseCursor
             $spec=substr($spec,1);
         }
         if ($spec === "..") {
-            $cVal = $this->pointer->getParent();
+            $cVal = $this->pointer->__getParent();
             $this->pointer = $cVal;
             return $cVal;
         } else {
@@ -139,7 +139,7 @@ class BaseCursor
             if(is_a($this->pointer,'\lib\model\BaseTypedObject') && !is_a($this->pointer,'\lib\model\ModelBaseRelation'))
             {
                 $field=$this->pointer->__getField($spec,true);
-                if($field->isRelation())
+                if($field->__isRelation())
                     $v=$this->pointer->{$spec};
                 else
                     $v=$this->pointer->{"*".$spec};
@@ -178,7 +178,7 @@ class BaseCursor
     function getValue()
     {
         if(is_a($this->pointer,'\lib\model\types\BaseType'))
-            return $this->pointer->getReference();
+            return $this->pointer->__getReference();
         return $this->pointer;
     }
 }

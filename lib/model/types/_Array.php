@@ -26,13 +26,13 @@
       {
           return $this->subTypeDef;
       }
-      function setValidationMode($mode)
+      function __setValidationMode($mode)
       {
           $this->validationMode=$mode;
           if($this->subObjects!==null)
           {
               for($k=0;$k<count($this->subObjects);$k++)
-                  $this->subObjects[$k]->setValidationMode($mode);
+                  $this->subObjects[$k]->__setValidationMode($mode);
           }
       }
       function getSubtypeInstance($fieldName)
@@ -54,8 +54,8 @@
               {
                 if(is_a($v,$className))
                 {
-                    $v->setParent($this,$k);
-                    $v->setValidationMode($this->validationMode);
+                    $v->__setParent($this,$k);
+                    $v->__setValidationMode($this->validationMode);
                     $this->subObjects[]=$v;
                 }
                 else
@@ -102,7 +102,7 @@
           }
           return $v;
       }
-      function getReference()
+      function __getReference()
       {
           return $this;
       }
@@ -216,11 +216,11 @@
           $errors=parent::getApplicableErrors();
           $errors[get_class($this)."Exception"][ArrayTypeException::ERR_ERROR_AT]=ArrayTypeException::TXT_ERROR_AT;
           $subType=TypeFactory::getType(null,$this->subTypeDef,null);
-          $subType->setParent($this);
+          $subType->__setParent($this);
           $errorsSubType=$subType->getApplicableErrors();
           return array_merge($errors,$errorsSubType);
       }
-      function _clear()
+      function __clear()
       {
           $this->subObjects=null;
       }
@@ -237,18 +237,12 @@
           if($n>0)
               $this->valueSet=true;
       }
-      function getMetaClassName()
-      {
-          include_once(PROJECTPATH."/model/reflection/objects/Types/_Array");
-          return '\model\reflection\Types\meta\_Array';
-      }
 
-
-      function getEmptyValue()
+      function __getEmptyValue()
       {
           return [];
       }
-      function getTypeFromPath($path)
+      function __getTypeFromPath($path)
       {
           if(!is_array($path))
           {
@@ -259,7 +253,7 @@
           if(count($path)==0)
               return $this;
           $type=$this->getSubtypeInstance($path[0]);
-          return $type->getTypeFromPath($path);
+          return $type->__getTypeFromPath($path);
       }
 
   }

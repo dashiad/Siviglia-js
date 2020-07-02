@@ -66,8 +66,8 @@ abstract class StorageDataSource extends TableDataSource
     function getStartingRow()
     {
         $f=$this->pagingParameters->__getField("__start");
-        if($f->hasOwnValue())
-            return $f->get();
+        if($f->__hasOwnValue())
+            return $f->getValue();
         return 0;
     }
     function getOriginalDefinition()
@@ -101,7 +101,7 @@ abstract class StorageDataSource extends TableDataSource
 
     function fetchAll()
     {
-        if($this->pagingParameters->{"*__accumulated"}->hasOwnValue() || $this->pagingParameters->{"*__group"}->hasOwnValue())
+        if($this->pagingParameters->{"*__accumulated"}->__hasOwnValue() || $this->pagingParameters->{"*__group"}->__hasOwnValue())
         {
             $group=$this->pagingParameters->__group;
             if(!$group)

@@ -48,9 +48,9 @@
     }
     function createRelationValues()
     {
-        return new MultipleRelationValues($this,isset($this->definition["LOAD"])?$this->definition["LOAD"]:"LAZY");
+        return new MultipleRelationValues($this,isset($this->__definition["LOAD"])?$this->__definition["LOAD"]:"LAZY");
     }
-     function isAlias()
+     function __isAlias()
      {
          return true;
      }
@@ -93,7 +93,7 @@
     {
         return $this->relationModelInstance;
     }
-    function onModelSaved()
+    function __onModelSaved()
     {
         if(!$this->relation->is_set() && $this->getModel()->__isNew())
         {

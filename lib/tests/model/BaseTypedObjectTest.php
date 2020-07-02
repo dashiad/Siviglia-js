@@ -414,7 +414,7 @@ class BaseTypedObjectTest extends TestCase
         $this->assertEquals(true,$ob->isDirty());
         $inf=$ob->getDirtyFields();
 
-        $this->assertEquals("one",$inf[0]->getFieldName());
+        $this->assertEquals("one",$inf[0]->__getFieldName());
         $this->assertEquals(1,count($inf));
     }
     function test2()
@@ -431,17 +431,17 @@ class BaseTypedObjectTest extends TestCase
             $this->assertEquals(\lib\model\types\_StringException::ERR_TOO_SHORT,$e->getCode());
         }
         $this->assertEquals(true,$thrown);
-        $this->assertEquals(true,$obj->isErrored());
+        $this->assertEquals(true,$obj->__isErrored());
         $errored=$obj->getErroredFields();
         $this->assertEquals(1,count($errored));
-        $this->assertEquals(true,$obj->{"*one"}->isErrored());
+        $this->assertEquals(true,$obj->{"*one"}->__isErrored());
         $this->assertEquals(true,$obj->{"*one"}->__getError()!==null);
         $this->assertEquals("/one",$errored[0]->__getFieldPath());
         // Le damos ahora un valor valido. Deberia borrarse el error.
         $obj->one="ssss";
-        $this->assertEquals(false,$obj->{"*one"}->isErrored());
+        $this->assertEquals(false,$obj->{"*one"}->__isErrored());
         $this->assertEquals(null,$obj->{"*one"}->__getError());
-        $this->assertEquals(false,$obj->isErrored());
+        $this->assertEquals(false,$obj->__isErrored());
     }
 
 
@@ -474,7 +474,7 @@ class BaseTypedObjectTest extends TestCase
         }catch(\Exception $e) {
             $this->assertEquals(true,is_a($e,'lib\model\BaseTypedException'));
             $this->assertEquals(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE,$e->getCode());
-            $this->assertEquals(true,$obj->isErrored());
+            $this->assertEquals(true,$obj->__isErrored());
             $erroredFields=$obj->getErroredFields();
             $this->assertEquals(1, count($erroredFields));
             $error=$erroredFields[0]->__getError();
@@ -500,7 +500,7 @@ class BaseTypedObjectTest extends TestCase
             $thrown=true;
             $this->assertEquals(true,is_a($e,'lib\model\BaseTypedException'));
             $this->assertEquals(\lib\model\BaseTypedException::ERR_REQUIRED_FIELD,$e->getCode());
-            $this->assertEquals(true,$obj->isErrored());
+            $this->assertEquals(true,$obj->__isErrored());
             $errored=$obj->getErroredFields();
             $this->assertEquals(1,count($errored));
             $this->assertEquals("/three",$errored[0]->__getFieldPath());
@@ -882,5 +882,93 @@ class BaseTypedObjectTest extends TestCase
     // ANTES DE ACCEDER A CUALQUIER CAMPO CON EL OPERADOR ->
     // 2: CONTAINER CON CAMPOS REQUERIDOS: LANZAR EXCEPCION SI UN CAMPO REQUERIDO SE PONE A null.
     // 3: CAMPO AUTONUMERICO : NO DEBE PERMITIR EN NINGUN CASO QUE SE LE ESTABLEZCA UN VALOR A null
+    function getStateDefinition1()
+    {
+        return [
+            'STATES' => [
+                'E1' => [
+                    'FIELDS' => ['EDITABLE' => ['one','two','inner']]
+                ],
+                'E2' => [
+                    'ALLOW_FROM'=>["E1"],
+                    'FIELDS' => ['EDITABLE' => ['two','three']]
+                ],
+                'E3' => [
+                    'ALLOW_FROM'=>["E2"],
+                    'FINAL'=>true,
+                    'FIELDS' => ['REQUIRED' => ['three']]]
+            ],
+            'FIELD' => 'state'
+        ];
+    }
+    function testNestedState()
+    {
+        $t=new \lib\model\BaseTypedObject([
+            "FIELDS"=>[
+                "one"=>["TYPE"=>"String"],
+                "two"=>["TYPE"=>"String"],
+                "state"=>["TYPE"=>"State","VALUES"=>["E1","E2","E3"],"DEFAULT"=>"E1"],
+                "inner"=>[
+                    "TYPE"=>"Container",
+                    "REQUIRED"=>true,
+                    "FIELDS"=>[
+                        "one"=>["TYPE"=>"String"],
+                        "two"=>["TYPE"=>"String"],
+                        "three"=>["TYPE"=>"String"],
+                        "state"=>["TYPE"=>"State","VALUES"=>["E1","E2","E3"],"DEFAULT"=>"E1"]
+                    ],
+                    'STATES' => $this->getStateDefinition1()
+                ]
+            ],
+            'STATES' => $this->getStateDefinition1()
+        ]);
+        // Se intenta asignar un valor no valido del container interno:
+        $thrown=false;
+        try {
+            $t->setValue(["one"=>"aa","state"=>"E1","inner"=>["three"=>"zzz","state"=>"E1"]]);
+        }catch(\Exception $e)
+        {
+            $thrown=true;
+            $isErrored=$t->__isErrored();
+            $isErrored2=$t->{"*inner"}->__isErrored();
+            $isErrored3=$t->inner->{"*three"}->__isErrored();
+            $this->assertEquals(true,$isErrored && $isErrored2 && $isErrored3);
+            $e1=$t->getErroredFields();
+            $path=$e1[0]->__getFieldPath();
+            $e2=$t->{"*inner"}->getErroredFields();
+            $path2=$e2[0]->__getFieldPath();
+            $this->assertEquals("/inner",$path);
+            $this->assertEquals("/inner/three",$path2);
+        }
+        $this->assertEquals(true,$thrown);
+        // Arreglamos el campo inner:
+        $t->inner=["one"=>"qq","state"=>"E1"];
+        $isErrored=$t->__isErrored();
+        $isErrored2=$t->{"*inner"}->__isErrored();
+        $isErrored3=$t->inner->{"*three"}->__isErrored();
+        $this->assertEquals(false, $isErrored || $isErrored2 || $isErrored3);
+        // Se pasa el inner al estado E2, y luego a E3, donde deberia dar un error, ya que three es requerido
+        $t->inner->state="E2";
+        $thrown=false;
+        try {
+            $t->inner->state="E3";
+        }catch(\Exception $e)
+        {
+            $thrown=true;
+            $this->assertEquals(true,is_a($e,'lib\model\BaseTypedException'));
+            $this->assertEquals(\lib\model\BaseTypedException::ERR_REQUIRED_FIELD,$e->getCode());
+            $isErrored=$t->__isErrored();
+            $isErrored2=$t->{"*inner"}->__isErrored();
+            $isErrored3=$t->inner->{"*three"}->__isErrored();
+            $e1=$t->getErroredFields();
+            $path=$e1[0]->__getFieldPath();
+            $e2=$t->{"*inner"}->getErroredFields();
+            $path2=$e2[0]->__getFieldPath();
+            $this->assertEquals("/inner",$path);
+            $this->assertEquals("/inner/three",$path2);
+        }
+        $this->assertEquals(true,$thrown);
+
+    }
 
 }

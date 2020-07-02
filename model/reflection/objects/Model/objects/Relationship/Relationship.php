@@ -92,7 +92,7 @@ class Relationship extends \model\reflection\Model\BaseRelation
          return array("LABEL"=>$labelFields,"VALUE"=>$valueField,"NULL_RELATION"=>array(-1),"PRE_OPTIONS"=>array(-1=>"Select an option"),"DATASOURCE"=>$datasource);
     }
 
-    function isAlias()
+    function __isAlias()
     {
         return false;
     }
@@ -166,7 +166,7 @@ class Relationship extends \model\reflection\Model\BaseRelation
         $parentName=$this->parentModel->objectName->getNamespaced();
         foreach($aliases as $key=>$value)
         {
-            if($value->isRelation())
+            if($value->__isRelation())
             {
                 if($value->pointsTo($parentName,$this->name))
                     return;
@@ -280,7 +280,7 @@ class Relationship extends \model\reflection\Model\BaseRelation
             $type2= \lib\model\types\TypeFactory::getType(null,$this->{$key}->getDefinition());
         }
 
-        return array($this->name=>$type2->getRelationshipType());
+        return array($this->name=>$type2->__getRelationshipType());
     }
 }
 

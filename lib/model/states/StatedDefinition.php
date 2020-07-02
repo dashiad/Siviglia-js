@@ -116,7 +116,7 @@ class StatedDefinition
         {
             $this->model=$model;
             $this->definition= $definition!==null?$definition:$model->getDefinition();
-            $this->pathPrefix=$model->getPathPrefix();
+            $this->pathPrefix=$model->__getPathPrefix();
         }
         function setOldState($state)
         {
@@ -172,7 +172,7 @@ class StatedDefinition
                 if(!$this->hasState)
                     return null;
 
-            if($this->stateType->hasValue())
+            if($this->stateType->__hasValue())
                 return $this->stateType->getValue();
             return $this->getDefaultState();
         }
@@ -260,40 +260,33 @@ class StatedDefinition
         function isRequired($fieldName)
         {
             if($this->hasState==false)
-                return $this->model->__getField($fieldName)->isDefinedAsRequired();
-
+                return $this->model->__getField($fieldName)->__isDefinedAsRequired();
             return $this->isRequiredForState($fieldName,$this->getCurrentStateLabel());
         }
         function isEditable($fieldName)
         {
-            if($fieldName[0]!==$this->pathPrefix)
-                $fieldName=$this->pathPrefix.$fieldName;
             if($this->hasState==false)
                 return true;
-            if($fieldName==$this->stateField)
-                return true;
-
             return $this->isEditableInState($fieldName,$this->getCurrentStateLabel());
         }
         function isFixed($fieldName)
         {
             if($this->hasState==false)
                 return false;
-            return $this->isFixedInState($fieldName,$this->getNewState());
+            return $this->isFixedInState($fieldName,$this->getCurrentStateLabel());
         }
         function isRequiredForState($fieldName,$stateName)
         {
             if(!$this->hasState)
-                return $this->model->__getField($fieldName)->isRequired();
+                return $this->model->__getField($fieldName)->__isRequired();
 
             if($this->existsFieldInStateDefinition($stateName,$fieldName,"REQUIRED"))
                 return true;
-            return $this->model->__getField($fieldName)->isDefinedAsRequired();
+            return $this->model->__getField($fieldName)->__isDefinedAsRequired();
 
         }
         function isEditableInState($fieldName,$stateName)
         {
-
             if(!$this->hasState)
                 return true;
             if($fieldName[0]!==$this->pathPrefix)
@@ -416,7 +409,7 @@ class StatedDefinition
             for($n=0;$n<count($f);$n++)
             {
                 $field=$this->model->{"*".$f[$n]};
-                if(!$field->hasValue()) {
+                if(!$field->__hasValue()) {
                     $this->changingState=false;
                     $this->newState=null;
                     $e=new BaseTypedException(BaseTypedException::ERR_REQUIRED_FIELD, array("field" => $f[$n]));
@@ -466,6 +459,7 @@ class StatedDefinition
         $this->changingState=false;
         $this->oldState=$this->newState;
         $this->newState=null;
+        $this->getStateFieldObj()->onStateChangeComplete();
     }
 
     function executeCallbacks($type,$state,$refState)
@@ -483,7 +477,7 @@ class StatedDefinition
         //Hay que buscar quien es el modelo destino.
         $dest=$this->model;
         while($dest!==null && !is_a($dest,'\lib\model\BaseTypedObject'))
-            $dest=$dest->getParent();
+            $dest=$dest->__getParent();
         if($dest===null)
             throw new BaseTypedException(BaseTypedException::ERR_NO_STATE_CONTROLLER,array("state"=>$state,"callbackType"=>$type));
 

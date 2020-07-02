@@ -170,7 +170,7 @@ class ArraySourceTest extends TestCase
         $ins=$this->getTypedObject1();
         $ins->f1="a";
         $ins->f2="b";
-        $src=$ins->{"*f3"}->getSource();
+        $src=$ins->{"*f3"}->__getSource();
         $d=$src->getData();
         $this->assertEquals(1,count($d));
         $this->assertEquals(1,$d[0]["Id"]);

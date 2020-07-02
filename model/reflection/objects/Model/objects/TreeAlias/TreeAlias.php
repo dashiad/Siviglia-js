@@ -7,9 +7,9 @@
       {
           parent::__construct($name,$parentModel,$definition);
       }
-      function isRelation() {return false;}
+      function __isRelation() {return false;}
 
-      function isAlias(){ return true;}
+      function __isAlias(){ return true;}
 
 
       function generateActions()

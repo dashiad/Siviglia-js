@@ -5,7 +5,7 @@ class Container
 {
     function serialize($name,$type,$serializer,$model=null)
     {
-        if($type->hasValue())
+        if($type->__hasValue())
         {
             $val=$type->getValue();
             return [$name=>"'".json_encode($type->getValue())."'"];

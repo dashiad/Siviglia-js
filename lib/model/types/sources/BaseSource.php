@@ -13,7 +13,7 @@ abstract class BaseSource
     function __construct($parent,$definition,$useValidatingData=false)
     {
         $this->parent=$parent;
-        $this->definition=$definition;
+        $this->__definition=$definition;
         $this->useValidatingData=$useValidatingData;
     }
 
@@ -54,28 +54,28 @@ abstract class BaseSource
     }
     function getLabel($row)
     {
-        if(isset($this->definition["LABEL_EXPRESSION"]))
-            return \lib\php\ParametrizableString::getParametrizedString($this->definition["LABEL_EXPRESSION"],$row);
+        if(isset($this->__definition["LABEL_EXPRESSION"]))
+            return \lib\php\ParametrizableString::getParametrizedString($this->__definition["LABEL_EXPRESSION"],$row);
         else {
-            return $row[$this->definition["LABEL"]];
+            return $row[$this->__definition["LABEL"]];
         }
     }
     function getLabelField()
     {
 
-        return isset($this->definition["LABEL"])?$this->definition["LABEL"]:"LABEL";
+        return isset($this->__definition["LABEL"])?$this->__definition["LABEL"]:"LABEL";
     }
     function getLabelExpression()
     {
 
-        return isset($this->definition["LABEL_EXPRESSION"])?$this->definition["LABEL_EXPRESSION"]:null;
+        return isset($this->__definition["LABEL_EXPRESSION"])?$this->__definition["LABEL_EXPRESSION"]:null;
     }
     function getValueField()
     {
-        return isset($this->definition["VALUE"])?$this->definition["VALUE"]:"VALUE";
+        return isset($this->__definition["VALUE"])?$this->__definition["VALUE"]:"VALUE";
     }
     function getDefinition()
     {
-        return $this->definition;
+        return $this->__definition;
     }
 }

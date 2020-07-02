@@ -29,20 +29,20 @@ abstract class BaseQueryBuilder
                     switch ($cKey) {
                         case "__start":
                             {
-                                if ($val->hasValue())
+                                if ($val->__hasValue())
                                     $this->setStartingRow($val->getValue());
 
                             }
                             break;
                         case "__count":
                             {
-                                if ($val->hasValue())
+                                if ($val->__hasValue())
                                     $this->setPageSize($val->getValue());
                             }
                             break;
                         case "__sort":
                             {
-                                if ($val->hasValue()) {
+                                if ($val->__hasValue()) {
                                     $sortDir = $fields["__sortDir"] ? $fields["__sortDir"]->getLabel() : "ASC";
 
                                     $this->setDefaultOrder($val->getValue(), $sortDir);

@@ -91,7 +91,7 @@ class BaseModelDefinition
         $def=$this->getFieldOrAliasDefinition($path[0]);
         $field=ModelField::getModelField("none",null,$def);
         $a=array(array("TABLE"=>$this->getTableName(),"FIELD"=>$path[0]));
-        if($field->isRelation())
+        if($field->__isRelation())
         {
             $remote=$field->getRemoteObject();
             $remoteDef=BaseModelDefinition::loadDefinition($remote);
