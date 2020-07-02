@@ -52,6 +52,31 @@ class Edit extends \lib\action\Action
                            'FIELD'=>'id_type',
                            'MODEL'=>'\model\web\Page'
                            ),
+                   'date_add'=>array(
+                       'REQUIRED'=>1,
+                       'FIELD'=>'date_add',
+                       'MODEL'=>'\model\web\Page'
+                   ),
+                   'date_modified'=>array(
+                       'REQUIRED'=>1,
+                       'FIELD'=>'date_modified',
+                       'MODEL'=>'\model\web\Page'
+                   ),
+                   'model'=>array(
+                       'REQUIRED'=>1,
+                       'FIELD'=>'model',
+                       'MODEL'=>'\model\web\Page'
+                   ),
+                   'modelParam'=>array(
+                       'REQUIRED'=>1,
+                       'FIELD'=>'modelParam',
+                       'MODEL'=>'\model\web\Page'
+                   ),
+                   'datasource'=>array(
+                       'REQUIRED'=>1,
+                       'FIELD'=>'datasource',
+                       'MODEL'=>'\model\web\Page'
+                   ),
                      'isPrivate'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'isPrivate',
