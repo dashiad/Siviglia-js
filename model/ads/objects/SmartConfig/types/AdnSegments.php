@@ -10,7 +10,8 @@ class AdnSegments extends BaseType
     
     public $definition = [
         "TYPE" => "Container",
-        "LABEL" => "Segmentos de AppNexus.Introducir los ids de segmentos asociados a la url actual",
+        "LABEL" => 'Segmentos',
+        "DESCRIPTION" => "Segmentos de AppNexus.Introducir los ids de segmentos asociados a la url actual",
         "FIELDS" => [
             "segments" => [
                 "TYPE" => "Array",

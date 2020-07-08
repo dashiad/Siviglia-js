@@ -8,7 +8,7 @@ namespace model\ads\SmartConfig\actions;
 class Edit extends \lib\action\Action
 {
 
-    static $definition = array(
+    static $_definition = array(
         'MODEL' => '\model\ads\SmartConfig',
         'ROLE' => 'Edit',
         'PERMISSIONS' => array(
@@ -46,7 +46,7 @@ class Edit extends \lib\action\Action
      */
     function __construct()
     {
-        parent::__construct(Edit::$definition);
+        parent::__construct(Edit::$_definition);
     }
 
     /**
@@ -66,12 +66,12 @@ class Edit extends \lib\action\Action
      *
      * RETURNS:
      */
-    function validate($actionResult)
-    {
+//     function validate($actionResult)
+//     {
 
-        /* Insert the validation code here */
-        return $actionResult->isOk();
-    }
+//         /* Insert the validation code here */
+//         return $actionResult->isOk();
+//     }
 
     /**
      * NAME:onSuccess
@@ -112,7 +112,6 @@ class Edit extends \lib\action\Action
      */
     function onError($keys, $params, $actionResult, $user)
     {
-
         /* Insert callback code here */
         return true;
     }

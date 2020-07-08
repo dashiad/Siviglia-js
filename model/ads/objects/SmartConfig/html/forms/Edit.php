@@ -18,28 +18,45 @@ class Edit extends \lib\output\html\Form
             'INHERIT'=>1
         ),
         'ROLE'=>'Edit',
+        'FIELDS' => [
+            'domain' => ['MODEL' => '\model\ads\SmartConfig', 'FIELD' => 'domain'],
+            'config' => ['MODEL' => '\model\ads\SmartConfig', 'FIELD' => 'config'],
+        ],
         'REDIRECT'=>array(
             'ON_SUCCESS'=>'',
             'ON_ERROR'=>''
         ),
-        'INPUTS'=>array(),
+        'INPUTS'=>array(
+            'domain' => [
+                'TYPE' => 'String',
+                'PARAMS' => [],
+            ],
+            'config' => [
+                'TYPE' => 'String',
+                'PARAMS' => [],
+            ],        
+        ),
         'INDEXFIELDS'=>array(
-//              'domain'=>array(
-//                 'REQUIRED'=>1,
-//                 'FIELD'=>'domain',
-//                 'MODEL'=>'\model\ads\SmartConfig'
-//             )
+             'domain'=>array(
+                'REQUIRED'=>1,
+                'FIELD'=>'domain',
+                'MODEL'=>'\model\ads\SmartConfig'
+            )
         ),
         'GROUPS' => [
-            'TAB1' => [
-                'LABEL'=>'TAB1', 'FIELDS'=>['/config/.*/Exelate',]
-            ],
-            'TAB2' => [
-                'LABEL'=>'TAB1', 'FIELDS'=>['/config/.*/AdnSegments']
-            ],
+//             'TAB1' => [
+//                 'FIELDS' => ['/config/*'],
+//                 'LABEL' => 'Configuración',
+//             ],
         ],
         'INPUTPARAMS' => [
-            '/' => ['INPUT'=>'TabsContainer'],
+            '/' => ['INPUT'=>'FlexContainer'],
+            '/config' => ['INPUT'=>'ActionList'],
+            'Exelate' => ['INPUT'=>'GridContainer'],
+//             '/config/*' => [
+//                 'LABEL' => 'Configuración',
+//                 'INPUT'=>'TabsContainer'
+//             ],
         ],
     );
     
@@ -58,9 +75,7 @@ class Edit extends \lib\output\html\Form
 	 */
 	 function __construct( $actionResult=null)
 	{
-
-			parent::__construct(Edit::$definition,$actionResult);
-
+		parent::__construct(Edit::$definition,$actionResult);
 	}
 
 
@@ -79,7 +94,6 @@ class Edit extends \lib\output\html\Form
 	 */
 	 function onSuccess( $actionResult)
 	{
-
 
 	/* Insert callback code here */
 

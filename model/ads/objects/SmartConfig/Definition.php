@@ -28,78 +28,62 @@ class Definition extends BaseModelDefinition
                 'DEFAULT' => null,
             ],
             'config' => [
-                'TYPE' => 'Container',
-                'LABEL' => 'micampo container',
-                'FIELDS' => [
-                    '.*' => [
-                        'LABEL' => 'Plugin',
-                        'TYPE' => 'Container',
-//                         'KEEP_KEY_ON_EMPTY' => false,
-                        'FIELDS' => [
-                            'Exelate' => [
-                                'TYPE' => '\\model\\ads\\SmartConfig\\types\\Exelate',
-                                'LABEL' => 'Plugin Exelate',
+                'TYPE' => 'Array',
+                'LABEL' => 'Regex',
+                'ELEMENTS' => [
+                    'LABEL' => 'Plugin',
+                    'TYPE' => 'Container',
+                    'KEEP_KEY_ON_EMPTY' => false,
+                    'FIELDS' => [
+                        'actions' => [
+                            'TYPE' => 'Array',
+                            'LABEL' => 'Acciones',
+                            'ELEMENTS' => [
+                                'TYPE' => 'TypeSwitcher',
+                                "ON"=>[
+                                    ["IS"=>"String", "THEN"=>"simple"],
+                                    ["IS"=>"Object", "THEN"=>"composite"],
+                                ],                                
+                                'ALLOWED_TYPES' => [
+                                    'simple' => [
+                                        'TYPE' => 'String',
+                                    ],
+                                    'composite' => [
+                                        'TYPE' => 'Dictionary',
+                                        "VALUETYPE" => [
+                                            'TYPE' => "String",
+                                        ],
+                                    ],
+                                ],
                             ],
-//                             'Adobe' => [
-//                                 'TYPE' => '\\model\\ads\\SmartConfig\\types\\Adobe',
-//                                 'LABEL' => 'Plugin Adobe',
-//                             ],
-//                             "BlueKaiPlugin" => [
-//                                 'TYPE' => '\\model\\ads\\SmartConfig\\types\\BlueKai',
-//                                 'LABEL' => 'Plugin BlueKai',
-//                             ],
-//                             'ImageLoaderUrl' => [
-//                                 'TYPE' => '\\model\\ads\\SmartConfig\\types\\ImageLoaderUrl',
-//                                 'LABEL' => 'Plugin ImageLoaderUrl',
-//                             ],
-                            'AdnSegments' => [
-                                'TYPE' => '\\model\\ads\\SmartConfig\\types\\AdnSegments',
-                                'LABEL' => 'Plugin AdnSegments',
-                            ],
-//                             'GPTConfig' => [
-//                                 'TYPE' => '\\model\\ads\\SmartConfig\\types\\GPTConfig',
-//                                 'LABEL' => 'Plugin GPTConfig',
-//                             ],
+                        ],
+                        'Exelate' => [
+                            'TYPE' => '\\model\\ads\\SmartConfig\\types\\Exelate',
+                            'LABEL' => 'Plugin Exelate',
+                        ],
+                        'Adobe' => [
+                            'TYPE' => '\\model\\ads\\SmartConfig\\types\\Adobe',
+                            'LABEL' => 'Plugin Adobe',
+                        ],
+                        "BlueKaiPlugin" => [
+                            'TYPE' => '\\model\\ads\\SmartConfig\\types\\BlueKai',
+                            'LABEL' => 'Plugin BlueKai',
+                        ],
+                        'ImageLoaderUrl' => [
+                            'TYPE' => '\\model\\ads\\SmartConfig\\types\\ImageLoaderUrl',
+                            'LABEL' => 'Plugin ImageLoaderUrl',
+                        ],
+                        'AdnSegments' => [
+                            'TYPE' => '\\model\\ads\\SmartConfig\\types\\AdnSegments',
+                            'LABEL' => 'Plugin AdnSegments',
+                        ],
+                        'GPTConfig' => [
+                            'TYPE' => '\\model\\ads\\SmartConfig\\types\\GPTConfig',
+                            'LABEL' => 'Plugin GPTConfig',
                         ],
                     ],
-                ],
+                ],  
             ],
-//             'config' => [
-//                 'TYPE' => 'Dictionary',
-//                 'LABEL' => 'Regex',
-//                 'VALUETYPE' => [
-//                     'LABEL' => 'Plugin',
-//                     'TYPE' => 'Container',
-//                     'KEEP_KEY_ON_EMPTY' => false,
-//                     'FIELDS' => [
-//                         'Exelate' => [
-//                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\Exelate',
-//                             'LABEL' => 'Plugin Exelate',
-//                         ],
-//                         'Adobe' => [
-//                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\Adobe',
-//                             'LABEL' => 'Plugin Adobe',
-//                         ],
-//                         "BlueKaiPlugin" => [
-//                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\BlueKai',
-//                             'LABEL' => 'Plugin BlueKai',
-//                         ],
-//                         'ImageLoaderUrl' => [
-//                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\ImageLoaderUrl',
-//                             'LABEL' => 'Plugin ImageLoaderUrl',
-//                         ],
-//                         'AdnSegments' => [
-//                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\AdnSegments',
-//                             'LABEL' => 'Plugin AdnSegments',
-//                         ],
-//                         'GPTConfig' => [
-//                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\GPTConfig',
-//                             'LABEL' => 'Plugin GPTConfig',
-//                         ],
-//                     ],
-//                 ],
-                
-//             ],
         ],
         'INDEXFIELDS' => [
             "domain",

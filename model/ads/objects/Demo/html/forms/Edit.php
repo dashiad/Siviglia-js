@@ -9,7 +9,7 @@ namespace model\ads\Demo\html\forms;
 
 class Edit extends \lib\output\html\Form
 {
-    static  $definition=array(
+    static $definition=array(
         'NAME'=>'Edit',
         'MODEL'=>'\model\ads\Demo',
         'ACTION'=>array(
@@ -28,26 +28,41 @@ class Edit extends \lib\output\html\Form
             'ON_ERROR'=>''
         ),
         'INPUTS'=>array(
-            'id' => ['TYPE' => 'String', 'PARAMS' => []],
-            'domain' => ['TYPE' => 'String', 'PARAMS' => []],
-            'config' => ['TYPE' => 'String', 'PARAMS' => []],        
+            'id' => [
+                'TYPE' => 'Integer',
+//                 "LABEL"=>"id",
+//                 "VALUE"=>"id",
+                'PARAMS' => [],
+            ],
+            'domain' => [
+                'TYPE' => 'String', 
+//                 "LABEL"=>"domain",
+//                 "VALUE"=>"domain",
+                'PARAMS' => [],
+            ],
+            'config' => [
+                'TYPE' => 'String', 
+//                 "LABEL"=>"config",
+//                 "VALUE"=>"config",
+                'PARAMS' => [],
+            ],        
         ),
         'INDEXFIELDS'=>array(
              'id'=>array(
-                    'REQUIRED'=>1,
                     'FIELD'=>'id',
                     'MODEL'=>'\model\ads\Demo'
                 )
         ),
 //         'GROUPS' => [
 //             'TAB1' => [
-//                 'LABEL'=>'TAB1', 'FIELDS'=>['/config/.*/Exelate',]
+//                 'LABEL'=>'Dominio', 'FIELDS'=>['id', 'domain']
 //             ],
 //             'TAB2' => [
-//                 'LABEL'=>'TAB1', 'FIELDS'=>['/config/.*/AdnSegments']
+//                 'LABEL'=>'Config', 'FIELDS'=>['config']
 //             ],
 //         ],
         'INPUTPARAMS' => [
+//             '/' => ['INPUT'=>'GridContainer'],
 //             '/' => ['INPUT'=>'TabsContainer'],
             '/' => ['INPUT'=>'FlexContainer'],
         ],

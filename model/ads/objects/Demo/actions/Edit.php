@@ -7,8 +7,7 @@ namespace model\ads\Demo\actions;
  */
 class Edit extends \lib\action\Action
 {
-    
-    static $definition = array(
+    static $_definition = array(
         'MODEL' => '\model\ads\Demo',
         'ROLE' => 'Edit',
         'PERMISSIONS' => array(
@@ -71,12 +70,13 @@ class Edit extends \lib\action\Action
      *
      * RETURNS:
      */
-    function validate($actionResult)
-    {
+    // TODO: revisar qué ha cambiado en clase base !!!
+//     function validate($actionResult)
+//     {
         
-        /* Insert the validation code here */
-        return $actionResult->isOk();
-    }
+//         /* Insert the validation code here */
+//         return $actionResult->isOk();
+//     }
     
     /**
      * NAME:onSuccess

@@ -9,9 +9,34 @@ class Regex extends BaseType
     const REGEX = "";
     
     public $definition = [
-        "TYPE" => "String",
+        "TYPE" => "Container",
         "DESCRIPTION" => "Regex",
         "LABEL" => "Regex",
+        "FIELDS" => [
+            "is_object" => [
+                "LABEL" => "Objeto",
+                "DESCRIPTION" => "True si es objeto, false si es una cadena",
+                "TYPE" => "Boolean"
+            ],
+            "values" => [
+                "LABEL" => "Valores",
+                "TYPE" => "Array",
+                "ELEMENTS" => [
+                    "TYPE" => "Container",
+                    "FIELDS" => [
+                        "key" => [
+                            "LABEL" => "Clave",
+                            "TYPE" => "String",
+                            "DEFAULT" => null,
+                        ],
+                        "value" => [
+                            "LABEL" => "Valor",
+                            "TYPE" => "String",
+                        ],
+                    ],
+                ],
+            ],
+        ],
     ];
     
     public function _setValue($val, $validationMode = null)

@@ -442,7 +442,7 @@
 .jqx-widget-content {
     background-color: var(--jqx-background-color);
     border-color: var(--jqx-border-color);    
-    height: fit-content !important;
+    height: fit-content(100%) !important;
     /* width: 750px !important;
     height: 400px !important; */
 }

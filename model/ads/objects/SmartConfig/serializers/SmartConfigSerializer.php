@@ -131,6 +131,7 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
                      $domain = explode(".", $filename);
                      $this->data[] = ["domain" => $domain[0]];
                  }
+                 sort($this->data);
              }
              $this->nRows = count($this->data); 
          }
@@ -182,7 +183,7 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
                     
                     foreach ($result['actions'] as $action)
                     {
-                        $config['config'][$action['regex'][0]] = $action['actions'];
+                        $config['config'][] = array_merge($action['actions'], ['actions' => $action['regex']]);
                     }                    
                     return $config;
                 }
