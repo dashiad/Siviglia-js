@@ -174,34 +174,57 @@ Siviglia.Utils.buildClass(
                         construct:function(source,controller,stack)
                         {
 
+                            this.source=source;
                             this.BaseDataSource(source,controller,stack);
                             this.lastWasValid=true;
+                            this.ev = new Siviglia.Dom.EventManager();
 
-                            if(typeof source["DATA"] != "undefined")
+                            if(typeof source["DATA"] != "undefined") {
+                                source["DATA"]=Siviglia.Path.Proxify(source["DATA"], this.ev);
                                 this._initializeValues(source["DATA"]);
+
+                            }
                             else {
                                 if (typeof source["VALUES"] !== "undefined") {
-                                    this.valsArray=[];
-                                    var re=null;
-                                    if(this.searchString)
-                                        re=new RegExp("/"+this.searchString+"/");
-                                    for(var k=0;k<source["VALUES"].length;k++) {
-                                        if(!re || re.match(source["VALUES"][k]) )
-                                            this.valsArray.push({"VALUE": k, "LABEL": source["VALUES"][k]});
-                                    }
+                                    source["VALUES"]=Siviglia.Path.Proxify(source["VALUES"], this.ev);
+                                    this.ev.addListener("CHANGE",null,function(){
+                                        this.rebuildValues();
+                                        this.fetch();
+
+                                    }.bind(this));
+                                    this.rebuildValues();
+
+
                                     if(typeof source["LABEL"]=="undefined")
                                         source["LABEL"]="LABEL";
                                     if(typeof source["VALUE"]=="undefined")
                                         source["VALUE"]="LABEL";
                                 }
                             }
-                            this.source=source;
+
+                        },
+                        destruct:function()
+                        {
+                            if(this.ev!==null)
+                                this.ev.destruct();
                         },
                         methods:
                             {
                                 _initializeValues:function(data)
                                 {
                                     this.valsArray=data;
+                                },
+                                rebuildValues:function()
+                                {
+                                    this.valsArray=[];
+                                    var re=null;
+                                    if(this.searchString)
+                                        re=new RegExp("/"+this.searchString+"/");
+                                    for(var k=0;k<this.source["VALUES"].length;k++) {
+                                        if(!re || re.match(this.source["VALUES"][k]) )
+                                            this.valsArray.push({"VALUE": k, "LABEL": this.source["VALUES"][k]});
+                                    }
+
                                 },
                                 resolvePath:function(path)
                                 {

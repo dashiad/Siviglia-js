@@ -1498,6 +1498,25 @@ Siviglia.Utils.buildClass(
                 inherits: 'BaseType',
                 construct: function (name, def, parentType, val, validationType) {
                     this.__erroredFields = null;
+                    if(Siviglia.isset(def["INHERITS"]))
+                    {
+                        var baseType=Siviglia.types.TypeFactory.getType({
+                            "fieldName": "inh",
+                            "path": "/"
+                           }, def, this, null, this.__validationMode);
+                        var baseDef=baseType.getDefinition();
+                        for(var k in def)
+                        {
+                            if(k=="FIELDS") {
+                                for(var k1 in def["FIELDS"]) {
+                                    baseDef["FIELDS"][k1] = def["FIELDS"][k1];
+                                }
+                            }
+                            else
+                                baseDef[k]=def[k];
+                        }
+                        def=baseDef;
+                    }
                     this.__fieldDef = def["FIELDS"];
                     this.__fields = {};
                     this.__dirtyFields = [];
@@ -1568,6 +1587,8 @@ Siviglia.Utils.buildClass(
 
                     },
                     getPlainValue: function () {
+                        if(this.__value===null)
+                            return null;
                         var subVal = this.__value;
                         var nSet = 0;
                         var nFields = 0;
@@ -3413,7 +3434,20 @@ Siviglia.i18n = (Siviglia.i18n || {});
 Siviglia.i18n.es = (Siviglia.i18n.es || {});
 Siviglia.i18n.es.base = (Siviglia.i18n.es.base || {});
 Siviglia.i18n.es.base.errors = {
-    BaseType: {1: 'Por favor, complete este campo.', 2: 'Campo no válido', 5: 'Campo Requerido'},
+    BaseTyped:{
+        1: 'Por favor, complete este campo.',
+        3: 'Estado no válido',
+        4: 'Transición de estado no válida',
+        5: 'Path no válido',
+        10: 'No es posible cambiar de estado',
+        11: 'No es posible cambiar a ese estado',
+        12: 'Cambio de estado rechazado',
+        13: 'No editable en el estado actual'
+    },
+    BaseType: {
+        1: 'Por favor, complete este campo.',
+        2: 'Campo no válido',
+        5: 'Campo Requerido'},
     Integer: {100: 'Valor demasiado pequeño', 101: 'Valor demasiado grande', 102: 'Debes introducir un número'},
     String: {
         100: 'El campo debe tener al menos %min% caracteres',
