@@ -74,7 +74,7 @@
 
 <script>
     hljs.initHighlightingOnLoad();
-    var DEVELOP_MODE=0;
+    var DEVELOP_MODE=-1;
 
     var def1={
         "TYPE":"Container",
@@ -2351,8 +2351,8 @@
             "TYPE":"Container",
         "FIELDS":{
         "one":{"TYPE":"String","REQUIRED":true},
-    "two":{"TYPE":"String","REQUIRED":true},
-    "state":{"TYPE":"State","VALUES":["E1","E2","E3"],"DEFAULT":"E1"}
+        "two":{"TYPE":"String","REQUIRED":true},
+        "state":{"TYPE":"State","VALUES":["E1","E2","E3"],"DEFAULT":"E1"}
     },
     'STATES' : {
         'STATES' : {
@@ -3656,6 +3656,36 @@
             result=result && thrown;
             return result;
         });
+
+    runTest("Valor vacio en valor por defecto.",
+        "Comprobacion de que si los valores de un container, son siempre los valores por defecto, el valor del container es nulo",
+        {
+            "FIELDS": {
+                "q1": {
+                    "TYPE":"Container",
+                    "FIELDS": {
+                        "f1": {
+                            "TYPE": "String",
+                            "DEFAULT": "Value3"
+                        },
+                        "f2": {
+                            "TYPE": "String",
+                            "DEFAULT": "Value3"
+                        }
+                    }
+                }
+            }
+        },
+        function (def) {
+            var t1 = new Siviglia.model.BaseTypedObject(def);
+            var v=t1.getPlainValue();
+            var status=(v===null);
+            t1.q1={f1:"qq"};
+            v=t1.getPlainValue();
+            status = status && v.q1.f1==="qq" && v.q1.f2==="Value3";
+            console.dir(v);
+            return status;
+        }, true);
 
     
         
