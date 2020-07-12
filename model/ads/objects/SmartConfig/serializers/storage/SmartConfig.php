@@ -92,7 +92,6 @@ class SmartConfig extends ApiRequest
     public function request($q="", $field="")
     {
         $options = $q;
-        
         $url = $options['url'];
         $method = $options['method'];
         unset($options['url']);

@@ -5,12 +5,13 @@ use lib\model\types\BaseType;
 
 require_once(__DIR__."/BaseType.php");
 
-class AolBidder extends  BaseType
+class AolBidder extends BaseType
 {
     
     public $definition = [
         "TYPE" => "Container",
         "DESCRIPTION" => "Bidder de AOL",
+        "LABEL" => "AOL Bidder",
         "FIELDS" => [
             "bidder" => [
                 "LABEL" => "Tipo",

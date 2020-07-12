@@ -122,6 +122,10 @@ abstract class DataSource extends \lib\model\BaseTypedObject
         }
     }
 
+    public function getOriginalDefinition()
+    {
+        return $this->originalDefinition;
+    }
 
     function isLoaded()
     {

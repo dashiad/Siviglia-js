@@ -27,21 +27,19 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
             $parameters = $query['parameters'];
         }
 
-        if (!isset($query["action"])) {
-            $query["action"] = "getFileContent";
-        }
+        $action = $query["definition"]["action"]??"getFileContent";
         
-        switch ($query["action"]) {
+        switch ($action) {
             case "getFolderContent":
-                $url = self::BASE_URL."?action=".$query['action'];
+                $url = self::BASE_URL."?action=".$action;
                 $method = "GET";
                 break;
             case "getFileContent":
-                $url = self::BASE_URL."?action=".$query['action']."&file=".$parameters['domain'].".js";
+                $url = self::BASE_URL."?action=".$action."&file=".$parameters['domain'].".js";
                 $method = "GET";
                 break;
             case "changeFileContent": // TODO: urlencode contenido
-                $url = self::BASE_URL."?action=".$query['action']."&secret=".self::SECRET."file=".$parameters['domain'].".js&content=".$parameters['content'];
+                $url = self::BASE_URL."?action=".$action."&secret=".self::SECRET."file=".$parameters['domain'].".js&content=".$parameters['content'];
                 $method = "POST";
                 break;
             default:

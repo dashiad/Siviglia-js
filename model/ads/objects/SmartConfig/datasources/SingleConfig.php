@@ -14,39 +14,40 @@ class SingleConfig
         'DATAFORMAT' => 'Table',
         'PARAMS' => [
             'domain' => [
-                'TYPE' => '/model/ads/SmartConfig/types/Domain', 
-                'LABEL' => 'Mensaje',
+                'TYPE' => 'String',
+                'LABEL' => 'Dominio',
                 'REQUIRED'=>'true',
             ],
             'regex' => [
-                'TYPE' => '/model/ads/SmartConfig/types/Regex', 
+                'TYPE' => 'Array',
                 'LABEL' => 'Regex',
-                'REQUIRED' => 'true',
-                'DEFAULT' => '.*'
+                'REQUIRED' => 'false',
+                'ELEMENTS' => [
+                    'TYPE' => 'String',
+                ],
             ],
             'plugin' => [
-                'TYPE' => 'String', 
+                'TYPE' => 'Array', 
                 'LABEL' => 'Plugin',
-                'REQUIRED' => 'true',
+                'REQUIRED' => 'false',
+                'ELEMENTS' => [
+                    'TYPE' => 'String',
+                ],
             ],
         ],
         'FIELDS' => [
             // TODO: revisar formato de cada campo
             'domain' => [
+                'LABEL' => 'Domain',
+                'TYPE' => 'String',
                 'MODEL' => '\model\ads\SmartConfig',
                 'FIELD' => 'domain',
             ],
-            'regex' => [
-                'MODEL' => '\model\ads\SmartConfig',
-                'FIELD' => 'regex',
-            ],
-            'plugin' => [
-                'MODEL' => '\model\ads\SmartConfig',
-                'FIELD' => 'plugin',
-            ],
             'config' => [
+                'LABEL' => 'Config',
+//                 'TYPE'  => 'model/ads/SmartConfig/types/SmartConfig',
                 'MODEL' => '\model\ads\SmartConfig',
-                'FIELD' => 'plugin',
+                'FIELD' => 'config',
             ],
         ],
         'PERMISSIONS' => [],
@@ -57,6 +58,7 @@ class SingleConfig
                     'CLASS'  => 'model\\ads\\SmartConfig\\serializers\\SmartConfigSerializer',
                     'DEFINITION' => [
                         'BASE'   => [
+                            'action' => 'getFileContent',
                             'domain' => "[%domain%]",
                             'regex'  => "[%regex%]",
                             'plugin' => "[%plugin%]",

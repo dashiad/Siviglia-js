@@ -1,0 +1,23 @@
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$currentPage=Registry::$registry["currentPage"];
+$params=Registry::$registry["params"];
+?>
+
+[*:LIST_DS({"currentPage":"$currentPage","object":"/model/web/Site","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+    [_:HEADER]
+        [_:TITLE]Sites[#]
+    [#]
+    [_:LISTING]
+        [_:ROWS]
+            [_:ROW]
+                [_:VALUE]
+                    [*::TAGS/LINK][_::URL]/Site/<?php echo $iterator->namespace;?>[#][_::TEXT]<?php echo $iterator->namespace;?>[#][#]
+                [#]
+            [#]
+        [#]
+    [#]
+    [_:LISTINGFOOTER]
+    [#]
+[#]
+

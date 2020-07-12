@@ -5,12 +5,13 @@ use lib\model\types\BaseType;
 
 require_once(__DIR__."/BaseType.php");
 
-class AppnexusBidder extends  BaseType
+class AppnexusBidder extends BaseType
 {
     
     public $definition = [
         "TYPE" => "Container",
         "DESCRIPTION" => "Bidder de AppNexus",
+        "LABEL" => "AppNexus Bidder",
         "FIELDS" => [
             "bidder" => [
                 "LABEL" => "Tipo",

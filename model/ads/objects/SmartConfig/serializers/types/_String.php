@@ -7,7 +7,7 @@ class _String extends BaseType
     {
         if($type->__hasValue())
         {
-            return [$name=>$type->value];
+            return [$name=>$type->getValue()];
         }
         return null;
     }
