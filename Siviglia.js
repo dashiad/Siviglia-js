@@ -1481,6 +1481,7 @@ Siviglia.Path.Proxify=function(obj,ev)
             delete curVal[prop];
             if(!__disableEvents__)
                 ev.fireEvent("CHANGE",{object:obj,property:prop,value:undefined});
+            return true;
         }
     });
     return objProxy;
@@ -1899,6 +1900,8 @@ Siviglia.Utils.buildClass(
                                 }
                             }
                             var newChildren=$(newNode).children();
+                            if(newChildren.length===0)
+                                newChildren=$("<div></div>");
                             newChildren.insertBefore(this.node[0]);
                             this.node.remove();
 

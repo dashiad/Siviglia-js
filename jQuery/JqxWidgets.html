@@ -154,13 +154,21 @@
                                   }
                               }
                           }
-
                       }
+                      if(this.stateDriven)
+                      {
+                          var controller=this.type.__getController();
+                          var stDef=controller.getStateDef();
+                          var stateType=stDef.getStateFieldObj();
+                          stateType.removeListeners(this);
+                      }
+                      this.type.removeListeners(this);
                     },
                     methods: {
                         preInitialize: function (params) {
                             this.errored = false;
                             this.controller = this.parentView;
+                            this.stateDriven=false;
                             this.tooltipNode=null;
                             this.changing=false;
                             this.hasGlobalErrors=false;
@@ -178,6 +186,24 @@
                             var opts = this.getDefaultInputOptions();
                             for (var k in this.inputParams)
                                 opts[k] = this.inputParams[k];
+                            if(!this.type.__isEditable())
+                                opts.disabled=true;
+                            var controller=this.type.__getController();
+
+                            if(controller!==null && controller.getStateDef()!==null)
+                            {
+                                var stDef=controller.getStateDef();
+                                var stateType=stDef.getStateFieldObj();
+                                if(stateType!==this.type)
+                                {
+                                    this.stateDriven=true;
+                                    this.__checkEditable=function(ev){
+                                        this.callInp({disabled:!this.type.__isEditable()});
+                                    }
+                                    stateType.addListener("CHANGE",this,"__checkEditable");
+                                    this.stateDriven=true;
+                                }
+                            }
                             this.createInput(opts);
                             this.inputNode[this.getJqxWidgetName()]('theme', 'light');
                             var m = this;
@@ -187,13 +213,19 @@
                                     return;
                                 m.changing=true;
                                 try {
-                                    if (m.validate()) {
+
                                         m.type.setValue(m.getValue());
-                                        m.clearErrors();
-                                    }
+                                        if(m.type.__isErrored()) {
+                                            var error=m.type.__getError()
+                                            m.showError(
+                                                Siviglia.i18n.es.base.getErrorFromJsException(error)
+                                            );
+                                        }
+                                        else
+                                            m.clearErrors();
                                 }catch(e)
                                 {
-                                    this.showError(
+                                    m.showError(
                                         Siviglia.i18n.es.base.getErrorFromJsException(e)
                                     );
                                 }
@@ -203,6 +235,17 @@
                             if (this.type.is_set()) {
                                 var toSet = this.type.getValue();
                                 this._setInputValue(toSet);
+
+                                if(this.type.__isErrored()) {
+                                    var m=this;
+                                    setTimeout(function(){
+                                    var error=m.type.__getError();
+
+                                    m.showError(
+                                        Siviglia.i18n.es.base.getErrorFromJsException(error)
+                                    );
+                                    },500);
+                                }
                             }
                         },
 
@@ -371,7 +414,7 @@
                                 opts.maxLength = d.MAXLENGTH;
                             return opts;
                         },
-                        createInput:function(opts)
+                     /*   createInput:function(opts)
                         {
                             var d=this.type.__definition;
                             if(typeof d.PARAMTYPE!=="undefined" && d.PARAMTYPE==='DYNAMIC')
@@ -379,7 +422,7 @@
                                 // Poner callback de keyup, con debouncer
                             }
 
-                        }
+                        }*/
 
                     }
                 },
@@ -714,8 +757,17 @@
                                 if (it) {
                                     self._setInputValue(toSet);
                                 }
-                                else
+                                else {
                                     self.type.unset();
+                                    this.inputNode.jqxComboBox('selectItem',-1);
+                                    this.inputNode.jqxComboBox('val','');
+                                }
+                            }
+                            else
+                            {
+                                //self._setInputValue(null);
+                                this.inputNode.jqxComboBox('selectItem',-1);
+                                this.inputNode.jqxComboBox('val','');
                             }
                         }
 
@@ -875,7 +927,77 @@
                     }
                 },
                 State:{
-                    inherits:'Enum'
+                    inherits:'Enum',
+                    methods: {
+                        onTypeChanged:function(event,params){
+                            this.Enum$onTypeChanged(event,params);
+                            this.callInp(this.getDefaultInputOptions());
+                            var wasChanging=this.__changing;
+                            this.__changing=true;
+                            this.inputNode.val(this.type.getLabel());
+                            this.__changing=wasChanging;
+                        },
+                        getDefaultInputOptions: function () {
+                            var finalOpts = [];
+                            var stDef=this.type.__getController().getStateDef();
+                            var id=this.type.getValue();
+                            var label=stDef.getCurrentStateLabel();
+                            var isFinal=stDef.isFinalState(label);
+
+                            var d = this.type.__definition;
+                            for (var k = 0; k < d.VALUES.length; k++) {
+                                var c = d.VALUES[k];
+                                if(c==label || stDef.canTranslateTo(k))
+                                {
+                                    finalOpts.push(
+                                        {
+                                            //   html: '<div tabIndex=0 style="padding:1px">' + label + '</div>',
+                                            label: c,
+                                            value: c
+                                        }
+                                    )
+
+                                }
+                            }
+                            var opts = {
+                                source: finalOpts, //finalOpts,
+                                placeHolder: 'Seleccionar',
+                                autoComplete: false,
+                                height: 25,
+                                displayMember: "label",
+                                valueMember: "value",
+                                width: '100%',
+                                minLength: 0,
+                                disabled:isFinal
+                            };
+                            return opts;
+                        },
+                        getJqxWidgetName: function () {
+                            return "jqxComboBox";
+                        },
+                        _setInputValue:function(v)
+                        {
+                            this.changing = true;
+                            var curLabel=this.type.getLabel();
+                            this.inputNode[this.getJqxWidgetName()]('val', curLabel);
+                            this.changing = false;
+                        },
+
+                        save:function()
+                        {
+                            try{
+                                this.type.save();
+                                this.clearErrors();
+                                var opts=this.getDefaultInputOptions();
+                                this.callInp(opts);
+                            }catch(e)
+                            {
+                                this.showError(
+                                    Siviglia.i18n.es.base.getErrorFromJsException(e)
+                                );
+                            }
+                        }
+                    }
                 },
                 Name:{
                     inherits:'String'
@@ -1139,6 +1261,115 @@
                         }
                         }
 
+                    }
+                },
+                ByFieldContainer:{
+                    // El Container por campos, no muestra todos los campos a la vez, sino que
+                    // permite añadir o quitar campos disponibles.
+                    inherits:"Container",
+                    methods:{
+                        preInitialize:function(params)
+                        {
+                            /* Se van a utilizar 2 variables aqui, para mantener los campos usados, y los no usados.
+                            Los campos no usados, van a ser un SOURCE para un tipo String, que se va a mostrar en un combo.
+                            Los campos usados, se van a leer desde un sivLoop.
+                            Lo que queremos, es que no haya que hacer otra cosa que manejar esos dos arrays, insertando o eliminando
+                            elementos de cada uno.
+                            El array para el sivLoop lo puede mantener el widget. El sivloop añade listeners a este mismo array.
+                            Pero no pasa lo mismo con el SOURCE. El SOURCE de un campo, tiene que montar un Proxy sobre el array, y
+                            ese proxy se lo queda el SOURCE. es decir, en el código siguiente, el ArraySource no se va a quedar con
+                            el array "unusedFields", sino que va a hacer un Proxy sobre él. Es sobre ese Proxy sobre el que hay
+                            que añadir o quitar elementos. Y es por eso que, una vez creado el tipo (y por tanto, el SOURCE, y su proxy,
+                            recuperamos el array (proxy) del SOURCE, y es a ese al que añadimos y borramos elementos */
+
+                            var t=params.type;
+                            this.changing=false;
+                            this.currentElement=-1;
+                            var def=t.getDefinition();
+                            var v=t.getValue();
+                            var unusedFields=[];
+                            this.usedFields=[];
+                            for(var k in def["FIELDS"])
+                            {
+                                if(v===null || Siviglia.empty(v[k]))
+                                    unusedFields.push(k);
+                                else
+                                    this.usedFields.push(k);
+                                def["FIELDS"][k]["KEEP_KEY_ON_EMPTY"]=false;
+                            }
+                            this.fieldsController=Siviglia.types.TypeFactory.getType("controller", {
+                                "TYPE": "String",
+                                "SOURCE": {
+                                    "TYPE": "Array",
+                                    "VALUES": unusedFields,
+                                    "LABEL": "LABEL",
+                                    "VALUE": "LABEL"
+                                }
+                            },null,null);
+
+                            this.Container$preInitialize(params);
+
+                        },
+                        initialize:function(params)
+                        {
+                            this.Container$initialize(params);
+                            var factory=new Siviglia.inputs.jqwidgets.Factory()
+                            factory.getInput(this.fieldsController,{controller:null},this.form).then(function(instance){
+                                this.fControllerInput=instance;
+                                this.fControllerNode.append(instance.rootNode);
+                                this.fieldsController.addListener("CHANGE",this,"onFieldAdded");
+                                // Recuperamos el array (proxy).
+                                this.unusedFields=this.fieldsController.getDefinition().SOURCE.VALUES;
+                            }.bind(this));
+
+
+                        },
+                        onFieldAdded:function(evName,params)
+                        {
+                            // Hay que evitar bucles
+                            if(this.changing)
+                                return;
+                            this.changing=true;
+                            var selected=this.fieldsController.getValue();
+                            if(selected==null)
+                                return;
+                            var idx=this.unusedFields.indexOf(selected);
+                            if(idx>=0)
+                            {
+                                this.unusedFields.splice(idx,1);
+                                this.usedFields.push(selected);
+                            }
+                            this.currentElement=selected;
+                            this.changing=false;
+
+                        },
+                        setCurrent:function(node,params)
+                        {
+                            this.currentElement=params.current;
+                        },
+                        removeField:function(node,params)
+                        {
+                            var selected=params.current;
+                            if(selected==null)
+                                return;
+
+                            if(selected===this.currentElement) {
+                                // Importante destruir primero el subwidget, de forma que destruimos los listeners que
+                                // habia sobre los elementos que ahora vamos a destruir. Si no, ese subwidget puede
+                                // quedarse apuntando a un valor que ahora vamos a poner a null.
+
+                                this.subwidgets[selected].destruct();
+                                this.currentElement = '-1';
+                            }
+                            var idx=this.usedFields.indexOf(selected);
+                            if(idx>=0)
+                            {
+                                this.usedFields.splice(idx,1);
+                                this.unusedFields.push(selected);
+                                this.type[selected]=null;
+                            }
+
+                        }
                     }
                 },
                 AccordionContainer:{
@@ -2334,6 +2565,38 @@
             </div>
         </div>
     </div>
+
+    <!--
+            ---------------------------------------------------------------------------------------
+            -->
+
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.ByFieldContainer" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.ByFieldContainer">
+        <div>
+            <div style="float:left;border:1px solid black;width:250px">
+                <div data-sivId="fControllerNode"></div>
+                <div>
+                    <div data-sivLoop="*usedFields" data-contextIndex="current">
+                        aa
+                        <div>
+                            <span data-sivValue="[%@current%]" data-sivEvent="click" data-sivCallback="setCurrent" data-sivParams='{"current":"/@current"}'></span>
+                            <span style="background-color:red;color:white;padding:2px" data-sivEvent="click" data-sivCallback="removeField" data-sivParams='{"current":"/@current"}'>x</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-sivIf="'[%/*currentElement%]' != '-1'"  style="float: left; margin-left: 20px;">
+                <div>
+                    <div style="font-weight:bold" data-sivValue="[%/*type/__definition/FIELDS/{%*currentElement%}/LABEL%]"></div>
+                <div class="ContainerType" data-sivCall="getInputFor" data-sivParams='{"key":"*currentElement"}'></div>
+
+                </div>
+            </div>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+    </div>
+
     <!------------------------------------------------------------------------------------------->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.DockingContainer" data-widgetParams="type,inputParams"
             data-widgetCode="Siviglia.inputs.jqwidgets.DockingContainer">

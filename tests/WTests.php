@@ -110,7 +110,7 @@
 
 
 <script>
-    var DEVELOP_MODE=0;
+    var DEVELOP_MODE=-1;
     var Siviglia=Siviglia || {};
     Siviglia.config={
         baseUrl:'http://reflection.adtopy.com/',
@@ -1132,6 +1132,58 @@
             })
         }
     )
+    runTest("Inputs Simples","Prueba parcial de errores.Se establece un valor invalido, y se ve si el input inmediatamente muestra el error.<br>",
+
+        '<div data-sivWidget="Test.Input1" data-widgetParams="" data-widgetCode="Test.Input1">'+
+        '<div class="type">'+
+        '<div class="label">Cadena</div>'+
+        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"stringType"}\'></div>'+
+        '</div>'+
+        '</div>',
+        '<div data-sivView="Test.Input1"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "Input1": {
+                        inherits: "Siviglia.inputs.jqwidgets.Form",
+                        methods: {
+                            preInitialize: function (params) {
+
+                                this.factory = Siviglia.types.TypeFactory;
+                                this.self = this;
+                                this.typeCol = [];
+                                /* STRING **************************/
+                                this.typedObj = new Siviglia.model.BaseTypedObject({
+                                    "FIELDS": {
+                                        "stringType":
+                                            {
+                                                TYPE: "String",
+                                                MINLENGTH: 3,
+                                                LABEL: "Hola",
+                                                HELP: "La ayuda"
+                                            }
+                                    }
+                                });
+                                try {
+                                    this.typedObj.stringType = "ab";
+                                }catch(e)
+                                {} // Aqui ignoramos la excepcion, queremos que se pinte el input con el error.
+                                return this.Form$preInitialize({bto:this.typedObj});
+                            },
+                            initialize: function (params) {
+                            },
+                            show: function () {
+                            },
+
+                        }
+                    }
+
+                }
+
+            })
+        }
+    )
     runTest("Inputs Simples","Segunda prueba de JqxWidgets<br>"+
         "Se prueba un entero con un source, y una serie de campos enteros y de cadena, con sources enlazados, de forma que unos dependen de otros. .<br>"+
             "",
@@ -1827,12 +1879,193 @@
         });
         }
     )
+
     runTest("Formulario de edicion de modelo remoto (II)","En este ejemplo, tanto formulario como los datos se cargan remotamente.Es por eso que no hay plantilla,ni clase, y el namespace del formulario es el que espera el servidor.<br>",
+
         '',
         '<div data-sivView="Siviglia.model.web.Page.forms.Edit" data-sivParams=\'{"id_page":2}\'></div>',
         function(){
         }
     )
+
+    runTest("Test de inputs con estado","Se prueba un bto con containers con una especificacion de estado.<br>",
+
+        '<div data-sivWidget="Test.Input11" data-widgetParams="" data-widgetCode="Test.Input11">'+
+        '<div class="type">'+
+        '<div class="label">Type Switcher:</div>'+
+        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"cont1"}\'></div>'+
+        '</div>'+
+        '</div>',
+        '<div data-sivView="Test.Input11"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "Input11": {
+                        inherits: "Siviglia.inputs.jqwidgets.Form",
+                        methods: {
+                            preInitialize: function (params) {
+
+                                this.factory = Siviglia.types.TypeFactory;
+                                this.self = this;
+                                this.typeCol = [];
+                                /* STRING **************************/
+                                this.typedObj = new Siviglia.model.BaseTypedObject(
+                                    {
+                                    "FIELDS": {
+                                        cont1:
+                                            {
+                                                "LABEL":"Container",
+                                                "TYPE":"Container",
+                                                "FIELDS":{
+                                                    "one":{"TYPE":"String","LABEL":"one"},
+                                                    "two":{"TYPE":"String","LABEL":"two"},
+                                                    "three":{"TYPE":"String","LABEL":"three"},
+                                                    "state":{"TYPE":"State","VALUES":["E1","E2","E3"],"DEFAULT":"E1","LABEL":"State"}
+                                                },
+                                                'STATES' : {
+                                                    'STATES' : {
+                                                        'E1' : {
+                                                            'FIELDS' : {'EDITABLE' : ['one','two']}
+                                                        },
+                                                        'E2' : {
+                                                            'ALLOW_FROM':["E1"],
+                                                            'FIELDS' : {'EDITABLE' : ['two','three']}
+                                                        },
+                                                        'E3' : {
+                                                            'ALLOW_FROM':["E2"],
+                                                            'FINAL':true,
+                                                            'FIELDS' : {'REQUIRED' : ['three']}}
+                                                    },
+                                                    'FIELD' : 'state'
+                                                }
+                                            },
+
+                                    }
+                                });
+                                this.typedObj.cont1={"TYPE":"TYPE_TWO","Field1":"AAA","Field2":77};
+                                return this.Form$preInitialize({bto:this.typedObj});
+                            },
+                            initialize: function (params) {
+                            },
+                            show: function () {
+                            },
+
+                        }
+                    }
+
+                }
+
+            })
+        }
+    )
+
+    runTest("Container y valores por defecto.","Un container cuyos campos no son tocados, y solo tienen los valores por defecto de los camos, deberia seguir teniendo valor nulo.",
+        '<div data-sivWidget="Test.DefCont" data-widgetParams="" data-widgetCode="Test.DefCont">'+
+        '<div class="type">'+
+        '<div class="label">Container:</div>'+
+        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"simpleContainer"}\'></div>'+
+        '</div>'+
+        '<input type="button" data-sivEvent="click" data-sivCallback="doSubmit" ></input>'+
+        '</div>',
+        '<div data-sivView="Test.DefCont"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "DefCont": {
+                        inherits: "Siviglia.inputs.jqwidgets.Form",
+                        methods: {
+                            preInitialize: function (params) {
+
+                                this.factory = Siviglia.types.TypeFactory;
+                                this.self = this;
+                                this.typeCol = [];
+                                /* STRING **************************/
+                                this.typedObj = new Siviglia.model.BaseTypedObject({
+                                    "FIELDS": {
+                                        simpleContainer:
+                                            {
+                                                "LABEL":"SimpleContainer",
+                                                "TYPE": "Container",
+                                                "FIELDS": {
+                                                    "Field1": {
+                                                        "LABEL": "Container 1",
+                                                        "TYPE":"Container",
+                                                        "FIELDS": {
+                                                            "f1":{
+                                                                "LABEL":"f1",
+                                                                "TYPE": "String",
+                                                                "DEFAULT":"ssss"
+                                                            },
+                                                            "f2":{
+                                                                "LABEL":"f2",
+                                                                "TYPE": "String",
+                                                            }
+                                                        }
+
+                                                    },
+                                                    "Field2": {
+                                                        "LABEL": "Container 2",
+                                                        "TYPE":"Container",
+                                                        "FIELDS": {
+                                                            "f1":{
+                                                                "LABEL":"f3",
+                                                                "TYPE": "String",
+                                                                "DEFAULT":"ssss"
+                                                            },
+                                                            "f2":{
+                                                                "LABEL":"f4",
+                                                                "TYPE": "String",
+                                                            }
+                                                        }
+                                                    },
+                                                    "Field3": {
+                                                        "LABEL": "Container 3",
+                                                        "TYPE":"Container",
+                                                        "FIELDS": {
+                                                            "f1":{
+                                                                "LABEL":"f5",
+                                                                "TYPE": "String",
+                                                                "DEFAULT":"ssss"
+                                                            },
+                                                            "f2":{
+                                                                "LABEL":"f6",
+                                                                "TYPE": "String",
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                    },
+                                    "INPUTPARAMS":{
+                                        "/simpleContainer":{
+                                            "INPUT": "ByFieldContainer",
+                                        }
+                                    }
+                                });
+                                this.typedObj.setValue({simpleContainer:{Field1:{f1:"aaa"}}})
+
+                                return this.Form$preInitialize({bto:this.typedObj});
+                            },
+                            doSubmit:function()
+                            {
+                                this.typedObj.save();
+                                console.dir(this.typedObj.getPlainValue());
+                            }
+
+                        }
+                    }
+
+                }
+
+            })
+        }
+    )
+
+
+
+
 </script>
 <script>
     checkTests();
