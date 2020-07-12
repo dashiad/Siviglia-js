@@ -1700,7 +1700,7 @@
                             submit: function () {
                                 var errors=null;
                                 try {
-                                    this.__bto.__save();
+                                    this.type.save();
                                 }catch(e)
                                 {
                                     if(e.code===Siviglia.types.BaseTypeException.ERR_SAVE_ERROR)
@@ -1722,14 +1722,14 @@
                                 }
                                 for (var k in this.erroredInputs)
                                     return;
-                                var i = Siviglia.issetOr(this.__bto.__getDefinition().INDEXFIELDS,null);
+                                var i = Siviglia.issetOr(this.type.getDefinition().INDEXFIELDS,null);
 
                                 var myIndexes = {};
-                                var vals = this.__bto.getPlainValue();
+                                var vals = this.type.getPlainValue();
                                 if(i!=null) {
                                     for (var k = 0; k < i.length; k++) {
-                                        if (!this.__bto["*" + i[k]].__isEmpty()) {
-                                            myIndexes[i[k]] = this.__bto[i[k]];
+                                        if (!this.type["*" + i[k]].__isEmpty()) {
+                                            myIndexes[i[k]] = this.type[i[k]];
                                         } else {
                                             myIndexes = null;
                                         }
@@ -1740,10 +1740,10 @@
                             },
                             doRedirect:function(type)
                             {
-                                if(typeof this.__bto.__definition["REDIRECT"]!=="undefined" &&
-                                    typeof this.__bto.__definition["REDIRECT"][type]!=="undefined"
+                                if(typeof this.type.__definition["REDIRECT"]!=="undefined" &&
+                                    typeof this.type.__definition["REDIRECT"][type]!=="undefined"
                                 ) {
-                                    var url=this.__bto.__definition["REDIRECT"][type];
+                                    var url=this.type.__definition["REDIRECT"][type];
                                     setTimeout(function(){window.location.assign(url);},200);
                                     return true;
                                 }
@@ -1834,10 +1834,10 @@
                                     var parts= k.split("::");
                                     var exName=parts[1];
                                     var message='';
-                                    if (typeof this.__bto.__definition.ERRORS !== "undefined" &&
-                                        typeof this.__bto.__definition.ERRORS["GLOBAL"] !== "undefined" &&
-                                        typeof this.__bto.__definition.ERRORS["GLOBAL"][exName] !== "undefined")
-                                        messages.push(this.__bto.__definition.ERRORS["GLOBAL"][exName]["txt"]);
+                                    if (typeof this.type.__definition.ERRORS !== "undefined" &&
+                                        typeof this.type.__definition.ERRORS["GLOBAL"] !== "undefined" &&
+                                        typeof this.type.__definition.ERRORS["GLOBAL"][exName] !== "undefined")
+                                        messages.push(this.type.__definition.ERRORS["GLOBAL"][exName]["txt"]);
                                     else {
                                         messages.push(Siviglia.issetOr(ex[k]["str"],exName));
                                     }
@@ -1852,11 +1852,11 @@
                                 var exName="";
                                 for(var k in exception)
                                     exName=k;
-                                var errDef=this.__bto.__definition.FIELDS[field]["ERRORS"];
+                                var errDef=this.type.__definition.FIELDS[field]["ERRORS"];
                                 if(!errDef)
                                 {
                                     var h;
-                                    if((h=this.__bto.__definition.ERRORS) && (h= h.FIELDS) && (h=h[field]))
+                                    if((h=this.type.__definition.ERRORS) && (h= h.FIELDS) && (h=h[field]))
                                     {
                                         errDef=h;
                                     }
