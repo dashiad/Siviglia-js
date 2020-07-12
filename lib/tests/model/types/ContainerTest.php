@@ -324,4 +324,22 @@ class ContainerTest extends TestCase
         $this->assertEquals(true,true);
 
     }
+    // Comprobacion de que un container, cuando sus hijos solo tienen valores por defecto, él no tiene valor.
+    function testEmptyDefaults()
+    {
+
+        $cnt=new \lib\model\types\Container("",[
+                "TYPE"=>"Container",
+                "FIELDS"=>[
+                    "one"=>["TYPE"=>"String","DEFAULT"=>"aa"],
+                    "two"=>["TYPE"=>"String"]
+                ]
+            ]);
+        $val=$cnt->getValue();
+        $this->assertEquals(null,$val);
+        $cnt->two="zz";
+        $val=$cnt->getValue();
+        $this->assertEquals("aa",$val["one"]);
+    }
+
 }

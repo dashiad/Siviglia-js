@@ -34,7 +34,7 @@
       protected $__controllerPath=null;
       protected $__isDirty=false;
       protected $__name;
-
+      protected $__setFromDefault=false;
       protected $__errorException=null;
       function __construct($name,$def,$parentType=null, $value=null,$validationMode=null)
       {
@@ -66,14 +66,20 @@
           }
           else {
               if ($value === null) {
-                  if ($this->__hasDefaultValue() && !isset($definition["DISABLE_DEFAULT"]))
-                      $this->apply($this->__getDefaultValue(),\lib\model\types\BaseType::VALIDATION_MODE_NONE);
+                  if ($this->__hasDefaultValue() && !isset($definition["DISABLE_DEFAULT"])) {
+
+                      $this->apply($this->__getDefaultValue(), \lib\model\types\BaseType::VALIDATION_MODE_NONE);
+                      $this->__setFromDefault=true;
+                  }
               } else {
                   $this->apply($value);
               }
           }
       }
-
+     function __isSetFromDefault()
+     {
+         return $this->__setFromDefault;
+     }
      function __getName()
      {
          return $this->__name;
@@ -201,6 +207,7 @@
       }
       function apply($val,$validationMode=null)
       {
+          $this->__setFromDefault=false;
           if($validationMode!==BaseType::VALIDATION_MODE_NONE && !$this->__isEditable()) {
             if($this->__controller && $this->__controller->getStateDef()!==null)
             $e=new \lib\model\BaseTypedException(\lib\model\BaseTypedException::ERR_NOT_EDITABLE_IN_STATE);

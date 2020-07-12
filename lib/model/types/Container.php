@@ -29,6 +29,22 @@ class Container extends BaseType implements \ArrayAccess
     {
         $this->__fields=[];
         $this->__errored=[];
+        if(isset($def["INHERITS"]))
+        {
+            $baseType=\lib\model\types\TypeFactory::getType("inh",["TYPE"=>$def["INHERITS"]],null);
+            $baseDef=$baseType->getDefinition();
+            foreach($def as $k=>$v)
+            {
+                if($k=="FIELDS") {
+                    foreach ($def["FIELDS"] as $k1 => $v1) {
+                        $baseDef["FIELDS"][$k1] = $v1;
+                    }
+                }
+                else
+                    $baseDef[$k]=$v;
+            }
+            $def=$baseDef;
+        }
         $this->__fieldDef=$def["FIELDS"];
         if(isset($def["STATES"]) && $this->__stateDef==null) {
 
@@ -40,6 +56,7 @@ class Container extends BaseType implements \ArrayAccess
         if($this->__stateDef!==null)
             $this->__stateDef->enable();
     }
+
     function reset()
     {
         if ($this->__isDirty) {
@@ -343,6 +360,8 @@ class Container extends BaseType implements \ArrayAccess
 
         if($this->value==null)
             throw new ContainerException(ContainerException::ERR_CANT_ASSIGN_FIELD_TO_NULL_CONTAINER);
+
+
         $this->__allowRead=true;
         if(isset($this->__fieldDef[$varName]))
         {
@@ -374,6 +393,7 @@ class Container extends BaseType implements \ArrayAccess
                 $remField->setValue($value);
             }
         }
+        $this->__setFromDefault=false;
 
 
         $this->__allowRead=false;
@@ -390,6 +410,8 @@ class Container extends BaseType implements \ArrayAccess
     function __isComplete($markErrored=false)
     {
         $haveValue=false;
+        $nDefaults=0;
+        $nSet=0;
         foreach($this->__fieldDef as $k=>$v)
         {
             $f=$this->__getField($k);
@@ -407,8 +429,10 @@ class Container extends BaseType implements \ArrayAccess
                 if(isset($def["KEEP_KEY_ON_EMPTY"]))
                     $haveValue=true;
             }
-            else
-                $haveValue=true;
+            else {
+                if(!$f->__isSetFromDefault())
+                    $haveValue = true;
+            }
 
         }
         return $haveValue;

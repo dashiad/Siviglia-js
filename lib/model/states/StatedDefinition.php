@@ -105,7 +105,7 @@ class StatedDefinition
         var $model;
         var $onlyDefault;
         var $stateFieldObj=null;
-        var $stateType;
+
         var $oldState=null;
         var $newState=null;
         var $newStateLabel=null;
@@ -134,7 +134,7 @@ class StatedDefinition
         {
             if($this->newState)
                 return $this->newState;
-            return $this->stateType->getValue();
+            return $this->getStateFieldObj()->getValue();
         }
         function getOldState()
         {
@@ -163,8 +163,8 @@ class StatedDefinition
                 $this->stateField=$this->definition["STATES"]["FIELD"];
                 if($this->stateField[0]!==$this->pathPrefix)
                     $this->stateField=$this->pathPrefix.$this->stateField;
-                $this->stateFieldObj=$this->model->__getField($this->stateField);
-                $this->stateType=$this->stateFieldObj;
+                //$this->stateFieldObj=$this->model->__getField($this->stateField);
+
             }
         }
         function getCurrentState()
@@ -172,8 +172,8 @@ class StatedDefinition
                 if(!$this->hasState)
                     return null;
 
-            if($this->stateType->__hasValue())
-                return $this->stateType->getValue();
+            if($this->getStateFieldObj()->__hasValue())
+                return $this->getStateFieldObj()->getValue();
             return $this->getDefaultState();
         }
         function getStateField()
@@ -196,8 +196,8 @@ class StatedDefinition
         {
             if(!$this->hasState)
                 return null;
-            if($this->stateType->getDefaultState()!==null)
-                return $this->stateType->getDefaultState();
+            if($this->getStateFieldObj()->getDefaultState()!==null)
+                return $this->getStateFieldObj()->getDefaultState();
 
             if($this->definition["STATES"]["DEFAULT_STATE"])
                 {
@@ -211,11 +211,11 @@ class StatedDefinition
         }
         function getStateFieldObj()
         {
-            return $this->stateFieldObj;
+            return $this->model->__getField($this->stateField);
         }
         function getStateId($name)
         {
-            return $this->stateType->getValueFromLabel($name);
+            return $this->getStateFieldObj()->getValueFromLabel($name);
         }
         function isFinalState($label)
         {
@@ -227,7 +227,7 @@ class StatedDefinition
         {
             if(!is_numeric($id))
                 return $id;
-            $labels= $this->stateType->getLabels();
+            $labels= $this->getStateFieldObj()->getLabels();
             return $labels[$id];
         }
         function getCurrentStateLabel()
