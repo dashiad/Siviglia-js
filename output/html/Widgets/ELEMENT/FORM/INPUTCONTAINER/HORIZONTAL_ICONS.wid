@@ -1,0 +1,88 @@
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_CODE]
+                $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();   
+                });
+            [#]
+        [#]
+        [_CSS]
+            [_CODE]
+            <style>
+                .error-item {display:none}
+                .error-message {
+                    display:block !important; 
+                    color: #FF5B5C;                
+                }
+
+                input.form-control.input-error, input.form-control.input-error-1, input.form-control.input-error-2, input.form-control.input-error-100, input.form-control.input-error-101, input.form-control.input-error-102 {                
+                    border-color: #FF5B5C;
+                    -webkit-box-shadow: 0 3 10px 0 #FF5B5C;
+                    -moz-box-shadow: 0 3 10px 0 #FF5B5C;
+                    box-shadow: 0 3 10px 0 #FF5B5C;
+                }                
+
+            </style>
+            [#]
+        [#]
+    [#]
+[#]
+
+
+    <script>
+        var __prev__=document.currentScript.parentElement;
+        var cForm=__s__form.S_FormRegistry["<?php echo $form->getHash();?>"];
+        cForm.pushContainer(__prev__);
+    </script>
+
+    <div class="col-md-2">
+        <?php $extra=isset($extraClass)?$extraClass:""; $sc=isset($styleClass)?$styleClass:"";?>
+        <label class="inputLabel<?php echo $extra;?> <?php echo $sc;?>">
+            [_LABEL][_*][#]
+            [_HELP]
+                <i class="bx bx-info-circle" data-toggle="tooltip" data-placement="<?php echo (empty($position))? 'bottom' : $position ?>" title="[_*]"></i>
+            [#]        
+        </label>
+    </div>
+
+    <div class="col-md-10">
+    <div class="form-group">
+        <div class="controls">
+            <div class="position-relative has-icon-left input-error">                                            
+                [_INPUT][_*][#]
+                [_ICON]<div class="form-control-position">[_*]</div>[#]
+                [_DESCRIPTION_INPUT]<small class="text-muted">[_*]</small>[#]
+            </div>
+        </div>
+        <div class="help-block error-<?php echo $name;?>">
+        [_ERRORS]        
+        <ul role="alert" class="error-message">
+            [_ERROR]            
+                <li class="error-item error-help-<?php echo $code;?>">[_*]</li>            
+            [#]
+            </ul>
+            
+        [#]
+        </div>
+
+    </div>
+    </div>
+
+
+
+
+<script>
+    var cForm=__s__form.S_FormRegistry["<?php echo $form->getHash();?>"];
+    cForm.popContainer();
+</script>
+
+
+<?php
+
+// (!empty($position))? $position : 'bottom'
+
+// (empty($position))? 'bottom' : $position
+
+?>

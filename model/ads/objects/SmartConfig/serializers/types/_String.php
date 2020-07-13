@@ -1,0 +1,14 @@
+<?php
+namespace model\ads\SmartConfig\serializers\types;
+
+class _String extends BaseType
+{
+    function serialize($name,$type,$serializer,$model=null)
+    {
+        if($type->__hasValue())
+        {
+            return [$name=>$type->getValue()];
+        }
+        return null;
+    }
+}

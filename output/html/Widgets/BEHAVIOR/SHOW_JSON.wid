@@ -1,0 +1,22 @@
+<?php 
+/**
+ * Wid usado para mostrar el json de forma usable incrustado en cualquier lado.
+ * Plugin json viewer: https://github.com/LorDOniX/json-viewer/blob/master/src/json-viewer.js
+ * Parametros de entrada: $json
+ * Ejemplo uso: [*::/BEHAVIOR/SHOW_JSON({"json":"$json"})][#]
+ * Salida: aqui se resuelve dicha llamada y se muestra el contenido del json.
+ * Customizable: jsonViewer.showJSON(jsonObj,-1,1); puede recibir 3 parámetros:
+ * 1-json file, 2-optional: visualise to max level (-1 unlimited, 0..n), 3-optional: collapse all at level (-1 unlimited, 0..n)
+ */
+$myId=uniqid("json-"); ?>
+
+<div id="<?php echo $myId; ?>">
+<script>
+    var jsonObj = {};
+    var jsonViewer = new JSONViewer();
+    document.querySelector("#<?php echo $myId; ?>").appendChild(jsonViewer.getContainer());
+    var value_obj = JSON.stringify(<?php echo $json; ?>);
+    jsonObj = JSON.parse(value_obj);
+    jsonViewer.showJSON(jsonObj,-1,1);
+</script>
+</div>

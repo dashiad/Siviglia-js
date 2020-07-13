@@ -1,0 +1,1 @@
+docker run -t -i -p 80:80 -v /media:/var/www adtopy /bin/bash

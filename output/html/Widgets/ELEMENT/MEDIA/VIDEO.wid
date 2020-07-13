@@ -1,0 +1,3 @@
+<video src="[_VIDEO_SRC][_*][#]" autoplay poster="[_VIDEO_IMG_POSTER][_*][#]">
+    Your browser does not support the <code> video </code> element.
+</video>

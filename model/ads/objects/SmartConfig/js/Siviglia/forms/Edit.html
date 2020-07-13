@@ -1,0 +1,35 @@
+	<div data-sivWidget="Siviglia.model.ads.SmartConfig.forms.Edit" 
+		 data-widgetCode="Siviglia.model.ads.SmartConfig.forms.Edit">
+		 <div style="display:none;">
+	        <div data-sivCall="getInputFor" data-sivParams='{"key":"domain"}'></div>
+	    </div>
+	    <div>
+	        <div data-sivCall="getInputFor" data-sivParams='{"key":"config"}'></div>
+	    </div>
+	    <div>
+	    	<input type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar">
+	    </div>
+	</div>
+
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.ActionList" 
+    	 data-widgetParams="parentObject,parentNode,value" 
+    	 data-widgetCode="Siviglia.inputs.jqwidgets.ActionList" 
+    	 class="ArrayType">
+	    <div style="display:block;">
+	        <div class="arrayValues" style="width:100%;min-height:20px;margin:20px 0;">
+	            <div data-sivLoop="/*type" data-contextIndex="current">
+	                <a data-sivEvent="click" data-sivParams='{"key":"@current-index"}' 
+	                   data-sivCallback="getInputFor" class="label label-primary" 
+	                   style="margin-right:4px;padding:6px 4px;cursor:pointer;font-size:14px;background:lightblue;" 
+	                   data-sivValue="Acción [%/@current-index%]"></a>
+	                    <!--span class="remove ion-close-circled " style="color:red;padding-left:5px" 
+	                    data-sivEvent="click" data-sivCallback="onRemoveItem" 
+	                    data-sivParams='{"index":"[%@current-index%]"}'></span-->
+	                    
+	            </div>
+	        </div>
+	        <div style="border:1px solid black" data-sivId="currentItemNode"></div>
+	    </div>
+	    <div data-sivId="tooltip"></div>
+	    <button data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Crear nuevo</button>
+    </div>

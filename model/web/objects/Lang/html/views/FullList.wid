@@ -1,0 +1,36 @@
+<?php
+        $serializer=\Registry::getService("storage")->getSerializerByName('backoffice');
+        $params=Registry::$registry["PAGE"];
+?>
+[*LIST_DS({"currentPage":"$currentPage","object":"Lang","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]name[#][#]
+						[_COLUMN][_LABEL]is_rtl[#][#]
+						[_COLUMN][_LABEL]language_code[#][#]
+						[_COLUMN][_LABEL]iso_code[#][#]
+						[_COLUMN][_LABEL]active[#][#]
+						[_COLUMN][_LABEL]id_lang[#][#]
+						[_COLUMN][_LABEL]date_format_full[#][#]
+						[_COLUMN][_LABEL]date_format_lite[#][#]
+
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/String({"name":"name","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"is_rtl","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"language_code","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"iso_code","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"active","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_lang","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"date_format_full","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"date_format_lite","model":"$iterator"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]
+           [#]

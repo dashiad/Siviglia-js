@@ -1,0 +1,38 @@
+<?php
+
+            $serializer=\Registry::getService("storage")->getSerializerByName('web');
+            $params=Registry::$registry["PAGE"];
+            $formKeys=array("USER_ID"=>Registry::$registry["params"]["USER_ID"]);
+
+?>
+
+
+                [*/FORMS/form({"object":"WebUser","layer":"web","name":"SetEditorAction","form":"&$form"})]
+                [_TITLE]SetEditorAction WebUser[#]
+                [_DESCRIPTION]Form Description[#]
+                [_MODEL({"keys":"$formKeys","serializer":"$serializer","model":"&$currentModel"})][#]
+                [_FORMGROUP]
+                        [_TITLE]Form Group Title[#]
+                        [_DESCRIPTION]Form Group Description[#]
+                        [_FORMERRORS]
+
+                        [#]
+                        [_FIELDS]
+
+
+				[*/FORMS/inputContainer({"name":"SectionEditors","form":"&$form"})]
+					[_LABEL]SectionEditors[#]
+					[_HELP]**Insert Field Help**[#]
+					[_INPUT]
+						[*:/types/inputs/RelationMxN({"model":"$currentModel","name":"SectionEditors","form":"$form"})][#]
+					[#]
+					[_ERRORS]
+					[#]
+				[#]
+
+                        [#]
+                [#]
+                [_BUTTONS]
+                        [*:/INPUTS/Submit({"form":"&$form"})][_LABEL][@L]Aceptar[#][#][#]
+                [#]
+          [#]

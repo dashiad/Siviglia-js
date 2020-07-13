@@ -1,0 +1,33 @@
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_CODE]
+                jQuery(document).ready(function($){
+                    $(document).ready(function() {
+                        $('.smartclip-select2').select2();
+                    });
+                });
+            [#]
+        [#]        
+    [#]
+[#]
+
+<?php
+  $source=$info["source"];
+?>  
+
+<input type="hidden" name="INPUTS[<?php echo $info['name']; ?>]" value="Select">
+<select class="form-control smartclip-select2" name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $info['name']; ?>]"  autocomplete="off" id="basicSelect">
+[*/ELEMENT/FORM/INPUTS/SOURCEINPUT({"source":"$source","it":"&$it"})]
+
+    <option value="<?php echo $it; ?>" <?php echo ($value==$curVal?'selected="selected"':"") ?>> <?php echo $source->getLabel($it); ?> </option>
+    
+[#]
+</select>
+
+
+<script>
+    var q=document.currentScript.previousElementSibling;
+    __s__form.curForm.addInput(q);
+</script>

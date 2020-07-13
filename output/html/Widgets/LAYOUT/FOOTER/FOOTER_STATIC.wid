@@ -1,0 +1,5 @@
+[*/LAYOUT/FOOTER/FOOTER]
+    [_FOOTER_STATIC][_*][#]
+    [_FOOTER_COLOR]light[#]
+    [_FOOTER_CONTENT]© Smartclip <?php echo date("Y"); ?>[#]    
+[#]

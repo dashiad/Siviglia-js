@@ -1,0 +1,13 @@
+<fieldset class="form-group">
+    <textarea class="form-control char-textarea active" id="basicTextarea" name="FIELDS<?php echo ($prefix!=""?"[".$prefix."]":"");?>[<?php echo $info['name'];?>]"  rows="3" placeholder="Textarea placeholder <?php echo $info['name']; ?>" data-sivname="<?php echo $name;?>" data-sivprefix="<?php echo $prefix;?>">
+        <?php 
+            if (!empty($info['value']))
+                echo $info['value'];         
+        ?>
+    </textarea>
+</fieldset>
+
+<script>
+    var q=document.currentScript.previousElementSibling;
+    __s__form.curForm.addInput(q);
+</script>

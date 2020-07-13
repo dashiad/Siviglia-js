@@ -1,0 +1,22 @@
+define(
+       ["dojo/_base/declare","dijit/_WidgetBase",
+        "dijit/_TemplatedMixin","dijit/_WidgetsInTemplateMixin",
+        "dojo/text!backoffice/WebUser/dojo/actions/templates/AddAction.html","dojo/promise/all",
+        "dojo/when","dojo/Deferred","Siviglia/forms/Form","Siviglia/forms/inputs/String","Siviglia/forms/inputs/Integer","dijit/form/Button"
+        ],
+       function(declare,WidgetBase,TemplatedMixin,WidgetsInTemplateMixin,template,all,when,Deferred,Form)
+       {
+          return declare('WebUser.AddAction',[WidgetBase,TemplatedMixin,WidgetsInTemplateMixin,Form],{
+                          templateString:template,
+                          definition:{"NAME":"AddAction","MODEL":"WebUser","ACTION":{"MODEL":"\\backoffice\\WebUser","ACTION":"AddAction"},"FIELDS":{"LOGIN":{"MODEL":"WebUser","FIELD":"LOGIN","REQUIRED":true},"PASSWORD":{"MODEL":"WebUser","FIELD":"PASSWORD","REQUIRED":true},"USER_ID":{"MODEL":"WebUser","FIELD":"USER_ID","REQUIRED":true},"EMAIL":{"MODEL":"WebUser","FIELD":"EMAIL","REQUIRED":true}},"ROLE":"Add","REDIRECT":{"ON_SUCCESS":"","ON_ERROR":""},"INPUTS":[],"INDEXFIELDS":[]},
+                          title:"",
+                          formClass:'',
+                          description:'',
+                          _widgetsInTemplate:true,
+                          errors:[],
+                           constructor:function()
+                          {
+                            this.inherited(arguments);
+                          }
+                        });
+      });

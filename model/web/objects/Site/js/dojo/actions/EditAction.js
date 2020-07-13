@@ -1,0 +1,22 @@
+define(
+       ["dojo/_base/declare","dijit/_WidgetBase",
+        "dijit/_TemplatedMixin","dijit/_WidgetsInTemplateMixin",
+        "dojo/text!web//objects/model/objects/Site/actions/templates/EditAction.html","dojo/promise/all",
+        "dojo/when","dojo/Deferred","Siviglia/forms/Form","dijit/form/Button"
+        ],
+       function(declare,WidgetBase,TemplatedMixin,WidgetsInTemplateMixin,template,all,when,Deferred,Form)
+       {
+          return declare('.model.Site.EditAction',[WidgetBase,TemplatedMixin,WidgetsInTemplateMixin,Form],{
+                          templateString:template,
+                          definition:{"NAME":"EditAction","MODEL":"\\model\\Site","ACTION":{"MODEL":"\\model\\web\\Site","ACTION":"EditAction","INHERIT":true},"ROLE":"Edit","REDIRECT":{"ON_SUCCESS":"","ON_ERROR":""},"INPUTS":[],"INDEXFIELDS":{"id_site":{"REQUIRED":true,"FIELD":"id_site","MODEL":"\\model\\web\\Site"}}},                                 
+                          title:"",
+                          formClass:'',
+                          description:'',
+                          _widgetsInTemplate:true,
+                          errors:[],
+                           constructor:function()
+                          {
+                            this.inherited(arguments);
+                          }
+                        });
+      });

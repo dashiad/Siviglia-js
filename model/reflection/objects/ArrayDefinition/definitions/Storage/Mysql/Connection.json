@@ -1,0 +1,35 @@
+{
+  "ROOT": {
+    "TYPE": "CONTAINER",
+    "FIELDS": {
+      "ADDRESS": {
+        "TYPE": "CONTAINER",
+        "LABEL": "Storage definition",
+        "FIELDS": {
+          "host": {
+            "TYPE": "STRING",
+            "LABEL": "Host"
+          },
+          "user": {
+            "TYPE": "STRING",
+            "LABEL": "User name"
+          },
+          "password": {
+            "TYPE": "STRING",
+            "LABEL": "Password"
+          },
+          "database": {
+            "TYPE": "CONTAINER",
+            "LABEL": "Database",
+            "FIELDS": {
+              "NAME": {
+                "TYPE": "STRING",
+                "LABEL": "Database name"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

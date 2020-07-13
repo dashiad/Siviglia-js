@@ -1,0 +1,245 @@
+        [*:/LAYOUTS/LAYOUT_ADMIN]
+        [_:TITLE][_TITLE][_*][#][#]
+        [_:MENU]
+        [*:/MENUS/MENU_1]
+        			[_:MENUGROUP({"permission":"BackofficeAdmin"})]
+				[_:MENUITEM({"permission":"adminList","module":"ps_order_state_lang"})]
+					[_:LINK]http://backoffice.com//admin/ps_order_state_lang[#]
+					[_:LABEL]ps_order_state_lang[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"Payment"})]
+					[_:LINK]http://backoffice.com//admin/Payment[#]
+					[_:LABEL]Payment[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_product"})]
+					[_:LINK]http://backoffice.com//admin/ps_product[#]
+					[_:LABEL]ps_product[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"Bag"})]
+					[_:LINK]http://backoffice.com//admin/Bag[#]
+					[_:LABEL]Bag[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ProductType"})]
+					[_:LINK]http://backoffice.com//admin/ProductType[#]
+					[_:LABEL]ProductType[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"siteOrders"})]
+					[_:LINK]http://backoffice.com//admin/siteOrders[#]
+					[_:LABEL]siteOrders[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"Sites"})]
+					[_:LINK]http://backoffice.com//admin/Sites[#]
+					[_:LABEL]Sites[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_carrier_zone"})]
+					[_:LINK]http://backoffice.com//admin/ps_carrier_zone[#]
+					[_:LABEL]ps_carrier_zone[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_image"})]
+					[_:LINK]http://backoffice.com//admin/ps_image[#]
+					[_:LABEL]ps_image[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"price_reference_detail"})]
+					[_:LINK]http://backoffice.com//admin/price_reference_detail[#]
+					[_:LABEL]price_reference_detail[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_feature_value_lang"})]
+					[_:LINK]http://backoffice.com//admin/ps_feature_value_lang[#]
+					[_:LABEL]ps_feature_value_lang[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"CarrierService"})]
+					[_:LINK]http://backoffice.com//admin/CarrierService[#]
+					[_:LABEL]CarrierService[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"incidence"})]
+					[_:LINK]http://backoffice.com//admin/incidence[#]
+					[_:LABEL]incidence[#]
+				[#]
+
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_feature"})]
+					[_:LINK]http://backoffice.com//admin/ps_feature[#]
+					[_:LABEL]ps_feature[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_order_discount"})]
+					[_:LINK]http://backoffice.com//admin/ps_order_discount[#]
+					[_:LABEL]ps_order_discount[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"price_references"})]
+					[_:LINK]http://backoffice.com//admin/price_references[#]
+					[_:LABEL]price_references[#]
+				[#]
+
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_feature_product"})]
+					[_:LINK]http://backoffice.com//admin/ps_feature_product[#]
+					[_:LABEL]ps_feature_product[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_image_type"})]
+					[_:LINK]http://backoffice.com//admin/ps_image_type[#]
+					[_:LABEL]ps_image_type[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"Tracking"})]
+					[_:LINK]http://backoffice.com//admin/Tracking[#]
+					[_:LABEL]Tracking[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_order_history"})]
+					[_:LINK]http://backoffice.com//admin/ps_order_history[#]
+					[_:LABEL]ps_order_history[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_category_product"})]
+					[_:LINK]http://backoffice.com//admin/ps_category_product[#]
+					[_:LABEL]ps_category_product[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_product_lang"})]
+					[_:LINK]http://backoffice.com//admin/ps_product_lang[#]
+					[_:LABEL]ps_product_lang[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_feature_lang"})]
+					[_:LINK]http://backoffice.com//admin/ps_feature_lang[#]
+					[_:LABEL]ps_feature_lang[#]
+				[#]
+
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_order_modifications"})]
+					[_:LINK]http://backoffice.com//admin/ps_order_modifications[#]
+					[_:LABEL]ps_order_modifications[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_zone"})]
+					[_:LINK]http://backoffice.com//admin/ps_zone[#]
+					[_:LABEL]ps_zone[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"WebUser"})]
+					[_:LINK]http://backoffice.com//admin/WebUser[#]
+					[_:LABEL]WebUser[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"SubProductTypeFeatures"})]
+					[_:LINK]http://backoffice.com//admin/SubProductTypeFeatures[#]
+					[_:LABEL]SubProductTypeFeatures[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_category"})]
+					[_:LINK]http://backoffice.com//admin/ps_category[#]
+					[_:LABEL]ps_category[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"carriers"})]
+					[_:LINK]http://backoffice.com//admin/carriers[#]
+					[_:LABEL]carriers[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_order_state"})]
+					[_:LINK]http://backoffice.com//admin/ps_order_state[#]
+					[_:LABEL]ps_order_state[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_country"})]
+					[_:LINK]http://backoffice.com//admin/ps_country[#]
+					[_:LABEL]ps_country[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"SiteProperty"})]
+					[_:LINK]http://backoffice.com//admin/SiteProperty[#]
+					[_:LABEL]SiteProperty[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"Shipment"})]
+					[_:LINK]http://backoffice.com//admin/Shipment[#]
+					[_:LABEL]Shipment[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_order_detail"})]
+					[_:LINK]http://backoffice.com//admin/ps_order_detail[#]
+					[_:LABEL]ps_order_detail[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_lang"})]
+					[_:LINK]http://backoffice.com//admin/ps_lang[#]
+					[_:LABEL]ps_lang[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_orders"})]
+					[_:LINK]http://backoffice.com//admin/ps_orders[#]
+					[_:LABEL]ps_orders[#]
+				[#]
+
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_manufacturer"})]
+					[_:LINK]http://backoffice.com//admin/ps_manufacturer[#]
+					[_:LABEL]ps_manufacturer[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_feature_value"})]
+					[_:LINK]http://backoffice.com//admin/ps_feature_value[#]
+					[_:LABEL]ps_feature_value[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_customer"})]
+					[_:LINK]http://backoffice.com//admin/ps_customer[#]
+					[_:LABEL]ps_customer[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"PercentilManufacturer"})]
+					[_:LINK]http://backoffice.com//admin/PercentilManufacturer[#]
+					[_:LABEL]PercentilManufacturer[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"SubProductType"})]
+					[_:LINK]http://backoffice.com//admin/SubProductType[#]
+					[_:LABEL]SubProductType[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"SiteCategories"})]
+					[_:LINK]http://backoffice.com//admin/SiteCategories[#]
+					[_:LABEL]SiteCategories[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_category_lang"})]
+					[_:LINK]http://backoffice.com//admin/ps_category_lang[#]
+					[_:LABEL]ps_category_lang[#]
+				[#]
+
+				[_:MENUITEM({"permission":"adminList","module":"ps_state"})]
+					[_:LINK]http://backoffice.com//admin/ps_state[#]
+					[_:LABEL]ps_state[#]
+				[#]
+
+
+				[_:MENUITEM({"permission":"adminList","module":"bag_request"})]
+					[_:LINK]http://backoffice.com//admin/bag_request[#]
+					[_:LABEL]bag_request[#]
+				[#]
+
+			[#]
+
+
+        [#]
+        [#]
+        [_:CONTENT][_CONTENT][_*][#][#]
+        [_:SIDE][_SIDE][_*][#][#]
+        [_:FOOTER][_FOOTER][_*][#][#]
+        [#]
+        

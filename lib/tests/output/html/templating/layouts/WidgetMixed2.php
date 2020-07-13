@@ -1,0 +1,5 @@
+[*DUMMY]
+    [*:BOX]
+        [_:TITLE]hola[#]
+    [#]
+[#]

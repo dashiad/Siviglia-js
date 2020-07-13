@@ -1,0 +1,159 @@
+<?php
+ global $editor;
+ $prefix=$editor->website->getLocalPrefix();
+
+?>
+<?php include_once(CUSTOMPATH."/pages/Editor/views/header.php");?>
+<?php 
+$v0lang=$prefix;
+
+?><?php
+
+    $v0realm_name=array('front', 'back', 'email');
+
+    define('REALM_FRONT', 0);
+    define('REALM_BACK', 1);
+    define('REALM_EMAIL', 2);
+
+
+     $v0ds=\getDataSource('\backoffice\ps_lang\translations',"FullList");
+     $v0ds->lang=$v0lang;
+     //$ds->value='';
+     $v0it=$v0ds->fetchAll();
+     $v0n=$v0ds->count();
+
+
+?>
+<style>
+    .no_visible {
+        visibility: hidden;
+        height: 0;
+        padding: 0;
+        margin: 0;
+        border: 0;}
+    .translation_blank {display:block}
+    .translation_dirty {display:block}
+    .translation_normal {display:block}
+    .translation_nott {display:block}
+    .hide {display: none!important}
+    .translations.front {background: }
+    .Filter td {
+        padding: 10px;
+    }
+    td.front{
+        background-color: rgba(210, 240, 231, 1);
+    }
+    td.back{
+        background-color: rgba(240, 210, 210, 1);
+    }
+
+</style>
+
+<div class="contentDerecha">
+    <form method="POST" action="?site=<?php echo $_GET["site"]?>&action=saveTranslation&template=EditLang">
+        <input type="hidden" name="lang" value="<?php echo $v0lang;?>">
+    <div class="contentForm">
+        <br><br>
+        <div class="sectionName">
+            Traducciones
+        </div>
+        <div style="padding-bottom: 20px;" class="Filter">
+
+            <table style="width:100%" border="1">
+                <tr>
+                    <td width="25%" class="front"><input type="checkbox" name="realm" id="chk-fron" value="front" onchange="toggleRealm()" checked="checked">Front</input></td>
+                    <td width="25%" class="back"><input type="checkbox" name="realm" id="chk-back" value="back" onchange="toggleRealm()">Back</input></td>
+                    <td width="50%"></td>
+                </tr>
+            </table>
+
+            <p style="margin-bottom: 20px"></p>
+
+            <table style="width:100%" border="1">
+                <tr>
+                    <td width="25%"><input type="radio" name="blank" value="all" onchange="toggleMe(this)">Todas</input></td>
+                    <td width="25%"><input type="radio" name="blank" value="blank" onchange="toggleMe(this)">Sólo traducciones vacias</input></td>
+                    <td width="25%"><input type="radio" name="blank" value="nott" onchange="toggleMe(this)">Sólo no traducidas</input></td>
+                    <td width="25%"><input type="radio" name="blank" value="dirty" onchange="toggleMe(this)">Sólo traducciones modificadas</input></td>
+                </tr>
+            </table>
+
+            <p style="margin-bottom: 20px"></p>
+
+            <table style="width:100%" border="1">
+                <tr>
+                    <td>
+                        Texto de búsqueda:
+                        <input type="text" name="search" id="search" style="width:250px;">
+                        <!--<a href="#" title="Buscar" id="searchAction">Buscar</a>-->
+                    </td>
+                </tr>
+            </table>
+
+
+        </div>
+        <div class="sectionActions">
+            <input type=submit value="MODIFY" class="btSend">
+        </div>
+        <?php
+        for($v0j=0;$v0j<$v0n;$v0j++)
+        {
+            $v0v=$v0it[$v0j];
+            $v0currentElementRealm = $v0realm_name[$v0v->realm];
+
+
+            if($v0v->translated=="")
+            {
+                $v0class="translation_blank";
+            }
+            else
+            {
+                if($v0v->dirty)
+                    $v0class="translation_dirty";
+                else
+                {
+                    if($v0v->translated==$v0v->original)
+                         $v0class="translation_nott";
+                    else
+                        $v0class="translation_normal";
+                }
+
+
+            if($v0v->translated=="")
+            {
+                $v0class="translation_blank";
+            }
+            else
+            {
+                if($v0v->dirty)
+                    $v0class="translation_dirty";
+                else
+                {
+                    if($v0v->translated==$v0v->original)
+                         $v0class="translation_nott";
+                    else
+                        $v0class="translation_normal";
+                }
+
+            }
+            ?>
+            <div class="translations <?php echo $v0class . " " . $v0currentElementRealm;?>" data-value="<?php echo $v0it[$v0j]->original;?>">
+                    <div class="translationKey"><span class="textTranslation"><?php echo $v0it[$v0j]->original;?></span></div>
+                    <div class="translationValue">
+                        <textarea style="width:100%;height:40px" name="translation[<?php echo $v0it[$v0j]->id_string;?>]"><?php echo str_replace('"','\\"',$v0it[$v0j]->translated);?></textarea>
+                    </div>
+            </div>
+        <?php }
+        }
+        ?>
+        </div>
+    <div class="sectionActions">
+        <input type=submit value="MODIFY" class="btSend">
+
+    </div>
+    </form>
+
+</div>
+
+<?php include_once(CUSTOMPATH."/pages/Editor/views/footer.php");?>
+

@@ -1,0 +1,29 @@
+<style type="text/css">
+
+    .reflection-modelEditor-closeButton {
+        text-align:right;
+    }
+    .reflection-modelEditor-componentView {
+        position:absolute;
+        top:10px;
+        left:50px;
+        width:800px;
+        height:450px;
+        z-index:40;
+        background-color:#EEE;
+    }
+</style>
+
+<div data-sivWidget="Siviglia.model.reflection.Model.views.ModelEditor" data-widgetCode="Siviglia.model.reflection.Model.views.ModelEditor" style="position:relative;width:900px;height:800px" class="reflection-modelEditor">
+    <div data-sivId="svgView" style="width:900px;height:500px;background-color:#AAA;float:left" class="reflection-modelEditor-svgView">
+    </div>
+    <div data-sivIf="[%/*editing%] == true">
+        <div style="position:absolute;top:0px;left:0px;opacity:.5;background-color:black;z-index:10;width:900px;height:500px" class="reflection-modelEditor-overlay"></div>
+    </div>
+    <div data-sivId="componentView" data-sivValue="^class|[%/*shown%]" class="reflection-modelEditor-componentView">
+        <div data-sivEvent="click" data-sivCallback="closeComponentView" class="reflection-modelEditor-closeButton"></div>
+        <div data-sivId="componentViewContainer">
+
+        </div>
+    </div>
+</div>

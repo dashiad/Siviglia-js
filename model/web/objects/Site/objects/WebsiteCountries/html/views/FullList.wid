@@ -1,0 +1,26 @@
+<?php
+        $serializer=\Registry::getService("storage")->getSerializerByName('web');
+        $params=Registry::$registry["PAGE"];
+?>
+[*LIST_DS({"currentPage":"$currentPage","object":"Sites/WebsiteCountries","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]id_country[#][#]
+						[_COLUMN][_LABEL]name[#][#]
+						[_COLUMN][_LABEL]id_state[#][#]
+
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_country","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"name","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_state","model":"$iterator"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]
+           [#]

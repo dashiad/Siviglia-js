@@ -1,0 +1,7 @@
+<div class="layout">
+    [_CONTENT]
+        <div class="layoutContent">
+            [_*]
+        </div>
+    [#]
+</div>

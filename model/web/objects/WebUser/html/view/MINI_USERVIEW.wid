@@ -1,0 +1,12 @@
+[*(##PARAMETER##)]
+    [_NAME]<?php echo $model->name;?>[#]
+    [_ICON][#]
+    [_PHOTO][#]
+    [_PROFILE_URL]<?php echo $model->name;?>[#]
+[#]
+
+
+
+
+[*MINI_USERVIEW::PARAMETER:MI_USERVIEW][#]
+

@@ -1,0 +1,144 @@
+<?php
+
+            $serializer=\Registry::getService("storage")->getSerializerByName('backoffice');
+            $params=Registry::$registry["PAGE"];
+?>
+            [*/VIEWS/OBJECT_VIEW({"currentPage":"$currentPage","object":"Lang","dsName":"ViewDs","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                    [_TITLE][#]
+                    [_CONTENTS]
+                        [*/LAYOUTS/2Columns]
+				[_ROW]
+					[_LEFT]name[#]
+					[_RIGHT][*:/types/String({"name":"name","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]is_rtl[#]
+					[_RIGHT][*:/types/Integer({"name":"is_rtl","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]language_code[#]
+					[_RIGHT][*:/types/String({"name":"language_code","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]iso_code[#]
+					[_RIGHT][*:/types/String({"name":"iso_code","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]active[#]
+					[_RIGHT][*:/types/Integer({"name":"active","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]id_lang[#]
+					[_RIGHT][*:/types/AutoIncrement({"name":"id_lang","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]date_format_full[#]
+					[_RIGHT][*:/types/String({"name":"date_format_full","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]date_format_lite[#]
+					[_RIGHT][*:/types/String({"name":"date_format_lite","model":"$iterator"})][#][#]
+				[#]
+
+                        [#]
+                    [#]
+           [#]
+
+
+<?php /* INCLUDED DATASOURCE : ps_feature_value_lang */
+		  $ps_feature_value_langIterator=$iterator->ps_feature_value_lang;
+ ?><?php
+
+?>
+[*LIST_IT({"currentPage":"$currentPage","iterator":"&$ps_feature_value_langIterator","subModel":"&$curModel"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]id_lang[#][#]
+						[_COLUMN][_LABEL]value[#][#]
+						[_COLUMN][_LABEL]id_feature_value[#][#]
+
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/Relationship({"name":"id_lang","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"value","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Relationship({"name":"id_feature_value","model":"$curModel"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]
+           [#]
+
+
+<?php /* INCLUDED DATASOURCE : ps_feature_lang */
+		  $ps_feature_langIterator=$iterator->ps_feature_lang;
+ ?><?php
+
+?>
+[*LIST_IT({"currentPage":"$currentPage","iterator":"&$ps_feature_langIterator","subModel":"&$curModel"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]id_lang[#][#]
+						[_COLUMN][_LABEL]id_feature[#][#]
+						[_COLUMN][_LABEL]name[#][#]
+
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/Relationship({"name":"id_lang","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"id_feature","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"name","model":"$curModel"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]
+           [#]
+
+
+<?php /* INCLUDED DATASOURCE : ps_category_lang */
+		  $ps_category_langIterator=$iterator->ps_category_lang;
+ ?><?php
+
+?>
+[*LIST_IT({"currentPage":"$currentPage","iterator":"&$ps_category_langIterator","subModel":"&$curModel"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]meta_description[#][#]
+						[_COLUMN][_LABEL]id_category[#][#]
+						[_COLUMN][_LABEL]meta_title[#][#]
+						[_COLUMN][_LABEL]meta_keywords[#][#]
+						[_COLUMN][_LABEL]description[#][#]
+						[_COLUMN][_LABEL]link_rewrite[#][#]
+						[_COLUMN][_LABEL]ps_category_id_category[#][#]
+						[_COLUMN][_LABEL]id_lang[#][#]
+						[_COLUMN][_LABEL]name[#][#]
+
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/String({"name":"meta_description","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"id_category","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"meta_title","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"meta_keywords","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Text({"name":"description","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"link_rewrite","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Relationship({"name":"ps_category_id_category","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Relationship({"name":"id_lang","model":"$curModel"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"name","model":"$curModel"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]
+           [#]

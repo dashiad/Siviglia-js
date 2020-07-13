@@ -1,0 +1,37 @@
+<div style="border:1px solid #DDDDDD;background-color:#EEEEEE">
+   <div style="background-color:#CCCCCC">
+        [_HEADER][_TITLE][_*][#][#]
+   </div>
+   <div>        
+       <table width="100%">
+       
+    [_LISTING]
+        [_COLUMNHEADERS]
+           <tr>
+            [_COLUMN]<th style="border-bottom:1px solid #AAAAAA;">[_LABEL][*:TEXT_1][_*][#]</th>[#][#]
+            </tr> 
+         [#]
+        
+            
+         [_ROWS]    
+            <?php
+               for($k=0;$k<$iterator->count();$k++)
+               {
+                   $subModel=& $iterator[$k];                   
+            ?>
+            <tr>
+            [_ROW]                      
+              <td style="border-bottom:1px solid #AAAAAA">
+                  [_VALUE][_*][#]
+              </td>
+             [#]  
+             <?php } ?>
+         [#]
+
+                
+    [#]
+           </table>
+
+    </div>
+</div>
+

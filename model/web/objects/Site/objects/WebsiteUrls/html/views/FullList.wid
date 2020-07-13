@@ -1,0 +1,26 @@
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$params=Registry::$registry["PAGE"];
+?>
+[*LIST_DS({"currentPage":"$currentPage","object":"Sites/WebsiteUrls","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]id_websiteUrl[#][#]
+						[_COLUMN][_LABEL]url[#][#]
+						[_COLUMN][_LABEL]priority[#][#]
+
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"id_websiteUrl","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"url","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"priority","model":"$iterator"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]
+           [#]

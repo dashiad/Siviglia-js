@@ -1,0 +1,75 @@
+<?php
+namespace model\web\Site\WebsiteUrls;
+/**
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Sites/objects/WebsiteUrls/Definition.php
+  CLASS:Definition
+*
+*
+**/
+
+class Definition extends \lib\model\BaseModelDefinition
+{
+	 static  $definition=array(
+               'ROLE'=>'ENTITY',
+               'DEFAULT_SERIALIZER'=>'default',
+               'DEFAULT_WRITE_SERIALIZER'=>'default',
+               'INDEXFIELDS'=>array('id_websiteUrl'),
+               'TABLE'=>'WebsiteUrls',
+               'LABEL'=>'WebsiteUrls',
+               'SHORTLABEL'=>'WebsiteUrls',
+               'CARDINALITY'=>'30',
+               'CARDINALITY_TYPE'=>'FIXED',
+               'FIELDS'=>array(
+                     'id_websiteUrl'=>array(
+                           'TYPE'=>'AutoIncrement',
+                           'MIN'=>0,
+                           'MAX'=>9999999999,
+                           'LABEL'=>'id_website',
+                           'SHORTLABEL'=>'id_website',
+                           'DESCRIPTIVE'=>'true',
+                           'ISLABEL'=>'false'
+                           ),
+                     'id_website'=>array(
+                           'DEFAULT'=>'',
+                           'FIELDS'=>array('id_website'=>'id_website'),
+                           'MODEL'=>'model\web\Site',
+                           'LABEL'=>'id_website',
+                           'SHORTLABEL'=>'id_website',
+                           'TYPE'=>'Relationship',
+                           'MULTIPLICITY'=>'1:N',
+                           'ROLE'=>'HAS_ONE',
+                           'CARDINALITY'=>1
+                           ),
+                     'url'=>array(
+                           'DEFAULT'=>'',
+                           'MINLENGTH'=>'4',
+                           'LABEL'=>'namespace',
+                           'SHORTLABEL'=>'namespace',
+                           'MAXLENGTH'=>'255',
+                           'TYPE'=>'String',
+                           'DESCRIPTIVE'=>'true',
+                           'ISLABEL'=>'false'
+                           ),
+                     'priority'=>array(
+                           'DEFAULT'=>'',
+                           'LABEL'=>'priority',
+                           'SHORTLABEL'=>'priority',
+                           'TYPE'=>'Integer',
+                           'ISLABEL'=>'false',
+                           'DESCRIPTIVE'=>'true'
+                           )
+                     ),
+               'PERMISSIONS'=>array(),
+               'SOURCE'=>[
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'ENGINE'=>'InnoDb',
+                           'CHARACTER SET'=>'utf8',
+                           'COLLATE'=>'utf8_general_ci',
+                           'TABLE_OPTIONS'=>array('ROW_FORMAT'=>'FIXED')
+                           )
+                     )
+                   ]
+               );
+}
+?>

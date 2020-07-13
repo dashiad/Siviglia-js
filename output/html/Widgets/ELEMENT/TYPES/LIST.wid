@@ -1,0 +1,9 @@
+    [*:/ELEMENT/TYPES/_ARRAY({"data":"$data","it":"&$iterator"})]
+        [_ROWS]
+            [_ROW]
+            <tr role="row">
+                <td>[_VALUE][_*][#]</td>
+            </tr>
+            [#]
+        [#]
+    [#]

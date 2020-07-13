@@ -1,0 +1,22 @@
+define(
+       ["dojo/_base/declare","dijit/_WidgetBase",
+        "dijit/_TemplatedMixin","dijit/_WidgetsInTemplateMixin",
+        "dojo/text!backoffice/Lang/dojo/actions/templates/AddAction.html","dojo/promise/all",
+        "dojo/when","dojo/Deferred","Siviglia/forms/Form","Siviglia/forms/inputs/String","Siviglia/forms/inputs/Integer","dijit/form/Button"
+        ],
+       function(declare,WidgetBase,TemplatedMixin,WidgetsInTemplateMixin,template,all,when,Deferred,Form)
+       {
+          return declare('Lang.AddAction',[WidgetBase,TemplatedMixin,WidgetsInTemplateMixin,Form],{
+                          templateString:template,
+                          definition:{"NAME":"AddAction","OBJECT":"Lang","ACTION":{"OBJECT":"\\backoffice\\Lang","ACTION":"AddAction"},"FIELDS":{"name":{"MODEL":"Lang","FIELD":"name","REQUIRED":true},"is_rtl":{"MODEL":"Lang","FIELD":"is_rtl","REQUIRED":true},"language_code":{"MODEL":"Lang","FIELD":"language_code","REQUIRED":true},"iso_code":{"MODEL":"Lang","FIELD":"iso_code","REQUIRED":true},"active":{"MODEL":"Lang","FIELD":"active","REQUIRED":true},"date_format_full":{"MODEL":"Lang","FIELD":"date_format_full","REQUIRED":true},"date_format_lite":{"MODEL":"Lang","FIELD":"date_format_lite","REQUIRED":true}},"ROLE":"Add","REDIRECT":{"ON_SUCCESS":"","ON_ERROR":""},"INPUTS":[],"INDEXFIELDS":[]},
+                          title:"",
+                          formClass:'',
+                          description:'',
+                          _widgetsInTemplate:true,
+                          errors:[],
+                           constructor:function()
+                          {
+                            this.inherited(arguments);
+                          }
+                        });
+      });

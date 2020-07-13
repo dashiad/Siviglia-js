@@ -1,0 +1,25 @@
+<?php
+
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$params=Registry::$registry["PAGE"];
+?>
+            [*LIST_DS({"currentPage":"$currentPage","object":"WebUser","dsName":"NotAdminUsers","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]USER_ID[#][#]
+						[_COLUMN][_LABEL]LOGIN[#][#]
+
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/AutoIncrement({"name":"USER_ID","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Login({"name":"LOGIN","model":"$iterator"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]
+           [#]

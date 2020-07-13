@@ -1,0 +1,377 @@
+{
+	"info": {
+		"_postman_id": "35a281d9-b8af-4705-8da2-37186eb14530",
+		"name": "Jobs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create simple Job",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6739b861-7243-40f6-b0a1-cd94b28eb7e4",
+						"exec": [
+							"",
+							"var result = JSON.parse(pm.response.text())",
+							"pm.environment.set(\"id\", result.job_id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"job\",\n    \"name\": \"simplest_job\",\n    \"task\": {\n        \"type\": \"task\",\n        \"name\": \"data_mixer\",\n        \"args\": {\n            \"task\": \"Test\",\n            \"type\": \"DateRange\",\n            \"params\": {\n                \"start_date\": \"2019-11-01 00:00:00\",\n                \"end_date\": \"2019-11-30 23:59:59\",\n                \"max_chunk_size\": 30\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Job Creator",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "37475333-d5fd-4e16-9075-28296cc2939e",
+						"exec": [
+							"",
+							"var result = JSON.parse(pm.response.text())",
+							"pm.environment.set(\"id\", result.job_id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"trigger\",\n    \"name\": \"alerts_on_daily_report\",\n    \"on\": \"daily_report\",\n    \"job\": {\n\t    \"type\": \"job\",\n\t    \"name\": \"daily_alert\",\n\t    \"task\": {\n\t        \"type\": \"task\",\n\t        \"name\": \"data_mixer\",\n\t        \"args\": {\n\t            \"task\": \"Test\",\n\t            \"type\": \"DateRange\",\n\t            \"params\": {\n\t                \"start_date\": \"2019-11-01 00:00:00\",\n\t                \"end_date\": \"2019-11-30 23:59:59\",\n\t                \"max_chunk_size\": 30\n\t            }\n\t        }\n\t    }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create directory Job",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "37475333-d5fd-4e16-9075-28296cc2939e",
+						"exec": [
+							"",
+							"var result = JSON.parse(pm.response.text())",
+							"pm.environment.set(\"id\", result.job_id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"job\",\n    \"name\": \"directory_report\",\n    \"on\": \"daily_report\",\n    \"partials\": false,\n    \"task\": {\n        \"type\": \"task\",\n        \"name\": \"directory_listing\",\n        \"args\": {\n            \"task\": \"DirectoryList\",\n            \"type\": \"List\",\n            \"params\": {\n                \"items\": [\n                    \"/var\",\n                    \"/home\",\n                    \"/bin\"\n                ],\n                \"max_chunk_size\": 1\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create SQL Job",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6b79bc23-02e3-4c53-be38-b5ec91446f12",
+						"exec": [
+							"",
+							"var result = JSON.parse(pm.response.text())",
+							"pm.environment.set(\"id\", result.job_id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"job\",\n    \"name\": \"daily_report\",\n    \"max_running_children\": 2,\n    \"task\": {\n        \"type\": \"task\",\n        \"name\": \"sql_report\",\n        \"args\": {\n            \"task\": \"MySql\",\n            \"type\": \"DateRange\",\n            \"params\": {\n                \"start_date\": \"2019-11-01 00:00:00\",\n                \"end_date\": \"2019-11-30 23:59:59\",\n                \"max_chunk_size\": 10\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create SQL Job Employees",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6b79bc23-02e3-4c53-be38-b5ec91446f12",
+						"exec": [
+							"",
+							"var result = JSON.parse(pm.response.text())",
+							"pm.environment.set(\"id\", result.job_id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"job\",\n    \"name\": \"employee_report\",\n    \"task\": {\n        \"type\": \"task\",\n        \"name\": \"employee_sql_query\",\n        \"args\": {\n            \"task\": \"EmployeeList\",\n            \"type\": \"None\",\n            \"params\": {}\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create complex job",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "48a5da1c-766f-4911-aa48-7d6d628a1745",
+						"exec": [
+							"",
+							"var result = JSON.parse(pm.response.text())",
+							"pm.environment.set(\"id\", result.job_id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"job\",\n    \"name\": \"monthly_report\",\n    \"jobs\": [\n        {\n            \"type\": \"job\",\n            \"name\": \"db_export\",\n            \"task\": {\n                \"type\": \"task\",\n                \"name\": \"sql_exporter\",\n                \"args\": {\n                    \"task\": \"Test\",\n                    \"type\": \"DateRange\",\n                    \"params\": {\n                        \"start_date\": \"2019-11-01 00:00:00\",\n                        \"end_date\": \"2019-11-30 23:59:59\",\n                        \"max_chunk_size\": 10\n                    }\n                }\n            }\n        },\n        {\n            \"type\": \"job\",\n            \"name\": \"file_export\",\n            \"task\": {\n                \"type\": \"task\",\n                \"name\": \"file_exporter\",\n        \t\t\"args\": {\n            \t\t\"task\": \"DirectoryList\",\n            \t\t\"type\": \"List\",\n            \t\t\"params\": {\n                \t\t\"items\": [\n                    \t\t\"/var\",\n                    \t\t\"/home\",\n                    \t\t\"/bin\"\n                \t\t],\n                \t    \"max_chunk_size\": 1\n            \t    }\n            }\n        }\n    }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Halt Job",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/{{id}}/halt",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{id}}",
+						"halt"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Poll job",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/{{id}}/poll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{id}}",
+						"poll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Start job",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/{{id}}/start",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{id}}",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "System status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"status"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

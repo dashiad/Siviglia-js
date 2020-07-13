@@ -1,0 +1,43 @@
+<?php
+
+$params=Registry::$registry["PAGE"];
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$currentModel=new \model\web\WebUser();
+
+?>
+
+                [*/FORMS/form({"object":"/model/web/WebUser","layer":"web","name":"Add2","form":"&$form"})]
+                [_TITLE]AddAction WebUser[#]
+                [_DESCRIPTION]Form Description[#]
+                [_MODEL({"keys":"$formKeys","serializer":"$serializer","model":"&$currentModel"})][#]
+                [_FORMGROUP]
+                        [_TITLE]Form Group Title[#]
+                        [_DESCRIPTION]Form Group Description[#]
+                        [_FORMERRORS]
+
+                        [#]
+                        [_FIELDS]
+
+
+				[*/FORMS/inputContainer({"name":"LOGIN","form":"&$form"})]
+					[_LABEL]LOGIN[#]
+					[_HELP]**Insert Field Help**[#]
+					[_INPUT]
+						[*:/types/inputs/_String({"model":"$currentModel","name":"LOGIN","form":"$form"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"INVALID","code":"2"})]WebUser__LOGIN_INVALID[#]
+						[_ERROR({"type":"UNSET","code":"1"})]WebUser__LOGIN_UNSET[#]
+						[_ERROR({"type":"TOO_SHORT","code":"100"})]WebUser__LOGIN_TOO_SHORT[#]
+						[_ERROR({"type":"TOO_LONG","code":"101"})]WebUser__LOGIN_TOO_LONG[#]
+						[_ERROR({"type":"INVALID_CHARACTERS","code":"102"})]WebUser__LOGIN_INVALID_CHARACTERS[#]
+					[#]
+				[#]
+
+
+                        [#]
+                [#]
+                [_BUTTONS]
+                    [*:/INPUTS/Submit({"form":"&$form"})][_:LABEL]Aceptar[#][#]
+                [#]
+          [#]

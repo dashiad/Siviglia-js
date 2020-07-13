@@ -1,0 +1,20 @@
+<div data-sivWidget="Siviglia.model.web.WebUser.forms.Login" data-widgetCode="Siviglia.model.web.WebUser.forms.Login">
+    <div data-sivIf="[%/*hasGlobalErrors%] == true">
+        <div class="globalErrors">
+            <ul class="globalErrorList" data-sivLoop="/*globalErrors" data-contextIndex="current">
+                <li class="globalError error-icon" data-sivValue="[%/@current%]"></li>
+            </ul>
+        </div>
+    </div>
+    <div class="inputContainer">
+        <div class="inputLabel">Login</div>
+        <div class="inputElement" data-sivCall="getInputFor" data-sivParams='{"key":"LOGIN"}'></div>
+    </div>
+    <div class="inputContainer">
+        <div class="inputLabel">Password</div>
+        <div class="inputElement" data-sivCall="getInputFor" data-sivParams='{"key":"PASSWORD"}'></div>
+    </div>
+    <div class="formButtonsContainer">
+        <input class="formSubmit" type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar">
+    </div>
+</div>

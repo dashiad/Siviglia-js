@@ -1,0 +1,135 @@
+{
+  "ROOT": {
+    "LABEL": "Website",
+    "TYPE": "CONTAINER",
+    "LAYOUT": "MenuLayout",
+    "FIELDS": {
+      /* "userProfiles": {
+       "TYPE": "ARRAY",
+       "LABEL": "Perfiles de usuario"
+       },*/
+      "system": {
+        "HANDLER": "Editor.SystemHandler",
+        "TYPE": "CONTAINER",
+        "IGNOREKEY": true,
+        "LABEL": "Config",
+        //"LOAD_URL":"?ds=config",
+        "LOAD_URL": "loader.php?load=website",
+        "SAVE_URL": "?action=changeConfig",
+        "FIELDS": {
+          "PROJECTPATH": {
+            "TYPE": "STRING",
+            "LABEL": "Path del proyecto",
+            "READONLY": true,
+            "NODELETE": true
+          },
+          "WEBPATH": {
+            "NODELETE": true,
+            "TYPE": "STRING",
+            "LABEL": "Url del proyecto",
+            "HELP": "Esta url debe apuntar a la carpeta /html del proyecto"
+          },
+          "SERIALIZERS": {
+            "TYPE": "CONTAINER",
+            "LABEL": "Bases de datos",
+            "FIELDS": {
+              "app": {
+                "TYPE": "TYPESWITCH",
+                "LABEL": "App Database",
+                "TYPE_FIELD": "TYPE",
+                "ALLOWED_TYPES": [
+                  "Mysql",
+                  "Cassandra"
+                ]
+              },
+              "web": {
+                "TYPE": "TYPESWITCH",
+                "LABEL": "Web Database",
+                "TYPE_FIELD": "TYPE",
+                "ALLOWED_TYPES": [
+                  "Mysql",
+                  "Cassandra"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "Website": {
+        "TYPE": "CONTAINER",
+        "LABEL": "Web",
+        "LAYOUT": "MenuItem",
+        "FIELDS": {
+          "objects": {
+            "HANDLER": "Editor.ObjectHandler",
+            "TYPE": "DICTIONARY",
+            "LABEL": "Objetos de web",
+            "LOAD_URL": "loader.php?load=webObjects",
+            "VALUETYPE": "OBJECTMODEL",
+            "LAYOUT": "ObjEditorLayout"
+          }
+        }
+      },
+      "Application": {
+        "TYPE": "CONTAINER",
+        "LABEL": "Application",
+        "LAYOUT": "MenuItem",
+        "FIELDS": {
+          "objects": {
+            "HANDLER": "Editor.ObjectHandler",
+            "TYPE": "DICTIONARY",
+            "LABEL": "Objetos de Aplicacion",
+            "LOAD_URL": "loader.php?load=appObjects",
+            "VALUETYPE": "OBJECTMODEL",
+            "LAYOUT": "ObjEditorLayout"
+          }
+        }
+      },
+      "preferences": {
+        "Label": "Users",
+        "HANDLER": "Editor.SystemPreferences",
+        "TYPE": "CONTAINER",
+        "IGNOREKEY": true,
+        "LABEL": "Preferences",
+        //"LOAD_URL":"?ds=preferences",
+        "SAVE_URL": "?action=preferences",
+        "FIELDS": {
+          "REQUIRE_UNIQUE_EMAIL": {
+            "TYPE": "BOOLEAN",
+            "LABEL": "Emails are unique?",
+            "HELP": "Require unique emails on sign-up"
+          },
+          "PLAINTEXT_PASSWORDS": {
+            "TYPE": "SELECTOR",
+            "OPTIONS": {
+              "Plain Text": 1,
+              "MD5": 2,
+              "CRYPT": 3
+            },
+            "DEFAULT": 3,
+            "LABEL": "Password encryption"
+          },
+          "ATTEMPTS_BEFORE_LOCKOUT": {
+            "TYPE": "INTEGER",
+            "LABEL": "Attempts before freeze",
+            "DEFAULT": 0
+          },
+          "REQUIRE_ACCOUNT_VALIDATION": {
+            "TYPE": "BOOLEAN",
+            "LABEL": "Requires account validation",
+            "DEFAULT": false
+          },
+          "LOGIN_ON_CREATE": {
+            "TYPE": "BOOLEAN",
+            "LABEL": "Autolog user after sign-up",
+            "DEFAULT": true
+          },
+          "NOT_ALLOWED_NICKS": {
+            "TYPE": "ARRAY",
+            "LABEL": "Not allowed nicks (regexps)"
+          }
+        }
+      }
+    }
+  }
+}

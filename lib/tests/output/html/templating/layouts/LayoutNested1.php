@@ -1,0 +1,8 @@
+[*WINDOW]
+    [_TITLE]
+        [*:B]Hola[#]
+    [#]
+    [_CONTENT]
+        [*:B]Adios[#]
+    [#]
+[#]

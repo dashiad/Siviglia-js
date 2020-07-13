@@ -1,0 +1,11 @@
+<?php 
+    $source_data=[];
+    $source_data=$source->getData();
+    for($k=0; $k < count($source_data); $k++)
+    {
+        $it=$source_data[$k];
+?>
+    [_*]
+<?php        
+    }
+?>

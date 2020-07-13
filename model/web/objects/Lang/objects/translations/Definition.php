@@ -1,0 +1,82 @@
+<?php
+namespace model\web\Lang\translations;
+/**
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Lang/objects/translations/Definition.php
+  CLASS:Definition
+*
+*
+**/
+
+class Definition  extends \lib\model\BaseModelDefinition
+{
+	 static  $definition=array(
+               'ROLE'=>'ENTITY',
+               'DEFAULT_SERIALIZER'=>'web',
+               'DEFAULT_WRITE_SERIALIZER'=>'web',
+               'INDEXFIELDS'=>array('id_translation'),
+               'TABLE'=>'Translations',
+               'LABEL'=>'translations',
+               'SHORTLABEL'=>'translations',
+               'CARDINALITY'=>'300',
+               'CARDINALITY_TYPE'=>'FIXED',
+               'FIELDS'=>array(
+                     'value'=>array(
+                           'DEFAULT'=>'',
+                           'SHORTLABEL'=>'value',
+                           'TYPE'=>'Text',
+                           'DESCRIPTIVE'=>'true',
+                           'ISLABEL'=>'false',
+                           'LABEL'=>'value'
+                           ),
+                     'lang'=>array(
+                           'DEFAULT'=>'',
+                           'MINLENGTH'=>'1',
+                           'LABEL'=>'lang',
+                           'SHORTLABEL'=>'lang',
+                           'MAXLENGTH'=>'10',
+                           'TYPE'=>'String',
+                           'DESCRIPTIVE'=>'true',
+                           'ISLABEL'=>'false'
+                           ),
+                     'id_string'=>array(
+                           'TYPE'=>'UUID',
+                           'DESCRIPTIVE'=>'true',
+                           'ISLABEL'=>'false',
+                           'LABEL'=>'id_string',
+                           'SHORTLABEL'=>'id_string'
+                           ),
+                     'id_translation'=>array(
+                           'TYPE'=>'AutoIncrement',
+                           'MIN'=>0,
+                           'MAX'=>9999999999,
+                           'LABEL'=>'id_lang',
+                           'SHORTLABEL'=>'id_lang',
+                           'DESCRIPTIVE'=>'true',
+                           'ISLABEL'=>'false'
+                           ),
+                     'dirty'=>array(
+                           'TYPE'=>'Boolean',
+                           'LABEL'=>'dirty',
+                           'DEFAULT'=>false
+                           ),
+                     'realm'=>array(
+                           'TYPE'=>'Enum',
+                           'VALUES'=>array("Site","Back","Editor","Reflection"),
+                           'DEFAULT'=>'Site',
+                           'LABEL'=>'Realm'
+                           )
+                     ),
+               'PERMISSIONS'=>array(),
+         'SOURCE'=>[
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'ENGINE'=>'InnoDb',
+                           'CHARACTER SET'=>'utf8',
+                           'COLLATE'=>'utf8_general_ci',
+                           'TABLE_OPTIONS'=>array('ROW_FORMAT'=>'FIXED')
+                           )
+                     )
+             ]
+               );
+}
+?>

@@ -1,0 +1,44 @@
+<?php
+if($type==null)
+    $type=$form->__getField($name);
+
+$info=$type->summarize();
+
+?>
+
+
+<?php
+    $curModel=$form;
+    $remField=$curModel->__getField($name);
+    $localDefinition=$remField->getDefinition();
+
+    if(!$ds)
+    {
+        if(!is_a($remField,'lib\model\Relation1x1'))
+        {
+
+            $remoteDefinition=\lib\model\types\TypeFactory::getObjectField($localDefinition["MODEL"],$localDefinition["FIELD"]);
+            $remField=new lib\model\Relation1x1($name,$curModel, $remoteDefinition, $remField->getValue());
+        }
+
+        $params=$form->__getInputParams($name);
+
+           $ds=\lib\datasource\DataSourceFactory::getDataSource($remoteDefinition["MODEL"],"FullList");
+
+
+    }
+    try
+    {
+        $val=$model->{$localDefinition["FIELD"]};
+    }catch(\lib\model\BaseModelException $e)
+    {
+        if($e->getCode()==\lib\model\BaseModelException::ERR_INVALID_OFFSET)
+        {
+            $val=null;
+        }
+    }
+    $labelField=$params["LABEL"];
+    $valueField=$params["VALUE"];
+    ?>
+
+    [*:/ELEMENT/FORM/INPUTS/SELECT_2020({"info":"$info"})][#]

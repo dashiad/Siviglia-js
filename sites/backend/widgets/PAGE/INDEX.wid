@@ -1,0 +1,28 @@
+<!-- NOTA: NO FUNCIONA esta dependencia para añadir ficheros al final del body -->
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_PHASE]BODYEND[#]
+    [_CONTENTS]
+        [_SCRIPT]            
+            [_FILE]backend/js/vendors/datatable-jobs.js[#]
+        [#]
+    [#]
+[#]
+
+[*:HTML/HTMLPAGE({"bodyClasses":"$bodyClasses"})]
+    [_:EXTRA_PAGE_PROPERTIES]data-open="click" data-menu="vertical-menu-modern" data-col="2-columns" data-layout="semi-dark-layout"[#]
+    [_:LAYOUT_STRUCTURE]
+        [_HORIZONTAL]class="horizontal-layout horizontal-menu navbar-sticky 2-columns footer-static  menu-expanded pace-done" data-open="hover" data-menu="horizontal-menu" data-col="2-columns"[#]
+        [_VERTICAL]class="vertical-layout vertical-menu-modern semi-dark-layout 2-columns navbar-sticky footer-static  menu-expanded pace-done" data-open="click" data-menu="vertical-menu-modern" data-col="2-columns" data-layout="semi-dark-layout" cz-shortcut-listen="true"[#]
+    [#]
+    
+    [_:TITLE][_TITLE][_*][#][#]
+
+    [_:CONTENT]    
+        [*::LAYOUT/LAYOUT_HORIZONTAL_BACKEND]
+            [_::CONTENT]
+                [_CONTENT][_*][#]
+            [#]
+        [#]
+    [#]   
+[#]

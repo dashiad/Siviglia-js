@@ -1,0 +1,26 @@
+<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+    [_SUBMENU_SECTION]
+    <div class="menu_section">
+            [_SECTION_TITLE]<h3>[_*]</h3>[#]
+            [_SECTION_GROUPS]
+                <ul class="nav side-menu">
+                    [_SUBMENU_GROUP]
+                    <li>
+                        <a><i class="fa[_SUBMENU_ICON] fa-[_*][#]"></i>[_SUBMENU_TITLE][_*][#] <span class="fa fa-chevron-down"></span></a>
+                        [_SUBMENU_ENTRIES]
+                            <ul class="nav child_menu">
+                                [_MENU_ENTRY]
+                                    <li>[_ICON]<i class="fa fa-[_*]"></i>[#]<a href="[_LINK][_*][#]">[_LABEL][_*][#]</a></li>
+                                [#]
+                            </ul>
+                        [#]
+                    </li>
+                    [#]
+                    [_SUBMENU_SIMPLE]
+                        <li><a href="[_NOLINK]javascript:void(0)[#][_LINK][_*][#]"><i class="fa[_SUBMENU_ICON] fa-[_*][#]"></i> [_SUBMENU_TITLE][_*][#] [_RIGHT_ICON]<span class="[_ICON][_*][#] pull-right">[_TEXT][_*][#]/span>[#]</a></li>
+                    [#]
+                </ul>
+            [#]
+    </div>
+    [#]
+</div>

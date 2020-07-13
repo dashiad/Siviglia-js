@@ -1,0 +1,28 @@
+<?php
+    $field=$form->__getField($name);
+    $type=$field;
+    if($type->__hasValue())
+    {
+
+
+        if($type->hasThumbnail())
+        {
+            $thumbPath=$type->getThumbnailPath();
+            echo '<img src="'.WEBPATH.'/'.$thumbPath.'" width="'.$type->getThumbnailWidth().'" height="'.$type->getThumbnailHeight.'"';
+        }
+        else
+        {
+            echo '<img src="'.WEBPATH.'/'.$type->getValue().'"';
+            if($thumbWidth)
+                echo ' width="'.$thumbWidth.'"';
+            if($thumbHeight)
+                echo ' height="'.$thumbHeight.'"';
+        }
+
+
+
+        echo ">";
+    }
+    $val=$form->{$name};
+?>
+[*:/ELEMENT/FORM/INPUTS/FILE({"name":"$name","value":"$val"})][#]

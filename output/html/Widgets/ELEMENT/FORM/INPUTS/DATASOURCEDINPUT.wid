@@ -1,0 +1,7 @@
+[_ITERATOR]
+        [*:DATASOURCE]
+                [_:ITERATOR({"name":"$name","ds":"$ds","iterator":"&$inputIterator"})]
+                        [_*]
+                [#]
+        [#]
+[#]

@@ -1,0 +1,25 @@
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$currentPage=Registry::$registry["currentPage"];
+$params=Registry::$registry["params"];
+?>
+
+<div class="header-navbar navbar-expand-sm navbar navbar-horizontal navbar-fixed navbar-smartclip navbar-without-dd-arrow navbar-brand-center" role="navigation" data-menu="menu-wrapper" data-nav="brand-center">
+[*:LAYOUT/NAVIGATION/LIST_DS_MENU({"currentPage":"$currentPage","object":"/model/web/Site","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+    [_:HEADER]
+        [_:TITLE]Smartclip[#]
+        [_:LINK]http://editor.adtopy.com/[#]
+        [_:TARGET]_self[#]
+        [_:SUP_TITLE](editor)[#]
+    [#]    
+    [_:LISTING]
+        [_:ROWS]
+            [_:ROW]
+                [_:VALUE]
+                    [*::LAYOUT/NAVIGATION/LINK_MENU][_::URL]/Site/<?php echo $iterator->namespace;?>[#][_::TEXT]<?php echo $iterator->namespace;?>[#][#]
+                [#]
+            [#]
+        [#]
+    [#]
+[#]
+</div>

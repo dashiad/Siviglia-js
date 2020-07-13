@@ -1,0 +1,44 @@
+
+[*/FORMS/form({"object":"WebUser","layer":"web","name":"AddAdministrator"})]
+            [_MODEL][#]
+                [_FORMGROUP]
+                        [_FORMERRORS]
+                        [#]
+                        [_FIELDS]
+				[*/FORMS/inputContainer({"name":"USER_ID","form":"&$form"})]
+
+					[_LABEL]Usuario:[#]
+					[_HELP]**Insert Field Help**[#]
+					<?php $inputParams="";?>
+					[_INPUT]
+                                        <?php
+                                            $ds=\lib\datasource\DataSourceFactory::getDataSource('WebUser','NotAdminUsers');
+                                        ?>
+						[*/types/inputs/Relation1x1({"name":"USER_ID","labelField":"LOGIN","valueField":"USER_ID","ds":"$ds"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"UNSET","code":"1"})][@L]WebUser_AdminCreate_UNSET[#][#]
+					[#]
+				[#]
+
+                        [*/FORMS/inputContainer({"name":"ADMIN_TYPE","form":"&$form"})]
+					[_LABEL]Tipo:[#]
+					[_HELP]**Insert Field Help**[#]
+					<?php $inputParams="";?>
+					[_INPUT]
+						[*/types/inputs/Enum({"name":"ADMIN_TYPE"})][#]
+					[#]
+					[_ERRORS]
+						[_ERROR({"type":"UNSET","code":"1"})][@L]WebUser_AdminCreate_UNSET[#][#]
+					[#]
+				[#]
+
+
+
+
+                        [#]
+                [#]
+                [_BUTTONS]
+                        [*:/INPUTS/Submit({"form":"&$form"})][_LABEL][@L]Aceptar[#][#][#]
+                [#]
+          [#]

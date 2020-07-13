@@ -1,0 +1,41 @@
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT][_URL]https://code.jquery.com/jquery-3.4.1.min.js[#][#]
+        [_SCRIPT]
+
+            [_CODE]
+            <script>
+                var __s__base=(function(){
+                    var config={
+                        statics:'http://statics.adtopy.com',
+                        metadata:'http://metadata.adtopy.com',
+                        site:'http://editor.adtopy.com'
+                    };
+                    var obj={};
+
+                    obj.callEndPoint=function(t){
+                        var url=null;
+                        var p=t.params;
+                        switch(t.endPoint)
+                        {
+                            case 'validation':
+                            {
+                                url=config.metadata+"/validate/"+p.model+"/forms/"+p.name+"/field/"+p.field+"?fieldValue="+JSON.stringify(p.value)+"&fieldPath="+p.prefix;
+                                return $.getJSON(url,(typeof p.params=="undefined"?null:p.params));
+                            }break;
+                            case 'form':
+                            {
+                                url=config.site+"/action";
+                                return $.post(url,p);
+                            }break;
+                        }
+                    }
+                    return obj;
+                })();
+            </script>
+            [#]
+
+        [#]
+    [#]
+[#]

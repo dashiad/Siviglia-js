@@ -1,0 +1,71 @@
+[_PARAMETERS]
+        <?php
+
+        if($object)
+        {
+            $ds=\lib\datasource\DataSourceFactory::getDataSource(str_replace("/","\\",$object),$name);
+            if($params)
+            {
+                $defDs=$ds->getDefinition();
+
+                if(is_object($params))
+                {
+                    $def=$params->getDefinition();
+
+                    if(isset($defDs["INDEXFIELDS"]))
+                    {
+                        foreach($defDs["INDEXFIELDS"] as $key=>$value)
+                            $ds->{$key}=$params->{$key};
+
+                    }
+                    if(isset($defDs["PARAMS"]))
+                    {
+                        foreach($defDs["PARAMS"] as $key=>$value)
+                        {
+                            if(isset($def["FIELDS"][$key]))
+                                $ds->{$key}=$params->{$key};
+                        }
+                    }
+                }
+                else
+                {
+                    foreach($defDs["PARAMS"] as $key=>$value)
+                    {
+                        if(isset($params[$key]))
+                            $ds->{$key}=$params[$key];
+                    }
+                }
+            }
+            if(isset($dsParams))
+            {
+                $pagingParams=$ds->getPagingParameters();
+                foreach($dsParams as $key=>$value)
+                    $pagingParams->{$key}=$value;
+            }
+
+            $ds->initialize();
+
+         }
+        ?>
+[#]
+[_ITERATOR]
+<?php
+      $it=$ds->fetchAll();
+      $nItems=$it->count();
+      for($k=0;$k<$nItems;$k++)
+      {
+          $iterator=$it[$k];
+     ?>
+        [_*]
+<?php }?>
+[#]
+
+[_NOROWS]
+    <?php if($nItems==0){?>
+         [_*]
+    <?php }?>
+[#]
+
+
+
+
