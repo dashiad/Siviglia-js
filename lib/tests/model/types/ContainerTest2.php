@@ -40,7 +40,7 @@ class ContainerTest2 extends TestCase
         return [
             'STATES' => [
                 'E1' => [
-                    'FIELDS' => ['EDITABLE' => ['one','two']]
+                    'FIELDS' => ['EDITABLE' => ['one','two','inner']]
                 ],
                 'E2' => [
                     'ALLOW_FROM'=>["E1"],
