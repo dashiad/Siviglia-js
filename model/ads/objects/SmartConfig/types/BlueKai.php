@@ -14,7 +14,8 @@ class BlueKai extends BaseType
         "FIELDS" => [
             "siteId" => [
                 "LABEL" => "Site Id",
-                "TYPE" => "String"
+                "TYPE" => "String",
+//                 "REQUIRED" => false, // TODO: debería ser obligatorio si se usa el plugin
             ],
             "segments" => [
                 "TYPE" => "Dictionary",

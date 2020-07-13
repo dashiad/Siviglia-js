@@ -1,5 +1,8 @@
 	<div data-sivWidget="Siviglia.model.ads.SmartConfig.forms.Edit" 
 		 data-widgetCode="Siviglia.model.ads.SmartConfig.forms.Edit">
+		 <div style="display:none;">
+	        <div data-sivCall="getInputFor" data-sivParams='{"key":"domain"}'></div>
+	    </div>
 	    <div>
 	        <div data-sivCall="getInputFor" data-sivParams='{"key":"config"}'></div>
 	    </div>
@@ -27,5 +30,6 @@
 	        </div>
 	        <div style="border:1px solid black" data-sivId="currentItemNode"></div>
 	    </div>
-	    <button data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
+	    <div data-sivId="tooltip"></div>
+	    <button data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Crear nuevo</button>
     </div>

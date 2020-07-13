@@ -8,6 +8,9 @@ require_once(__DIR__."/BaseType.php");
 class ImageLoaderUrl extends BaseType
 {
     
+    // TODO: este campo es opcional dentro de SmartConfig, pero al tener
+    // valores por defecto uno de los subcampos, está inicializado y falla
+    // por ser el otro requerido
     public $definition = [
         'LABEL' => 'ImageLoaderUrl',
         'TYPE' => 'Container',
@@ -15,13 +18,15 @@ class ImageLoaderUrl extends BaseType
             'url' => [
                 'LABEL' => 'URL',
                 'TYPE' => 'String',
-                'REQUIRED' => true
+//                 'REQUIRED' => true
+//                 'REQUIRED' => false,
             ],
             'throttle' => [
                 'LABEL' => 'Throttle',
                 'TYPE' => 'Integer',
-                'REQUIRED' => true,
-                'DEFAULT' => 1
+//                 'REQUIRED' => true,
+//                 'DEFAULT' => 1
+//                 'REQUIRED' => false,
             ]
         ]
     ];

@@ -32,7 +32,7 @@ class Edit extends \lib\action\Action
                 'FIELD' => 'config',
                 'MODEL' => '\model\ads\SmartConfig'
             )
-        )
+        ),
     );
 
     /**

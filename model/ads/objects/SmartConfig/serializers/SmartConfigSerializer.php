@@ -169,7 +169,14 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
                 // reemplazamos comillas simples por dobles
                 $result = str_replace("'", '"', $result);
                 // eliminamos comas al final de listas
-                $result = preg_replace("/,([\s]*[\]}][\s]*)/","$1", $result);
+                $result = preg_replace("/,([\s]*[\]}][\s]*)/", "$1", $result);
+                // algunas claves no están entrecomilladas, no es correcto en JSON
+                // TODO: utilizar regex general para este caso
+                $keys = ["when", "reload", "relocate", "regex", "actions", "schedule", "url",
+                         "configType", "mappings", "modelName", "segments", "source", ];
+                foreach ($keys as $key) {
+                    $result = preg_replace("/".$key."[\s]?:[\s]?/", "\"$key\":", $result);
+                }
                 // ahora tenemos un json que puede parsearse a un array PHP
                 $result = json_decode($result, true);
                 if (json_last_error()!=FALSE) {
@@ -245,6 +252,32 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
         return  $qB->build($query);
     }
 
+    public function _store($object, $isNew, $dirtyFields=null)
+    {
+        $file = fopen("/vagrant/adtopy/TEST.js", "w");
+        
+        $config = [
+            "configType" => $object->configType,
+            "domain" => $object->domain,
+            "actions" => [],
+        ];
+        foreach ($object->config->getValue() as $action) {
+            $regex = $action["actions"];
+            $plugins = $action;
+            unset($plugins["actions"]);
+            $config["actions"][] = [
+                "regex" => $regex,
+                "actions" => $plugins,
+            ];
+        }
+        
+        $dataTemplate = "SMC.Config.process([%config%]);";
+        $config = ["config"=>json_encode($config)];
+        fwrite($file, ParametrizableString::getParametrizedString($dataTemplate, $config));
+        fclose($file);
+        return parent::_store($object, $isNew, $dirtyFields);
+    }
+    
     public function existsDataSpace($name)
     {}
 

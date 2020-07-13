@@ -10,7 +10,7 @@ namespace model\ads\SmartConfig\actions;
 class Edit extends \lib\action\Action
 {
 	 static  $definition=array(
-               'MODEL'=>'\model\ads\SmartConfiog',
+               'MODEL'=>'\model\ads\SmartConfig',
                'ROLE'=>'Edit',
                'PERMISSIONS'=>array(
 //                     array(
@@ -19,64 +19,20 @@ class Edit extends \lib\action\Action
 //                           )
                      ),
                'IS_ADMIN'=>false,
-               'INDEXFIELDS'=>array("domain"),
+//                'INDEXFIELDS'=>array("domain"),
                'FIELDS'=>array(
-/*                   'id_page'=>array(
+                   'domain'=>array(
                        'REQUIRED'=>1,
-                       'FIELD'=>'id_page',
-                       'MODEL'=>'\model\web\Page'
+                       'FIELD'=>'domain',
+                       'MODEL'=>'\model\ads\SmartConfig'
                    ),
-                     'tag'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'tag',
-                           'MODEL'=>'\model\web\Page'
-                           ),
-                     'id_site'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'id_site',
-                           'MODEL'=>'\model\web\Page',
-                           'DATASOURCE'=>array(
-                                 'MODEL'=>'\model\web\Site',
-                                 'NAME'=>'FullList',
-                                 'LABEL'=>'websiteName',
-                                 'PARAMS'=>array()
-                                 )
-                           ),
-                     'name'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'name',
-                           'MODEL'=>'\model\web\Page'
-                           ),
-                     'id_type'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'id_type',
-                           'MODEL'=>'\model\web\Page'
-                           ),
-                     'isPrivate'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'isPrivate',
-                           'MODEL'=>'\model\web\Page'
-                           ),
-                     'path'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'path',
-                           'MODEL'=>'\model\web\Page'
-                           ),
-                     'title'=>array(
-                           'REQUIRED'=>1,
-                           'FIELD'=>'title',
-                           'MODEL'=>'\model\web\Page'
-                           ),
-                     'tags'=>array(
-                           'FIELD'=>'tags',
-                           'MODEL'=>'\model\web\Page'
-                           ),
-                     'description'=>array(
-                           'FIELD'=>'description',
-                           'MODEL'=>'\model\web\Page'
-                           )
-		   )*/
-	       )               );
+                   'config'=>array(
+                       'REQUIRED'=>1,
+                       'FIELD'=>'config',
+                       'MODEL'=>'\model\ads\SmartConfig'
+                   ),
+	           ),
+           );
 
 
 	/**
@@ -91,12 +47,8 @@ class Edit extends \lib\action\Action
 	 */
 	 function __construct( )
 	{
-
-			parent::__construct(Edit::$definition);
-
+        parent::__construct(Edit::$definition);
 	}
-
-
 
 	/**
 	 *
@@ -116,14 +68,10 @@ class Edit extends \lib\action\Action
 	 *
 	 * RETURNS:
 	 */
-	 function validate ( $actionResult )
-	{
-
-
-	/* Insert the validation code here */
-
-			return $actionResult->isOk();
-
+	function validate ( $actionResult )
+    {
+    	/* Insert the validation code here */
+        return $actionResult->isOk();
 	}
 
 
@@ -142,14 +90,10 @@ class Edit extends \lib\action\Action
 	 *
 	 * RETURNS:
 	 */
-	 function onSuccess( $model, $user)
+	function onSuccess( $model, $user)
 	{
-
-
-	/* Insert callback code here */
-
-	return true;
-
+    	/* Insert callback code here */
+    	return true;
 	}
 
 
@@ -174,13 +118,7 @@ class Edit extends \lib\action\Action
 	 */
 	 function onError( $keys, $params, $actionResult, $user)
 	{
-
-
-	/* Insert callback code here */
-
-	return true;
-
+    	/* Insert callback code here */
+    	return true;
 	}
-
 }
-?>

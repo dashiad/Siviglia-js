@@ -18,13 +18,13 @@ class Definition extends BaseModelDefinition
             'configType' => [
                 'TYPE' => 'String',
                 'LABEL' => 'Tipo de configuración',
-                'REQUIRED' => true,
+                'REQUIRED' => false,
                 'DEFAULT' => 'default',
             ],
             'domain' => [
                 'TYPE' => 'String',
                 'LABEL' => 'Dominio',
-                'REQUIRED' => true,
+                'REQUIRED' => false,
                 'DEFAULT' => null,
             ],
             'config' => [
@@ -60,26 +60,32 @@ class Definition extends BaseModelDefinition
                         'Exelate' => [
                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\Exelate',
                             'LABEL' => 'Plugin Exelate',
+                            'REQUIRED' => false,
                         ],
                         'Adobe' => [
                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\Adobe',
                             'LABEL' => 'Plugin Adobe',
+                            'REQUIRED' => false,
                         ],
                         "BlueKaiPlugin" => [
                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\BlueKai',
                             'LABEL' => 'Plugin BlueKai',
+                            'REQUIRED' => false,
                         ],
                         'ImageLoaderUrl' => [
                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\ImageLoaderUrl',
                             'LABEL' => 'Plugin ImageLoaderUrl',
+                            'REQUIRED' => false,
                         ],
                         'AdnSegments' => [
                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\AdnSegments',
                             'LABEL' => 'Plugin AdnSegments',
+                            'REQUIRED' => false,
                         ],
                         'GPTConfig' => [
                             'TYPE' => '\\model\\ads\\SmartConfig\\types\\GPTConfig',
                             'LABEL' => 'Plugin GPTConfig',
+                            'REQUIRED' => false,
                         ],
                     ],
                 ],  
