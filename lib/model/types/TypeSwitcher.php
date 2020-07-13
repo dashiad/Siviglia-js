@@ -34,8 +34,8 @@ class TypeSwitcher extends BaseType implements \ArrayAccess
     function __setValidationMode($mode)
     {
         $this->validationMode=$mode;
-        if($this->currentType!==null)
-            $this->currentType->__setValidationMode($this->validationMode);
+        if($this->subNode!==null)
+            $this->subNode->__setValidationMode($this->validationMode);
     }
 
     function _setValue($val,$validationMode=null)
