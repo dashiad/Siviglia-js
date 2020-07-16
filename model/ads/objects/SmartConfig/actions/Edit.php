@@ -19,12 +19,12 @@ class Edit extends \lib\action\Action
         ),
         'IS_ADMIN' => false,
         'INDEXFIELDS' => array(
-            "domain"
+            "id"
         ),
         'FIELDS' => array(
-            'domain' => array(
+            'id' => array(
                 'REQUIRED' => 1,
-                'FIELD' => 'domain',
+                'FIELD' => 'id',
                 'MODEL' => '\model\ads\SmartConfig'
             ),
             'config' => array(
@@ -115,5 +115,18 @@ class Edit extends \lib\action\Action
         /* Insert callback code here */
         return true;
     }
+    
+    /**
+     * 
+     * @return boolean
+     */
+    function validateAction()
+    {
+        // este método es llamado en algún punto y no está definido en la clase base
+        // por ahora solo devolvemos true
+        return true;
+    }
+    
+    
 }
 ?>

@@ -10,7 +10,7 @@ Siviglia.Utils.buildClass({
 						"model" : "/model/ads/SmartConfig",
 						"form" : "Edit",
 					};
-					this.domain = params.domain;
+					this.id = params.id;
 					return this.Form$preInitialize(p);
 				},
 				initialize : function(params) {

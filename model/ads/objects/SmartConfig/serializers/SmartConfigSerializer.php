@@ -55,27 +55,7 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
         $result = $this->storageManager->request($q);
         $config = $this->parseConfig($result);
         
-//         // busca regex
-//         foreach ($config['actions'] as $value) {
-//             if ($params['regex']==$value['regex'][0]) {
-//                 $regex=$value;
-//                 break;
-//             }
-//         }
-//         // busca el plugin
-//         if (isset($regex['actions'][$params['plugin']])) {
-//             $data = $regex['actions'][$params['plugin']];
-//         }
-        
-//         if (is_null($data) || is_null($regex)) {
-//             throw new SmartConfigSerializerException(SmartConfigSerializerException::ERR_PATH_NOT_FOUND);
-//         }
-        
-//         $object->config = [$params['plugin'] => $data];
-
-//          var_dump($config);
-
-//          var_dump($object);
+        $object->id = $params['id']; 
         $object->config = $config['config']; 
         
     }
@@ -199,15 +179,6 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
             }
         }
     }
-
-    protected function writeConfig(Array $q)
-    {
-        $dataTemplate = "SMC.Config.process([%config]);";
-        $config = ['config' => json_encode($q)];
-        // TODO: mezclar configuración con la almacenada (puede actualizarse solo la de un plugin)
-        $url = $this->entryPoint . "?action=changeFileContent&file=$domain.js&content=".rawurlencode(ParametrizableString::getParametrizedString($dataTemplate, $config));
-        return $url;
-    }
    
     protected function checkDomain(String $domain) 
     {
@@ -254,7 +225,7 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
 
     public function _store($object, $isNew, $dirtyFields=null)
     {
-        $file = fopen("/vagrant/adtopy/TEST.js", "w");
+        $id = $object->id; // el fichero a guardar
         
         $config = [
             "configType" => $object->configType,
@@ -273,8 +244,19 @@ class SmartConfigSerializer extends \lib\storage\StorageSerializer
         
         $dataTemplate = "SMC.Config.process([%config%]);";
         $config = ["config"=>json_encode($config)];
-        fwrite($file, ParametrizableString::getParametrizedString($dataTemplate, $config));
-        fclose($file);
+        
+        $params = [
+            "id" => $id,
+            "config" => $config,
+            "definition" => [
+                "action" => "changeFileContent",
+            ],
+        ];
+        
+        
+        $qb = $this->getQueryBuilder($this->definition, null);
+        $q = $qb->build($params, true);
+        $result = $this->storageManager->request($q);
         return parent::_store($object, $isNew, $dirtyFields);
     }
     

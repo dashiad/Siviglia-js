@@ -10,9 +10,13 @@ use model\ads\SmartConfig\serializers\SmartConfig\storage\SmartConfigException;
 class QueryBuilder extends \lib\datasource\BaseQueryBuilder
 {
     
-    // TODO: mover a config
-    const BASE_URL = "http://cdn.smartclip-services.com/v1/Storage-a482323/smartclip-services/HeaderBidding/js/configs/editor/entryPoint.php";
-    const SECRET = "Lu9eil3Eek3eemi3ahvei,Y3gah9aGie";
+    public function __construct($serializer, $definition, $params=null, $pagingParams=null)
+    {
+        global $Config;
+        $this->config = $Config['SERIALIZERS']['smartconfig'];
+        
+        parent::__construct($serializer, $definition, $params=null, $pagingParams=null);
+    }
     
     public function getSerializerType()
     {
@@ -31,15 +35,24 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         
         switch ($action) {
             case "getFolderContent":
-                $url = self::BASE_URL."?action=".$action;
-                $method = "GET";
+                $url = $this->config["BASE_URL"]."?action=".$action;
                 break;
             case "getFileContent":
-                $url = self::BASE_URL."?action=".$action."&file=".$parameters['domain'].".js";
-                $method = "GET";
+                $url = $this->config["BASE_URL"]."?action=".$action."&file=".$parameters['id'].".js";
                 break;
             case "changeFileContent": // TODO: urlencode contenido
-                $url = self::BASE_URL."?action=".$action."&secret=".self::SECRET."file=".$parameters['domain'].".js&content=".$parameters['content'];
+                $dataTemplate = "SMC.Config.process([%config%]);";
+                $content = rawurlencode(ParametrizableString::getParametrizedString($dataTemplate, $parameters['config']));
+                $url = $this->config["BASE_URL"];
+                $headers = [
+                    "Content-type" => "application/json",
+                ];
+                $body = json_encode([
+                    "action" => "changeFileContent",
+                    "token" => $this->config["SECRET"],
+                    "file" => $parameters["id"],
+                    "content" => $content,
+                ]);
                 $method = "POST";
                 break;
             default:
@@ -48,9 +61,9 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
         
         return [
             'url' => $url,
-            'method'        => $method,
-            'headers'       => [],
-            'body'          => "",
+            'method'        => $method??"GET",
+            'headers'       => $headers??[],
+            'body'          => $body??"",
         ];
     }
 
@@ -60,63 +73,3 @@ class QueryBuilder extends \lib\datasource\BaseQueryBuilder
     }
 
 }
-
-/*
-     function build(?String $query=null, $onlyConditions=false)
-    {
-        
-        $query = ParametrizableString::getParametrizedString($query, $this->data);
-        
-        $this->params = $this->parser->parse($query);
-        $this->api    = $this->params['api'];
-        $this->action = $this->params['call'];
-        $this->type   = $this->params['params']['type']['value'];
-        $this->region = $this->params['params']['region']['value'];
-        $this->soapParams = null;
-        
-        $this->queryReady = false;
-        
-        switch (strtolower($this->api)) {
-            case 'comscore':
-                switch ($this->action) {
-                    case 'requestReport':
-                        $this->queryReady = $this->requestReport();
-                        break;
-                    case 'checkReport':
-                        $this->queryReady = $this->checkReport($this->params['params']['report_id']);
-                        break;
-                    case 'getReport':
-                        $this->queryReady = $this->getReport($this->params['params']['report_id']);
-                        break;
-                    default:
-                        throw new \model\ads\ComscoreException(\model\ads\ComscoreException::ERR_INVALID_ACTION);
-                    }
-                break;
-            case 'comscoredemographics':
-                switch ($this->action) {
-                    case 'SearchMedia':
-                        $this->queryReady = $this->searchMedia();
-                        break;
-                    default:
-                        $this->queryReady = $this->getDemographicsReport();
-                }
-                break;
-            default:
-                throw new \model\ads\ComscoreException(\model\ads\ComscoreException::ERR_UNKNOWN_API);
-        }
-        
-        if ($this->queryReady) {
-            return [
-                'api'           => $this->api,
-                'url'           => $this->url,
-                'method'        => $this->method,
-                'headers'       => $this->headers,
-                'body'          => $this->body,
-                'soapParams'    => $this->soapParams,
-                'waitForResult' => $this->waitForResult,
-                'testing'       => $this->testing??false,
-            ];  
-        } else {
-            return false;
-        }
-    }*/

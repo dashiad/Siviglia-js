@@ -1,14 +1,15 @@
 	<div data-sivWidget="Siviglia.model.ads.SmartConfig.forms.Edit" 
 		 data-widgetCode="Siviglia.model.ads.SmartConfig.forms.Edit">
-		 <div style="display:none;">
-	        <div data-sivCall="getInputFor" data-sivParams='{"key":"domain"}'></div>
+		 <div id="id">
+	        <div data-sivCall="getInputFor" data-sivParams='{"key":"id"}'></div>
 	    </div>
-	    <div>
+		 
+	    <div id="config">
 	        <div data-sivCall="getInputFor" data-sivParams='{"key":"config"}'></div>
 	    </div>
 	    <div>
-	    	<input type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar">
-	    </div>
+		      <input type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar">
+		 </div>
 	</div>
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.ActionList" 

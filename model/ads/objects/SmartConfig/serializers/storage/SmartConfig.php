@@ -103,7 +103,7 @@ class SmartConfig extends ApiRequest
             $response = $client->request($method, $url, $options);
             $result = $response->getBody()->getContents();
             
-            if ($result=="") {
+            if ($method=="GET" && $result=="") {
                 throw new SmartConfigException(SmartConfigException::ERR_EMTPY_RESPONSE);
             }
         } catch (SmartConfigException $e) {

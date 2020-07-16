@@ -32,6 +32,14 @@ $Config=[
 		"API_MAX_ATTEMPTS" => 6*60*8,
 		"DATA_ROOT_DIR"    => "/vagrant/data/comscore",
 	],
+	"smartconfig"=>[
+                "NAME"=>"SmartConfig",
+                "TYPE"=>"smartconfig",
+                "MODEL"=>"/model/ads/SmartConfig",
+                "CLASS"=>"SmartConfigSerializer",
+                "BASE_URL" => "http://cdn.smartclip-services.com/v1/Storage-a482323/smartclip-services/HeaderBidding/js/configs/editor/entryPoint.php",
+                "SECRET" => "Lu9eil3Eek3eemi3ahvei,Y3gah9aGie",
+        ],
         "cookie"=>array(
             "NAME"=>"cookie",
             "TYPE"=>"Cookie",
