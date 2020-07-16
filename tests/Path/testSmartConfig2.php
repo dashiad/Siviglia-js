@@ -57,11 +57,11 @@
 		 data-sivParams='{"bto":"/*configSelector"}'>
 		 	<div>Dominio</div>
 			<div data-sivCall="getInputFor" 
-				 data-sivParams='{"key":"domain"}'>
+				 data-sivParams='{"key":"id"}'>
 		    </div>
 			<div data-sivView="Siviglia.model.ads.SmartConfig.forms.Edit" 
 				 data-widgetCode="Siviglia.model.ads.Demo.SmartConfig.Edit" 
-				 data-sivParams='{"domain":"/*configSelector/domain"}'>
+				 data-sivParams='{"id":"/*configSelector/id"}'>
 	        </div>
     </div>
 
@@ -149,7 +149,7 @@
         "context":"SmartConfig",
         "classes":{
             Selector:{
-				"inherits": "Siviglia.inputs.jqwidgets.Form",
+		"inherits": "Siviglia.inputs.jqwidgets.Form",
                 "methods":{
                     preInitialize:function(params)
                     {
@@ -160,7 +160,7 @@
                         this.configSelector=new Siviglia.model.BaseTypedObject(
                             {
                                 "FIELDS":{
-                                    "domain": {
+                                    "id": {
                                         "LABEL":"Select domain",
                                         "TYPE":"String",
                                         "ROLE": "List",
@@ -176,11 +176,11 @@
                                 "INPUTPARAMS": {
                                 	"/":{
                                 		"INPUT": "FlexContainer"
-									},
-									"/domain":{
+					},
+					"/id":{
                                 		"INPUT": "ListBox"
-									},
-                                },
+					},
+                                 },
                             }
                         );
                         return this.Form$preInitialize({bto:this.configSelector});
