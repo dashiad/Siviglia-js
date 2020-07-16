@@ -13,11 +13,16 @@ class SingleConfig
         'ROLE' => 'list', // posibles roles?
         'DATAFORMAT' => 'Table',
         'PARAMS' => [
-            'domain' => [
+            'id' => [
                 'TYPE' => 'String',
-                'LABEL' => 'Dominio',
+                'LABEL' => 'ID',
                 'REQUIRED'=>'true',
             ],
+//             'domain' => [
+//                 'TYPE' => 'String',
+//                 'LABEL' => 'Dominio',
+//                 'REQUIRED'=>'true',
+//             ],
             'regex' => [
                 'TYPE' => 'Array',
                 'LABEL' => 'Regex',

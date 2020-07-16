@@ -134,6 +134,7 @@ class Form extends \lib\model\BaseTypedObject
 
     function process($request)
     {
+        
         if (!$this->actionResult->isOk()) {
             throw new FormException(FormException::ERR_INVALID);
         }
@@ -145,7 +146,6 @@ class Form extends \lib\model\BaseTypedObject
         //$hasState=$this->__stateDef->hasState;
         $unserializedFields=array();
         $htmlSerializer=new \lib\storage\HTML\HTMLSerializer();
-
 
         foreach ($this->formDefinition["FIELDS"] as $key => $value) {
             $isKey=false;
@@ -169,9 +169,10 @@ class Form extends \lib\model\BaseTypedObject
                 // Puede ser que formValues["FIELDS"][$field] no este "set",y, aun asi, el campo tenga un valor.
                 // Por ejemplo, en los checkboxes.
                 $currentInputValue=null;
-                if($isKey)
+                if($isKey) // FIXME: Esto parece innecesario, EN HTMLRequest se meten las KEYS en FIELDS
                 {
-                    $currentInputValue=$formData["KEYS"][$key];
+//                     $currentInputValue=$formData["KEYS"][$key];
+                    $currentInputValue=$formData["keys"][$key];
                 }
                 else
                 {
@@ -192,6 +193,7 @@ class Form extends \lib\model\BaseTypedObject
                     return;
             }
         }
+        
         foreach ($this->formDefinition["FIELDS"] as $key => $value) {
             if(isset($unserializedFields[$key])) {
                 try {
@@ -216,9 +218,10 @@ class Form extends \lib\model\BaseTypedObject
             }
             $this->__loaded=true;
         }
+        
         if($this->actionResult->isOk())
             $this->validateForm($this->actionResult);
-
+            
         if ($this->actionResult->isOk()) {
             if ($this->processAction($this->actionResult)) {
                 $this->onSuccess($this->actionResult);
@@ -230,9 +233,8 @@ class Form extends \lib\model\BaseTypedObject
         } else {
             $this->onError($this->actionResult);
         }
-
         \Registry::$registry["newAction"] = $this->actionResult;
-
+        
         return $this->actionResult;
     }
 
@@ -243,7 +245,6 @@ class Form extends \lib\model\BaseTypedObject
 
     function unserializeValue($field,$inputObj,$definition,$formValues,$actionResult)
     {
-
         $fieldInstance=$this->__getField($field);
         $type=$fieldInstance;
         try

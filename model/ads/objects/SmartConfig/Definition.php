@@ -15,6 +15,11 @@ class Definition extends BaseModelDefinition
         'DEFAULT_SERIALIZER' => 'smartconfig',
         'DEFAULT_WRITE_SERIALIZER' => 'smartconfig',
         'FIELDS' => [
+            'id' => [
+                'TYPE' => 'String',
+                'LABEL' => 'ID',
+                'REQUIRED' => true,
+            ],
             'configType' => [
                 'TYPE' => 'String',
                 'LABEL' => 'Tipo de configuración',
@@ -92,7 +97,7 @@ class Definition extends BaseModelDefinition
             ],
         ],
         'INDEXFIELDS' => [
-            "domain",
+            "id",
         ]
     ];
 }

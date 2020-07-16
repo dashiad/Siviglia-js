@@ -19,7 +19,7 @@ class Edit extends \lib\output\html\Form
         ),
         'ROLE'=>'Edit',
         'FIELDS' => [
-//             'domain' => ['MODEL' => '\model\ads\SmartConfig', 'FIELD' => 'domain'],
+//             'id' => ['MODEL' => '\model\ads\SmartConfig', 'FIELD' => 'domain'],
             'config' => ['MODEL' => '\model\ads\SmartConfig', 'FIELD' => 'config'],
         ],
         'REDIRECT'=>array(
@@ -27,7 +27,7 @@ class Edit extends \lib\output\html\Form
             'ON_ERROR'=>''
         ),
         'INPUTS'=>array(
-//             'domain' => [
+//             'id' => [
 //                 'TYPE' => 'String',
 //                 'PARAMS' => [],
 //             ],
@@ -37,18 +37,11 @@ class Edit extends \lib\output\html\Form
             ],        
         ),
         'INDEXFIELDS'=>array(
-             'domain'=>array(
+             'id'=>array(
                  'TYPE' => 'String',
-//                 'REQUIRED'=>1,
-//                 'FIELD'=>'domain',
-//                 'MODEL'=>'\model\ads\SmartConfig'
             )
         ),
         'GROUPS' => [
-//             'TAB1' => [
-//                 'FIELDS' => ['/config/*'],
-//                 'LABEL' => 'Configuración',
-//             ],
         ],
         'INPUTPARAMS' => [
             '/' => ['INPUT'=>'FlexContainer'],
@@ -91,7 +84,6 @@ class Edit extends \lib\output\html\Form
 	 */
 	 function onSuccess( $actionResult)
 	{
-	    $this->output("ok");
 	   return true;
 	}
 
@@ -111,20 +103,7 @@ class Edit extends \lib\output\html\Form
 	 */
 	 function onError( $actionResult)
 	{
-        $this->output("error");
-        ob_start();
-        var_dump($actionResult);
-        $out = ob_get_clean();
-        $this->output($out);
 	    return true;
-	}
-	
-	protected function output(String $text, Bool $delete=true) 
-	{
-	    $mode = $delete?"w":"w+";
-	    $f = fopen("/vagrant/adtopy/TEST.txt", $mode);
-	    fwrite($f, $text.PHP_EOL);
-	    fclose($f);
 	}
 	
 

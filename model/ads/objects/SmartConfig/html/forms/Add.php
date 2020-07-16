@@ -1,5 +1,5 @@
 <?php
-namespace model\web\Site\html\forms;
+namespace model\ads\SmartConfig\html\forms;
 /**
  FILENAME:/var/www/adtopy/model/web/objects/Site//html/forms/AddAction.php
   CLASS:AddAction
@@ -11,9 +11,9 @@ class Add extends \lib\output\html\Form
 {
 	 static  $definition=array(
                'NAME'=>'Add',
-               'MODEL'=>'\model\web\Site',
+               'MODEL'=>'\model\ads\SmartConfig',
                'ACTION'=>array(
-                     'MODEL'=>'\model\web\Site',
+                     'MODEL'=>'\model\ads\SmartConfig',
                      'ACTION'=>'Add',
                      'INHERIT'=>1
                      ),

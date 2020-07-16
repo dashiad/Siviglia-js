@@ -10,7 +10,5 @@ class SmartConfigException extends BaseException
 
 class SmartConfig extends BaseModel
 {
-//     public function save($serializer=null) {
-//         parent::save($serializer);
-//     }
+    //
 }

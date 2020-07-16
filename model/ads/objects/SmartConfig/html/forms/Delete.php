@@ -1,5 +1,5 @@
 <?php
-namespace model\web\Site\html\forms;
+namespace model\ads\SmartConfig\html\forms;
 /**
  FILENAME:/var/www/adtopy/model/web/objects/Site//html/forms/DeleteAction.php
   CLASS:DeleteAction
@@ -11,9 +11,9 @@ class Delete extends \lib\output\html\Form
 {
 	 static  $definition=array(
                'NAME'=>'Delete',
-               'MODEL'=>'\model\web\Site',
+               'MODEL'=>'\model\ads\SmartConfig',
                'ACTION'=>array(
-                     'MODEL'=>'\model\web\Site',
+                     'MODEL'=>'\model\ads\SmartConfig',
                      'ACTION'=>'Delete',
                      'INHERIT'=>1
                      ),
@@ -27,7 +27,7 @@ class Delete extends \lib\output\html\Form
                      'id_site'=>array(
                            'REQUIRED'=>1,
                            'FIELD'=>'id_site',
-                           'MODEL'=>'\model\web\Site'
+                           'MODEL'=>'\model\ads\SmartConfig'
                            )
                      ),
                'NOFORM'=>1
