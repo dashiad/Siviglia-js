@@ -1,0 +1,89 @@
+<?php
+namespace model\web\Site\WebsiteUrls\datasources;
+/**
+ FILENAME:/var/www/percentil/backoffice//backoffice/objects/Sites/objects/WebsiteUrls/datasources/AdminView.php
+  CLASS:AdminView
+*
+*
+**/
+
+class AdminView
+{
+	 static  $definition=array(
+               'ROLE'=>'view',
+               'DATAFORMAT'=>'Table',
+               'PARAMS'=>array(
+                     'id_websiteUrl'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
+                           'FIELD'=>'id_websiteUrl',
+                           'TRIGGER_VAR'=>'id_websiteUrl'
+                           )
+                     ),
+               'IS_ADMIN'=>1,
+               'INDEXFIELDS'=>array(
+                     'id_websiteUrl'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
+                           'FIELD'=>'id_websiteUrl',
+                           'REQUIRED'=>'true'
+                           )
+                     ),
+               'FIELDS'=>array(
+                     'id_websiteUrl'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
+                           'FIELD'=>'id_websiteUrl'
+                           ),
+                     'id_website'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
+                           'FIELD'=>'id_website'
+                           ),
+                     'url'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
+                           'FIELD'=>'url'
+                           ),
+                     'priority'=>array(
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
+                           'FIELD'=>'priority'
+                           )
+                     ),
+               'INCLUDE'=>array(
+                     'Sites_id_website'=>array(
+                           'MODEL'=>'model\web\Site',
+                           'DATASOURCE'=>'AdminFullList',
+                           'JOINTYPE'=>'LEFT',
+                           'JOIN'=>array('id_website'=>'id_website')
+                           )
+                     ),
+               'PERMISSIONS'=>array(
+                     array(
+                           'MODEL'=>'\model\web\Site\WebsiteUrls',
+                           'PERMISSION'=>'adminView'
+                           )
+                     ),
+               'SOURCE'=>[
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'DEFINITION'=>array(
+                                 'TABLE'=>'WebsiteUrls',
+                                 'BASE'=>array(
+                                       'id_websiteUrl',
+                                       'id_website',
+                                       'url',
+                                       'priority'
+                                       ),
+                                 'CONDITIONS'=>array(
+                                       array(
+                                             'FILTER'=>array(
+                                                   'F'=>'id_websiteUrl',
+                                                   'OP'=>'=',
+                                                   'V'=>'[%id_websiteUrl%]'
+                                                   ),
+                                             'FILTERREF'=>'id_websiteUrl'
+                                             )
+                                       )
+                                 )
+                           )
+                     )
+                   ]
+               );
+}
+?>

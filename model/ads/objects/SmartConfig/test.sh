@@ -1,0 +1,13 @@
+curl 'http://editor.adtopy.com//action?output=json&nc=1594716885405' \
+  -H 'Connection: keep-alive' \
+  -H 'Pragma: no-cache' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Accept: application/json, text/javascript, */*; q=0.01' \
+  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36' \
+  -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' \
+  -H 'Origin: http://statics.adtopy.com' \
+  -H 'Referer: http://statics.adtopy.com/packages/Siviglia/tests/Path/testSmartConfig2.php' \
+  -H 'Accept-Language: es-ES,es;q=0.9' \
+  --data-raw 'json=%7B%22MODEL%22%3A%22%2Fmodel%2Fads%2FSmartConfig%22%2C%22FORM%22%3A%22Edit%22%2C%22FIELDS%22%3A%7B%22id%22%3A%22aaa%22%2C%20%22config%22%3A%5B%7B%22actions%22%3A%5B%22.%2A%22%5D%2C%22Exelate%22%3A%7B%22qqqq%22%3A%221111%22%7D%2C%22GPTConfig%22%3A%7B%22log%22%3Atrue%2C%22sizes%22%3A%7B%22300x250%22%3A%7B%22reload%22%3A%222000%22%2C%22relocate%22%3A%223000%22%7D%7D%7D%7D%5D%7D%2C%22KEYS%22%3A%7B%22id%22%3A%22aaa%22%7D%7D%27' \
+  --compressed \
+  --insecure

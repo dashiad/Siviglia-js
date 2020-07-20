@@ -1,0 +1,38 @@
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('backoffice');
+$params=Registry::$registry["PAGE"];
+?>
+[*LIST_DS({"currentPage":"$currentPage","object":"Lang","dsName":"NotPs_category_langDs","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]meta_description[#][#]
+						[_COLUMN][_LABEL]id_category[#][#]
+						[_COLUMN][_LABEL]meta_title[#][#]
+						[_COLUMN][_LABEL]meta_keywords[#][#]
+						[_COLUMN][_LABEL]description[#][#]
+						[_COLUMN][_LABEL]link_rewrite[#][#]
+						[_COLUMN][_LABEL]ps_category_id_category[#][#]
+						[_COLUMN][_LABEL]id_lang[#][#]
+						[_COLUMN][_LABEL]name[#][#]
+
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/String({"name":"meta_description","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"id_category","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"meta_title","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"meta_keywords","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Text({"name":"description","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"link_rewrite","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Relationship({"name":"ps_category_id_category","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Relationship({"name":"id_lang","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"name","model":"$iterator"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]
+           [#]

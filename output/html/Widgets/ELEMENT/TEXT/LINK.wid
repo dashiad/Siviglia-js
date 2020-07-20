@@ -1,0 +1,1 @@
+<a [_LINK_URL]href="[_*]"[#] [_CLASS_URL]class="[_*]"[#] [_ROLE_BUTTON]role="button"[#]>[_LINK_TEXT][_*][#]</a>

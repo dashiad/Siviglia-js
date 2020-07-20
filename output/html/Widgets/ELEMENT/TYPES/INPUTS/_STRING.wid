@@ -1,0 +1,15 @@
+<?php
+if($type==null)
+    $type=$form->__getField($name);
+    
+$info=$type->summarize();
+$path=$info["path"];
+$path="[".str_replace("/","][",substr($path,1))."]";
+$info["path"]=$path;
+$info["inputParams"]=$form->__getInputParams($name,$path);
+if($info["hasSource"])   //Si tiene fuente Source, es un tipo de input Select, TODO: cambiar el INPUTS/SELECT
+{ ?>
+    [*:/ELEMENT/FORM/INPUTS/SELECT({"info":"$info"})][#]
+<?php }else{ //TODO: cambiar el INPUT/TEXTFIELD?>
+    [*:/ELEMENT/FORM/INPUTS/TEXTFIELD({"info":"$info"})][#]
+<?php } ?>

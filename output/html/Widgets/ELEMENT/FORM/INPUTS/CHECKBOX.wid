@@ -1,0 +1,15 @@
+<?php
+  $source=$info["source"];
+?>  
+  
+<input type="hidden" name="INPUTS<?php echo ($prefix?"[".$prefix."]":"")."[".$name."]";?>" value="Radio">
+[*/ELEMENT/FORM/INPUTS/SOURCEINPUT({"source":"$source","it":"&$it"})]
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="<?php echo $source->getValue($it); ?>" id="checkbox_<?php echo $info['name'].$source->getValue($it); ?>">
+    <label class="form-check-label" for="checkbox_<?php echo $info['name'].$source->getValue($it); ?>"><?php echo $source->getLabel($it); ?></label>
+</div>
+[#]
+<script>
+    var q=document.currentScript.previousElementSibling;
+    __s__form.curForm.addInput(q);
+</script>

@@ -1,0 +1,31 @@
+{
+  "name": "@coreui/ajax",
+  "version": "1.0.6",
+  "description": "Open Source Bootstrap Admin Template",
+  "main": "index.html",
+  "dependencies": {
+    "bootstrap": "4.0.0-beta.2",
+    "chart.js": "2.7.1",
+    "d3-context-menu": "^1.1.2",
+    "font-awesome": "4.7.0",
+    "gentelella": "^1.4.0",
+    "jquery": "^3.2.1",
+    "pace-progress": "1.0.2",
+    "popper.js": "1.12.6",
+    "simple-line-icons": "2.4.1"
+  },
+  "browserslist": [
+    "Chrome >= 45",
+    "Firefox ESR",
+    "Edge >= 12",
+    "Explorer >= 10",
+    "iOS >= 9",
+    "Safari >= 9",
+    "Android >= 4.4",
+    "Opera >= 30"
+  ],
+  "author": "Łukasz Holeczek",
+  "homepage": "http://coreui.io",
+  "copyright": "Copyright 2017 creativeLabs Łukasz Holeczek",
+  "license": "MIT"
+}

@@ -1,0 +1,15 @@
+Siviglia.Utils.buildClass(
+    {
+        context:'App.model.reflection.ArrayDefinition',
+        classes:
+            {
+                Model:
+                    {
+                        inherits:'Siviglia.Model.Instance',
+                        construct:function(model)
+                        {
+                            this.Instance(model);
+                        }
+                    }
+            }
+    });

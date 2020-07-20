@@ -1,0 +1,67 @@
+<?php
+namespace model\web\Permissions\PermissionGroupItems;
+class Definition extends \lib\model\BaseModelDefinition
+{
+    static  $definition=array(
+        'ROLE'=>'MULTIPLE_RELATION',
+        'DEFAULT_SERIALIZER'=>'web',
+        'DEFAULT_WRITE_SERIALIZER'=>'web',
+        'MULTIPLE_RELATION'=>array(
+            'FIELDS'=>array(
+                'group_id',
+                'item_id'
+            )
+        ),
+        'INDEXFIELDS'=>array('id'),
+        'TABLE'=>'UserRole',
+        'LABEL'=>'UserRole',
+        'SHORTLABEL'=>'UserRole',
+        'CARDINALITY'=>'100000',
+        'CARDINALITY_TYPE'=>'VARIABLE',
+        'FIELDS'=>array(
+            'id'=>array(
+                'TYPE'=>'AutoIncrement',
+                'MIN'=>0,
+                'MAX'=>9999999999,
+                'LABEL'=>'id',
+                'SHORTLABEL'=>'id',
+                'DESCRIPTIVE'=>'true',
+                'ISLABEL'=>'true'
+            ),
+            'group_id'=>array(
+                'DEFAULT'=>'',
+                'FIELDS'=>array('group_id'=>'id'),
+                'MODEL'=>'\model\web\Permissions\PermissionGroups',
+                'LABEL'=>'id group',
+                'SHORTLABEL'=>'id_group',
+                'TYPE'=>'Relationship',
+                'MULTIPLICITY'=>'1:N',
+                'ROLE'=>'HAS_ONE',
+                'CARDINALITY'=>1
+            ),
+            'item_id'=>array(
+                'DEFAULT'=>'',
+                'FIELDS'=>array('item_id'=>'id'),
+                'MODEL'=>'\model\web\Permissions\PermissionItems',
+                'LABEL'=>'id_role',
+                'SHORTLABEL'=>'id_role',
+                'TYPE'=>'Relationship',
+                'MULTIPLICITY'=>'1:N',
+                'ROLE'=>'HAS_ONE',
+                'CARDINALITY'=>1,
+                'DESCRIPTIVE'=>'true'
+            )
+        ),
+        'PERMISSIONS'=>array(),
+        'SOURCE'=>[
+            'STORAGE'=>array(
+                'MYSQL'=>array(
+                    'ENGINE'=>'InnoDb',
+                    'CHARACTER SET'=>'utf8',
+                    'COLLATE'=>'utf8_general_ci',
+                    'TABLE_OPTIONS'=>array('ROW_FORMAT'=>'FIXED')
+                )
+            )
+        ]
+    );
+}

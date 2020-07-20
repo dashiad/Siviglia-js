@@ -1,0 +1,18 @@
+server {
+	listen   0.0.0.0:80 ; ## listen for ipv4; this line is default and implied
+
+	root /var/www/adtopy/sites/statics/html;
+    index index.html;
+    server_name statics.adtopy.com;
+
+    access_log  /var/log/nginx/statics.access.log;
+    error_log   /var/log/nginx/statics.error.log notice;
+
+location ~* \.(?:ttf|ttc|otf|eot|woff|woff2)$ {
+   if ( $http_origin ~* "adtopy.com$" ) {
+      add_header "Access-Control-Allow-Origin" "$http_origin";
+   }
+}
+    include common.inc;
+}
+

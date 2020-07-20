@@ -1,0 +1,45 @@
+<style type="text/css">
+    .reflection-model-modeltreenode-TitleLabel {
+        fill: var(--svg-color);
+        font-family: var(--svg-font);
+        font-size: 12px;
+    }
+    .reflection-model-modeltreenode-Icon {
+        font-family: var(--icon-font);
+        font-size:14px;
+        fill:white;
+        pointer-events: bounding-box;
+        animation-fill-mode: forwards;
+    }
+    .reflection-model-modeltreenode-Node {
+        fill: var(--svg-background);
+    }
+</style>
+<svg data-sivWidget="Siviglia.model.reflection.Model.views.ModelTreeNode" data-widgetCode="Siviglia.model.reflection.Model.views.ModelTreeNode" width="100" height="50">
+    <g>
+        <rect data-sivValue="stroke|[%/*bgcolor%]" class="reflection-model-modeltreenode-Node" cx="25" cy="25" width="100" height="50" rx="5"
+              pointer-events="bounding-box" data-sivEvent="click" data-sivCallback="toggleSelection"></rect>
+        <text data-sivValue="/*icon" class="reflection-model-modeltreenode-Icon" y="17" x="5" y="15" fill="white"></text>
+        <text class="reflection-model-modeltreenode-TitleLabel" x="20" y="14" data-sivValue="/*name" fill="red">z</text>
+        <g data-sivIf="[%/*hasChildren%] == true" class="reflection-model-modeltreenode-Icon">
+            <text data-sivId="expandIcon" data-sivEvent="click"
+                  data-sivCallback="expand" class="reflection-model-modeltreenode-Icon" x="43" y="47">&#xEA03;</text>
+            <animateTransform data-sivId="animationDown" attributeName="transform"
+                              attributeType="XML"
+                              type="rotate"
+                              from="0 50 41"
+                              to="180 50 41"
+                              dur="250ms"
+                              begin="indefinite"
+                              fill="freeze"
+            />
+        </g>
+        <g data-sivIf="[%/*selected%] == true">
+            <rect class="svg_selectionRect" x="-5" y="-5" width="10" height="10"></rect>
+            <rect class="svg_selectionRect" x="95" y="-5" width="10" height="10"></rect>
+            <rect class="svg_selectionRect" x="-5" y="45" width="10" height="10"></rect>
+            <rect class="svg_selectionRect" x="95" y="45" width="10" height="10"></rect>
+
+        </g>
+    </g>
+</svg>

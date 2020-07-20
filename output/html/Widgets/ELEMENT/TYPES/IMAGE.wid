@@ -1,0 +1,19 @@
+<?php
+    $type=$model->__getField($name);
+    echo '<img src="'.WEBPATH."/".$model->{$name}.'"';
+    if(!$description)
+    {
+        if($type->hasDescription())
+        {
+                $description=$type->getDescription();
+        }
+        if($description)
+                echo ' alt="'.$description.'"';
+    }
+    if($width)
+        echo ' width="'.$width.'"';
+    if($height)
+        echo ' height="'.$height.'"';
+    echo ">";
+?>
+

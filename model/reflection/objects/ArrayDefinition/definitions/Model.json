@@ -1,0 +1,95 @@
+{ "ROOT": {
+  "TYPE": "CONTAINER",
+  "LABEL": "Model Object",
+  "DONT_DRAW_KEYS": true,
+  "FIELDS": {
+    "DEFINITION": {
+      "LABEL": "Definition",
+      "TYPE": "CONTAINER",
+      "DONT_DRAW_KEYS": true,
+      "LOAD_URL": "loader.php?load=modelDefinition",
+      "FIELDS": {
+        "INDEXFIELDS": {
+          "LABEL": "Indexes",
+          "TYPE": "ARRAY",
+          "SOURCE": "../FIELDS"
+        },
+        "FIELDS": {
+          "LABEL": "Fields",
+          "TYPE": "DICTIONARY",
+          "VALUETYPE": "FIELDDEFINITION"
+        }
+      }
+    }
+  }
+},
+  "FIELDDEFINITION": {
+    "LABEL": "Field",
+    "TYPE": "TYPESWITCH",
+    TYPE_FIELD: 'TYPE',
+    ALLOWED_TYPES: [
+      'AutoIncrement',
+      'UUID',
+      'Integer',
+      'String',
+      'Boolean',
+      'DateTime',
+      'Enum',
+      'Relationship',
+      'Timestamp',
+      'Decimal',
+      'Text',
+      'Email',
+      'IP',
+      'Login',
+      'UserId',
+      'Password',
+      'Money',
+      'City',
+      'Phone',
+      'State',
+      'Street'
+    ]
+  },
+  "STATE_SPEC": {
+    "TYPE": "CONTAINER",
+    "LABEL": "Especificacion de estado",
+    "FIELDS": {
+      "LABEL": {
+        "TYPE": "STRING",
+        "LABEL": "Nombre del estado"
+      },
+      "CALLBACKS": {
+        "TYPE": "CONTAINER",
+        "LABEL": "Eventos generados",
+        "FIELDS": {
+          "ON_ENTER": {
+            "TYPE": "OBJECTARRAY",
+            "VALUETYPE": "CALLBACK_SPEC",
+            "LABEL": "Eventos de entrada",
+            "DESCRIPTION": "Objeto/metodo a llamar al entrar en este estado"
+          },
+          "ON_LEAVE": {
+            "TYPE": "OBJECTARRAY",
+            "VALUETYPE": "CALLBACK_SPEC",
+            "LABEL": "Eventos de salida",
+            "DESCRIPTION": "Objeto/metodo a llamar al salir de este estado"
+          }
+        }
+      },
+      "ALLOWED_TRANSITIONS": {
+        "TYPE": "ARRAY",
+        "SOURCE": "../..",
+        "LABEL": "Transiciones permitidas",
+        "DESCRIPTION": "Estados a los que puede ir un objeto que se encuentre en este estado"
+      },
+      "PERMISSIONS": {
+        "TYPE": "DICTIONARY",
+        "SOURCE": "/userProfiles",
+        "VALUETYPE": "PERMISSION_SPEC",
+        "LABEL": "Permisos",
+        "DESCRIPTION": "Permisos agregados/eliminados de los permisos por defecto, a cada perfil de usuario, cuando el objeto se encuentra en este estado."
+      }
+    }
+  }
+}

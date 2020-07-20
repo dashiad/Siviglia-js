@@ -1,0 +1,38 @@
+{
+  "PERMISSION_SPEC": {
+    "TYPE": "CONTAINER",
+    "LABEL": "",
+    "FIELDS": {
+      "ALLOW": {
+        "TYPE": "ARRAY",
+        "SOURCE": "../../../PERMISSIONS",
+        "LABEL": "Permitir",
+        "DESCRIPTION": "Permisos agregados para este perfil de usuario"
+      },
+      "DENY": {
+        "TYPE": "ARRAY",
+        "SOURCE": "../../../PERMISSIONS",
+        "LABEL": "Denegar",
+        "DESCRIPTION": "Permisos denegados a este perfil de usuario"
+      }
+    }
+  },
+  "PERMISSION_SPEC2": {
+    "TYPE": "CONTAINER",
+    "LABEL": "",
+    "FIELDS": {
+      "ALLOW": {
+        "TYPE": "ARRAY",
+        "SOURCE": "../../../PERMISSIONS",
+        "LABEL": "Permitir",
+        "DESCRIPTION": "Permisos agregados para este perfil de usuario"
+      },
+      "DENY": {
+        "TYPE": "ARRAY",
+        "SOURCE": "../../../PERMISSIONS",
+        "LABEL": "Denegar",
+        "DESCRIPTION": "Permisos denegados a este perfil de usuario"
+      }
+    }
+  }
+}

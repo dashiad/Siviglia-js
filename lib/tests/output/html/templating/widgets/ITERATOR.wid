@@ -1,0 +1,7 @@
+<?php
+for($k=0;$k<count($data);$k++)
+{
+    $it=$data[$k];
+    ?>
+    [_*]
+<?php } ?>

@@ -1,0 +1,27 @@
+<?php
+            global $SERIALIZERS;
+            $params=Registry::$registry["PAGE"];
+            $serializer=\Registry::getService("storage")->getSerializerByName('backoffice');
+?>
+[*LIST_DS({"currentPage":"$currentPage","object":"Lang","dsName":"NotPs_feature_langDs","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_HEADER]
+                    [_TITLE]Titulo de la lista[#]
+                    [_DESCRIPTION]Descripcion de la lista[#]
+                [#]
+                [_LISTING]
+                    [_COLUMNHEADERS]
+						[_COLUMN][_LABEL]id_lang[#][#]
+						[_COLUMN][_LABEL]id_feature[#][#]
+						[_COLUMN][_LABEL]name[#][#]
+
+                    [#]
+                    [_ROWS]
+						[_ROW][_VALUE][*:/types/Relationship({"name":"id_lang","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/Integer({"name":"id_feature","model":"$iterator"})][#][#][#]
+						[_ROW][_VALUE][*:/types/String({"name":"name","model":"$iterator"})][#][#][#]
+
+                    [#]
+                    [_LISTINGFOOTER]
+                    [#]
+                [#]
+           [#]

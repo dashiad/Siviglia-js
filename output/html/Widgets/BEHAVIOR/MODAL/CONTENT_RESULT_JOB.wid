@@ -1,0 +1,10 @@
+<?php //$iterator->result = "C:/data/".$iterator->result; ?>
+    [*/ELEMENT/TITLE/H3][_TEXT]Resultados de la salida[#][#]
+    [*/ELEMENT/CONTENT/PARRAFO]Nombre de fichero: [*:/ELEMENT/TEXT/STRONG]<?php echo $salida_job; ?>[#][#]
+    [*/ELEMENT/CONTENT/PARRAFO]Tamaño fichero: <?php //echo filesize($iterator->result); ?>[#]
+    [*/ELEMENT/TEXT/LINK]
+        [_ROLE_BUTTON][_*][#]
+        [_CLASS_URL]btn btn-outline-success[#]
+        [_LINK_URL]<?php echo $salida_job; ?>[#]
+        [_LINK_TEXT]Descargar '<?php echo $salida_job; ?>'[#]
+    [#]

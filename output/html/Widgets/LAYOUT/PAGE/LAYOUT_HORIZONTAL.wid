@@ -1,0 +1,64 @@
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_PHASE]Headers[#]
+    [_CONTENTS]        
+        [_CSS]
+            [_FILE]editor/css/style.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/bootstrap/bootstrap.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/bootstrap/bootstrap-extended.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/bootstrap/colors.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/bootstrap/components.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/bootstrap/vendors.min.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/fonts/boxicons/css/boxicons.css[#]
+        [#]                 
+        [_CSS]
+            [_FILE]editor/css/menu/vertical-menu.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/themes/semi-dark-layout.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/form/form-validation.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/vendors/pickers/pickadate.css[#]
+        [#]
+        [_CSS]
+            [_URL]https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css[#]
+        [#]
+    [#]
+[#]
+  
+    <!-- MENU NAVIGATION -->
+    [*:LAYOUT/NAVIGATION/MAIN_MENU_HORIZONTAL][#]
+
+    <!-- MENU EXTRA -->
+    [*:LAYOUT/NAVIGATION/TOOLBAR/TOOLBAR_HORIZONTAL][#]
+
+    <!-- CONTENT -->
+    <div class="app-content content-horizontal">
+        <!-- BREADCRUMBS -->
+        [*:LAYOUT/NAVIGATION/BREADCRUMBS/BREADCRUMBS][#]    
+        
+        <div class="content-wrapper">
+            <div class="content-body">
+                [_CONTENT][_*][#]
+            </div>                
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    [*:LAYOUT/FOOTER/FOOTER_STATIC][#]

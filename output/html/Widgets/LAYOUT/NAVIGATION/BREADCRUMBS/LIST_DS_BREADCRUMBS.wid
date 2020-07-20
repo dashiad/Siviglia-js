@@ -1,0 +1,20 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb p-0 mb-0">
+        <li class="breadcrumb-item"><a href="<?php $_SERVER['SERVER_NAME']; ?>" title="HOME"><i class="bx bx-home"></i></a></li>
+
+    [_LISTING]
+        [*:DATASOURCE]
+            [_:PARAMETERS({"object":"$object","name":"$dsName","serializer":"$serializer","params":"$params"})][#]
+            [_:ITERATOR({"iterator":"&$iterator"})]
+                [_ROWS]
+                    [_ROW]
+                        <li class="breadcrumb-item">
+                            [_VALUE][_*][#]
+                        </li>
+                    [#]
+                [#]
+            [#]
+        [#]
+    [#]
+    </ol>
+</nav>

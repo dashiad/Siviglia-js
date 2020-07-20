@@ -1,0 +1,19 @@
+@font-face {
+    font-family: "ExpresswayRg";
+    src: url("/fonts/ExpresswayRg.woff") format("woff"),
+    url("/fonts/ExpresswayRg.woff2") format("woff2")
+}
+@font-face {
+    font-family:"BoxIcons";
+    src:url("/editor/fonts/boxicons/boxicons.svg") format("svg"),
+    url("/editor/fonts/boxicons/boxicons.woff") format("woff"),
+    url("/editor/fonts/boxicons/boxicons.woff2") format("woff2");
+}
+body
+{
+    margin:0px;
+    padding:0px;
+    background-color:#222;
+    font-family:"ExpresswayRg"
+}
+

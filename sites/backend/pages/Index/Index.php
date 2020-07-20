@@ -1,0 +1,10 @@
+[*PAGE/INDEX]
+    [_TITLE]Backend Index - SmartClip v.1.0 beta[#]
+
+    [_CONTENT]
+		[*:BEHAVIOR/CARD]
+            [_:TITLE]Reporte ComScore[#]
+            [_:CONTENT][*::JobFullList][#][#]
+        [#]
+    [#]
+[#]

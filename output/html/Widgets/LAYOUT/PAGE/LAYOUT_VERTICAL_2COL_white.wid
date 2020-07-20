@@ -1,0 +1,67 @@
+<!-- Los CSS y JS, que vayan a statis:
+    sites/statics/html/nombre_site/css
+    sites/statics/html/nombre_site/js
+
+    Ejemplo:
+    sites/statics/html/editor/css/editor-layaout.css
+    sites/statics/html/editor/css/editor-layaout.js
+
+    Cargado de LAYOUT/PAGE/nombre_layout.wid
+
+-->  
+
+
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_PHASE]Headers[#]
+    [_CONTENTS]        
+        [_CSS]
+            [_FILE]editor/css/style.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/bootstrap/bootstrap.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/bootstrap/bootstrap-extended.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/bootstrap/colors.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/bootstrap/components.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/bootstrap/vendors.min.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/fonts/boxicons/css/boxicons.css[#]
+        [#]                 
+        [_CSS]
+            [_FILE]editor/css/menu/vertical-menu.css[#]
+        [#]
+        [_CSS]
+            [_FILE]editor/css/themes/semi-dark-layout.css[#]
+        [#]       
+    [#]
+[#]
+  
+    <!-- MENU EXTRA -->
+    [*:LAYOUT/NAVIGATION/TOOLBAR/TOOLBAR][#]
+
+    <!-- MENU NAVIGATION -->
+    [*:LAYOUT/NAVIGATION/MAIN_MENU][#]
+    
+
+    <!-- CONTENT -->
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="content-wrapper">
+            <div class="content-body">
+                [_CONTENT][_*][#]
+            </div>                
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    [*:LAYOUT/FOOTER/FOOTER_STATIC][#]

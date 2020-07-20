@@ -1,0 +1,42 @@
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_PHASE]BODYEND[#]
+    [_CONTENTS]
+        [_SCRIPT]            
+            [_FILE]backend/js/vendors/datatable-workers.js[#]
+        [#]
+    [#]
+[#]
+
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$currentPage=Registry::$registry["currentPage"];
+$params=$currentPage->getPageParams();
+?>
+
+[*:WORKER_LIST_DS_TABLE({"currentPage":"$currentPage","object":"/model/web/Jobs/Worker","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                [_:HEADER]
+                    [_:TITLE]Tabla del Worker[#]
+                    [_:DESCRIPTION]Detalles de los workers asociados al job  [*::ELEMENT/TEXT/STRONG]<?php echo $params->job_id;?>[#][#]                                
+                [#]
+                [_:LISTING]
+                    [_:COLUMNHEADERS]
+						[_:COLUMN][_:LABEL]ID[#][#]
+						[_:COLUMN][_:LABEL]Trabajo[#][#]
+                        [_:COLUMN][_:LABEL]Índice[#][#]
+						[_:COLUMN][_:LABEL]Estado[#][#]
+						[_:COLUMN][_:LABEL]Creado[#][#]
+						[_:COLUMN][_:LABEL]Actualizado[#][#]
+                    [#]
+                    [_:ROWS]
+                        [_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"id_worker","model":"$iterator"})][#][#][#]	
+                        [_:ROW][_:VALUE][*::/ELEMENT/TYPES/_String({"name":"job_id","model":"$iterator"})][#][#][#]
+                        [_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer({"name":"index","model":"$iterator"})][#][#][#]
+                        [_:ROW][_:VALUE][*::/ELEMENT/TYPES/Integer_Job_Status({"name":"status","model":"$iterator"})][#][#][#]
+                        [_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"created_at","model":"$iterator"})][#][#][#]
+						[_:ROW][_:VALUE][*::/ELEMENT/TYPES/DateTime({"name":"updated_at","model":"$iterator"})][#][#][#]
+                    [#]
+                    [_:LISTINGFOOTER]
+                    [#]
+                [#]
+           [#]

@@ -1,0 +1,9 @@
+<div class="box">
+[*:WINDOW]
+    [_TITLE]
+        <div class="boxTitle">
+        [_:TITLE][_*][#]
+        </div>
+    [#]
+[#]
+</div>

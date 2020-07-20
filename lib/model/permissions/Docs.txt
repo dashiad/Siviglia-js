@@ -1,0 +1,244 @@
+En el problema de los permisos, hay 3 entidades principales:
+- Los usuarios
+- Los permisos
+- Los "targets", elementos sobre los que se declaran permisos:
+
+El usuario <X> tiene permisos <Y> sobre el elemento <Z>
+
+Hay dos posibles acercamientos al problema de los permisos:
+
+1) Basado en Roles: los usuarios tienen un rol, y los targets requieren un rol.
+
+2) Basado en ACL : los usuarios pertenecen a 1 o mas grupos, los permisos pertenecen a 1 o
+   mas grupos, y los targets pertenecen a 1 o mas grupos.
+
+   Los permisos se definen como una terna de 3 <grupos o ids> a los que se concede acceso:
+   El grupo <Grupo de usuarios> tiene <Grupo de accesos> sobre <Grupo de elementos>.
+
+   En la frase anterior, cualquier <Grupo> podría ser tambien un item:
+   El <usuario X> tiene <permiso Y> sobre <elemento Z>
+
+   Aqui, <elemento Z> no es un "tipo" de elemento, sino un <id> de elemento.
+   La frase equivalente sería:
+   EL usuario 10 tiene permiso READ sobre el Documento con id 20.
+
+
+Además de estos dos acercamientos, los permisos se pueden requerir de otras formas:
+  - PUBLIC : Acceso publico
+  - LOGGED : Acceso a usuarios que han hecho login
+  - OWNER  : Acceso a usuarios que sean "dueños" del target. Para que este tipo de
+             permiso se pueda utilizar, el target debe indicar un path al campo que define el owner.
+==================================================================================================================
+==================================================================================================================
+
+Hasta aqui, el planteamiento inicial.
+Ahora, vemos cómo se aplican las anteriores ideas.
+Primero, las tres entidades base, (usuarios, permisos, targets):
+
+Cosas comunes a los 3:
+- Los 3 tienen una estructura de arbol, donde las raices son "Todos los usuarios", "Todos los permisos", "Todos los targets",
+de los que cuelgan subgrupos.De hecho, al instalar el sistema, se crean automaticamente los grupos:
+
+        $this->createGroup( "/AllModules/Sys",     PermissionsManager::PERM_TYPE_MODULE,true);
+        $this->createGroup( "/AllUsers/Sys",       PermissionsManager::PERM_TYPE_USER,true);
+        $this->createGroup( "/AllPermissions/Sys", PermissionsManager::PERM_TYPE_PERMISSIONS,true);
+
+Y, por defecto, cualquier grupo adicional que se cree, va a colgar de esos grupos.
+Como ejemplo, si se crea un grupo para los modulos definidos en un Package, por ejemplo "web", se llamaría a :
+
+       $this->createGroup( "/web", PermissionsManager::PERM_TYPE_MODULE,false);
+
+Y el path real donde estaria ese grupo, seria : "/AllModules/Sys/web" (el ultimo parametro de createGroup indica si el grupo se
+está creando colgando del raiz (true) o en la estructura por defecto (false).
+Esta estructura por defecto sirve para que la forma de referenciar todos los modulos, o todos los permisos, sea unica:
+Si todos los modulos cuelgan de /AllModules, y todos los permisos cuelgan de /AllPermissions, es posible dar permisos a un usuario
+a "/AllModules" y "/AllPermissions". Si cada grupo de modulos/permisos/usuarios se creara libremente en el path "/", no habria ningun grupo
+que los abarcara a todos, y no seria facil referenciar a TODOS a la vez.
+
+Sobre esos path iniciales, se van a crear nuevos grupos, o items.
+Los grupos que se van a crear son:
+
+- Para usuarios:
+  Se crean los siguientes grupos por defecto (definidos en \lib\model\permissions\PernmissionsManager):
+
+    const DEFAULT_USER_GROUP="Users";
+    const DEFAULT_ADMIN_GROUP="Admins";
+    const DEFAULT_EDITORS_GROUP="Editors";
+    const DEFAULT_REFLECTION_GROUP="Reflection";
+
+ Ademas de estos, los modulos o sites podrían crear nuevos grupos de usuarios.
+ En particular, los Sites podrán especificar el grupo por defecto donde se incluiran los usuarios que se den de alta
+ en esos sites.
+ Por ejemplo, el site Reflection, usa el grupo Reflection para añadir a ese grupo a los usuarios que sean dados de alta
+ en ese site.
+
+ Hay que tener en cuenta que, si el sistema fuera basado en roles, un usuario "Admin" seria "Admin" independientemente
+ del Package, Model, o Site.
+ Pero si existen permisos basados en ACL, un usuario podría ser Admin sólo para un Package, un Model,o 1 Site,
+ incluso podría ser Admin para una cierta instancia de 1 modelo.
+
+
+- Para permisos:
+  Van a existir una serie de permisos, que deberían ser bastantes para todas las necesidades:
+    const PERMS_REFLECTION="Reflection";
+    const PERMS_ADMIN="Admin";
+    const PERMS_EDIT="Edit";
+    const PERMS_VIEW="View";
+    const PERMS_CREATE="Create";
+    const PERMS_LIST="List";
+    const PERMS_DESTROY="Destroy";
+    const PERMS_DISABLE="Disable";
+    const PERMS_ACCESS="Access";
+    const PERMS_CUSTOM1="Custom1";
+    const PERMS_CUSTOM2="Custom2";
+    const PERMS_CUSTOM3="Custom3";
+
+    Los permisos Create/Edit/List/View/Destroy, son items, que irán dentro del grupo CRUD.
+    Por lo tanto, existira el grupo /AllPermissions/Sys/CRUD, con los items Create/Edit/View/Destroy.
+
+    Los permiso "Admin", "Disable" estan disponibles para tareas de administracion.
+    El permiso "Access" esta disponible para indicar quien puede acceder a un Site.
+
+    Los permisos Custom1, Custom2 y Custom3, estan disponibles para permisos dados usando ACL, por lo que su interpretacion
+    depende de cada modulo.
+    Es decir, una operacion puede requerir que un usuario tenga permisos Custom1 sobre el Package web, o tenga permisos
+    Custom1 sobre el Modelo "Site". Qué significa ese permiso, es dependiente del Package, Site o Model.
+    Asi evitamos crear permisos especificos continuamente, reutilizando esos 3 permisos custom.
+
+
+ - Para targets:
+   Como se ha ido diciendo, los targets van a ser Sites, Packages y Models.
+   Los Sites son Items (objetos finales).
+   Los Packages son Grupos, y su contenido son cada uno de los Modelos contenidos en el Package.
+   Los Modelos son tambien Grupos, porque los items son *instancias* de modelos.
+   Esto quiere decir que es posible dar permisos a un usuario sobre una *pagina*, una *web*, no solo sobre "Paginas" o "Sites".
+
+
+==========================================================================================================================
+==========================================================================================================================
+Por lo tanto, la instalación de permisos, que se encuentra en el metodo install de \lib\model\permissions\PermissionsManager:
+- instala las tablas de permisos (Mysql)
+- instala los 3 grupos iniciales:
+
+  $this->createGroup( "/AllModules/Sys",     PermissionsManager::PERM_TYPE_MODULE,true);
+  $this->createGroup( "/AllUsers/Sys",       PermissionsManager::PERM_TYPE_USER,true);
+  $this->createGroup( "/AllPermissions/Sys", PermissionsManager::PERM_TYPE_PERMISSIONS,true);
+
+- instala los permisos iniciales, creando el grupo CRUD:
+
+        $this->createGroup("/CRUD",PermissionsManager::PERM_TYPE_PERMISSIONS,false);
+        $this->addToGroup(array(
+            PermissionsManager::PERMS_EDIT,
+            PermissionsManager::PERMS_VIEW,
+            PermissionsManager::PERMS_CREATE,
+            PermissionsManager::PERMS_DESTROY,
+        ),"/CRUD",PermissionsManager::PERM_TYPE_PERMISSIONS,false);
+        $this->addToGroup(array(
+            PermissionsManager::PERMS_REFLECTION,
+            PermissionsManager::PERMS_ADMIN,
+            PermissionsManager::PERMS_DISABLE,
+            PermissionsManager::PERMS_LIST,
+            PermissionsManager::PERMS_ACCESS,
+        ),"/AllPermissions/Sys",PermissionsManager::PERM_TYPE_PERMISSIONS,true);
+ - Instala un primer usuario por defecto, con nombre "admin", password "admin", usando el metodo createAdminUser de \model\web\WebUser
+ - Se añade ese usuario al grupo de usuarios "/AllUsers", y se le dan permisos sobre /AllPermissions y /AllModules . Es por eso que existen
+   estos dos paths. Así, cualquier usuario en ese grupo, tiene permisos sobre todo.
+ - Se itera sobre los paquetes instalados, para que se agreguen ellos mismos, y todos sus modelos, a la estructura de targets de permisos.
+   Asi, la estructura final que quedaria,es:
+   /AllModules/Sys/web/Site , /AllModules/Sys/web/Page, etc (en modo "RAW")
+
+ - Se itera sobre los sites instalados, para que se agreguen ellos mismos a la estructura de targets, dentro del path:
+  /AllModules/Sys/sites , como si sites fuera un nombre de paquete.
+
+
+===============================================================================================================================
+===============================================================================================================================
+
+Ya definidos las entidades de permisos, y la instalación, lo siguiente a ver es cómo se especifican los permisos requeridos para
+una cierta accion, datasource, modelo, etc.
+Como se decía arriba, las formas de especificar los requisitos de permisos son varias:
+
+    const PERMISSIONSPEC_PUBLIC="Public";
+    const PERMISSIONSPEC_OWNER="Owner";
+    const PERMISSIONSPEC_LOGGED="Logged";
+    const PERMISSIONSPEC_ACL="ACL";
+    const PERMISSIONSPEC_ROLE="Role";
+
+Una especificacion de permisos es un ARRAY de requerimientos de permisos. Si el usuario cumple *alguno* de los permisos requeridos,
+se dará por válido.
+----------------------------------------------------------------------------------------------------------------------------------
+* Especificacion de permisos "PUBLIC":
+
+  "PERMISSIONS"=>[["TYPE"=>"Public"]]
+----------------------------------------------------------------------------------------------------------------------------------
+* Especificacion de permisos "OWNER":
+
+  "PERMISSIONS"=>[["TYPE"=>"Owner", "MODEL"=>"/model/xxx/yyy"]]
+
+  Si se especifica el permiso "Owner", es necesario dar un Modelo sobre el que se aplica la propiedad. Ese modelo debe tener
+  en su definicion un campo "OWNER" indicando el path hasta el campo que define la propiedad.
+
+  Por ejemplo, si tenemos un modelo "Habitaciones" que pertenecen a una "Casa", por lo que las habitaciones tienen un id_casa,
+  y las casas tienen un id_owner , el modelo Habitaciones tiene en su definicion:
+  "OWNER"=>"/id_casa/id_owner"
+  Y una Action definida sobre Habitacion (por ejemplo, "Paint"), puede requerir:
+  "PERMISSIONS"=>[["TYPE"=>"Owner", "MODEL"=>"/model/xxx/Habitaciones".
+
+  Es importante notar que los permisos de tipo "OWNER" se pueden especificar cuando:
+  - Los permisos se van a aplicar sobre una *instancia* de un modelo, porque el owner se refiere a *esa* instancia.
+
+  Es decir, una Action que reciba un id_habitacion, es capaz de determinar cual es su owner.
+
+  Aplicar permisos de "Owner" sobre datasources, queriendo por ejemplo "listar aquellas habitaciones que pertenecen al usuario actual",
+  no es posible, ya que eso requeriría modificar la query para incluir automaticamente un JOIN con la tabla "casa", y ese JOIN depende
+  del Storage de cada Datasource.
+  Es por eso que los Datasources que quieren filtrar por Owner, deben utilizar el contexto global "&", donde se almacenan variables
+  globales de la peticion, incluido el usuario:
+
+  SELECT * from habitaciones, casas on habitaciones.id_casa=casas.id_casa and casas.id_owner=[%&user/USER_ID%]
+----------------------------------------------------------------------------------------------------------------------------------
+* Especificaciones de permisos LOGGED
+
+  "PERMISSIONS"=>[["TYPE"=>"Logged"]]
+
+  Si el usuario ha hecho login, se le conceden permisos.
+
+----------------------------------------------------------------------------------------------------------------------------------
+* Especificaciones de permisos "ACL"
+
+  "PERMISSIONS"=>[["TYPE"=>"ACL", "REQUIRES"=>"<Permission>", "ON"=>"<target>"]]
+
+  Ejemplo:
+
+  "PERMISSIONS"=>[["TYPE"=>"ACL", "REQUIRES"=>PermissionsManager::PERMS_EDIT, "ON"=>/model/xxx/Habitacion"]]
+  "PERMISSIONS"=>[["TYPE"=>"ACL", "REQUIRES"=>PermissionsManager::PERMS_EDIT, "ON_ITEM"=>/model/xxx/Habitacion/11"]]
+
+  NOTA: Estos ACLs siempre suponen que :
+  "REQUIRES" es un ITEM, no un grupo. Es decir, no se puede requerir CRUD, ya que CRUD es un grupo donde estan añadidos CREATE,EDIT...
+
+  "ON" es un GRUPO, no un ITEM.
+  "ON_ITEM" es un ITEM, no un grupo, pero esta especificacion de permiso solo puede ser calculado, ya que es necesario el *id* de la instancia
+  a la que se refiere.
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+* Especificaciones de permisos "ROLE"
+
+  "PERMISSIONS"=>[["TYPE"=>"ROLE", "ROLE"=>"/xxx"]]
+
+  Especifica que el usuario debe pertenecer a un cierto grupo para que el acceso sea permitido.
+  Es parecido a un acceso basado en ACL, pero no hay ni permiso, ni target. Si se tiene el role, se tiene acceso al recurso pedido.
+
+=================================================================================================================================
+
+API de gestión de permisos:
+
+Se apoya en \lib\model\PermissionsManager , especialmente en el metodo:
+
+function canAccess($permsDefinition, $user=null, $model = null)
+
+Donde, si no existe $user, se toma el usuario actual, y $model solo debe especificarse en caso de que se quiera chequear permisos.
+
+
+
+

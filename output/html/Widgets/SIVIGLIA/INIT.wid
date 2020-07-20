@@ -1,0 +1,43 @@
+<?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/JqxWidgets.html"); ?>
+<?php include_once(PROJECTPATH."/sites/statics/html/packages/Siviglia/jQuery/Visual.html"); ?>
+[@DEPENDENCY]
+    [_BUNDLE]Page[#]
+    [_CONTENTS]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/jqx-all.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/globalization/globalize.js[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/styles/jqx.base.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/jqwidgets/styles/jqx.darkblue.css[#][#]
+        [_CSS][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/jQuery/JqxWidgets.css[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Siviglia.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/SivigliaStore.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/SivigliaTypes.js[#][#]
+        [_SCRIPT][_URL]##STATICS_WEB_ROOT##/packages/Siviglia/Model.js[#][#]
+        [_SCRIPT]
+            [_CODE]
+                <script>
+                    var Siviglia=Siviglia || {};
+                    Siviglia.config={
+                        baseUrl:'##SITE_WEB_ROOT##/',
+                        publicUrl:'##SITE_WEB_ROOT##/',
+                        staticsUrl:'##STATICS_WEB_ROOT##/',
+                        metadataUrl:'http://metadata.adtopy.com/',
+                        jsFramework:'jquery',
+                        locale:'es-ES',
+                        mapper:'Siviglia',
+                        datasourcePrefix:'datasource/',
+                        id_lang:'es'
+                        //jsFramework:'dojo'
+                    };
+                    Siviglia.Model.initialize(Siviglia.config);
+                    $(document).ready(function () {
+                        //var remoteRoot=new Siviglia.model.RemotePath("http://127.0.0.1/buscando");
+                        var parser = new Siviglia.UI.HTMLParser();
+                        //parser.addContext("/",obj1);
+                        parser.parse($(document.body));
+                    });
+                    $.jqx.theme = "darkblue";
+                </script>
+            [#]
+        [#]
+    [#]
+[#]

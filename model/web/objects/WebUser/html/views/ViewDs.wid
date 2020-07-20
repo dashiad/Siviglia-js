@@ -1,0 +1,30 @@
+<?php
+
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$params=Registry::$registry["PAGE"];
+?>
+            [*/VIEWS/OBJECT_VIEW({"currentPage":"$currentPage","object":"WebUser","dsName":"ViewDs","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                    [_TITLE][#]
+                    [_CONTENTS]
+                        [*/LAYOUTS/2Columns]
+				[_ROW]
+					[_LEFT]LOGIN[#]
+					[_RIGHT][*:/types/String({"name":"LOGIN","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]PASSWORD[#]
+					[_RIGHT][*:/types/String({"name":"PASSWORD","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]USER_ID[#]
+					[_RIGHT][*:/types/Integer({"name":"USER_ID","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]EMAIL[#]
+					[_RIGHT][*:/types/String({"name":"EMAIL","model":"$iterator"})][#][#]
+				[#]
+
+                        [#]
+                    [#]
+           [#]
+

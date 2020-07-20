@@ -1,0 +1,116 @@
+<?php
+namespace model\web\Lang\translations\datasources;
+/**
+ FILENAME:/Users/rafa/www/percentil/public/backoffice//backoffice/objects/Lang/objects/translations/datasources/FullList.php
+  CLASS:FullList
+*
+*
+**/
+
+class FullList
+{
+	 static  $definition=array(
+               'ROLE'=>'list',
+               'DATAFORMAT'=>'Table',
+               'PARAMS'=>array(
+                     'id_string'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'id_string',
+                           'TRIGGER_VAR'=>'id_string'
+                           ),
+                     'lang'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'lang',
+                           'TRIGGER_VAR'=>'lang'
+                           ),
+                     'dirty'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'dirty',
+                           'TRIGGER_VAR'=>'dirty'
+                           ),
+                     'value'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'value',
+                           'TRIGGER_VAR'=>'value'
+                           ),
+                     'realm'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'realm',
+                           'TRIGGER_VAR'=>'realm'
+                           )
+                     ),
+               'IS_ADMIN'=>0,
+               'FIELDS'=>array(
+                     'id_translation'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'id_translation'
+                           ),
+                     'id_string'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'id_string'
+                           ),
+                     'lang'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'lang'
+                           ),
+                     'realm'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'realm'
+                           ),
+                     'dirty'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'dirty'
+                           ),
+                     'translated'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'value'
+                           ),
+                     'original'=>array(
+                           'MODEL'=>'\model\web\Lang\translations',
+                           'FIELD'=>'value'
+                           )
+                     ),
+               'PERMISSIONS'=>array(["TYPE"=>"Public"]),
+         'SOURCE'=>[
+               'STORAGE'=>array(
+                     'MYSQL'=>array(
+                           'DEFINITION'=>array(
+                                 'TABLE'=>'translations',
+                                 'BASE'=>'SELECT tp.id_translation,tp.id_string,tp.lang,tp.realm,tp.dirty,tp.value as translated ,tf.value as original
+                                 FROM translations tp
+                                 LEFT JOIN translations tf ON tp.`id_string`=tf.`id_string`
+                                 WHERE tf.`lang`=\'|%DEFAULT_LANGUAGE%|\' AND [%0%] AND [%1%] AND [%2%] AND [%3%] AND [%4%] ORDER BY id_translation DESC',
+                                 'CONDITIONS'=>array(
+                                       array(
+                                             'FILTER'=>'tp.id_string=[%id_string%]',
+                                             'TRIGGER_VAR'=>'id_string',
+                                             'DISABLE_IF'=>''
+                                             ),
+                                       array(
+                                             'FILTER'=>'tp.lang=[%lang%]',
+                                             'TRIGGER_VAR'=>'lang',
+                                             'DISABLE_IF'=>''
+                                             ),
+                                       array(
+                                             'FILTER'=>'tp.dirty=[%dirty%]',
+                                             'TRIGGER_VAR'=>'dirty',
+                                             'DISABLE_IF'=>''
+                                             ),
+                                       array(
+                                             'FILTER'=>'tp.value=[%value%]',
+                                             'TRIGGER_VAR'=>'value',
+                                             'DISABLE_IF'=>null
+                                             ),
+                                       array(
+                                             'FILTER'=>'tp.realm=[%realm%]',
+                                             'TRIGGER_VAR'=>'realm',
+                                             'DISABLE_IF'=>''
+                                             )
+                                       )
+                                 )
+                           )
+                     )
+             ]
+               );
+}
+?>

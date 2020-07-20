@@ -1,0 +1,160 @@
+<div class="SivDatasource">
+	<div class="SivDatasourceHeader">
+		<h2>AdminFullList</h2>
+				<div class="SivDatasourceDescription"></div>
+		<div class="SivDatasourceFilters">
+        <div class="SivForm">
+
+            <div class="SivFormBody">
+
+                <form method="post" data-dojo-type="dijit/form/Form" data-dojo-attach-point='mainForm'>
+                    <div class="SivFormContents">
+                        <div class="SivFieldContainer" style="position:relative">
+								<div style="float:left">
+
+									<table border=0>
+										<tr>
+											<td class="SivFormLabel">id_site</td>
+											<td class="SivFormInput">
+											<span data-siviglia-name="id_site" data-siviglia-input-type="AutoIncrement"  data-siviglia-input-definition='{"TYPE":"AutoIncrement","MIN":0,"MAX":9999999999}'></span>
+											</td>
+										</tr>
+									</table>
+								</div>
+
+								<div style="float:left">
+
+									<table border=0>
+										<tr>
+											<td class="SivFormLabel">host</td>
+											<td class="SivFormInput">
+											<span data-siviglia-name="host" data-siviglia-input-type="_String"  data-siviglia-input-definition='{"TYPE":"String","MAXLENGTH":40}'></span>
+											</td>
+										</tr>
+									</table>
+								</div>
+
+								<div style="float:left">
+
+									<table border=0>
+										<tr>
+											<td class="SivFormLabel">canonical_url</td>
+											<td class="SivFormInput">
+											<span data-siviglia-name="canonical_url" data-siviglia-input-type="_String"  data-siviglia-input-definition='{"TYPE":"String","MAXLENGTH":255}'></span>
+											</td>
+										</tr>
+									</table>
+								</div>
+
+								<div style="float:left">
+
+									<table border=0>
+										<tr>
+											<td class="SivFormLabel">hasSSL</td>
+											<td class="SivFormInput">
+											<span data-siviglia-name="hasSSL" data-siviglia-input-type="Enum"  data-siviglia-input-definition='{"TYPE":"Enum","VALUES":["No","S\u00ed"]}'></span>
+											</td>
+										</tr>
+									</table>
+								</div>
+
+								<div style="float:left">
+
+									<table border=0>
+										<tr>
+											<td class="SivFormLabel">namespace</td>
+											<td class="SivFormInput">
+											<span data-siviglia-name="namespace" data-siviglia-input-type="_String"  data-siviglia-input-definition='{"DEFAULT":"","MINLENGTH":"4","MAXLENGTH":"45","TYPE":"String"}'></span>
+											</td>
+										</tr>
+									</table>
+								</div>
+
+								<div style="float:left">
+
+									<table border=0>
+										<tr>
+											<td class="SivFormLabel">websiteName</td>
+											<td class="SivFormInput">
+											<span data-siviglia-name="websiteName" data-siviglia-input-type="_String"  data-siviglia-input-definition='{"DEFAULT":"","MINLENGTH":"4","MAXLENGTH":"45","TYPE":"String","SEARCHABLE":1}'></span>
+											</td>
+										</tr>
+									</table>
+								</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>		</div>
+        <div data-dojo-type="dijit/Dialog" data-dojo-id="saveSelectionDialog" data-dojo-attach-point="saveSelectionDialog" title="Guardar selección">
+            <div  data-dojo-type="dijit/layout/ContentPane" data-dojo-id="saveSelectionDialogPane" title="Pane" doLayout="false" style="width: 360px; position: relative; height: 160px;">
+                <form data-dojo-type="dijit/form/Form" data-dojo-attach-point="saveSelectionForm">
+                    <div>
+                        <div style="height: 30px;">
+                            <div style="float: left;width: 124px;">[@L]Objeto[#]</div>
+                            <div style="float: left;margin-left:10px;" data-dojo-attach-point="objectSelectorWrapper"></div>
+                        </div>
+                        <div style="height: 30px;">
+                            <div style="float: left;width: 124px;">
+                                <input data-dojo-type="dijit/form/RadioButton" name="groupNameSelector" id="groupNameSelector1" checked value="1" /><label for="groupNameSelector1" style="margin-left:10px;">[@L]Nuevo grupo[#]</label>
+                            </div>
+                            <div style="float: left;margin-left:10px;">
+                                <input type="text" data-dojo-attach-point="groupName" data-dojo-type="dijit/form/ValidationTextBox" required="true" />
+                            </div>
+                        </div>
+                        <div style="height: 30px;">
+                            <div style="float: left;width: 124px;">
+                                <input data-dojo-type="dijit/form/RadioButton" name="groupNameSelector" value="2" id="groupNameSelector2" /><label for="groupNameSelector2" style="margin-left:10px;">[@L]Grupo existente[#]</label>
+                            </div>
+                            <div style="float: left;margin-left:10px;" data-dojo-attach-point="groupSelectorWrapper"></div>
+                        </div>
+                        <div style="height: 30px;">
+                            <div style="float: left;width: 124px;">[@L]Nombre de subgrupo[#]</div>
+                            <div style="float: left;margin-left:10px;"><input type="text" data-dojo-attach-point="groupMemberName" required="true" data-dojo-type="dijit/form/ValidationTextBox" /></div>
+                        </div>
+                    </div>
+                </form>
+                <div style="position: absolute; z-index: 900; bottom: 5px; right: 5px;">
+                    <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="[@L]Cancelar[#]"
+                           iconClass="dijitNoIcon" onClick="saveSelectionDialog.onCancel();">
+                    <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="[@L]Aceptar[#]" iconClass="dijitNoIcon"
+                           data-dojo-attach-point="saveSelectionButton" data-dojo-attach-event="onClick:saveSelection">
+                </div>
+            </div>
+        </div>        <div data-dojo-type="dijit/Dialog" data-dojo-id="chooseSelectionDialog" data-dojo-attach-point="chooseSelectionDialog" title="[@L]Abrir selección[#]">
+            <div  data-dojo-type="dijit/layout/ContentPane" data-dojo-id="chooseSelectionDialogPane" title="Pane" doLayout="false" style="width: 360px; position: relative; height: 80px;">
+                <form data-dojo-type="dijit/form/Form" data-dojo-attach-point="chooseSelectionForm">
+                    <div>
+                        <div style="height: 30px;display:none;" data-dojo-attach-point="CSdataGroupMemberSelectorContainer">
+                            <div style="float: left;width: 124px;">[@L]Selección guardada[#]</div>
+                            <div style="float: left;margin-left:10px;" data-dojo-attach-point="CSdataGroupMemberSelectorWrapper"></div>
+                        </div>
+                        <div style="height: 30px;display:none;" data-dojo-attach-point="CSdataGroupMemberSelectorEmpty">
+                            [@L]No se encuentra ninguna selección guardada coincidente con la selección actual[#]
+                        </div>
+                    </div>
+                </form>
+                <div style="position: absolute; z-index: 900; bottom: 5px; right: 5px;">
+                    <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="[@L]Cancelar[#]"
+                           iconClass="dijitNoIcon" onClick="chooseSelectionDialog.onCancel();">
+                    <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="[@L]Aceptar[#]" iconClass="dijitNoIcon"
+                           data-dojo-attach-point="chooseSelectionButton" data-dojo-attach-event="onClick:chooseSelection">
+                </div>
+            </div>
+        </div>        <div data-dojo-type="dijit/Dialog" data-dojo-id="executeActionDialog" data-dojo-attach-point="executeActionDialog" title="Ejecutar acción">
+            <div  data-dojo-type="dijit/layout/ContentPane" data-dojo-id="executeActionDialogPane" title="Pane" doLayout="false" style="width: 500px; position: relative;">
+                <div data-dojo-attach-point="actionsDialogContentWrapper"></div>
+            </div>
+        </div>
+		<div style="text-align:right">
+		<input data-dojo-attach-event="onClick:showSetColumns" data-dojo-attach-point="showSetColumnshButton" type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Columnas" iconClass="commonIcons dijitIconTable">
+		<input data-dojo-attach-event="onClick:doRefresh" data-dojo-attach-point="refreshButton" type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Refresh" iconClass="commonIcons dijitIconUndo">
+		<input data-dojo-attach-event="onClick:showSaveSelectionDialog" data-dojo-attach-point="saveSelectionButton" type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Guardar" iconClass="commonIcons dijitIconSave">
+		<input data-dojo-attach-event="onClick:showChooseSelectionDialog" data-dojo-attach-point="saveSelectionButton" type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Abrir" iconClass="commonIcons dijitIconFolderOpen">
+		<input data-dojo-attach-event="onClick:showActionsDialog" data-dojo-attach-point="actionsButton" type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Ejecutar acción" iconClass="commonIcons dijitIconFunction">
+		<span>[@L]Filas:[#]</span><div data-dojo-type="dijit/form/Select" data-dojo-attach-event="onChange:setLines" data-dojo-attach-point="lineSelector"><option value="10" >10</option><option value="20" selected>20</option><option value="50">50</option><option value="100">100</option></div>&nbsp;&nbsp;<a href="" data-dojo-attach-point="downloadCSVLink">Descargar CSV</a>&nbsp;&nbsp;<a href="" data-dojo-attach-point="downloadXLSLink">Descargar Excel</a></div>
+<div data-dojo-attach-point="showSetColumnsWrapper" style="display:none"><div data-dojo-attach-point="setColumnsContainer"></div><div><input data-dojo-attach-event="onClick:setColumns" data-dojo-attach-point="setColumnsButton" type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Aceptar"></div></div>		<div class="SivDatasourceGrid" data-dojo-attach-point="mainGrid" style="position:relative;height:270px">
+		</div>
+	</div>
+</div>

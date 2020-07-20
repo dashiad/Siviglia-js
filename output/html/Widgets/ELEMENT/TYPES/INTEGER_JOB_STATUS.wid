@@ -1,0 +1,43 @@
+[@DEPENDENCY]
+    [_BUNDLE]Global[#]
+    [_CONTENTS]
+        [_SCRIPT]
+            [_CODE]
+                $(document).ready(function(){
+                    $('[data-toggle="tooltip"]').tooltip();   
+                });
+            [#]
+        [#]        
+    [#]
+[#]
+
+<?php 
+// imprime los valores de los jobs de sus tipos
+
+switch ($model->{$name}) {
+    case '0':
+        //echo 'creado';
+        echo '<i class="bx bx-info-circle primary" data-toggle="tooltip" data-placement="right" title="Job creado"></i>';
+        break;
+    case '1':   
+        //echo 'en espera';
+        echo '<i class="bx bx-time light" data-toggle="tooltip" data-placement="right" title="Job en espera"></i>';
+        break;
+    case '2':
+        //echo 'en ejecucion';
+        echo '<i class="bx bx-run warning" data-toggle="tooltip" data-placement="right" title="Job ejecutandose"></i>';
+        break;
+    case '3':
+        //echo 'ok';
+        echo "<i class='bx bx-check success' data-toggle='tooltip' data-placement='right' title='Job terminado'></i>";
+        break;
+    case '4':
+        // echo 'error';
+        echo '<i class="bx bx-error-alt danger" data-toggle="tooltip" data-placement="right" title="Job con errores"></i>';
+        break;
+    default:
+        # code...
+        break;
+}
+
+?>

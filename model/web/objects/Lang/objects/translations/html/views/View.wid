@@ -1,0 +1,29 @@
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('backoffice');
+$params=Registry::$registry["PAGE"];
+
+?>
+            [*/VIEWS/OBJECT_VIEW({"currentPage":"$currentPage","object":"Lang/translations","dsName":"View","serializer":"$serializer","params":"$params","iterator":"&$iterator"})]
+                    [_TITLE]value[#]
+                    [_CONTENTS]
+                        [*/LAYOUTS/2Columns]
+				[_ROW]
+					[_LEFT]VALUE[#]
+					[_RIGHT][*:/types/Text({"name":"VALUE","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]lang[#]
+					[_RIGHT][*:/types/String({"name":"lang","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]id_string[#]
+					[_RIGHT][*:/types/UUID({"name":"id_string","model":"$iterator"})][#][#]
+				[#]
+				[_ROW]
+					[_LEFT]id_translation[#]
+					[_RIGHT][*:/types/AutoIncrement({"name":"id_translation","model":"$iterator"})][#][#]
+				[#]
+
+                        [#]
+                    [#]
+           [#]

@@ -1,0 +1,28 @@
+<?php
+$serializer=\Registry::getService("storage")->getSerializerByName('web');
+$currentPage=Registry::$registry["currentPage"];
+$params=Registry::$registry["params"];
+?>
+
+<div class="content-header row">
+    <div class="content-header-left col-12 mb-2 mt-1">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                [*:LAYOUT/NAVIGATION/BREADCRUMBS/LIST_DS_BREADCRUMBS({"currentPage":"$currentPage","object":"/model/web/Site","dsName":"FullList","serializer":"$serializer","params":"$params","iterator":"&$iterator"})] 
+                    [_:LISTING]
+                        [_:ROWS]
+                            [_:ROW]
+                                [_:VALUE]
+                                    [*::LAYOUT/NAVIGATION/BREADCRUMBS/LINK_BREADCRUMBS]
+                                        [_::URL]#[#]
+                                        [_::TEXT]<?php echo "item"; //echo $iterator->namespace;?>[#]
+                                    [#]
+                                [#]
+                            [#]
+                        [#]
+                    [#]                    
+                [#]
+            </div>
+        </div>
+    </div>
+</div>
