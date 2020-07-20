@@ -1,4 +1,3 @@
-<script src="../Model.js"></script>
 <style>
     .remove, .NewItemString .add {
         font-family:'IcoMoon'
@@ -1422,7 +1421,7 @@
                         }
 
                     }
-            
+
                 },
                 DockingContainer:{
                     inherits:"Container",
@@ -1463,9 +1462,9 @@
                         },
                         initialize: function (params) {
 
-                            this.menuNode.jqxMenu({ 
+                            this.menuNode.jqxMenu({
                                     width: '100%', height:"100%"
-                                    /* width: '600', height:"30px" */ 
+                                    /* width: '600', height:"30px" */
                             });
                             this.menuNode.css({ 'visibility':'visible'});
 
@@ -1931,7 +1930,7 @@
                             submit: function () {
                                 var errors=null;
                                 try {
-                                    this.__bto.__save();
+                                    this.type.save();
                                 }catch(e)
                                 {
                                     if(e.code===Siviglia.types.BaseTypeException.ERR_SAVE_ERROR)
@@ -1953,14 +1952,14 @@
                                 }
                                 for (var k in this.erroredInputs)
                                     return;
-                                var i = Siviglia.issetOr(this.__bto.__getDefinition().INDEXFIELDS,null);
+                                var i = Siviglia.issetOr(this.type.getDefinition().INDEXFIELDS,null);
 
                                 var myIndexes = {};
-                                var vals = this.__bto.getPlainValue();
+                                var vals = this.type.getPlainValue();
                                 if(i!=null) {
                                     for (var k = 0; k < i.length; k++) {
-                                        if (!this.__bto["*" + i[k]].__isEmpty()) {
-                                            myIndexes[i[k]] = this.__bto[i[k]];
+                                        if (!this.type["*" + i[k]].__isEmpty()) {
+                                            myIndexes[i[k]] = this.type[i[k]];
                                         } else {
                                             myIndexes = null;
                                         }
@@ -1971,10 +1970,10 @@
                             },
                             doRedirect:function(type)
                             {
-                                if(typeof this.__bto.__definition["REDIRECT"]!=="undefined" &&
-                                    typeof this.__bto.__definition["REDIRECT"][type]!=="undefined"
+                                if(typeof this.type.__definition["REDIRECT"]!=="undefined" &&
+                                    typeof this.type.__definition["REDIRECT"][type]!=="undefined"
                                 ) {
-                                    var url=this.__bto.__definition["REDIRECT"][type];
+                                    var url=this.type.__definition["REDIRECT"][type];
                                     setTimeout(function(){window.location.assign(url);},200);
                                     return true;
                                 }
@@ -1994,7 +1993,7 @@
                                     Siviglia.Model.loader.doAction(indexes, vals, this.__model, this.__formName).then(
                                         function (r) {
                                             if (r.error == 0) {
-                                                //this.__bto.setValue(r.data[0]);
+                                                //this.type.setValue(r.data[0]);
 						                        var returned=r.data!==null?r.data[0]:null;
                                                 this.onSuccess(returned);
                                                 if(!this.doRedirect("ON_SUCCESS"))
@@ -2065,10 +2064,10 @@
                                     var parts= k.split("::");
                                     var exName=parts[1];
                                     var message='';
-                                    if (typeof this.__bto.__definition.ERRORS !== "undefined" &&
-                                        typeof this.__bto.__definition.ERRORS["GLOBAL"] !== "undefined" &&
-                                        typeof this.__bto.__definition.ERRORS["GLOBAL"][exName] !== "undefined")
-                                        messages.push(this.__bto.__definition.ERRORS["GLOBAL"][exName]["txt"]);
+                                    if (typeof this.type.__definition.ERRORS !== "undefined" &&
+                                        typeof this.type.__definition.ERRORS["GLOBAL"] !== "undefined" &&
+                                        typeof this.type.__definition.ERRORS["GLOBAL"][exName] !== "undefined")
+                                        messages.push(this.type.__definition.ERRORS["GLOBAL"][exName]["txt"]);
                                     else {
                                         messages.push(Siviglia.issetOr(ex[k]["str"],exName));
                                     }
@@ -2083,11 +2082,11 @@
                                 var exName="";
                                 for(var k in exception)
                                     exName=k;
-                                var errDef=this.__bto.__definition.FIELDS[field]["ERRORS"];
+                                var errDef=this.type.__definition.FIELDS[field]["ERRORS"];
                                 if(!errDef)
                                 {
                                     var h;
-                                    if((h=this.__bto.__definition.ERRORS) && (h= h.FIELDS) && (h=h[field]))
+                                    if((h=this.type.__definition.ERRORS) && (h= h.FIELDS) && (h=h[field]))
                                     {
                                         errDef=h;
                                     }
@@ -2121,7 +2120,7 @@
          <input type="text" placeholder="" class="form-control" data-sivId="inputNode">
     </div>
     <!-- nuevo para jqxwidgets-json.String -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets-json.String" 
+    <div data-sivWidget="Siviglia.inputs.jqwidgets-json.String"
          data-widgetCode="Siviglia.inputs.jqwidgets.String">
         <input type="text" placeholder="" class="form-control-json" data-sivId="inputNode">
     </div>
@@ -2398,7 +2397,7 @@
     --------------------------------------------------------------------------------------------
 -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.GridContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.GridContainer">
-        <div class="Grid2ContainerType">            
+        <div class="Grid2ContainerType">
                 <div data-sivLoop="/*type/__definition/FIELDS" data-contextIndex="current">
                     <div class="GridItem">
                         <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>

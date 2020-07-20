@@ -106,6 +106,7 @@
 </style>
 <body style="background-color:#EEE">
 <?php include_once("../jQuery/JqxWidgets.html"); ?>
+<?php include_once("../jQuery/JqxLists.html"); ?>
 
 
 
@@ -1968,6 +1969,157 @@
         '</div>'+
         '<input type="button" data-sivEvent="click" data-sivCallback="doSubmit" ></input>'+
         '</div>',
+        '<div data-sivView="Test.DefCont"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "DefCont": {
+                        inherits: "Siviglia.inputs.jqwidgets.Form",
+                        methods: {
+                            preInitialize: function (params) {
+
+                                this.factory = Siviglia.types.TypeFactory;
+                                this.self = this;
+                                this.typeCol = [];
+                                /* STRING **************************/
+                                this.typedObj = new Siviglia.model.BaseTypedObject({
+                                    "FIELDS": {
+                                        simpleContainer:
+                                            {
+                                                "LABEL":"SimpleContainer",
+                                                "TYPE": "Container",
+                                                "FIELDS": {
+                                                    "Field1": {
+                                                        "LABEL": "Container 1",
+                                                        "TYPE":"Container",
+                                                        "FIELDS": {
+                                                            "f1":{
+                                                                "LABEL":"f1",
+                                                                "TYPE": "String",
+                                                                "DEFAULT":"ssss"
+                                                            },
+                                                            "f2":{
+                                                                "LABEL":"f2",
+                                                                "TYPE": "String",
+                                                            }
+                                                        }
+
+                                                    },
+                                                    "Field2": {
+                                                        "LABEL": "Container 2",
+                                                        "TYPE":"Container",
+                                                        "FIELDS": {
+                                                            "f1":{
+                                                                "LABEL":"f3",
+                                                                "TYPE": "String",
+                                                                "DEFAULT":"ssss"
+                                                            },
+                                                            "f2":{
+                                                                "LABEL":"f4",
+                                                                "TYPE": "String",
+                                                            }
+                                                        }
+                                                    },
+                                                    "Field3": {
+                                                        "LABEL": "Container 3",
+                                                        "TYPE":"Container",
+                                                        "FIELDS": {
+                                                            "f1":{
+                                                                "LABEL":"f5",
+                                                                "TYPE": "String",
+                                                                "DEFAULT":"ssss"
+                                                            },
+                                                            "f2":{
+                                                                "LABEL":"f6",
+                                                                "TYPE": "String",
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                    },
+                                    "INPUTPARAMS":{
+                                        "/simpleContainer":{
+                                            "INPUT": "ByFieldContainer",
+                                        }
+                                    }
+                                });
+                                this.typedObj.setValue({simpleContainer:{Field1:{f1:"aaa"}}})
+
+                                return this.Form$preInitialize({bto:this.typedObj});
+                            },
+                            doSubmit:function()
+                            {
+                                this.typedObj.save();
+                                console.dir(this.typedObj.getPlainValue());
+                            }
+
+                        }
+                    }
+
+                }
+
+            })
+        }
+    );
+
+    runTest("Listado derivado de BaseGrid","Test de Widget de Listado,directamente dereivado de BaseGrid con datasource remoto,filtros, y subwidgets",
+        '<div data-sivWidget="Test.ListViewerForm" data-widgetCode="Test.ListViewerForm">\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">Id</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"id_page"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">Tag</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"tag"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">id_site</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"id_site"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">name</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"name"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">endDateTime</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"endDateTime"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">LineItemType</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"lineItemType"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">Status</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"status"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">isArchived</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"isArchived"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">isMissingCreatives</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"isMissingCreatives"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">userConsentEligibility</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"userConsentEligibility"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">remoteId</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"remoteId"}\'></div>\n' +
+        '        </div>\n' +
+        '    </div>\n' +
+        '\n' +
+        '    <div data-sivWidget="Test.ListViewer" data-widgetCode="Test.ListViewer">\n' +
+        '    </div>\n' +
+        '\n' +
+        '    <div data-sivWidget="Test.ButtonList" data-widgetCode="Test.ButtonList">\n' +
+        '        <div>\n' +
+        '            <input type="button" value="Borrar" data-sivEvent="click" data-sivCallback="onClicked">\n' +
+        '        </div>\n' +
+        '    </div>',
         '<div data-sivView="Test.DefCont"></div>',
         function(){
             Siviglia.Utils.buildClass({
