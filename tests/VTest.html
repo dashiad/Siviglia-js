@@ -74,7 +74,14 @@
 
 <script>
     hljs.initHighlightingOnLoad();
-    var DEVELOP_MODE=-1;
+
+    var urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.has("test")) {
+        //var DEVELOP_MODE=0;  // All tests
+        var DEVELOP_MODE=-1; // Latest test
+    } else {
+        var DEVELOP_MODE = urlParams.get("test");
+    }
 
     var def1={
         "TYPE":"Container",
@@ -83,7 +90,7 @@
             "two": {"TYPE": "String", "DEFAULT": "Hola"}
         }
     };
-    
+
     var def2={
         "TYPE":"Container",
         "FIELDS":{
@@ -2386,7 +2393,7 @@
             return status;
         }
     );
-    
+
     runTest("Comprobaciones de campos dirty anidados",
             "Se comprueba que los campos dirty son asignados cada uno a su controller, con los paths correctos",
             {
@@ -2512,7 +2519,7 @@
                 cnt.setValue({});
                 var st=cnt.getStateDef();
                 var status= st!==null;
-                                    
+
                     status=status && "E1"===st.getCurrentStateLabel();
                     status = status && "state"===st.getStateField();
                     status = status && true===st.hasStates();
@@ -2734,7 +2741,7 @@
         });
     /*
          COMIENZAN LOS TESTS ASOCIADOS AL FICHERO /lib/tests/model/BaseTypedObjectTest
-          
+
      */
     Siviglia.Utils.buildClass(
         {
@@ -3687,10 +3694,10 @@
             return status;
         }, true);
 
-    
-        
 
-    
+
+
+
 
 
 
