@@ -2077,44 +2077,40 @@
         '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"id_page"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
-        '            <div class="label">Tag</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"tag"}\'></div>\n' +
-        '        </div>\n' +
-        '        <div class="input">\n' +
         '            <div class="label">id_site</div>\n' +
         '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"id_site"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">namespace</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"namespace"}\'></div>\n' +
+        '        </div>\n' +
+        '        <div class="input">\n' +
+        '            <div class="label">Tag</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"tag"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">name</div>\n' +
         '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"name"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
-        '            <div class="label">endDateTime</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"endDateTime"}\'></div>\n' +
+        '            <div class="label">date_add</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"date_add"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
-        '            <div class="label">LineItemType</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"lineItemType"}\'></div>\n' +
+        '            <div class="label">date_modified</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"date_modified"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
-        '            <div class="label">Status</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"status"}\'></div>\n' +
+        '            <div class="label">id_type</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"id_type"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
-        '            <div class="label">isArchived</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"isArchived"}\'></div>\n' +
+        '            <div class="label">isPrivate</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"isPrivate"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
-        '            <div class="label">isMissingCreatives</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"isMissingCreatives"}\'></div>\n' +
-        '        </div>\n' +
-        '        <div class="input">\n' +
-        '            <div class="label">userConsentEligibility</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"userConsentEligibility"}\'></div>\n' +
-        '        </div>\n' +
-        '        <div class="input">\n' +
-        '            <div class="label">remoteId</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"remoteId"}\'></div>\n' +
+        '            <div class="label">Path</div>\n' +
+        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"path"}\'></div>\n' +
         '        </div>\n' +
         '    </div>\n' +
         '\n' +
@@ -2123,101 +2119,77 @@
         '\n' +
         '    <div data-sivWidget="Test.ButtonList" data-widgetCode="Test.ButtonList">\n' +
         '        <div>\n' +
-        '            <input type="button" value="Borrar" data-sivEvent="click" data-sivCallback="onClicked">\n' +
+        '            <input style="width:120px;margin:0px" type="button" value="Show Id" data-sivEvent="click" data-sivCallback="onClicked">\n' +
         '        </div>\n' +
         '    </div>',
-        '<div data-sivView="Test.DefCont"></div>',
+        ' <div data-sivView="Test.ListViewer" data-sivLayout="Siviglia.lists.jqwidgets.BaseGrid"></div>',
         function(){
             Siviglia.Utils.buildClass({
-                context:'Test',
-                classes:{
-                    "DefCont": {
-                        inherits: "Siviglia.inputs.jqwidgets.Form",
-                        methods: {
-                            preInitialize: function (params) {
-
-                                this.factory = Siviglia.types.TypeFactory;
-                                this.self = this;
-                                this.typeCol = [];
-                                /* STRING **************************/
-                                this.typedObj = new Siviglia.model.BaseTypedObject({
-                                    "FIELDS": {
-                                        simpleContainer:
-                                            {
-                                                "LABEL":"SimpleContainer",
-                                                "TYPE": "Container",
-                                                "FIELDS": {
-                                                    "Field1": {
-                                                        "LABEL": "Container 1",
-                                                        "TYPE":"Container",
-                                                        "FIELDS": {
-                                                            "f1":{
-                                                                "LABEL":"f1",
-                                                                "TYPE": "String",
-                                                                "DEFAULT":"ssss"
-                                                            },
-                                                            "f2":{
-                                                                "LABEL":"f2",
-                                                                "TYPE": "String",
-                                                            }
-                                                        }
-
-                                                    },
-                                                    "Field2": {
-                                                        "LABEL": "Container 2",
-                                                        "TYPE":"Container",
-                                                        "FIELDS": {
-                                                            "f1":{
-                                                                "LABEL":"f3",
-                                                                "TYPE": "String",
-                                                                "DEFAULT":"ssss"
-                                                            },
-                                                            "f2":{
-                                                                "LABEL":"f4",
-                                                                "TYPE": "String",
-                                                            }
-                                                        }
-                                                    },
-                                                    "Field3": {
-                                                        "LABEL": "Container 3",
-                                                        "TYPE":"Container",
-                                                        "FIELDS": {
-                                                            "f1":{
-                                                                "LABEL":"f5",
-                                                                "TYPE": "String",
-                                                                "DEFAULT":"ssss"
-                                                            },
-                                                            "f2":{
-                                                                "LABEL":"f6",
-                                                                "TYPE": "String",
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                "context":"Test",
+                "classes":{
+                    ListViewer:{
+                        "inherits":"Siviglia.lists.jqwidgets.BaseGrid",
+                        "methods":{
+                            preInitialize:function(params)
+                            {
+                                this.BaseGrid$preInitialize({
+                                        "filters":"Test.ListViewerForm",
+                                        "ds": {
+                                            "model": "/model/web/Page",
+                                            "name": "FullList",
+                                            "settings":{
+                                                pageSize:20
                                             }
-                                    },
-                                    "INPUTPARAMS":{
-                                        "/simpleContainer":{
-                                            "INPUT": "ByFieldContainer",
+                                        },
+                                        "columns":{
+                                            "id":{"Type":"Field","Field":"id_page","Label":"id",gridOpts:{width:"80px"}},
+                                            "Id-name":{"Label":"Pstring","Type":"PString","str":'<a href="#" onclick="javascript:alert([%*id_page%]);">[%*name%]</a>',gridOpts:{width:'10%'}},
+                                            "Wid":{"Label":"Wid","Type":"Widget","Widget":"Test.ButtonList",gridOpts:{width:'10%'}},
+                                            "name":{"Type":"Field","Field":"name","Label":"name",gridOpts:{width:'10%'}},
+                                            "namespace":{"Type":"Field","Field":"namespace","Label":"Namespace",gridOpts:{width:'10%'}},
+                                            "tag":{"Type":"Field","Field":"tag","Label":"Tag",gridOpts:{width:'10%'}},
+                                            "id_site":{"Type":"Field","Field":"id_site","Label":"id_site",gridOpts:{width:'10%'}},
+                                            "date_add":{"Type":"Field","Field":"date_add","Label":"Add date",gridOpts:{width:"30px",height:"100px"}},
+                                            "date_modified":{"Type":"Field","Field":"date_modified","Label":"Last Modified",gridOpts:{width:"50px"}},
+                                            "id_type":{"Type":"Field","Field":"id_type","Label":"Type id"},
+                                            "isPrivate":{"Type":"Field","Field":"isPrivate","Label":"Is Private"},
+                                            "path":{"Type":"Field","Field":"path","Label":"Path",gridOpts:{width:"40px"}},
+                                            "title":{"Type":"Field","Field":"title","Label":"Title"}
+                                        },
+                                        "gridOpts":{
+                                            width:"100%",
+                                            //rowsheight:100
                                         }
                                     }
-                                });
-                                this.typedObj.setValue({simpleContainer:{Field1:{f1:"aaa"}}})
-
-                                return this.Form$preInitialize({bto:this.typedObj});
-                            },
-                            doSubmit:function()
-                            {
-                                this.typedObj.save();
-                                console.dir(this.typedObj.getPlainValue());
+                                );
                             }
 
                         }
+                    },
+                    ButtonList:{
+                        "inherits":"Siviglia.UI.Expando.View",
+                        "methods":{
+                            preInitialize:function(params)
+                            {
+                                this.data=params.row;
+
+                            },
+                            initialize:function(params)
+                            {
+
+                            },
+                            onClicked:function(node,params)
+                            {
+                                alert(this.data.id_page);
+                            }
+                        }
+                    },
+                    ListViewerForm:{
+                        "inherits":"Siviglia.lists.jqwidgets.BaseFilterForm",
+
                     }
-
                 }
-
-            })
+            });
         }
     )
 

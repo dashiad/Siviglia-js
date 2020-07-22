@@ -579,7 +579,7 @@ Siviglia.Utils.buildClass({
                     },
                     onResponse:function(response)
                     {
-                        this["*data"]._setValue(response.data);
+                        this["*data"].apply(response.data,Siviglia.types.BaseType.VALIDATION_MODE_NONE);
                         this["*count"]._setValue(response.count);
                         this.settings.count=response.count;
                         this.settings.start=response.start;

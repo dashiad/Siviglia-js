@@ -643,7 +643,7 @@ Siviglia.Utils.buildClass(
                     getContext: function (prefix) {
                         if (typeof this.contextRoots[prefix] != "undefined")
                             return this.contextRoots[prefix];
-                        throw new Exception("INVALID CONTEXT REQUESTED:"+prefix);
+                        throw "INVALID CONTEXT REQUESTED:"+prefix;
                     },
                     getRoot:function(str)
                     {

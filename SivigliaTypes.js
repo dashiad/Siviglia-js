@@ -1705,7 +1705,7 @@ Siviglia.Utils.buildClass(
                                 (function (k, def) {
 
                                     // lo hacemos en dos pasos: primero definimos, despues ponemos valor.
-                                    m.__buildField(k, def, v[k],null);
+                                    m.__buildField(k, def, v[k],validationMode);
                                 })(name, def);
 
                                 // Se recupera la definicion del tipo, y se copia sobre la definicion del bto.
@@ -2735,11 +2735,22 @@ Siviglia.Utils.buildClass(
                         _validate: function () {
                             return true;
                         },
-                        _setValue: function (val) {
+                        /*_setValue: function (val) {
 
                             if(this.__value && this.__value.hasOwnProperty("__destroy__"))
                                 this.__value.__destroy__();
                             this.__currentProxy = this.proxify(val);
+
+                        },*/
+                        apply: function (val,validationMode) {
+
+                            if(this.__value && this.__value.hasOwnProperty("__destroy__"))
+                                this.__value.__destroy__();
+                            var oldValidationMode=this.__validationMode;
+                            if(typeof validationMode!=="undefined")
+                                this.__validationMode=validationMode;
+                            this.__currentProxy = this.proxify(val);
+                            this.__validationMode=oldValidationMode;
 
                         },
                         // La clase base va a llamar a getKeys cuando se llama
@@ -2806,7 +2817,7 @@ Siviglia.Utils.buildClass(
                             var m = this;
 
                             for (var k = 0; k < val.length; k++) {
-                                this.__currentProxy[k] = val[k];
+                                this.__currentProxy[k]=val[k];
 
                             }
 
@@ -2838,8 +2849,9 @@ Siviglia.Utils.buildClass(
 
                         getValueInstance: function (idx, value) {
                             var name=(this.__currentProxy !== null)?idx:"0";
-                            return Siviglia.types.TypeFactory.getType({fieldName:name,path:this.__fieldNamePath}, this.__definition["ELEMENTS"], this,value);
-
+                            var ins=Siviglia.types.TypeFactory.getType({fieldName:name,path:this.__fieldNamePath}, this.__definition["ELEMENTS"], this,null);
+                            ins.apply(value,this.__validationMode);
+                            return ins;
                         },
                         areContentsSimple: function () {
                             var n = this.getValueInstance(0);
