@@ -1965,6 +1965,7 @@ Siviglia.Utils.buildClass(
                                 $(node).off(item);
                                 $(node).on(attr, callbackBuilder(attr));
                             });
+                            return true;
                         },
                         reset: function () {
                             var attr = this.node.data(this.expandoTag);
@@ -1982,13 +1983,13 @@ Siviglia.Utils.buildClass(
                         this.Expando("sivif");
                     },
                     destruct: function () {
-                        if (this.oManager)
-                            this.oManager.destruct();
+                        this.removeCurrentChildren();
                     },
                     methods: {
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
 
                             this.origHTML = [];
+                            this.childNodes=[];
                             while (node[0].childNodes.length>0) {
                                 var n = node[0].childNodes[0];
                                 var s = n.cloneNode(true);
@@ -1996,8 +1997,11 @@ Siviglia.Utils.buildClass(
                                 this.origHTML.push(n);
                             }
                             this.origDisplay = node[0].style.display;
-
+                            // Se crea un comentario en la posicion del nodo
+                            this.commentNode=document.createComment("SivIfReference");
+                            $(this.commentNode).insertBefore(node);
                             this.Expando$_initialize(node, nodeManager, stack, nodeExpandos);
+                            node.remove();
                             return false;
                         },
                         update: function (val) {
@@ -2007,26 +2011,47 @@ Siviglia.Utils.buildClass(
                                 this.restoreContent();
                         },
                         restoreContent: function () {
-                            if (this.oManager)
-                                this.oManager.destruct();
+                            this.removeCurrentChildren();
+
                             this.oManager = new Siviglia.UI.HTMLParser(this.stack);
-                            this.node.html("");
+                            //this.node.html("");
+
                             var curNode;
+                            // Se crea un container temporal para todos los clones.
+                            // Esto es necesario para que los expandos que sustituyen su nodo (como loop, if, view),
+                            // puedan colocar su contenido "detras" del nodo que los define. Pero para que exista ese "detras",
+                            // el nodo que los define tenia que tener un padre.
+                            var tempContainer=document.createElement("div");
                             for (var j = 0; j < this.origHTML.length; j++) {
                                 curNode = this.origHTML[j].cloneNode(true);
-                                if (curNode.nodeType == 1)
-                                    this.oManager.parse($(curNode));
-                                this.node[0].appendChild(curNode);
+                                tempContainer.appendChild(curNode);
                             }
-                            this.node.css("display", this.origDisplay);
+                             // Se parsea el padre temporal.
+                            this.oManager.parse($(tempContainer));
+                            // Y ahora, se extraen del temporal, y se colocan detras del comentario de marca.
+                            var lastNode=$(this.commentNode);
+                            while(tempContainer.childNodes.length>0)
+                            {
+                                curNode=$(tempContainer.childNodes[0]);
+                                curNode.insertAfter(lastNode);
+                                lastNode=curNode;
+                                this.childNodes.push(lastNode);
+                            }
+                            //this.node.css("display", this.origDisplay);
                             this.dontRecurse = false;
                         },
-                        removeContent: function () {
-                            this.node[0].innerHTML = "";
-                            if (this.oManager) {
+                        removeCurrentChildren:function()
+                        {
+                            if (this.oManager)
                                 this.oManager.destruct();
+                            for(var k=0;k<this.childNodes.length;k++)
+                            {
+                            this.childNodes[k].remove();
                             }
-
+                            this.childNodes=[];
+                        },
+                        removeContent: function () {
+                          this.removeCurrentChildren();
                             this.node.css("display", "none");
                             this.dontRecurse = true;
                         }
@@ -2236,8 +2261,19 @@ Siviglia.Utils.buildClass(
                     getNode:function()
                     {
                         return this.__node;
-                    }
+                    },
+                    preInitialize:function(params)
+                    {
 
+                    },
+                    initialize:function(params)
+                    {
+
+                    },
+                    onAddedToDom:function()
+                    {
+
+                    }
                 }
 
             },
@@ -2316,14 +2352,13 @@ Siviglia.Utils.buildClass(
                                     this.altLayout==null?this.name:this.altLayout,
                                     this.currentParamsValues,null, tempNode,  this.stack);
                                 this.view.__build().then(function(){
-
                                         m.rootNode = m.view.getNode().children();
                                         m.rootNode.insertAfter($(m.node[0]));
                                         m.node.remove();
                                         m.node = m.rootNode;
                                         if(oldView)
                                             oldView.destruct();
-
+                                        m.view.onAddedToDom();
                                     p.resolve()
                                 });
 
