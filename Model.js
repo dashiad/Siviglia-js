@@ -544,6 +544,7 @@ Siviglia.Utils.buildClass({
                     if(typeof meta.TYPES !=="undefined")
                         definition["TYPES"]=meta.TYPES;
                     this.BaseTypedObject(definition,null,true);
+
                     if(params===null)
                         params={};
                     this["*params"].setValue(params);
@@ -579,6 +580,7 @@ Siviglia.Utils.buildClass({
                     },
                     onResponse:function(response)
                     {
+
                         this["*data"].apply(response.data,Siviglia.types.BaseType.VALIDATION_MODE_NONE);
                         this["*count"]._setValue(response.count);
                         this.settings.count=response.count;
@@ -587,23 +589,23 @@ Siviglia.Utils.buildClass({
                         this["*end"]._setValue(response.end);
                         this.fireEvent("CHANGE",{});
                     },
-                    refresh:function()
+                    refresh:function(evName)
                     {
 
                         if(this.__frozen)
                             return;
                         // Si ahora mismo estamos refrescando, y alguien vuelve a pedir un refresco
-                        if(this.currentPromise)
-                        {
-                            // Si no tenemos una promesa proxima
-                            if(!this.nextPromise)
-                            {
-                                // Creamos una nueva promesa, que servira para todos aquellos que pidan un
-                                // refresh antes de que termine la request actual
-                                this.nextPromise=$.Deferred();
+                        if(typeof evName!=="undefined" && evName!=="NEXT") {
+                            if (this.currentPromise) {
+                                // Si no tenemos una promesa proxima
+                                if (!this.nextPromise) {
+                                    // Creamos una nueva promesa, que servira para todos aquellos que pidan un
+                                    // refresh antes de que termine la request actual
+                                    this.nextPromise = $.Deferred();
+                                }
+                                // Y devolvemos el futuro refresh
+                                return this.nextPromise;
                             }
-                            // Y devolvemos el futuro refresh
-                            return this.nextPromise;
                         }
 
                         // Un datasource va a ser simplemente un BaseTypedObject con una definicion fija
@@ -634,7 +636,7 @@ Siviglia.Utils.buildClass({
                                     // Borramos la nextPromise
                                     m.nextPromise=null;
                                     // Y refrescamos.
-                                    m.refresh();
+                                    m.refresh("NEXT");
                                 }
                             }.bind(this),
                             function (error) {

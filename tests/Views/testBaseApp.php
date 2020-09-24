@@ -38,7 +38,7 @@
 <body>
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 <?php include_once(__DIR__."/../../jQuery/JqxLists.html");?>
-<?php include_once(__DIR__."/../../jQuery/JqxViews.html");?>
+<?php include_once(__DIR__."/../../jQuery/JqxApp.html");?>
 
 <div class="widget">
     <div class="widget-content">

@@ -4,7 +4,29 @@
             context: 'Siviglia.lists.jqwidgets',
             classes: {
                 BaseFilterForm:{
-                  inherits:'Siviglia.inputs.jqwidgets.Form'
+                  inherits:'Siviglia.inputs.jqwidgets.Form',
+                    destruct:function()
+                    {
+                        for(var k in this.subwidgets)
+                        {
+                            this.subwidgets[k].removeListeners(this);
+                        }
+                    },
+                    methods:{
+                      initialize:function(params)
+                      {
+                          this.Form$initialize(params);
+                          for(var k in this.subwidgets)
+                          {
+                              this.subwidgets[k].addListener("CHANGE",this,"onInputChanged")
+                          }
+
+                      },
+                        onInputChanged:function()
+                        {
+                            console.dir(params);
+                        }
+                    }
                 },
                 BaseGrid: {
                     inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
@@ -309,6 +331,8 @@
                         },
                         refreshGrid:function(evName,params)
                         {
+                            // TODO : Por algun motivo, todavia se ejecutan requests extra en los autocompletar de los grids.
+                            // Hay que investigar por qué.
                             if(this.jqgrid===null) {
                                 this.jqgrid=1;
                                 return this.buildGrid();
@@ -362,7 +386,7 @@
                                 altrows: true,
                                 enabletooltips: true,
                                 editable: false,
-                                virtualmode:false,
+                                virtualmode:true,
                                 selectionmode:'checkbox'
                             };
                             for(var k in this.gridOpts)
@@ -414,10 +438,10 @@
                             {
                                 this.onRendered();
                             }.bind(this));
-this.grid.on("initialized",function(){console.log("initialized");});
-this.grid.on("rowClick",function(){console.log("rowClick");});
-this.grid.on("rowSelect",function(){console.log("rowSelect");});this.grid.on("rowUnselect",function(){console.log("rowUnselect");});this.grid.on("sort",function(){console.log("sort");});this.grid.on("columnClick",function(){console.log("columnClick");});this.grid.on("cellClick",function(){console.log("cellClick");});this.grid.on("pageChanged",function(){console.log("pageChanged");});this.grid.on("pageSizeChanged",function(){console.log("pageSizeChanged");});this.grid.on("bindingComplete",function(){console.log("bindingComplete");});this.grid.on("groupsChanged",function(){console.log("groupsChanged");});this.grid.on("filter",function(){console.log("filter");});this.grid.on("columnResized",function(){console.log("columnResized");});this.grid.on("cellSelect",function(){console.log("cellSelect");});this.grid.on("cellUnselect",function(){console.log("cellUnselect");});this.grid.on("cellBeginEdit",function(){console.log("cellBeginEdit");});this.grid.on("cellEndEdit",function(){console.log("cellEndEdit");});this.grid.on("cellValueChanged",function(){console.log("cellValueChanged");});this.grid.on("rowExpand",function(){console.log("rowExpand");});this.grid.on("rowCollapse",function(){console.log("rowCollapse");});this.grid.on("rowDoubleClick",function(){console.log("rowDoubleClick");});this.grid.on("cellDoubleClick",function(){console.log("cellDoubleClick");});this.grid.on("columnReordered",function(){console.log("columnReordered");});this.grid.on("pageChanging",function(){console.log("pageChanging");});
-                            
+                            this.grid.on("initialized",function(){console.log("initialized");});
+                            this.grid.on("rowClick",function(){console.log("rowClick");});
+                            this.grid.on("rowSelect",function(){console.log("rowSelect");});this.grid.on("rowUnselect",function(){console.log("rowUnselect");});this.grid.on("sort",function(){console.log("sort");});this.grid.on("columnClick",function(){console.log("columnClick");});this.grid.on("cellClick",function(){console.log("cellClick");});this.grid.on("pageChanged",function(){console.log("pageChanged");});this.grid.on("pageSizeChanged",function(){console.log("pageSizeChanged");});this.grid.on("bindingComplete",function(){console.log("bindingComplete");});this.grid.on("groupsChanged",function(){console.log("groupsChanged");});this.grid.on("filter",function(){console.log("filter");});this.grid.on("columnResized",function(){console.log("columnResized");});this.grid.on("cellSelect",function(){console.log("cellSelect");});this.grid.on("cellUnselect",function(){console.log("cellUnselect");});this.grid.on("cellBeginEdit",function(){console.log("cellBeginEdit");});this.grid.on("cellEndEdit",function(){console.log("cellEndEdit");});this.grid.on("cellValueChanged",function(){console.log("cellValueChanged");});this.grid.on("rowExpand",function(){console.log("rowExpand");});this.grid.on("rowCollapse",function(){console.log("rowCollapse");});this.grid.on("rowDoubleClick",function(){console.log("rowDoubleClick");});this.grid.on("cellDoubleClick",function(){console.log("cellDoubleClick");});this.grid.on("columnReordered",function(){console.log("columnReordered");});this.grid.on("pageChanging",function(){console.log("pageChanging");});
+
                             // COMIENZO DE MENU CONTEXTUAL
                             if(this.contextualActions.length > 1) {
                                 $("#jqxMenu").jqxMenu({
@@ -538,6 +562,7 @@ this.grid.on("rowSelect",function(){console.log("rowSelect");});this.grid.on("ro
 
                             var formNamespace=Siviglia.Utils.stringToContextAndObject(this.formWidgetName);
 
+
                             this.filterWidget=new formNamespace.context[formNamespace.object](this.formWidgetName,
                                 {bto:this.parameters},{},$("<div></div>"),this.__context);
                             this.filterWidget.__build().then(function(){
@@ -557,32 +582,6 @@ this.grid.on("rowSelect",function(){console.log("rowSelect");});this.grid.on("ro
     <div data-sivWidget="Siviglia.lists.jqwidgets.BaseGrid" data-widgetCode="Siviglia.lists.jqwidgets.BaseGrid">
         <div data-sivId="filterNode"></div>
         <div data-sivId="grid"></div>
-        <!--<div data-sivid='menuNode'>
-            <ul>
-                <div data-sivLoop="*contextualActions" data-contextIndex="current">
-                    <li data-sivValue="@current"></li>
-                    <div data-sivLoop="@current/actions" data-contextIndex="curAction"
-                </div>
-                <li><a href="#">Home</a></li>
-                <li>About Us
-                    <ul>
-                        <li><a href="#">Clients</a></li>
-                        <li><a href="#">Testimonials</a></li>
-                        <li><a href="#">Press</a></li>
-                        <li><a href="#">FAQs</a></li>
-                    </ul>
-                </li>
-                <li>Services
-                    <ul>
-                        <li><a href="#">Product Development</a></li>
-                        <li><a href="#">Delivery</a></li>
-                        <li><a href="#">Shop Online</a></li>
-                        <li><a href="#">Support</a></li>
-                        <li><a href="#">Training &amp; Consulting</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>-->
     </div>
 
 </div>

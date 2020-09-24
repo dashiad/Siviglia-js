@@ -1471,7 +1471,7 @@ Siviglia.Path.Proxify=function(obj,ev)
             }
             curVal[prop]=value;
             if(!__disableEvents__) {
-                if (!isArray || (isArray && prop !== "length"))
+                if ((!isArray && prop[0]!='_' ) || (isArray && prop !== "length") )
                     ev.fireEvent("CHANGE", {object: obj, value: value});
             }
             return true;
@@ -1689,6 +1689,7 @@ Siviglia.Utils.buildClass(
                         this.Expando("sivcall");
                     },
                     destruct: function () {
+                        this.paramObj.removeListeners(this);
                     },
                     methods: {
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
@@ -2281,15 +2282,15 @@ Siviglia.Utils.buildClass(
                 inherits: 'Expando',
                 construct: function () {
                     this.Expando('sivview');
-                    this.view = null;
-                    this.name = null;
-                    this.params = null;
-                    this.str=null;
-                    this.altLayout=null;
+                    this.__view = null;
+                    this.__name = null;
+                    this.__params = null;
+                    this.__str=null;
+                    this.__altLayout=null;
                 },
                 destruct: function () {
-                    if (this.view !== null)
-                        this.view.destruct();
+                    if (this.__view !== null)
+                        this.__view.destruct();
                 },
                 methods:
                     {
@@ -2299,34 +2300,34 @@ Siviglia.Utils.buildClass(
                             var altLayout = node.data("sivlayout");
 
                             if(typeof altLayout!=="undefined")
-                                this.altLayout=altLayout;
+                                this.__altLayout=altLayout;
 
-                            this.stack=stack;
+                            this.__stack=stack;
 
                             // Obtener id para, en su caso, mapear esta instancia sobre la vista padre.
                             // Nota: Esto podria ser un array.
-                            this.oldNode=null;
+                            this.__oldNode=null;
                             this.node = node;
-                            this.expandoNode=node;
+                            this.__expandoNode=node;
 
-                            this.params=typeof nodeExpandos["sivparams"]=="undefined"?null:nodeExpandos["sivparams"];
-                            if (this.params)
-                                this.params.addListener("CHANGE", this, "updateParams", "ViewExpando:" + this.method);
+                            this.__params=typeof nodeExpandos["sivparams"]=="undefined"?null:nodeExpandos["sivparams"];
+                            if (this.__params)
+                                this.__params.addListener("CHANGE", this, "__updateParams", "ViewExpando:" + this.__method);
 
                             this.Expando$_initialize(node, nodeManager, stack, nodeExpandos);
 
                             return false;
                         },
                         update: function (params) {
-                            this.name = params;
-                            this.rebuild();
+                            this.__name = params;
+                            this.__rebuild();
                         },
-                        updateParams:function(event,params){
+                        __updateParams:function(event,params){
 
 
-                              this.rebuild();
+                            this.__rebuild();
                         },
-                        rebuild:function()
+                        __rebuild:function()
                         {
                             var p=$.Deferred();
                             //var p=new SMCPromise();
@@ -2335,12 +2336,12 @@ Siviglia.Utils.buildClass(
                             this.node.removeData("sivview");
                             this.node.removeAttr("data-sivview");
                             var oldView=null;
-                            if (this.view) {
-                                oldView=this.view;
-                               // oldView.getNode().css({"display":"none"})
+                            if (this.__view) {
+                                oldView=this.__view;
+                                // oldView.getNode().css({"display":"none"})
                             }
-                            if(this.params)
-                                this.currentParamsValues=this.params.getValues();
+                            if(this.__params)
+                                this.__currentParamsValues=this.__params.getValues();
                             var widgetFactory = new Siviglia.UI.Expando.WidgetFactory();
                             var m=this;
 
@@ -2348,34 +2349,32 @@ Siviglia.Utils.buildClass(
                                 var className=w.getClass();
                                 var obj=Siviglia.Utils.stringToContextAndObject(className);
                                 var tempNode=$("<div class='inner'></div>");
-                                this.view = new obj.context[obj.object](
-                                    this.altLayout==null?this.name:this.altLayout,
-                                    this.currentParamsValues,null, tempNode,  this.stack);
-                                this.view.__build().then(function(){
-                                        m.rootNode = m.view.getNode().children();
-                                        m.rootNode.insertAfter($(m.node[0]));
-                                        m.node.remove();
-                                        m.node = m.rootNode;
-                                        if(oldView)
-                                            oldView.destruct();
-                                        m.view.onAddedToDom();
+                                this.__view = new obj.context[obj.object](
+                                    this.__altLayout==null?this.__name:this.__altLayout,
+                                    this.__currentParamsValues,null, tempNode,  this.__stack);
+                                this.__view.__build().then(function(){
+                                    m.rootNode = m.__view.getNode().children();
+                                    m.rootNode.insertAfter($(m.node[0]));
+                                    m.node.remove();
+                                    m.node = m.rootNode;
+                                    if(oldView)
+                                        oldView.destruct();
+                                    m.__view.onAddedToDom();
                                     p.resolve()
                                 });
 
                             }).bind(this);
 
-                            if(!widgetFactory.hasInstance(this.name)) {
-                                SMCPromise.when(widgetFactory.getInstance(this.name)).then(f);
+                            if(!widgetFactory.hasInstance(this.__name)) {
+                                SMCPromise.when(widgetFactory.getInstance(this.__name)).then(f);
                             }
                             else
-                                f(widgetFactory.getInstance(this.name));
+                                f(widgetFactory.getInstance(this.__name));
                             return p;
 
                         }
-
                     }
             }
-
         }
     });
 Siviglia.UI.Expando.WidgetExpando.prototype.widgets={};

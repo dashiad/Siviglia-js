@@ -420,6 +420,12 @@ Siviglia.Utils.buildClass(
                                     willSetDirty=false;
                                 this._setValue(val, validationMode);
                                 this.__valueSet = true;
+                                if(this.__isDynamic())
+                                {
+                                    validationMode = Siviglia.types.BaseType.VALIDATION_MODE_NONE;
+                                    this.onChange();
+                                }
+
                                 if (validationMode !== Siviglia.types.BaseType.VALIDATION_MODE_NONE) {
                                     try {
                                         this.validate(validationMode);
@@ -718,6 +724,14 @@ Siviglia.Utils.buildClass(
                             },
                             getReferencedField: function () {
                                 return this.__referencedField;
+                            },
+                            __isDynamic:function()
+                            {
+                                if(typeof this.__definition.references !=="undefined")
+                                {
+                                    return this.__definition.references.PARAMTYPE!=="undefined" && this.__definition.references.PARAMTYPE==="DYNAMIC";
+                                }
+                                return false;
                             }
                         }
                 },

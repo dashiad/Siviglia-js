@@ -207,11 +207,12 @@
                             this.inputNode[this.getJqxWidgetName()]('theme', 'light');
                             var m = this;
                             this.tooltipNode=this.inputNode;
-                            this.inputNode.on("change", function () {
-                                if (m.changing)
-                                    return;
-                                m.changing=true;
-                                try {
+                            var changeFunc=this.debounce(
+                                function () {
+                                    if (m.changing)
+                                        return;
+                                    m.changing=true;
+                                    try {
 
                                         m.type.setValue(m.getValue());
                                         if(m.type.__isErrored()) {
@@ -222,15 +223,21 @@
                                         }
                                         else
                                             m.clearErrors();
-                                }catch(e)
-                                {
-                                    m.showError(
-                                        Siviglia.i18n.es.base.getErrorFromJsException(e)
-                                    );
+                                    }catch(e)
+                                    {
+                                        m.showError(
+                                            Siviglia.i18n.es.base.getErrorFromJsException(e)
+                                        );
+                                    }
+                                    m.changing=false;
                                 }
-                                m.changing=false;
+                            ,250);
+                            // Aqui se escuchan los cambios de input.
+                            this.inputNode.on("change", changeFunc);
+                            // Pero si el tipo es un parametro dinamico, necesitamos que se dispare la funcion en "keyup"
+                            if(this.type.__isDynamic())
+                                this.inputNode.on("keyup",changeFunc);
 
-                            })
                             if (this.type.is_set()) {
                                 var toSet = this.type.getValue();
                                 this._setInputValue(toSet);
@@ -247,7 +254,20 @@
                                 }
                             }
                         },
-
+                        debounce:function(func, wait, immediate) {
+                            var timeout;
+                            return function() {
+                                var context = this, args = arguments;
+                                var later = function() {
+                                    timeout = null;
+                                    if (!immediate) func.apply(context, args);
+                                };
+                                var callNow = immediate && !timeout;
+                                clearTimeout(timeout);
+                                timeout = setTimeout(later, wait);
+                                if (callNow) func.apply(context, args);
+                            };
+                        },
                         onTypeChanged:function(event,params)
                         {
                             if(this.changing===false)
@@ -1120,8 +1140,8 @@
 
                                     var factory=new Siviglia.inputs.jqwidgets.Factory()
                                     //this.curType=this.type.getField(key);
-                                    this.curType=this.type.getValue()["*"+key];
-                                    return factory.getInput(this.curType,{controller:null},this.form)
+                                    this._curType=this.type.getValue()["*"+key];
+                                    return factory.getInput(this._curType,{controller:null},this._form)
 
                                 },
                                 getLabel:function(node,params,event)
@@ -1133,7 +1153,6 @@
                                 {
                                     if(params.key==this.currentKey && this.currentWidget!=null)
                                     {
-
                                         this.currentWidget.destruct();
                                     }
                                     this.hasCurrentKey=false;
@@ -1689,9 +1708,9 @@
                             {
                                 var factory=new Siviglia.inputs.jqwidgets.Factory()
 
-                                this.curType=this.type.getCurrentType();
+                                this._curType=this.type.getCurrentType();
 
-                                if(this.curType) {
+                                if(this._curType) {
                                     var curTypeObj=this.type.getCurrentTypeObj();
                                     factory.getInput(curTypeObj, {controller: null},this.form).then(function(instance){
                                         if(this.subNode) {
@@ -1843,12 +1862,59 @@
                                 }
                             }
                     },
+                StdInputContainer:{
+                    inherits:"Siviglia.UI.Expando.View",
+                    methods:
+                        {
+                            preInitialize:function(params)
+                            {
+                                this.form=params.form;
+                                this.field=params.key;
+                                var formDef=this.form.type.getDefinition();
+                                this.fieldDef=formDef["FIELDS"][this.field];
+                                // SI NO HAY AYUDA, LO QUE HAY QUE HACER, ES OCULTAR EL DIV
+                                // QUE TIENE LA AYUDA. PARA HACER ESO, SE LE PONE UN SIVID , Y
+                                // EN INITIALIZE, SE LE OCULTA.
+                                this.help=Siviglia.issetOr(this.fieldDef["HELP"],"");
+                                this.label=Siviglia.issetOr(this.fieldDef["LABEL"],"");
+                            },
+                            initialize:function()
+                            {
+
+                            },
+                            getInputFor:function(node,params)
+                            {
+                                this.form.getInputFor(node,{key:this.field});
+                            }
+
+
+                        }
+                },
+                StdFormButtons:{
+                    inherits:"Siviglia.UI.Expando.View",
+                    methods:
+                        {
+                            preInitialize:function(params)
+                            {
+                                this.form=params.form;
+                            },
+                            initialize:function()
+                            {
+
+                            },
+                            onclick:function(node, params)
+                            {
+                                this.form.submit();
+                            }
+                        }
+
+                },
                 Form:{
                     inherits:"Container",
                     destruct:function()
                     {
-                        if(this.type)
-                            this.type.destruct();
+                        if(this._type)
+                            this._type.destruct();
                         if(this.__containerWidget)
                             this.__containerWidget.destruct();
                     },
@@ -1862,15 +1928,16 @@
                                 var loadedPromise = $.Deferred();
                                 var containerPromise=$.Deferred();
                                 var m=this;
+                                this.self=this;
                                 this.__model=null;
-                                this.type=null;
+                                this._type=null;
 
                                 this.__erroredInputs={};
                                 this.__containerWidget=null;
                                 if(typeof params.model==="undefined") {
-                                    this.type = params.bto;
+                                    this._type = params.bto;
                                     this.setupBto();
-                                    loadedPromise.resolve(this.type);
+                                    loadedPromise.resolve(this._type);
                                 }
                                 else {
                                     this.__model = params.model;
@@ -1881,9 +1948,9 @@
 
                                     transport.doGet(formUrl).then(function (result) {
                                         if (result.error == 0) {
-                                            this.type = new Siviglia.Model.Form(params.model, params.name, params.keys, result.form.definition, result.form.value);
+                                            this._type = new Siviglia.Model.Form(params.model, params.name, params.keys, result.form.definition, result.form.value);
                                             this.setupBto();
-                                            loadedPromise.resolve(this.type);
+                                            loadedPromise.resolve(this._type);
 
                                         } else
                                             loadedPromise.reject();
@@ -1891,7 +1958,7 @@
                                 }
                                 $.when(loadedPromise).then(function(bto){
                                     this.Container$preInitialize({type:bto});
-                                    this.form=this;
+                                    this._form=this;
                                     containerPromise.resolve();
                                 }.bind(this));
                                 return containerPromise;
@@ -1899,7 +1966,7 @@
                             setupBto:function()
                             {
 
-                                var ip = Siviglia.issetOr(this.type.__definition.INPUTPARAMS, {});
+                                var ip = Siviglia.issetOr(this._type.__definition.INPUTPARAMS, {});
                                 this.__ip = [];
                                 for (var k in ip) {
                                     var t = k.replace(/\+/gm, '.*')
@@ -1930,7 +1997,7 @@
                             submit: function () {
                                 var errors=null;
                                 try {
-                                    this.type.save();
+                                    this._type.save();
                                 }catch(e)
                                 {
                                     if(e.code===Siviglia.types.BaseTypeException.ERR_SAVE_ERROR)
@@ -1955,11 +2022,11 @@
                                 var i = Siviglia.issetOr(this.type.getDefinition().INDEXFIELDS,null);
 
                                 var myIndexes = {};
-                                var vals = this.type.getPlainValue();
+                                var vals = this._type.getPlainValue();
                                 if(i!=null) {
                                     for (var k = 0; k < i.length; k++) {
                                         if (!this.type["*" + i[k]].__isEmpty()) {
-                                            myIndexes[i[k]] = this.type[i[k]];
+                                            myIndexes[i[k]] = this._type[i[k]];
                                         } else {
                                             myIndexes = null;
                                         }
@@ -1970,10 +2037,11 @@
                             },
                             doRedirect:function(type)
                             {
-                                if(typeof this.type.__definition["REDIRECT"]!=="undefined" &&
-                                    typeof this.type.__definition["REDIRECT"][type]!=="undefined"
+                                if(typeof this._type.__definition["REDIRECT"]!=="undefined" &&
+                                    typeof this._type.__definition["REDIRECT"][type]!=="undefined" &&
+                                    this._type.__definition["REDIRECT"][type]!==""
                                 ) {
-                                    var url=this.type.__definition["REDIRECT"][type];
+                                    var url=this._type.__definition["REDIRECT"][type];
                                     setTimeout(function(){window.location.assign(url);},200);
                                     return true;
                                 }
@@ -2186,7 +2254,7 @@
         <div data-sivId="inputNode"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Name" data-widgetParams="type,inputParams"
-         data-widgetCode="Siviglia.inputs.jqwidgets.Date">
+         data-widgetCode="Siviglia.inputs.jqwidgets.Name">
         <div data-sivId="inputNode"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Street" data-widgetParams="type,inputParams"
@@ -2593,7 +2661,7 @@
             </div>
             <div style="clear:both"></div>
         </div>
-    </div>
+
 
     <!------------------------------------------------------------------------------------------->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.DockingContainer" data-widgetParams="type,inputParams"
@@ -2680,4 +2748,29 @@
         </div>
         </ul>
     </div>
+<!--
+            ---------------------------------------------------------------------------------------
+            -->
+<div data-sivWidget="Siviglia.inputs.jqwidgets.StdInputContainer" data-widgetParams="key,form" data-widgetCode="Siviglia.inputs.jqwidgets.StdInputContainer">
+    <div class="StdInputContainer">
+
+            <div class="inputContainerLabel" data-sivValue="/*label">
+
+            </div>
+            <div class="inputContainerInput" data-sivCall="getInputFor" data-sivParams="{}">
+
+            </div>
+            <div class="inputContainerHelp" data-sivValue="/*help"></div>
+    </div>
+    <div style="clear:both"></div>
+</div>
+<div data-sivWidget="Siviglia.inputs.jqwidgets.StdFormButtons" data-widgetParams="form" data-widgetCode="Siviglia.inputs.jqwidgets.StdFormButtons">
+    <div class="StdFormButtons">
+        <div>
+            <input type="button" data-sivEvent="click" data-sivCallback="onclick" value="Guardar">
+        </div>
+
+    </div>
+</div>
+
 </div>
