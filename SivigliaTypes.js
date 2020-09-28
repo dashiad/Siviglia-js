@@ -3728,7 +3728,7 @@ Siviglia.Utils.buildClass(
                                         return true;
                                     return this.model.__getField(fieldName).__isDefinedAsRequired();
                                 },
-                                existsFieldInStateDefinition: function (stateName, fieldName, group, defResult = false) {
+                                existsFieldInStateDefinition: function (stateName, fieldName, group, defResult) {
                                     if (fieldName[0] !== this.pathPrefix)
                                         fieldName = this.pathPrefix + fieldName;
                                     if (Siviglia.empty(this.definition["STATES"]["STATES"][stateName]))

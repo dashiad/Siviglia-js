@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel='stylesheet prefetch'
-          href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css'>
+          href='http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css'>
     <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto'>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
     <script src="/node_modules/jquery/dist/jquery.js"></script>
@@ -57,7 +57,7 @@
             <div><div class="widget-title">Destination file:</div>
                 <div data-sivCall="getInputFor" data-sivParams='{"key":"file"}'></div>
             </div>
-        
+
             <div><div class="widget-title">Definition:</div>
                 <div data-sivCall="getInputFor" data-sivParams='{"key":"definition"}'></div>
             </div>

@@ -6,19 +6,9 @@
   - Los Layout TabsContainer, se aplican a los grupos creados de cada acordeon.
 -->
 <head>
-    <script src="/node_modules/jquery/dist/jquery.js"></script>
-    <script src="../../Siviglia.js"></script>
-    <script src="../../SivigliaTypes.js"></script>
-    <script src="../../SivigliaStore.js"></script>
-    <script src="../../SivigliaTypes.js"></script>
-    <script src="../../Model.js"></script>
-
-    <script src="../../../jqwidgets/jqx-all.js"></script>
-    <script src="../../../jqwidgets/globalization/globalize.js"></script>
-    <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">
-    <link rel="stylesheet" href="../../../../reflection/css/style.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.adtopy-dev.css">    
+    <?php
+    include_once("../scripts.php");
+    ?>
     <script>
         var Siviglia = Siviglia || {};
         Siviglia.config = {
@@ -43,7 +33,7 @@
     <div data-sivWidget="TestTabs.test"></div>
 </div>
 
-<!-- con class="widget" se define un espacio con margenes, estilos, etc., que define lo que es un widget. 
+<!-- con class="widget" se define un espacio con margenes, estilos, etc., que define lo que es un widget.
 Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
 <!-- class="widget-content" crea el estilo para ese widget (fondo blanco, bordes, etc..) -->
 <div class="widget">
@@ -66,7 +56,7 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                                 "GRUPO_1": {
                                     "TYPE": "Container",
                                     "LABEL": "Grupo 1 grid-container",
-                                    "FIELDS": 
+                                    "FIELDS":
                                     {
                                         "Field1": {
                                             "LABEL": "Field 1",
@@ -81,7 +71,7 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                                             "TYPE": "String"
                                         },
                                     },
-                                    
+
                                 },
 
                                 "GRUPO_2":
@@ -118,8 +108,8 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
                                             "TYPE": "Integer"
                                         }
                                     }
-                                },                                
-                                
+                                },
+
                                 "Field6": {
                                     "LABEL": "Field 6",
                                     "TYPE": "Integer"
@@ -163,7 +153,7 @@ Asi no se pone esa clase dentro de cada componente de jqxwidgets.html -->
 
                             "INPUTPARAMS":{
                                 "/": {
-                                    "INPUT": "AccordionContainer"                                    
+                                    "INPUT": "AccordionContainer"
                                 },
                                 "/Fielda7": {
                                     "INPUT": "TabsContainer"
