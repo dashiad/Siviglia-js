@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>TestGridLoad (FullList_Grid)</title>
     <link rel='stylesheet prefetch'
           href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css'>
     <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto'>
@@ -13,7 +13,6 @@
 
     <script src="../SivigliaTypes.js"></script>
     <script src="../Model.js"></script>
-
 
     <script src="../../jqwidgets/jqx-all.js"></script>
     <script src="../../jqwidgets/globalization/globalize.js"></script>
@@ -37,15 +36,15 @@
 <?php include_once("../jQuery/JqxWidgets.html"); ?>
 <?php include_once("../jQuery/JqxLists.html"); ?>
 
-
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->
-<div data-sivView="Siviglia.model.web.WebUser.lists.FullList" data-sivParams='{}'></div>
+<!-- antigua llamada <div data-sivView="Siviglia.model.web.WebUser.lists.FullList" data-sivParams='{}'></div> -->
+
+<!-- nueva llamada del FullList_Grid -->
+<div data-sivView="Siviglia.model.web.WebUser.lists.FullList_Grid" data-sivParams='{}'></div>
+
 <script>
 
-
-
-
-    var Siviglia=Siviglia || {};
+var Siviglia=Siviglia || {};
     Siviglia.config={
         baseUrl:'http://reflection.adtopy.com/',
         staticsUrl:'http://statics.adtopy.com/',
@@ -60,13 +59,11 @@
     };
     Siviglia.Model.initialize(Siviglia.config);
 
-
 </script>
 <script>
     var parser = new Siviglia.UI.HTMLParser();
     parser.parse($(document.body));
 </script>
-
 
 </body>
 </html>
