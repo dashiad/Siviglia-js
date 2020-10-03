@@ -271,7 +271,7 @@
                         onTypeChanged:function(event,params)
                         {
                             if(this.changing===false)
-                            this._setInputValue(params.data);
+                            this._setInputValue(params.data.getValue());
                         },
                         detach:function()
                         {
@@ -312,6 +312,9 @@
                         save:function()
                         {
                             try{
+
+                                if(this.getValue()!=this.type.getValue())
+                                    this.type.setValue(this.getValue());
                                 this.type.save();
                                 this.clearErrors();
                             }catch(e)
@@ -353,7 +356,8 @@
                                     animationShowDelay: 'fast',
                                     autoHide: false,
                                     closeOnClick: false,
-                                    position: 'right'
+                                    position: 'right',
+                                    theme:'errored'
                                 });
                             this.tooltipIds=this.tooltipNode.data().jqxTooltip.instance.IDArray;
                             this.tooltipNode.jqxTooltip({content: message});
@@ -1896,10 +1900,25 @@
                             preInitialize:function(params)
                             {
                                 this.form=params.form;
+                                if(typeof params.button === "undefined")
+                                    this.buttons=[{"label":"Ok","callback":"submit","class":"button-ok"}];
+                                else
+                                    this.buttons=params.buttons;
+
                             },
                             initialize:function()
                             {
-
+                                for(var k=0;k<this.buttons.length;k++)
+                                {
+                                    var cs=this.buttons[k];
+                                    var curB=$('<input type="button" value="'+cs.label+'">');
+                                    (function(cs,curB,form){
+                                    curB.on("click",function(){form[cs["callback"]]();}.bind(this));
+                                    if(typeof cs.class!=="undefined")
+                                        curB.addClass(cs.class);
+                                    })(cs,curB,this.form);
+                                    this.buttonContainer.append(curB);
+                                }
                             },
                             onclick:function(node, params)
                             {
@@ -1933,6 +1952,7 @@
 
                                 this.__erroredInputs={};
                                 this.__containerWidget=null;
+                                this.__errorNode=null;
                                 if(typeof params.model==="undefined") {
                                     this._type = params.bto;
                                     this.setupBto();
@@ -1995,8 +2015,15 @@
                             },
                             submit: function () {
                                 var errors=null;
+                                if(this.hasGlobalErrors)
+                                {
+                                    this.hasGlobalErrors=false;
+                                    if(this.__errorNode!==null)
+                                        this.__errorNode.css({'display':'none'});
+                                }
                                 try {
-                                    this._type.save();
+                                    for(var k in this.subwidgets)
+                                        this.subwidgets[k].save();
                                 }catch(e)
                                 {
                                     if(e.code===Siviglia.types.BaseTypeException.ERR_SAVE_ERROR)
@@ -2142,6 +2169,19 @@
                                 if(messages.length>0) {
                                     this.globalErrors = messages;
                                     this.hasGlobalErrors = true;
+
+                                    if(this.__errorNode!==null) {
+                                        this.__errorNode.html("");
+                                        var ul=$("<ul></ul>");
+                                        for(var j=0;j<this.globalErrors.length;j++)
+                                        {
+                                            var li=$("<li>"+this.globalErrors[j]+"</li>");
+                                            ul.append(li);
+                                        }
+                                        this.__errorNode.append(ul);
+                                        this.__errorNode.css({'display': 'block'});
+                                    }
+
                                 }
                             },
                             decodeServerError: function (field, exception) {
@@ -2765,8 +2805,8 @@
 </div>
 <div data-sivWidget="Siviglia.inputs.jqwidgets.StdFormButtons" data-widgetParams="form" data-widgetCode="Siviglia.inputs.jqwidgets.StdFormButtons">
     <div class="StdFormButtons">
-        <div>
-            <input type="button" data-sivEvent="click" data-sivCallback="onclick" value="Guardar">
+        <div class="buttonContainer" data-sivId="buttonContainer">
+
         </div>
 
     </div>

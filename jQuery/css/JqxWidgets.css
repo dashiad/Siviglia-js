@@ -1,0 +1,85 @@
+.formContainer {}
+.widForm {}
+.widForm > .widFormFieldSet {
+
+    margin: 4px;
+    padding: 8px;
+}
+.widError {
+    display:none;
+    background: var(--error-background-color);
+    padding-top: 3px;
+    padding-bottom: 1px;
+    color: var(--error-color);
+    border-bottom: 2px solid var(--dark-color);
+}
+.widField {}
+.StdInputContainer {
+    margin-bottom:10px;
+}
+.StdInputContainer > .inputContainerLabel {
+    font-size: 20px;
+    color: var(--light-color);
+    margin-top: 10px;
+}
+.StdInputContainer > .inputContainerInput {}
+.StdInputContainer > .inputContainerHelp {}
+
+.widField.left > .StdInputContainer > .inputContainerLabel {
+    float: left;
+    min-width: 150px;
+}
+.widField.left > .StdInputContainer > .inputContainerInput {}
+.widField.left > .StdInputContainer > .inputContainerHelp {}
+
+.widFormButtons {}
+.StdFormButtons {
+
+    background-color: var(--light-darker-color);
+    padding: 4px;
+    text-align:right;
+}
+
+.StdFormButtons > .buttonContainer {}
+.StdFormButtons input[type=button].button-ok {
+    background:var(--button-ok-background-color) !important;
+    color:var(--button-ok-color) !important;
+    min-width:100px !important;
+}
+.StdFormButtons input[type=button].button-cancel {
+    background:var(--button-cancel-background-color) !important;
+    color:var(--button-cancel-color) !important;
+    min-width:100px !important;
+}
+.StdFormButtons input[type=button].button-disabled {
+    filter:brightness(0.5);
+}
+
+
+.StdFormButtons input[type=button]:hover {}
+
+/* Sobreescritura de estilos de jqwidgets.css */
+.jqx-tooltip-errored {
+
+
+    border:var(--error-border) !important;
+}
+.jqx-tooltip-text-errored {
+    color:var(--error-color) !important;
+    font-family:var(--error-font) !important;
+    font-size:var(--error-font-size) !important;
+    background-color:var(--error-background-color) !important;
+}
+.jqx-tooltip-text-errored:before {
+    font-family:var(--icon-font);
+    content:var(--icon-error);
+    margin-right:10px;
+    font-size:14px;
+    color:white;
+}
+.jqx-tooltip-main-errored {
+    border-width:0px !important;
+}
+.jqx-widget-errored.jqx-tooltip-arrow {
+    border-color:var(--error-border-color) !important;
+}

@@ -38,7 +38,7 @@
 
 
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->
-<div data-sivView="Siviglia.model.web.WebUser.forms.Edit" data-sivParams='{"USER_ID":1}'></div>
+<div data-sivView="Siviglia.model.reflection.Model.forms.Edit" data-sivParams='{"className":"/model/web/Site"}'></div>
 <script>
 
 
