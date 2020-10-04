@@ -1143,8 +1143,15 @@
 
                                     var factory=new Siviglia.inputs.jqwidgets.Factory()
                                     //this.curType=this.type.getField(key);
-                                    this._curType=this.type.getValue()["*"+key];
-                                    return factory.getInput(this._curType,{controller:null},this._form)
+                                    if(key[0]==='#') {
+                                        var ctxStack=new Siviglia.Path.ContextStack();
+                                        var plainCtx = new Siviglia.Path.BaseObjectContext(this.type, "#", ctxStack);
+                                        this._curType = this.type.getPath(key,ctxStack);
+
+                                    }
+                                    else
+                                        this._curType=this.type.getValue()["*"+key];
+                                    return factory.getInput(this._curType,{controller:null},this.form)
 
                                 },
                                 getLabel:function(node,params,event)
@@ -1216,10 +1223,10 @@
                             },
                             getInputFor: function (node, params) {
 
-                                if(typeof this.type.__definition.FIELDS[params.key]=="undefined") {
+                                /*if(typeof this.type.__definition.FIELDS[params.key]=="undefined") {
                                     console.error("ERROR:LLamado getInputFor de Container con un campo no valido:" + params.key);
                                     return;
-                                }
+                                }*/
                                 this.__getInputFor(params.key).then(function(instance){
                                 this.subwidgets[params.key]=instance;
                                 node.append(this.subwidgets[params.key].rootNode);
@@ -1871,10 +1878,22 @@
                         {
                             preInitialize:function(params)
                             {
+                                debugger;
                                 this.form=params.form;
                                 this.field=params.key;
-                                var formDef=this.form.type.getDefinition();
-                                this.fieldDef=formDef["FIELDS"][this.field];
+                                this.innerType=null;
+
+
+                                if(this.field[0]==='#') {
+                                    var ctxStack=new Siviglia.Path.ContextStack();
+                                    var plainCtx = new Siviglia.Path.BaseObjectContext(this.form.type, "#", ctxStack);
+                                    this.innerType = this.form.type.getPath(params.key,ctxStack);
+                                }
+                                else
+                                    this.innerType=this.form.type.getValue()["*"+params.key];
+
+
+                                this.fieldDef=this.innerType.getDefinition();
                                 // SI NO HAY AYUDA, LO QUE HAY QUE HACER, ES OCULTAR EL DIV
                                 // QUE TIENE LA AYUDA. PARA HACER ESO, SE LE PONE UN SIVID , Y
                                 // EN INITIALIZE, SE LE OCULTA.
@@ -1899,6 +1918,7 @@
                         {
                             preInitialize:function(params)
                             {
+
                                 this.form=params.form;
                                 if(typeof params.button === "undefined")
                                     this.buttons=[{"label":"Ok","callback":"submit","class":"button-ok"}];
@@ -1976,11 +1996,16 @@
                                     }.bind(this))
                                 }
                                 $.when(loadedPromise).then(function(bto){
-                                    this.Container$preInitialize({type:bto});
-                                    this._form=this;
+                                    this.onLoaded(bto);
+
                                     containerPromise.resolve();
                                 }.bind(this));
                                 return containerPromise;
+                            },
+                            onLoaded:function(bto)
+                            {
+                                this.Container$preInitialize({type:bto,form:this});
+                                this._form=this;
                             },
                             setupBto:function()
                             {

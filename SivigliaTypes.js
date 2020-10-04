@@ -459,7 +459,9 @@ Siviglia.Utils.buildClass(
                                 var ctx=new Siviglia.Path.BaseObjectContext(this,this.__getPathPrefix(),ctxStack);
                                 var path=new Siviglia.Path.PathResolver(ctxStack,path);
                                 this.__resolvers.push(path);
-                                return path.getPath();
+                                var result=path.getPath();
+                                path.destruct();
+                                return result;
                             },
                             __getEmptyValue: function () {
                                 return null;
