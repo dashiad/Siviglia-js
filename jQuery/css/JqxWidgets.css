@@ -16,14 +16,74 @@
 .widField {}
 .StdInputContainer {
     margin-bottom:10px;
-}
-.StdInputContainer > .inputContainerLabel {
     font-size: 20px;
-    color: var(--light-color);
     margin-top: 10px;
+    border: 1px solid var(--light-darker-color);
+    padding: 3px;
+    display:flex;
+    /* background-color: var(--light-darker-darker-color); */
+    color: var(--dark-lighter-color);
+    flex-wrap:wrap;
+    border-bottom: 1px solid var(--light-darker-darker-color);
+    padding-bottom: 6px;
 }
-.StdInputContainer > .inputContainerInput {}
-.StdInputContainer > .inputContainerHelp {}
+
+.StdInputContainer > .required:before {
+    font-family:var(--icon-font);
+    font-color:var(--color-warning);
+    content:var(--icon-required);
+}
+.StdInputContainer > .input { width:100%}
+
+
+.StdInputContainer.String,
+.StdInputContainer.Boolean,
+.StdInputContainer.Enum,
+.StdInputContainer.State,
+.StdInputContainer.Relationship{
+
+}
+.StdInputContainer .label
+{
+    min-width:var(--input-label-min-width);
+    max-width:var(--input-label-max-width);
+}
+
+.StdInputContainer.Container > .label,
+.StdInputContainer.Dictionary  >.label,
+.StdInputContainer.TypeSwitcher >.label {
+    min-width:inherit !important;
+    max-width:inherit !important;
+
+}
+.StdInputContainer.Container:after,
+.StdInputContainer.Dictionary:after,
+.StdInputContainer.TypeSwitcher:after {
+    content:'';
+    width:100%
+}
+.StdInputContainer > .help {
+    order: 3;
+    font-size: smaller;
+    font-style: italic;
+    padding-left: 18px;
+
+    color: var(--dark-lighter-lighter-color);
+}
+.StdInputContainer.Container> .help,
+.StdInputContainer.Dictionary> .help,
+.StdInputContainer.TypeSwitcher > .help {
+    order: 1 !important;
+    margin-bottom: 3px;
+
+}
+
+.StdInputContainer.Container> .input,
+.StdInputContainer.Dictionary> .input,
+.StdInputContainer.TypeSwitcher > .input {
+    order:1;
+    width:100%
+}
 
 .widField.left > .StdInputContainer > .inputContainerLabel {
     float: left;
@@ -82,4 +142,101 @@
 }
 .jqx-widget-errored.jqx-tooltip-arrow {
     border-color:var(--error-border-color) !important;
+}
+.jqx-listitem-element {
+    font-family: var(--main-font);
+}
+.jqx-listitem-state-hover {
+    font-family: var(--main-font) !important;
+}
+.DictionaryInput {
+    background-color:var(--light-darker-color);
+    padding:4px;
+}
+.Dictionary-row-complex {display:flex}
+.Dictionary-mainKeyList {
+
+    padding: 4px;
+    border-right: 2px solid var(--light-darker-darker-color);
+}
+.Dictionary-keys {
+    background-color: var(--light-darker-darker-color);
+    padding: 7px;
+}
+.Dictionary-keyList
+{
+    background-color: var(--contrast-1);
+    list-style-type: none;
+    padding-left: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+    margin-top: 0px;
+}
+.Dictionary-keylist-item a {
+    color: var(--light-darker-color);
+    display: block;
+    width: 100%;
+    text-decoration: none;
+    margin-bottom: 2px;
+    padding-bottom: 1px;
+    border-bottom: 1px solid var(--dark-lighter-color);
+}
+.Dictionary-keylist-item a:hover {
+    color: var(--light-color);
+}
+.Dictionary-current {
+    width: 100%;
+    padding-left: 16px;
+    border-left: 4px solid var(--dark-lighter-color);
+}
+.Dictionary-removeButton:before {
+    content:var(--icon-remove);
+
+}
+.Dictionary-removeButton {
+    font-family:var(--icon-font);
+    font-style:normal;
+    color:var(--error-background-color);
+    cursor:pointer;
+}
+.Dictionary-removeButton:hover {
+    color:var(--error-background-color-light);
+}
+.Dictionary-keylist-item {
+    display:flex;
+}
+
+.TypeSwitcherInput .TypeSwitcherSelector {
+    background-color: var(--contrast-0);
+    color: var(--light-darker-color);
+    border: 2px solid var(--contrast-0);
+    padding: 2px;
+}
+.TypeSwitcherInput .TypeSwitcherField {
+    margin-left: 17px;
+    border-left: 3px solid var(--contrast-0);
+    padding-top: 5px;
+    padding-left: 9px;
+}
+.StdInputContainer.TypeSwitcher:after {
+    content:'';
+    width:100%
+}
+
+.StdInputContainer.TypeSwitcher > .input {
+    order:1;
+}
+
+
+.NewItem {}
+.NewItem-addButton {
+    width:20px;
+    height:20px;
+    margin-top:3px;
+}
+.NewItem-addButton:before {
+    content: var(--icon-add);
+    font-family: var(--icon-font);
+    font-size: 27px;
+    color: var(--contrast-0);
 }

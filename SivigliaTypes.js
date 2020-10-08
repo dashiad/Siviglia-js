@@ -459,9 +459,7 @@ Siviglia.Utils.buildClass(
                                 var ctx=new Siviglia.Path.BaseObjectContext(this,this.__getPathPrefix(),ctxStack);
                                 var path=new Siviglia.Path.PathResolver(ctxStack,path);
                                 this.__resolvers.push(path);
-                                var result=path.getPath();
-                                path.destruct();
-                                return result;
+                                return path.getPath();
                             },
                             __getEmptyValue: function () {
                                 return null;
@@ -2278,6 +2276,7 @@ Siviglia.Utils.buildClass(
                                                 }
                                                 , enumerable: false, configurable: true
                                             })
+
                                             isNewProp = true;
                                         } else {
                                             target["*" + prop].setValue(value)

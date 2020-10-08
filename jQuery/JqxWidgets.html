@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="../../../reflection/css/style.css">
 <style>
     .remove, .NewItemString .add {
         font-family:'IcoMoon'
@@ -1062,6 +1063,7 @@
                                     this.currentWidget=null;
                                     this.hasCurrentKey=false;
                                     this.currentKey=null;
+                                    this.currentType=null;
                                     this.params=params;
                                     this.currentErrors={};
 
@@ -1080,7 +1082,7 @@
                                     }
                                     node.html("");
                                     var pp=this.params;
-                                    pp.parent=this;
+                                    pp.parentInput=this;
                                     var tempNode=$("<div></div>");
                                     this.newItemWidget=new Siviglia.inputs.jqwidgets.NewItem('Siviglia.inputs.jqwidgets.NewItem',
                                         pp,
@@ -1096,6 +1098,7 @@
                                     // listeners para ambas variables.
                                     console.log("CLICK");
                                     this.currentKey=params.key;
+                                    this.currentType=this.type["*"+this.currentKey];
                                     this.hasCurrentKey=true;
 
                                 },
@@ -1147,7 +1150,6 @@
                                         var ctxStack=new Siviglia.Path.ContextStack();
                                         var plainCtx = new Siviglia.Path.BaseObjectContext(this.type, "#", ctxStack);
                                         this._curType = this.type.getPath(key,ctxStack);
-
                                     }
                                     else
                                         this._curType=this.type.getValue()["*"+key];
@@ -1167,6 +1169,7 @@
                                     }
                                     this.hasCurrentKey=false;
                                     this.currentKey=null;
+                                    this.currentType=null;
                                     this.currentWidget=null;
                                     var v=this.type.getValue();
                                     delete v[params.key];
@@ -1191,6 +1194,7 @@
                                     }
                                     else {
                                         this.currentKey = key;
+                                        this.currentType=this.type["*"+this.currentKey];
                                         this.hasCurrentKey=true;
                                     }
 
@@ -1727,6 +1731,7 @@
                                             this.subNode.destruct();
                                             this.fieldContainer.html("");
                                         }
+
                                         this.fieldContainer.append(instance.rootNode);
                                         this.subNode=instance;
                                     }.bind(this));
@@ -1835,7 +1840,7 @@
                                     typeDefinition["TYPE"]="String";
 
                                     this.type=Siviglia.types.TypeFactory.getType({fieldName:"selector",fieldPath:"/"}, typeDefinition,null,null);
-                                    this.parent=params.parent;
+                                    this.parentInput=params.parentInput;
                                     this.subInput=null;
                                     this.params=params;
                                 },
@@ -1866,7 +1871,7 @@
                                     }
                                 },
                                 onAdd: function () {
-                                    this.parent.onAdd(this.subInput.getValue());
+                                    this.parentInput.onAdd(this.subInput.getValue());
                                     this.subInput.inputNode.val(null);
 
                                 }
@@ -1874,26 +1879,23 @@
                     },
                 StdInputContainer:{
                     inherits:"Siviglia.UI.Expando.View",
+                    destruct:function()
+                    {
+                        if(this.innerInput!==null)
+                            this.innerInput.destruct();
+                        this.rootNode.html("");
+                    },
                     methods:
                         {
                             preInitialize:function(params)
                             {
-                                debugger;
                                 this.form=params.form;
+                                this.parent=params.parent;
                                 this.field=params.key;
-                                this.innerType=null;
-
-
-                                if(this.field[0]==='#') {
-                                    var ctxStack=new Siviglia.Path.ContextStack();
-                                    var plainCtx = new Siviglia.Path.BaseObjectContext(this.form.type, "#", ctxStack);
-                                    this.innerType = this.form.type.getPath(params.key,ctxStack);
-                                }
-                                else
-                                    this.innerType=this.form.type.getValue()["*"+params.key];
-
-
+                                this.innerType=this.parent["*"+this.field];
+                                this.fieldName=params.key;
                                 this.fieldDef=this.innerType.getDefinition();
+                                this.innerInput=null;
                                 // SI NO HAY AYUDA, LO QUE HAY QUE HACER, ES OCULTAR EL DIV
                                 // QUE TIENE LA AYUDA. PARA HACER ESO, SE LE PONE UN SIVID , Y
                                 // EN INITIALIZE, SE LE OCULTA.
@@ -1902,11 +1904,36 @@
                             },
                             initialize:function()
                             {
-
+                                this.rootNode.addClass(this.fieldName);
+                                var typeDef=this.innerType.getDefinition();
+                                this.rootNode.addClass(typeDef["TYPE"]);
+                                this.inputNode.addClass(this.fieldName);
+                                this.labelNode.addClass(this.fieldName);
+                                if(this.innerType.__isRequired())
+                                    this.requiredNode.addClass("required");
                             },
                             getInputFor:function(node,params)
                             {
-                                this.form.getInputFor(node,{key:this.field});
+                                var factory=new Siviglia.inputs.jqwidgets.Factory()
+                                //this.curType=this.type.getField(key);
+                                return factory.getInput(this.innerType,{controller:null},this.form).then(
+                                    function(instance){
+                                    if(this.innerInput!=null) {
+                                        this.innerInput.destruct();
+                                        this.inputNode.html("");
+                                    }
+                                    this.innerInput=instance;
+                                    this.inputNode.append(instance.rootNode);
+                                    /*var ce=this.currentErrors[key]
+                                    if(ce) {
+                                        for(var k=0;k<ce.length;k++) {
+                                            instance.addError(ce[k].path, ce[k].error);
+                                        }
+                                    }
+                                    delete this.currentErrors[key];*/
+
+
+                                }.bind(this));
                             }
 
 
@@ -2245,128 +2272,124 @@
 <div style="display:none">
     <div data-sivWidget="Siviglia.inputs.jqwidgets.AutoIncrement" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.AutoIncrement">
-        <input type="text" class="form-control" data-sivId="inputNode"></input>
+        <input type="text" class="form-control AutoIncrementInput" data-sivId="inputNode"></input>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.String" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.String">
-         <input type="text" placeholder="" class="form-control" data-sivId="inputNode">
-    </div>
-    <!-- nuevo para jqxwidgets-json.String -->
-    <div data-sivWidget="Siviglia.inputs.jqwidgets-json.String"
-         data-widgetCode="Siviglia.inputs.jqwidgets.String">
-        <input type="text" placeholder="" class="form-control-json" data-sivId="inputNode">
+         <input type="text" placeholder="" class="form-control StringInput" data-sivId="inputNode">
     </div>
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Enum" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Enum">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control EnumInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Integer" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Integer">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control IntegerInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Decimal" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Decimal">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control DecimalInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Text" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Text">
-        <input type="text" class="form-control" data-sivId="inputNode"></input>
+        <input type="text" class="form-control TextInput" data-sivId="inputNode"></input>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Boolean" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Boolean">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control BooleanInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Date" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Date">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control DateInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.DateTime" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.DateTime">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control DateTimeInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.ComboBox" data-widgetParams="type,inputParams,sourceParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.ComboBox">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control ComboBoxInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.BooleanCombo" data-widgetParams="type,inputParams,sourceParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.BooleanCombo">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control BooleanComboInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.FixedSelect" data-widgetParams="type,inputParams,sourceParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.FixedSelect">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control FixedSelectInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Relationship" data-widgetParams="type,inputParams,sourceParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Relationship">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control RelationshipInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Date" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Date">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control DateInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Money" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Money">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control MoneyInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Password" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Password">
-        <input type="password" class="form-control" data-sivId="inputNode"></input>
+        <input type="password" class="form-control PasswordInput" data-sivId="inputNode"></input>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.State" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.State">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control StateInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Name" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Name">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control NameInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Street" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Street">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control StreetInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.City" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.City">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control CityInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Phone" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Phone">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control PhoneInput"></div>
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.UUID" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.UUID">
-        <div data-sivId="inputNode"></div>
+        <div data-sivId="inputNode" class="form-control UUIDInput"></div>
     </div>
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Dictionary" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Dictionary">
-        <div class="DictionaryType ContainerType">
-            <div class="panel panel-primary">
+        <div class="DictionaryInput ContainerInput">
+
                 <div class="Dictionary-heading" data-sivValue="/*title" class="title"></div>
                 <div class="Dictionary-body">
                     <!--<div class="container-fluid">-->
                     <p class="text-info description" data-sivValue="/*description"></p>
+
                     <div data-sivIf="[%/*hasSimpleType%] == false" >
-                        <div class="row-form Dictionary-row" style="margin-left:0px">
-                            <div>
-                                <div class="Dictionary-keyList" width="150px">
+
+                        <div class="row-form Dictionary-row-complex">
+                                <div class="Dictionary-keys">
                                     <div class="Dictionary-mainKeyList">
                                         <!-- añade el boton + -->
-                                        <div class="Dictionary-newItemWidget">
-                                            <div data-sivView="Siviglia.inputs.jqwidgets.NewItem" data-sivParams='{"parent":"/*self","type":"/*type"}'></div>
-                                        </div>
+
                                         <!-- añade las claves introducidas -->
                                         <ul class="Dictionary-row Dictionary-keyList">
                                             <div data-sivLoop="/*type" data-contextIndex="current">
-                                                <li class="Dictionary-item">
+                                                <li class="Dictionary-keylist-item">
+
                                                     <a class="mainKeyList"  data-toggle="pill" href="#/@current-index">
                                                         <span style="display:block"  data-sivValue="title|[%/@current-index%]::[%/@current-index%]"
                                                               data-sivParams='{"key":"/@current-index"}'
                                                               data-sivEvent="click" data-sivCallback="onLabelClicked"></span>
-                                                        <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current-index"}' title="Eliminar"></i>
                                                     </a>
+                                                    <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current-index"}' title="Eliminar"></i>
                                                 </li>
                                             </div>
                                         </ul>
+                                        Añadir:
 
                                         <!-- añade las claves introducidas funciona bien! -->
                                         <!-- <ul  class="Dictionary-keys" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
@@ -2376,40 +2399,45 @@
                                             </li>
                                         </ul> -->
                                     </div>
+                                    <div class="Dictionary-newItemWidget">
+                                        <div data-sivView="Siviglia.inputs.jqwidgets.NewItem" data-sivParams='{"parentInput":"/*self","type":"/*type"}'></div>
+                                    </div>
                                 </div>
 
                                 <!-- contenido añadido en add.html -->
                                 <div class="Dictionary-current">
                                     <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
-                                        <div data-sivValue="/*type/__definition/LABEL"></div>
-                                        <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
+                                        <div style="display:flex">
+                                            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"key":"/*currentKey","parent":"/*type","form":"/*form"}'>
+                                            </div>
                                         </div>
+
+                                        <!--<div data-sivValue="/*type/__definition/LABEL"></div>
+                                        <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
+                                        </div>-->
                                     </div>
                                 </div>
-
-                            </div>
-
                         </div>
+
+
+
                     </div>
                     <div data-sivIf="[%/*hasSimpleType%] == true" >
-                        <div  data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
+                        <div class="row-form Dictionary-row-complex-simple">
+                        <div  data-sivLoop="/*type" data-contextIndex="current">
                             <div style="display:flex">
-                                <div>
-                                    <span class="Dictionary-label Form-label" data-sivValue="/@current"></span>
-                                </div>
-                                <div>
-                                    <span data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></span>
-                                </div>
-                                <div>
-                                    <span class="Dictionary-removeButton" style="float:right" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current"}'></span>
+                                <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"key":"@current","parent":"/*type","form":"/*form"}'>
                                 </div>
                             </div>
+
+
                         </div>
                         <div class="Dictionary-newItemWidget" data-sivCall="buildNewItemWidget"></div>
                     </div>
+                    </div>
 
                 </div>
-            </div>
+
         </div>
     </div>
 
@@ -2492,10 +2520,10 @@
     ----------------------------------------------------------------------------------------
 -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Container" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Container">
-        <div class="ContainerType">
-            <div class="panel panel-primary">
+        <div class="ContainerInput">
+
                 <!--<div class="panel-heading" data-sivValue="/*title" class="title"></div>-->
-                <div class="panel-body">
+
                     <p class="text-info description" data-sivValue="/*description"></p>
                     <div data-sivIf="[%/*hasGlobalErrors%] == true">
                         <div class="globalErrors">
@@ -2505,20 +2533,22 @@
                         </div>
                     </div>
                     <div class="inputs container">
-                        <div data-sivLoop="/*type/__definition/FIELDS" data-contextIndex="current">
-                            <div class="col col-sm-12" data-sivValue="/@current/LABEL"></div>
-                            <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
+                        <div data-sivLoop="/*type" data-contextIndex="current">
+                            <div>
+                            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"key":"@current-index","parent":"/*type","form":"/*form"}'>
+                            </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
+
+
         </div>
     </div>
     <!--
     ----------------------------------------------------------------------------------------
 -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.FlexContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.FlexContainer">
-        <div class="ContainerType">
+        <div class="ContainerInput FlexContainerInput">
             <div style="display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start" data-sivLoop="/*type/__definition/FIELDS" data-contextIndex="current">
                 <div style="margin:4px" data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
             </div>
@@ -2528,7 +2558,7 @@
     --------------------------------------------------------------------------------------------
 -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.GridContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.GridContainer">
-        <div class="Grid2ContainerType">
+        <div class="ContainerInput GridContainerInput">
                 <div data-sivLoop="/*type/__definition/FIELDS" data-contextIndex="current">
                     <div class="GridItem">
                         <div data-sivCall="getInputFor" data-sivParams='{"key":"/@current-index"}'></div>
@@ -2541,6 +2571,7 @@
 -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Array" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.Array" class="ArrayType">
     <!--<p class="text-info description" data-sivValue="/*description"></p>-->
+        <div class="ArrayInput">
     <div data-sivIf="[%/*hasSimpleType%] == true" >
         <div class="arrayValues" style="min-height:20px;margin-bottom:5px">
             <div data-sivLoop="/*type" data-contextIndex="current">
@@ -2569,25 +2600,23 @@
             </div>
             <button data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
         </div>
+        </div>
     </div>
     <!--
     ------------------------------------------------------------------------------------------------------
     -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.TypeSwitcher" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.TypeSwitcher">
-        <div class="TypeSwitchType">
-            <div class="panel panel-primary">
-                <div class="panel-body">
+        <div class="TypeSwitcherInput">
 
-                    <div class="typeChanger">
+
+                    <div class="TypeSwitcherSelector">
                         <span>Seleccionar Tipo:</span>
                         <span data-sivId="typeSwitchSelector">
                         </span>
                     </div>
 
-                    <div data-sivId="fieldContainer"></div>
-                </div>
+                    <div data-sivId="fieldContainer" class="TypeSwitcherField"></div>
 
-            </div>
         </div>
     </div>
      <!--
@@ -2607,38 +2636,27 @@
             -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Form" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Form">
+        <div class="Form">
         <div data-sivId="formNode"></div>
         <!-- <div class="formSubmit"></div> -->
         <input class="form-button" type="button" data-sivEvent="click" data-sivCallback="submit" value="Save">
+        </div>
     </div>
 
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.FilteringForm" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.FilteringForm">
+        <div class="Form FilteringForm">
         <div data-sivId="formNode"></div>
-
-    </div>
-
-    <!--
-    <div data-sivWidget="AUTOPAINTER_TypeSwitcher" data-widgetParams="parentObject,parentNode" data-widgetCode="Siviglia.AutoUI.Painter.TypeSwitchPainter" class="TypeSwitchType">
-        <div class="panel panel-primary">
-
-            <div class="panel-body">
-                <div data-sivId="fieldContainer"></div>
-                <div class="typeChanger">
-                    <div data-sivId="typeSwitchSelector">
-                    </div>
-                </div>
-            </div>
-
         </div>
+
     </div>
--->
     <!--
     ---
     -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.TabbedContainer" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.TabbedContainer">
+        <div class="ContainerInput TabbedContainerInput">
         <div data-sivId='jqxTabs'>
             <ul style='margin-left: 10px;' data-sivLoop="/*labels" data-contextIndex="current">
                 <li data-sivValue="[%@current%]"></li>
@@ -2653,6 +2671,7 @@
                 </div>
             </div>
         </div>
+        </div>
     </div>
     <!--
             ---------------------------------------------------------------------------------------
@@ -2660,6 +2679,7 @@
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.AccordionContainer" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.AccordionContainer">
+        <div class="ContainerInput AccordionContainerInput">
         <div data-sivId='jqxAccordion'>
         <div data-sivLoop="*containerGroups" data-contextIndex="current">
             <div data-sivValue="[%@current/LABEL%]"></div>
@@ -2671,6 +2691,7 @@
             </div>
         </div>
         </div>
+        </div>
     </div>
     <!--
             ---------------------------------------------------------------------------------------
@@ -2678,6 +2699,7 @@
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.TabsContainer" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.TabsContainer">
+        <div class="ContainerInput TabsContainerInput">
         <div data-sivId='jqxTabs'>
             <ul>
                 <div data-sivLoop="*containerGroups" data-contextIndex="current">
@@ -2694,6 +2716,7 @@
                 </div>
             </div>
         </div>
+        </div>
     </div>
 
     <!--
@@ -2702,7 +2725,7 @@
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.ByFieldContainer" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.ByFieldContainer">
-        <div>
+        <div class="ContainerInput ByFieldContainerInput">
             <div style="float:left;border:1px solid black;width:250px">
                 <div data-sivId="fControllerNode"></div>
                 <div>
@@ -2730,6 +2753,7 @@
     <!------------------------------------------------------------------------------------------->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.DockingContainer" data-widgetParams="type,inputParams"
             data-widgetCode="Siviglia.inputs.jqwidgets.DockingContainer">
+            <div class="ContainerInput DockingContainerInput">
            <div data-sivId='jqxDocking'>
 
             <!-- <div>
@@ -2773,6 +2797,7 @@
                     </div>
                 </div> -->
 
+           </div>
             </div>
     </div>
 
@@ -2818,15 +2843,17 @@
 <div data-sivWidget="Siviglia.inputs.jqwidgets.StdInputContainer" data-widgetParams="key,form" data-widgetCode="Siviglia.inputs.jqwidgets.StdInputContainer">
     <div class="StdInputContainer">
 
-            <div class="inputContainerLabel" data-sivValue="/*label">
+            <div class="label" data-sivId="labelNode" data-sivValue="/*label">
+            </div>
+            <div data-sivId="helpNode" class="help" data-sivValue="/*help"></div>
+            <div class="input" data-sivId="inputNode" data-sivCall="getInputFor" data-sivParams="{}">
 
             </div>
-            <div class="inputContainerInput" data-sivCall="getInputFor" data-sivParams="{}">
+            <div data-sivId="requiredNode"></div>
 
-            </div>
-            <div class="inputContainerHelp" data-sivValue="/*help"></div>
+            <div style="clear:both"></div>
     </div>
-    <div style="clear:both"></div>
+
 </div>
 <div data-sivWidget="Siviglia.inputs.jqwidgets.StdFormButtons" data-widgetParams="form" data-widgetCode="Siviglia.inputs.jqwidgets.StdFormButtons">
     <div class="StdFormButtons">

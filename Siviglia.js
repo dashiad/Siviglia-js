@@ -1432,6 +1432,7 @@ Siviglia.Path.Proxify=function(obj,ev)
                 return __disableEvents__;
             if(prop===Symbol.toStringTag)
                 return target.toString;
+
             if(prop==="[[KEYS]]")
             {
                 var result=[];
