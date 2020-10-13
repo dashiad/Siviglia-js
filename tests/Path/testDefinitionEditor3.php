@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.light.css">
 
     <!-- este tira de variables css del segundo style.css -->
-    <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">
+    <link rel="stylesheet" href="../../jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" href="../../../../reflection/css/style.css">
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.adtopy-dev.css">
 

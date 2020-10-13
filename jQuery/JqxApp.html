@@ -16,6 +16,7 @@
                         this.getSelf=function(){return this}.bind(this);
                         this.window=params.window;
                         this.currentWidget=null;
+                        this.icon=typeof params.icon
                     },
                     initialize:function(params)
                     {
@@ -100,7 +101,7 @@
                     },
                     onClicked:function(node,params)
                     {
-                        debugger;
+
                         if(params.item.menu!==null)
                             return;
                         this.getParent().onSelected(params.item);

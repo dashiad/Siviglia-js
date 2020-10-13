@@ -471,29 +471,34 @@ Siviglia.Utils.buildClass(
                                 this.__value = v;
                             },
                             validate: function (validationMode) {
-                                var val=this.__value;
-                                validationMode = Siviglia.issetOr(validationMode, null);
-                                if (validationMode === null)
-                                    validationMode = this.__validationMode;
-                                if (!this.__hasOwnValue()) {
-                                    if (validationMode === Siviglia.types.BaseType.VALIDATION_MODE_STRICT) {
-                                        if (this.__isRequired()) {
-                                            var e = new Siviglia.types.BaseTypeException(this.getFullPath(),Siviglia.types.BaseTypeException.ERR_REQUIRED);
-                                            this.__setErrored(e);
-                                            throw e;
+                                try {
+                                    var val = this.__value;
+                                    validationMode = Siviglia.issetOr(validationMode, null);
+                                    if (validationMode === null)
+                                        validationMode = this.__validationMode;
+                                    if (!this.__hasOwnValue()) {
+                                        if (validationMode === Siviglia.types.BaseType.VALIDATION_MODE_STRICT) {
+                                            if (this.__isRequired()) {
+                                                var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED);
+                                                this.__setErrored(e);
+                                                throw e;
+                                            }
+                                        }
+                                        return true;
+                                    }
+                                    var res = this._validate();
+                                    if (this.__hasSource()) {
+                                        var s = this.__getSource();
+                                        if (!s.isAsync() || validationMode >= Siviglia.types.BaseType.VALIDATION_MODE_COMPLETE) {
+                                            this.__checkSource(val);
                                         }
                                     }
-                                    return true;
+                                    this.__onlyValidating = false;
+                                    return res;
+                                }catch(e)
+                                {
+                                    throw e;
                                 }
-                                var res = this._validate();
-                                if(this.__hasSource()) {
-                                    var s=this.__getSource();
-                                    if (!s.isAsync() || validationMode >= Siviglia.types.BaseType.VALIDATION_MODE_COMPLETE) {
-                                        this.__checkSource(val);
-                                    }
-                                }
-                                this.__onlyValidating = false;
-                                return res;
                             },
                             __isRequired: function () {
                                 if(this.__isDefinedAsRequired())
@@ -2271,6 +2276,7 @@ Siviglia.Utils.buildClass(
                                                 }
                                                 , enumerable: false, configurable: true
                                             })
+
                                             isNewProp = true;
                                         } else {
                                             target["*" + prop].setValue(value)
@@ -2361,7 +2367,7 @@ Siviglia.Utils.buildClass(
                             return res;
                         },
                         getValueInstance: function (key, val) {
-                            return  Siviglia.types.TypeFactory.getType({"fieldName":key,"path":this.__fieldNamePath}, this.__definition["VALUETYPE"], this,Siviglia.issetOr(val, null));
+                            return  Siviglia.types.TypeFactory.getType({"fieldName":key,"path":this.__fieldNamePath}, this.__definition["VALUETYPE"], this,Siviglia.issetOr(val, null),this.__validationMode);
                         },
 
                         addItem: function (key, val) {
@@ -2383,7 +2389,23 @@ Siviglia.Utils.buildClass(
                                 this.__checkSource(this.__currentProxy);
                             }
                             return err;
-                        }
+                        },
+                        __checkSource: function (val) {
+                            // Esto solo deberia llamarse si el modo de validacion es complete.
+                            if (this.__hasSource()) {
+                                var s = this.__getSource();
+                                // En un Dictionary, el source se comprueba contra las keys del valor
+                                for(var k in val) {
+                                    if (!s.contains(k)) {
+                                        //this.setValue(null);
+                                        var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: k});
+                                        this.__setErrored(e);
+                                        throw e;
+                                    }
+                                }
+                            }
+                            return true;
+                        },
                     }
                 },
 
@@ -2437,7 +2459,7 @@ Siviglia.Utils.buildClass(
                             var typeInfo = this.getTypeFromValue(val);
                             var typeDef=Siviglia.issetOr(typeInfo["def"],typeInfo["name"]);
                             this.currentType = typeInfo["name"];
-                            this.subNode = Siviglia.types.TypeFactory.getType({fieldName:"",path:this.__fieldNamePath}, typeDef, this,this.forceType == null ? val : null);
+                            this.subNode = Siviglia.types.TypeFactory.getType({fieldName:"",path:this.__fieldNamePath}, typeDef, this.__parent,this.forceType == null ? val : null,this.__validationMode);
                             // Si despues de est, el subNodo no tiene valor, le asignamos un valor vacio.
                             if(!this.subNode.__hasOwnValue())
                                 this.subNode.apply({},Siviglia.types.BaseType.VALIDATION_MODE_NONE);

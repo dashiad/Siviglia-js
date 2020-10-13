@@ -146,7 +146,7 @@
                                 svg: m.svg
                             }, {}, $(gEl2), m.__context);
                             instance.__build().then(function () {
-                                gEl.append(gEl2.firstElementChild.firstElementChild);
+                                gEl.append(instance.rootNode[0]);
                             });
                             return gEl;
                         });
@@ -191,7 +191,7 @@
                             .attr("y", m.nodeHeight / 2)
                             .attr("d", function(d) {
                                 var o = {x: source.x0, y: source.y0}
-                                return "M" + source.x0 + "," +
+                                return "M" + (source.x0+m.nodeWidth/2) + "," +
                                     (d.source.y+m.nodeHeight)+
                                     "V" + (d.source.y+m.nodeHeight) +
                                     "H" + source.x0+
@@ -210,11 +210,11 @@
                             .duration(250)
                             .attr("d", function(d){
                                 var o = {x: source.x0, y: source.y0}
-                                return "M" + source.x0 + "," +
+                                return "M" + (source.x0+m.nodeWidth/2) + "," +
                                     (d.source.y+m.nodeHeight)+
                                     "V" + (d.source.y+m.nodeHeight) +
-                                    "H" + source.x0+
-                                    "V" + (d.source.y+m.nodeHeight)
+                                    "H" + source.x0//+
+                                    //"V" + (d.source.y+m.nodeHeight)
                             })
                             .remove();
 

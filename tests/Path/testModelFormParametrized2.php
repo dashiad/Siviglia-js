@@ -16,7 +16,7 @@
     <script src="../../../jqwidgets/jqx-all.js"></script>
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
 
-    <link rel="stylesheet" href="../../jQuery/JqxWidgets.css">
+    <link rel="stylesheet" href="../../jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" href="../../../../reflection/css/style.css">
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
     <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.adtopy-dev.css">

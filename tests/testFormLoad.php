@@ -18,9 +18,9 @@
     <script src="../../jqwidgets/jqx-all.js"></script>
     <script src="../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="/reflection/css/style.css">
-    <link rel="stylesheet" href="../jQuery/JqxWidgets.css">
-    <link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
+    <link rel="stylesheet" href="../../../reflection/css/jqx.base.css">
+    <link rel="stylesheet" href="../../../reflection/css/jqx.light.css">
 
     <style type="text/css">
         #svgChart {
@@ -38,7 +38,7 @@
 
 
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->
-<div data-sivView="Siviglia.model.web.WebUser.forms.Edit" data-sivParams='{"USER_ID":1}'></div>
+<div data-sivView="Siviglia.model.reflection.Model.forms.Edit" data-sivParams='{"className":"/model/web/Site"}'></div>
 <script>
 
 
