@@ -1675,8 +1675,16 @@ Siviglia.Utils.buildClass(
                                             this.node.addClass(p1[1]);
                                             this.addedClass=p1[1];
                                         }
-                                        else
+                                        else {
+                                            if(p1[0][0]==="~")
+                                            {
+                                                var css={};
+                                                css[p1[0].substr(1)]=p1[1];
+                                                this.node.css(css);
+                                            }
+                                            else
                                             this.node.attr(p1[0], p1[1]);
+                                        }
                                     }
                                 }
                             } else
@@ -1956,8 +1964,11 @@ Siviglia.Utils.buildClass(
                                     // Si existe caller.invoke, es que es un widget
                                     if (caller.invoke)
                                         return evContext.invoke(method, params, evName, event);
-                                    else
-                                        return evContext[method].apply(caller, params, evName, event);
+                                    else {
+                                        params.push(evName);
+                                        params.push(event);
+                                        return evContext[method].apply(caller, params);
+                                    }
                                 }
                             };
                             this.node = node;
