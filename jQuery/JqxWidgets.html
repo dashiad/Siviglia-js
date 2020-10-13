@@ -2261,6 +2261,48 @@
                                 return "Unknown error";
                             }
                         }
+                },
+                Confirm:{
+                    inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
+                    destruct:function()
+                    {
+                        this.rootNode.jqxWindow('destroy');
+                    },
+                    methods:{
+                        preInitialize:function(params)
+                        {
+                            this.title=params.title;
+                            this.message=params.message;
+                        },
+                        initialize:function(params)
+                        {
+                            this.rootNode.jqxWindow({
+                                height: 100, //'auto',
+                                width: 350,
+                                autoOpen: false,
+                                isModal: true,
+                                okButton: this.buttonYes,
+                                cancelButton: this.buttonNo,
+                                initContent: function () {
+                                    this.buttonYes.jqxButton({ width: 40, height: 30 });
+                                    this.buttonNo.jqxButton({ width: 40, height: 30 });
+                                    this.buttonNo.focus();
+
+                                    this.buttonYes.click(function () {
+                                        this.fireEvent("CONFIRM",{"value":true});
+                                    }.bind(this));
+                                    this.buttonNo.click(function(){
+                                        this.fireEvent("CONFIRM",{"value":false});
+                                    }.bind(this))
+                                }.bind(this)
+                            });
+                        },
+                        open:function()
+                        {
+                            this.rootNode.jqxWindow('open');
+                            this.rootNode.jqxWindow('focus');
+                        }
+                    }
                 }
             }
         }
@@ -2863,5 +2905,18 @@
 
     </div>
 </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Confirm" data-widgetParams="title,message" data-widgetCode="Siviglia.inputs.jqwidgets.Confirm">
+        <div data-sivId="windowContainer" class="ConfirmContainer" style="display:none">
+            <div data-sivId="item">
+                <div data-sivValue="[%/*title%]"></div>
+                <div>
+                    <p data-sivValue="[%/*message%]"></p>
+                    <br/>
+                    <input type="button" value="No" data-sivId="buttonNo" class="ConfirmNo" />
+                    <input type="button" value="Yes" data-sivId="buttonYes" class="ConfirmYes"  />
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
