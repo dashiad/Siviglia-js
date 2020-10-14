@@ -56,6 +56,17 @@
                 }
 
             },
+            "SubApp":{
+                "inherits":"Siviglia.UI.Expando.View",
+                methods:{
+                    preInitialize:function(params){},
+                    initialize:function(params){},
+                    getWindowPreferences:function()
+                    {
+                        return {windowWidth:640,windowHeight:480,windowTitle:"Anonymous App"};
+                    }
+                }
+            },
             "Menu":{
                 "inherits":"Siviglia.UI.Expando.View",
                 destruct:function()
