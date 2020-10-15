@@ -392,6 +392,8 @@ Siviglia.Utils.buildClass(
                                 if (val === null || this.__isEmptyValue(val)) {
                                     var hasChanged = false;
                                     if (this.__value != null) {
+                                        if(this.__value && this.__value.hasOwnProperty("__destroy__"))
+                                            this.__value.__destroy__();
                                         this.__clearErrored();
                                         hasChanged = true;
 
@@ -416,8 +418,11 @@ Siviglia.Utils.buildClass(
                                 if (this.__flags & Siviglia.types.BaseType.TYPE_NOT_EDITABLE)
                                     return;
                                 var willSetDirty=true;
+
                                 if(this.__value===val && !this.__errored)
                                     willSetDirty=false;
+                                if(this.__value && this.__value.hasOwnProperty("__destroy__"))
+                                    this.__value.__destroy__();
                                 this._setValue(val, validationMode);
                                 this.__valueSet = true;
                                 if(this.__isDynamic())
@@ -1606,8 +1611,12 @@ Siviglia.Utils.buildClass(
 
                     },
                     getPlainValue: function () {
-                        if(this.__value===null)
+                       /* if(this.__value===null) {
+                            if (typeof this.__definition["SET_ON_EMPTY"] !== "undefined" &&
+                                this.__definition["SET_ON_EMPTY"] == true)
+                                return {};
                             return null;
+                        }*/
                         var subVal = this.__value;
                         var nSet = 0;
                         var nFields = 0;
@@ -2532,7 +2541,6 @@ Siviglia.Utils.buildClass(
 
                             //if(byType) {
                             var fieldName = this.__definition.TYPE_FIELD;
-                            // Se hace una copia de los campos, de forma que
                             tmpObject[this.__definition.TYPE_FIELD] = val[this.__definition.TYPE_FIELD];
                             defBuilder(this.__definition.TYPE_FIELD);
                             /*}
@@ -2568,7 +2576,8 @@ Siviglia.Utils.buildClass(
                             if (byType) {
                                 var typeField = byType;
                                 var curType = null;
-                                if (typeField != null && typeof val[typeField] !== "undefined") {
+                                if (typeField != null && typeof val[typeField] !== "undefined")
+                                {
                                     curType = val[typeField];
                                 } else {
                                     if (!Siviglia.empty(this.__definition.IMPLICIT_TYPE)) {
@@ -2577,8 +2586,18 @@ Siviglia.Utils.buildClass(
                                         throw new Siviglia.types.TypeSwitcherException(this.getFullPath(), Siviglia.types.TypeSwitcherException.ERR_INVALID_TYPE);
                                 }
 
+                                var t=null;
+                                if(typeof(this.__definition.ALLOWED_TYPES[curType])!=="undefined")
+                                    t=this.__definition.ALLOWED_TYPES[curType];
+                                else
+                                {
+                                    if(typeof(this.__definition.ALLOWED_TYPES["*"])!=="undefined")
+                                        t=this.__definition.ALLOWED_TYPES["*"];
+                                    else
+                                        throw new Siviglia.types.TypeSwitcherException(this.getFullPath(), Siviglia.types.TypeSwitcherException.ERR_INVALID_TYPE);
+                                }
 
-                                var t = this.__definition.ALLOWED_TYPES[curType];
+
                                 if (Siviglia.empty(this.__definition.CONTENT_FIELD)) {
                                     return {name: curType, def: t};
                                 } else {
@@ -2771,24 +2790,23 @@ Siviglia.Utils.buildClass(
                         _validate: function () {
                             return true;
                         },
-                        /*_setValue: function (val) {
+                        _setValue: function (val) {
 
-                            if(this.__value && this.__value.hasOwnProperty("__destroy__"))
-                                this.__value.__destroy__();
                             this.__currentProxy = this.proxify(val);
 
-                        },*/
-                        apply: function (val,validationMode) {
 
-                            if(this.__value && this.__value.hasOwnProperty("__destroy__"))
-                                this.__value.__destroy__();
+                        },
+                        /*apply: function (val,validationMode) {
+
+
                             var oldValidationMode=this.__validationMode;
                             if(typeof validationMode!=="undefined")
                                 this.__validationMode=validationMode;
                             this.__currentProxy = this.proxify(val);
                             this.__validationMode=oldValidationMode;
 
-                        },
+
+                        },*/
                         // La clase base va a llamar a getKeys cuando se llama
                         // a deleteProperty.Pero en un array,no queremos calcular las keys
                         // ahi, sino cuando se modifica length. Por eso

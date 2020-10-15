@@ -77,8 +77,8 @@
 
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-        //var DEVELOP_MODE=0;  // All tests
-        var DEVELOP_MODE=-1; // Latest test
+        var DEVELOP_MODE=0;  // All tests
+        //var DEVELOP_MODE=-1; // Latest test
     } else {
         var DEVELOP_MODE = urlParams.get("test");
     }
@@ -130,36 +130,35 @@
     var def6={
         "TYPE":"Container",
         "FIELDS":{
-        "one":{
-        "TYPE":"Array",
-        "ELEMENTS":{
-        "TYPE":"Container",
-        "FIELDS":{
-        "f1":{
-        "TYPE":"Dictionary",
-        "VALUETYPE":{
-        "TYPE":"Container",
-        "FIELDS":{
-        "q1":{"TYPE":"String"},
-        "q2":{"TYPE":"Integer"}
-    }
-
-    }
-    },
-        "f2":{
-        "TYPE":"TypeSwitcher",
-        "TYPE_FIELD":"Type",
-        "CONTENT_FIELD":"Value",
-        "ALLOWED_TYPES":{
-        "String":{"TYPE":"String"},
-        "Integer":{"TYPE":"Integer"}
-    }
-    }
-    }
-    }
-    },
-        "two":{"TYPE":"String"}
-    }
+            "one":{
+                "TYPE":"Array",
+                "ELEMENTS":{
+                    "TYPE":"Container",
+                    "FIELDS":{
+                        "f1":{
+                            "TYPE":"Dictionary",
+                            "VALUETYPE":{
+                                "TYPE":"Container",
+                                "FIELDS": {
+                                    "q1": {"TYPE": "String"},
+                                    "q2": {"TYPE": "Integer"}
+                                    }
+                                }
+                            },
+                        "f2":{
+                            "TYPE":"TypeSwitcher",
+                            "TYPE_FIELD":"Type",
+                            "CONTENT_FIELD":"Value",
+                            "ALLOWED_TYPES":{
+                                "String":{"TYPE":"String"},
+                                "Integer":{"TYPE":"Integer"}
+                            }
+                        }
+                    }
+                }
+            },
+            "two":{"TYPE":"String"}
+        }
     };
 
     var def = {
@@ -1271,6 +1270,7 @@
         var t1 = new Siviglia.model.BaseTypedObject(
            def
         );
+
         // Comprobamos que, en este punto, ya que t1.f3.TYPE=="TIPO3" (por el valor por defecto),
         // existen sf3 y sf4:
         var initStatus = (t1.f3.sf3 === "aaa" && typeof t1.f3.sf2 == "undefined");
@@ -1284,7 +1284,74 @@
         t1.destruct();
         return initStatus && secondStatus && thirdStatus && countListeners() == 0;
     }, true);
+    runTest("Comprobaciones de TypeSwitcher (3)",
+        "Comprobación del funcionamiento del valor * en ALLOWED_TYPES",
+        {
+            "FIELDS": {
+                "f3": {
+                    "TYPE": "TypeSwitcher",
+                    "TYPE_FIELD": "TYPE",
+                    "IMPLICIT_TYPE": "ModelReference",
+                    "ALLOWED_TYPES": {
+                        "String": {
+                            "TYPE": "Container",
+                            "FIELDS": {
+                                "TYPE": {"TYPE": "String", "FIXED": "String"},
+                                "MINLENGTH": {"TYPE": "Integer"},
+                                "MAXLENGTH": {"TYPE": "Integer"},
+                                "REGEXP": {"TYPE": "String"}
+                            }
+                        },
+                        "Integer": {
+                            "TYPE": "Container",
+                            "FIELDS": {
+                                "TYPE": {"TYPE": "String", "FIXED": "Integer"},
+                                "MIN": {"TYPE": "Integer"},
+                                "MAX": {"TYPE": "Integer"}
+                            }
+                        },
+                        "*": {
+                            "TYPE": "Container",
+                            "FIELDS": {
+                                "TYPE": {"TYPE": "String"},
+                                "F1": {"TYPE": "Integer"},
+                                "F2": {"TYPE": "Integer"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        function(def)
+        {
+            var t1 = new Siviglia.model.BaseTypedObject(def);
+            var nChanges = 0;
+            t1["*f3"].addListener("CHANGE", null, function () {
+                nChanges++
+            });
+            t1.f3={"TYPE":"Integer","MAX":10};
+            var status=nChanges===1 && 10===t1.f3.MAX;
 
+            t1.f3={"TYPE":"NO_DEFINIDO","F1":15};
+            status=status && 15===t1.f3.F1 && "NO_DEFINIDO"===t1.f3.TYPE;
+
+        // Asignamos el tipo "inline", asignando al campo, no llamando a setValue
+            t1.f3.TYPE="OOOTRO";
+            t1.f3.F1=22;
+            status=status && "OOOTRO"===t1.f3.TYPE;
+        // Cambiamos el tipo a traves de los campos:
+            t1.f3.TYPE="String";
+            t1.f3.MAXLENGTH=10;
+            status=status && "String"===t1.f3.TYPE;
+        // No se puede acceder a los campos del tipo "*"
+            exceptionThrown=false;
+
+            var p=t1.f3;
+            var q=p.F1;
+            status=status && typeof q==="undefined";
+            t1.destruct();
+            return status && countListeners()===0;
+    });
 
     runTest("Comprobaciones de Array (1)",
         "Comprobaciones basicas de array, incluyendo gestores de eventos,chequeos de errores,etc",
@@ -2061,7 +2128,7 @@
         function (def) {
         var t1 = new Siviglia.model.BaseTypedObject(def);
 
-        t1.f4={TYPE:"/model/reflection/Types/types/DateTime"};
+        t1.f4={TYPE:"DateTime"};
         t1.f4.LABEL="Probando";
         t1.f4.TYPE.STRICTLYPAST=true;
         return t1.f4.LABEL=="Probando" && t1.f4["*STRICTLYPAST"].__definition.TYPE=="Boolean";
