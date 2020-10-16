@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="../../../reflection/css/style.css">
+<link rel="stylesheet" type="text/css" href="../../../reflection/css/style.css">
 <style>
     .remove, .NewItemString .add {
         font-family:'IcoMoon'
@@ -428,15 +428,19 @@
                     methods: {
                         getDefaultInputOptions: function () {
                             var d = this.type.__definition;
+                                                        
+                            if (d.LABEL == null)
+                                d.LABEL= 'dato';
 
                             var opts = {
-
+                                placeHolder:Siviglia.issetOr(this.inputParams["placeholder"],"Insertar "+ d.LABEL +"...")
                             };
                             if (d.MINLENGTH)
                                 opts.minLength = d.MINLENGTH;
                             if (d.MAXLENGTH)
                                 opts.maxLength = d.MAXLENGTH;
                             return opts;
+
                         },
                      /*   createInput:function(opts)
                         {
@@ -939,8 +943,9 @@
                     methods:{
                         getDefaultInputOptions: function () {
                             var opts = {
-  //                              width: 200,
-                                minLength: 0
+                                // width: 200,
+                                minLength: 0,
+                                placeHolder:Siviglia.issetOr(this.inputParams["placeholder"],"Password...")
                             };
                             return opts;
                         },
@@ -2885,30 +2890,26 @@
 <div data-sivWidget="Siviglia.inputs.jqwidgets.StdInputContainer" data-widgetParams="key,form" data-widgetCode="Siviglia.inputs.jqwidgets.StdInputContainer">
     <div class="StdInputContainer">
 
-            <div class="label" data-sivId="labelNode" data-sivValue="/*label">
-            </div>
+            <div class="label" data-sivId="labelNode" data-sivValue="/*label"></div>
             <div data-sivId="helpNode" class="help" data-sivValue="/*help"></div>
-            <div class="input" data-sivId="inputNode" data-sivCall="getInputFor" data-sivParams="{}">
-
-            </div>
+            
+            <div class="input" data-sivId="inputNode" data-sivCall="getInputFor" data-sivParams="{}"></div>
+            
             <div data-sivId="requiredNode"></div>
-
             <div style="clear:both"></div>
     </div>
-
 </div>
+
 <div data-sivWidget="Siviglia.inputs.jqwidgets.StdFormButtons" data-widgetParams="form" data-widgetCode="Siviglia.inputs.jqwidgets.StdFormButtons">
     <div class="StdFormButtons">
-        <div class="buttonContainer" data-sivId="buttonContainer">
-
-        </div>
-
+        <div class="buttonContainer" data-sivId="buttonContainer"></div>
     </div>
 </div>
-    <div data-sivWidget="Siviglia.inputs.jqwidgets.Confirm" data-widgetParams="title,message" data-widgetCode="Siviglia.inputs.jqwidgets.Confirm">
-        <div data-sivId="windowContainer" class="ConfirmContainer" style="display:none">
-            <div data-sivId="item">
-                <div data-sivValue="[%/*title%]"></div>
+
+<div data-sivWidget="Siviglia.inputs.jqwidgets.Confirm" data-widgetParams="title,message" data-widgetCode="Siviglia.inputs.jqwidgets.Confirm">
+    <div data-sivId="windowContainer" class="ConfirmContainer" style="display:none">
+        <div data-sivId="item">
+            <div data-sivValue="[%/*title%]"></div>
                 <div>
                     <p data-sivValue="[%/*message%]"></p>
                     <br/>
@@ -2918,5 +2919,4 @@
             </div>
         </div>
     </div>
-
 </div>

@@ -4398,8 +4398,8 @@ ol li .jqx-listmenu-item-label:before {
 .jqx-passwordinput-password-icon, .jqx-passwordinput-password-icon-rtl {
     background-image: url(images/icon-showpassword.png) !important;
     background-repeat: no-repeat !important;
-    width: 14px;
-    height: 9px;
+    width: 20px;
+    height: 12px;
 }
 
 .jqx-passwordinput-password-icon-ltr {

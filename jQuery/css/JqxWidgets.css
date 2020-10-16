@@ -14,25 +14,42 @@
     border-bottom: 2px solid var(--dark-color);
 }
 .widField {}
+
 .StdInputContainer {
-    margin-bottom:10px;
-    font-size: 20px;
-    margin-top: 10px;
-    border: 1px solid var(--light-darker-color);
-    padding: 3px;
-    display:flex;
-    /* background-color: var(--light-darker-darker-color); */
-    color: var(--dark-lighter-color);
-    flex-wrap:wrap;
-    border-bottom: 1px solid var(--light-darker-darker-color);
-    padding-bottom: 6px;
+    margin-bottom: var(--StdInputContainer-margin-bottom);
+    font-size: var(--StdInputContainer-font-size);
+    margin-top: var(--StdInputContainer-margin-top);
+    padding: var(--StdInputContainer-padding);
+    display: flex;    
+    color: var(--light-color);
+    flex-wrap: wrap;
+    border-bottom: var(--StdInputContainer-border-bottom);
 }
 
 .StdInputContainer > .required:before {
-    font-family:var(--icon-font);
-    font-color:var(--color-warning);
-    content:var(--icon-required);
+    font-family: var(--icon-font);
+    /* color: var(--color-warning); */
+    color: var(--dark-lighter-color);
+    content: var(--icon-required);
+    position: fixed;
+    margin-left: 8px;
 }
+
+.StdInputContainer > .help:before {
+    font-family: var(--icon-font);
+    color: var(--color-help);
+    content: var(--icon-help);
+    margin: 25px 10px 0 10px;
+}
+
+.StdInputContainer .label {
+    min-width:var(--input-label-min-width);
+    max-width:var(--input-label-max-width);
+    margin-bottom: var(--label-StdInputContainer-margin-bottom);
+    font-size: var(--label-StdInputContainer-font-size) ;
+}
+
+
 .StdInputContainer > .input { width:100%}
 
 
@@ -42,11 +59,6 @@
 .StdInputContainer.State,
 .StdInputContainer.Relationship{
 
-}
-.StdInputContainer .label
-{
-    min-width:var(--input-label-min-width);
-    max-width:var(--input-label-max-width);
 }
 
 .StdInputContainer.Container > .label,
@@ -65,9 +77,6 @@
 .StdInputContainer > .help {
     order: 3;
     font-size: smaller;
-    font-style: italic;
-    padding-left: 18px;
-
     color: var(--dark-lighter-lighter-color);
 }
 .StdInputContainer.Container> .help,
@@ -75,7 +84,6 @@
 .StdInputContainer.TypeSwitcher > .help {
     order: 1 !important;
     margin-bottom: 3px;
-
 }
 
 .StdInputContainer.Container> .input,
@@ -93,28 +101,35 @@
 .widField.left > .StdInputContainer > .inputContainerHelp {}
 
 .widFormButtons {}
-.StdFormButtons {
 
-    background-color: var(--light-darker-color);
-    padding: 4px;
-    text-align:right;
+
+
+.StdFormButtons {    
+    padding: var(--StdFormButtons-padding);
+    text-align: var(--StdFormButtons-text-align);
 }
 
-.StdFormButtons > .buttonContainer {}
 .StdFormButtons input[type=button].button-ok {
-    background:var(--button-ok-background-color) !important;
-    color:var(--button-ok-color) !important;
-    min-width:100px !important;
+    background: var(--StdFormButtons-button-ok-background);
+    color: var(--StdFormButtons-button-ok-color);
+    min-width: var(--StdFormButtons-button-width);
+    border-width: var(--input-border-width);
+    border-style: var(--input-border-style);
+    border-color: var(--input-border-color);
 }
 .StdFormButtons input[type=button].button-cancel {
-    background:var(--button-cancel-background-color) !important;
-    color:var(--button-cancel-color) !important;
-    min-width:100px !important;
+    background: var(--StdFormButtons-button-cancel-background);
+    color: var(--StdFormButtons-button-cancel-color);
+    min-width: var(--StdFormButtons-button-width);
 }
+
 .StdFormButtons input[type=button].button-disabled {
     filter:brightness(0.5);
 }
 
+
+
+.StdFormButtons > .buttonContainer {}
 
 .StdFormButtons input[type=button]:hover {}
 
