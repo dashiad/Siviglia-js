@@ -1910,7 +1910,7 @@
                                 var typeDef=this.innerType.getDefinition();
                                 this.rootNode.addClass(typeDef["TYPE"]);
                                 this.inputNode.addClass(this.fieldName);
-                                this.labelNode.addClass(this.fieldName);
+                                this.labelNode.addClass(this.fieldName);                                
                                 if(this.innerType.__isRequired())
                                     this.requiredNode.addClass("required");
                             },
@@ -2423,13 +2423,12 @@
                                         <ul class="Dictionary-row Dictionary-keyList">
                                             <div data-sivLoop="/*type" data-contextIndex="current">
                                                 <li class="Dictionary-keylist-item">
-
-                                                    <a class="mainKeyList"  data-toggle="pill" href="#/@current-index">
+                                                    <a class="mainKeyList" data-toggle="pill" href="#/@current-index">
                                                         <span style="display:block"  data-sivValue="title|[%/@current-index%]::[%/@current-index%]"
                                                               data-sivParams='{"key":"/@current-index"}'
                                                               data-sivEvent="click" data-sivCallback="onLabelClicked"></span>
                                                     </a>
-                                                    <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current-index"}' title="Eliminar"></i>
+                                                    <i class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current-index"}' data-sivValue="title|Eliminar [%/@current-index%]"></i>
                                                 </li>
                                             </div>
                                         </ul>
@@ -2579,7 +2578,7 @@
                     <div class="inputs container">
                         <div data-sivLoop="/*type/__definition/FIELDS" data-contextIndex="current">
                             <div>
-                            2<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"key":"@current-index","parent":"/*type","form":"/*form"}'>
+                            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"key":"@current-index","parent":"/*type","form":"/*form"}'>
                             </div>
                             </div>
                         </div>
@@ -2617,32 +2616,32 @@
     <!--<p class="text-info description" data-sivValue="/*description"></p>-->
         <div class="ArrayInput">
     <div data-sivIf="[%/*hasSimpleType%] == true" >
-        <div class="arrayValues" style="min-height:20px;margin-bottom:5px">
+        <div class="arrayValues">
             <div data-sivLoop="/*type" data-contextIndex="current">
-                <span style="border:2px solid red;margin:3px;padding:2px;border-radius:5px">
-                    <span  data-sivValue="[%/@current%]"></span>
-                    <button style="color:red" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"/@current-index"}'>x</button>
+                <span class="arraySimpleValue">
+                    <span data-sivValue="title|[%/@current%]::[%/@current%]"></span>                    
+                    <i class="arraySimpleValue-removeButton" data-sivevent="click" data-sivCallback="onRemoveItem" data-sivparams='{"index":"/@current-index"}' data-sivValue="title|Eliminar [%/@current%]"></i>
                 </span>
             </div>
         </div>
         <div>
             <div data-sivId="newItemNode"></div>
-                <button data-sivId="addSimpleItem" data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
+                <button class="button-add" data-sivId="addSimpleItem" data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
             </div>
         </div>
         <div data-sivIf="[%/*hasSimpleType%] == false" >
             <div style="display:flex;flex-direction:row;flex-wrap:nowrap">
-                <div class="arrayValues" style="width:100px;min-height:20px;margin-bottom:5px">
+                <div class="arrayValues" style="width:300px;min-height:50px;margin-bottom:5px">
                     <div data-sivLoop="/*type" data-contextIndex="current">
-                        <a data-sivEvent="click" data-sivParams='{"key":"@current-index"}' data-sivCallback="getInputFor" class="label label-primary" style="margin-right:4px;font-size:14px" data-sivValue="[%/@current-index%]"></a>
-                            <span class="remove ion-close-circled " style="color:red;padding-left:5px" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"[%@current-index%]"}'></span>
+                        <a class="arrayValueComplex" data-sivEvent="click" data-sivParams='{"key":"@current-index"}' data-sivCallback="getInputFor" class="label label-primary" data-sivValue="[%/@current-index%]"></a>
+                        <span data-sivValue="title|Eliminar [%/@current-index%]" class="arraySimpleValue-removeButton" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"[%@current-index%]"}'></span>
                     </div>
                 </div>
                 <div style="border:1px solid black" data-sivId="currentItemNode">
 
                 </div>
             </div>
-            <button data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
+            <button class="button-add" data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
         </div>
         </div>
     </div>
