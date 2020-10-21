@@ -441,8 +441,9 @@
 
 .jqx-widget-content {
     background-color: var(--jqx-background-color);
-    border-color: var(--jqx-border-color);    
-    height: fit-content(100%) !important;
+    border-color: var(--jqx-border-color);
+    height: 100% !important;
+    /* height: fit-content(100%) !important; */    
     /* width: 750px !important;
     height: 400px !important; */
 }
@@ -2058,6 +2059,8 @@ input[type="text"].jqx-input:-ms-input-placeholder, input[type="text"].jqx-widge
     border: 1px solid var(--jqx-tabs-border-color);
     box-shadow: -8px 12px 18px 0 rgba(25, 42, 70, 0.13);
     transition: all .3s ease-in-out;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .jqx-tabs-header, .jqx-ribbon-header {

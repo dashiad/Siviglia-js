@@ -28,25 +28,24 @@
 
 .StdInputContainer > .required:before {
     font-family: var(--icon-font);
-    /* color: var(--color-warning); */
-    color: var(--dark-lighter-color);
+    color: var(--pallette-color-primary-3);
     content: var(--icon-required);
-    position: fixed;
-    margin-left: 8px;
 }
 
 .StdInputContainer > .help:before {
     font-family: var(--icon-font);
     color: var(--color-help);
     content: var(--icon-help);
-    margin: 25px 10px 0 10px;
+    margin: 25px 10px 0 0;
+    font-weight: 600;
 }
 
 .StdInputContainer .label {
     min-width:var(--input-label-min-width);
     max-width:var(--input-label-max-width);
-    margin-bottom: var(--label-StdInputContainer-margin-bottom);
-    font-size: var(--label-StdInputContainer-font-size) ;
+    margin: var(--label-StdInputContainer-margin-bottom);
+    font-size: var(--label-StdInputContainer-font-size);
+    color: var(--color-label-edit-model);
 }
 
 
@@ -76,8 +75,8 @@
 }
 .StdInputContainer > .help {
     order: 3;
-    font-size: smaller;
-    color: var(--dark-lighter-lighter-color);
+    font-size: smaller;    
+    color: var(--color-help);
 }
 .StdInputContainer.Container> .help,
 .StdInputContainer.Dictionary> .help,
@@ -116,11 +115,13 @@
     border-width: var(--input-border-width);
     border-style: var(--input-border-style);
     border-color: var(--input-border-color);
+    cursor: pointer;
 }
 .StdFormButtons input[type=button].button-cancel {
     background: var(--StdFormButtons-button-cancel-background);
     color: var(--StdFormButtons-button-cancel-color);
     min-width: var(--StdFormButtons-button-width);
+    cursor: pointer;
 }
 
 .StdFormButtons input[type=button].button-disabled {
@@ -170,9 +171,9 @@
 }
 .Dictionary-row-complex {display:flex}
 .Dictionary-mainKeyList {
-
-    padding: 4px;
-    border-right: 2px solid var(--light-darker-darker-color);
+    padding: 10px;
+    color: var(--color-label-edit-model);
+    /* border-right: 2px solid var(--light-darker-darker-color); */
 }
 .Dictionary-keys {
     background-color: var(--light-darker-darker-color);
@@ -183,7 +184,7 @@
     background-color: var(--contrast-1);
     list-style-type: none;
     padding-left: 4px;
-    max-height: 150px;
+    /* max-height: 150px; */
     overflow-y: auto;
     margin-top: 0px;
 }
@@ -204,17 +205,16 @@
     padding-left: 16px;
     border-left: 4px solid var(--dark-lighter-color);
 }
-.Dictionary-removeButton:before {
-    content:var(--icon-remove);
-
+.Dictionary-removeButton:before, .arraySimpleValue-removeButton:before {
+    content:var(--icon-trash);
 }
-.Dictionary-removeButton {
+.Dictionary-removeButton, .arraySimpleValue-removeButton {
     font-family:var(--icon-font);
     font-style:normal;
     color:var(--error-background-color);
     cursor:pointer;
 }
-.Dictionary-removeButton:hover {
+.Dictionary-removeButton:hover, .arraySimpleValue-removeButton:hover {
     color:var(--error-background-color-light);
 }
 .Dictionary-keylist-item {
@@ -223,7 +223,7 @@
 
 .TypeSwitcherInput .TypeSwitcherSelector {
     background-color: var(--contrast-0);
-    color: var(--light-darker-color);
+    color: var(--white-color-font);
     border: 2px solid var(--contrast-0);
     padding: 2px;
 }
@@ -254,4 +254,34 @@
     font-family: var(--icon-font);
     font-size: 27px;
     color: var(--contrast-0);
+    cursor: cell;
+}
+
+/* Array Styles */
+.arrayValues { margin-bottom: var(--ArraySimpleValue-margin-bottom); }
+
+.arraySimpleValue {
+    margin-right: var(--ArraySimpleValue-margin-right);
+    padding: var(--ArraySimpleValue-padding);
+    border-radius: var(--ArraySimpleValue-border-radius);
+    border: var(--ArraySimpleValue-border-size) solid var(--ArraySimpleValue-border-color);
+    color: var(--ArraySimpleValue-font-color);
+    background: var(--ArraySimpleValue-background-color);
+    font-size: var(--ArraySimpleValue-font-size);
+    cursor: pointer;
+    display: inline-block;
+}
+
+.arraySimpleValue:hover, .arrayValueComplex:hover { color: var(--ArraySimpleValue-font-color-hover); background: var(--ArraySimpleValue-background-color-hover); }
+
+.arrayValueComplex {
+    padding: var(--ArraySimpleValue-padding);
+    border-radius: var(--ArraySimpleValue-border-radius);
+    border: var(--ArraySimpleValue-border-size) solid var(--ArraySimpleValue-border-color);
+    color: var(--ArraySimpleValue-font-color) !important;
+    background: var(--ArraySimpleValue-background-color);
+    font-size: var(--ArraySimpleValue-font-size) !important;
+    cursor: pointer;
+    display: inline-block;
+    min-width: auto;
 }
