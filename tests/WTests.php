@@ -113,8 +113,8 @@
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-	//var DEVELOP_MODE=0;  // All tests
-        var DEVELOP_MODE=-1; // Latest test
+	    var DEVELOP_MODE=13;  // All tests
+        //var DEVELOP_MODE=-1; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");
     }
@@ -627,6 +627,38 @@
                             },
                             initialize: function (params) {
                                 setInterval(function(){this.flipper=(this.flipper+1)%2}.bind(this),1000);
+                            }
+                        }
+                    }
+                }
+
+            })
+        }
+    )
+    runTest("SivIf 2","Prueba de funcionamiento de la regeneración del contenido de sivIf."+
+        "Se prueba cómo sivIf regenera los contenidos a medida que cambia.Especificamente, qué ocurre con los sivId definidos dentro de un sivIf.<br>"
+        ,
+        '<div data-sivWidget="Test.SivIf" data-widgetCode="Test.SivIf">'+
+        '<div data-sivIf="[%/*flipper%] == 1"><div data-sivId="target"></div><div style="background-color:blue;color:white">Valor Uno</div></div>'+
+        '<div data-sivIf="[%/*flipper%] == 0"><div style="background-color:green;color:white">Valor Cero</div></div>'+
+        '</div>',
+        '<div data-sivView="Test.SivIf"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    'SivIf':{
+                        inherits: "Siviglia.UI.Expando.View",
+                        methods: {
+                            preInitialize: function (params) {
+                                this.flipper=1;
+                            },
+                            initialize: function (params) {
+                                setInterval(function(){
+                                    this.flipper=(this.flipper+1)%2;
+                                    if(typeof this.flipper!=="undefined")
+                                        this.target.html("**"+this.flipper+"**");
+                                }.bind(this),1000);
                             }
                         }
                     }
@@ -1967,7 +1999,7 @@
         }
     )
 
-    runTest("Container y valores por defecto.","Un container cuyos campos no son tocados, y solo tienen los valores por defecto de los camos, deberia seguir teniendo valor nulo.",
+    runTest("Container y valores por defecto.","Un container cuyos campos no son tocados, y solo tienen los valores por defecto de los campos, deberia seguir teniendo valor nulo.",
         '<div data-sivWidget="Test.DefCont" data-widgetParams="" data-widgetCode="Test.DefCont">'+
         '<div class="type">'+
         '<div class="label">Container:</div>'+

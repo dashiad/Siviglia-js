@@ -135,6 +135,7 @@
                       this.clearErrors();
                       // Destruccion del jqxInput
                       var widgetName=this.getJqxWidgetName();
+
                       if(this.inputNode) {
                           this.inputNode[widgetName]('destroy');
                           var ariaNode=this.inputNode.attr("aria-owns");
@@ -177,6 +178,7 @@
                             this.form=Siviglia.issetOr(params.form,null);
                             this.type = params.type;
                             this.type.addListener("CHANGE",this,"onTypeChanged");
+                            this.type.addListener("ERROR",null,function(){console.dir("ON_ERROR")});
                             this.helpMessage = Siviglia.issetOr(this.type.__definition.HELP, null);
                             this.hasHelpMessage = (this.helpMessage != null ? true : false);
                             this.inputParams = Siviglia.issetOr(params.inputParams, {});
@@ -297,19 +299,7 @@
                             //return this.inputNode[this.getJqxWidgetName()]('val');
                             return $(this.inputNode).val();
                         },
-                        validate: function () {
-                            var val = this.getValue();
-                            try {
-                                this.type.validate(val);
-                                this.clearErrors();
-                                return true;
-                            } catch (e) {
-                                this.showError(
-                                    Siviglia.i18n.es.base.getErrorFromJsException(e)
-                                );
-                            }
-                            return false;
-                        },
+
                         save:function()
                         {
                             try{
@@ -428,7 +418,7 @@
                     methods: {
                         getDefaultInputOptions: function () {
                             var d = this.type.__definition;
-                                                        
+
                             if (d.LABEL == null)
                                 d.LABEL= 'dato';
 
@@ -563,6 +553,7 @@
                             this.value = params.type.getValue();
                         },
                         initialize: function (params) {
+
                         },
                         getValue: function () {
                             return this.type.getValue();
@@ -596,6 +587,7 @@
                     {
                         var s = this.type.__getSource();
                         s.removeListeners(this);
+
                     },
                     methods: {
                         preInitialize: function (params) {
@@ -611,18 +603,24 @@
                           //      opts[k] = this.inputParams[k];
                             this.createInput(opts);
                             this.inputNode[this.getJqxWidgetName()]('theme', 'light');
+                            this.type.addListener("ERROR",null,function(){console.log("ON ERROR")});
                             var m = this;
                             this.inputNode.on("select", function (ev) {
                                 if(!m.dataBinding && !m.changing) {
                                     if (ev.args) {
                                         m.changing = true;
                                         var newVal = ev.args.item.value;
-                                        if (newVal == -1) {
-                                            m.type.setValue(null);
-
-                                        } else {
-                                            if (m.validate())
+                                        try {
+                                            if (newVal == -1) {
+                                                m.type.setValue(null);
+                                            } else {
                                                 m.type.setValue(m.getValue());
+                                            }
+                                            m.clearErrors();
+                                        } catch (e) {
+                                            this.showError(
+                                                Siviglia.i18n.es.base.getErrorFromJsException(e)
+                                            );
                                         }
                                         m.changing = false;
                                     }
@@ -1571,7 +1569,7 @@
                                 },
                                 initialize:function(params)
                                 {
-
+                                    this.buildNewItemWidget();
                                 },
                                 onRemoveClicked:function(node,params)
                                 {
@@ -1579,14 +1577,11 @@
                                 },
                                 buildNewItemWidget:function(node,params)
                                 {
-
                                     this.newInstance=this.type.getValueInstance();
                                     var factory=new Siviglia.inputs.jqwidgets.Factory();
-
                                     factory.getInput(this.newInstance,{},this.form).then(function(instance){
                                         if(this.newItemSelector) {
                                             this.newItemSelector.destruct();
-                                            this.newInstance.destruct();
                                         }
                                         this.newItemNode.html("");
                                       this.newItemSelector =instance;
@@ -1614,14 +1609,12 @@
                                                 this.type.setValue([newInstance]);
                                             else
                                                 this.type.getValue().push(newInstance);
-
-
                                         }
                                         this.newItemSelector.inputNode.focus();
                                     }
                                     else
                                     {
-                                        var newInstance=this.type.getValueInstance(0);
+                                        var newInstance=this.type.getValueInstance(0,null);
                                         var curVal=this.type.getValue();
                                         if(curVal===null)
                                             this.type.setValue([newInstance]);
@@ -1876,6 +1869,9 @@
                                     }
                                 },
                                 onAdd: function () {
+                                    debugger;
+                                    this.type.save();
+
                                     this.parentInput.onAdd(this.subInput.getValue());
                                     this.subInput.inputNode.val(null);
 
@@ -2580,9 +2576,9 @@
                         </div>
                     </div>
                     <div class="inputs container">
-                        <div data-sivLoop="/*type" data-contextIndex="current">
+                        <div data-sivLoop="/*type/__definition/FIELDS" data-contextIndex="current">
                             <div>
-                            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"key":"@current-index","parent":"/*type","form":"/*form"}'>
+                            2<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"key":"@current-index","parent":"/*type","form":"/*form"}'>
                             </div>
                             </div>
                         </div>
@@ -2629,7 +2625,7 @@
             </div>
         </div>
         <div>
-            <div data-sivId="newItemNode" data-sivCall="buildNewItemWidget"></div>
+            <div data-sivId="newItemNode"></div>
                 <button data-sivId="addSimpleItem" data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
             </div>
         </div>
@@ -2892,9 +2888,9 @@
 
             <div class="label" data-sivId="labelNode" data-sivValue="/*label"></div>
             <div data-sivId="helpNode" class="help" data-sivValue="/*help"></div>
-            
+
             <div class="input" data-sivId="inputNode" data-sivCall="getInputFor" data-sivParams="{}"></div>
-            
+
             <div data-sivId="requiredNode"></div>
             <div style="clear:both"></div>
     </div>

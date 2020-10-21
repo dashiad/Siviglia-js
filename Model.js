@@ -488,6 +488,7 @@ Siviglia.Utils.buildClass({
                     this.__model=model;
                     this.__dsname=name;
                     this.__params=params;
+                    this.__promises={};
                     this.currentPromise=null;
                     this.nextPromise=null;
                     if(typeof response=="undefined" || response==null)
@@ -594,56 +595,33 @@ Siviglia.Utils.buildClass({
 
                         if(this.__frozen)
                             return;
-                        // Si ahora mismo estamos refrescando, y alguien vuelve a pedir un refresco
-                        if(typeof evName!=="undefined" && evName!=="NEXT") {
-                            if (this.currentPromise) {
-                                // Si no tenemos una promesa proxima
-                                if (!this.nextPromise) {
-                                    // Creamos una nueva promesa, que servira para todos aquellos que pidan un
-                                    // refresh antes de que termine la request actual
-                                    this.nextPromise = $.Deferred();
-                                }
-                                // Y devolvemos el futuro refresh
-                                return this.nextPromise;
-                            }
-                        }
-
-                        // Un datasource va a ser simplemente un BaseTypedObject con una definicion fija
-                        // de datos, total de elementos, criterios de ordenacion, etc,etc.
                         var mName = new Siviglia.Model.ModelDescriptor(this.__model);
                         var location = mName.getDataSourceUrl(this.__dsname, null, this.params,this.settings);
+                        if(typeof this.__promises[location]!=="undefined")
+                            return this.__promises[location];
+
                         var transport = new Siviglia.Model.Transport();
                         var m=this;
-
-                        if(this.currentPromise===null)
-                            this.currentPromise=$.Deferred();
-
+                        (function(location){
+                            var currentPromise=$.Deferred();
+                            m.__promises[location]=currentPromise;
                         transport.doGet(location).then(
                             function (response) {
                                 if (response.error) {
-                                    m.currentPromise.reject(error);
+                                    currentPromise.reject(error);
                                 }else {
                                     m.onResponse(response);
-                                    m.currentPromise.resolve();
+                                    currentPromise.resolve();
                                 }
-                                // indicamos que ya no tenemos promesa actual
-                                m.currentPromise=null;
-                                // Pero si tenemos una promesa proxima
-                                if(m.nextPromise!==null)
-                                {
-                                    // Hacemos que la promesa actual, sea la proxima.
-                                    m.currentPromise=m.nextPromise;
-                                    // Borramos la nextPromise
-                                    m.nextPromise=null;
-                                    // Y refrescamos.
-                                    m.refresh("NEXT");
-                                }
-                            }.bind(this),
+                                delete m[location];
+                            },
                             function (error) {
-                                this.currentPromise.reject(error);
+                                currentPromise.reject(error);
+                                delete m[location];
                                 throw error;
-                            }.bind(this));
-                        return this.currentPromise;
+                            });
+                        })(location);
+                        return m.__promises[location];
                     },
                     getDynamicParam:function()
                     {

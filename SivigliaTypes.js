@@ -69,7 +69,8 @@ Siviglia.Utils.buildClass(
                             return this.__pathFieldName;
                         },
                         getFullPath: function () {
-                            var stack = [];
+                            return this.__fieldNamePath;
+                            /*var stack = [];
                             var cur = this;
                             while (!Siviglia.empty(cur)) {
                                 var fName = cur.getFieldName();
@@ -77,7 +78,7 @@ Siviglia.Utils.buildClass(
                                     stack.unshift(fName);
                                 cur = cur.getParent();
                             }
-                            return "/" + stack.join("/");
+                            return "/" + stack.join("/");*/
                         },
                         findPath: function (path, asTypes) {
                             var prefix = "";
@@ -341,8 +342,6 @@ Siviglia.Utils.buildClass(
                                 return this.__flags;
                             },
                             setValue: function (val) {
-
-
                                     this.apply(val, this.__validationMode);
 
                             },
@@ -388,6 +387,15 @@ Siviglia.Utils.buildClass(
                                     this.__controller.__clearErroredField(this);
                             },
                             apply: function (val, validationMode) {
+                                // Esto no esta tan claro que haya que hacerlo asi.
+                                // Esto sirve para que si lo que se asigna no es un valor javascript normal, sino un BaseType,
+                                // se obtenga el valor "normal", y se descarte el baseType. Pero esto es una copia, no es el mismo valor.
+                                // Ademas, el hecho de asignar un esto "molesta" sólo en algunas circunstancias, no siempre.
+                                // Habría que tratar esto mejor, comprobando que este tipo, es del mismo tipo que val, copiando su estado (errores, etc),
+                                // y compartiendo el valor.
+                                if(val!==null && typeof val!=="undefined" && typeof val.__type__!=="undefined")
+                                    val=val.getPlainValue();
+
                                 if (this.__isEditable()) {
                                 if (val === null || this.__isEmptyValue(val)) {
                                     var hasChanged = false;
@@ -410,8 +418,8 @@ Siviglia.Utils.buildClass(
                                 if (validationMode === null)
                                     validationMode = this.__validationMode;
 
-                                if (val === this.__getEmptyValue()) {
-                                    if (this.__setOnEmpty == false)
+                                if (this.__isEmptyValue(val)) {
+                                    if (this.__setOnEmpty === false)
                                         val = null;
                                 }
 
@@ -423,6 +431,7 @@ Siviglia.Utils.buildClass(
                                     willSetDirty=false;
                                 if(this.__value && this.__value.hasOwnProperty("__destroy__"))
                                     this.__value.__destroy__();
+
                                 this._setValue(val, validationMode);
                                 this.__valueSet = true;
                                 if(this.__isDynamic())
@@ -492,9 +501,9 @@ Siviglia.Utils.buildClass(
                                         return true;
                                     }
                                     var res = this._validate();
-                                    if (this.__hasSource()) {
+                                    if (this.__hasSource() && validationMode >= Siviglia.types.BaseType.VALIDATION_MODE_COMPLETE) {
                                         var s = this.__getSource();
-                                        if (!s.isAsync() || validationMode >= Siviglia.types.BaseType.VALIDATION_MODE_COMPLETE) {
+                                        if (!s.isAsync() ) {
                                             this.__checkSource(val);
                                         }
                                     }
@@ -611,10 +620,6 @@ Siviglia.Utils.buildClass(
                             getValue: function () {
                                 if (this.__hasValue())
                                     return this._getValue();
-                                else {
-                                    if (this.__setOnEmpty === true)
-                                        return this.__getEmptyValue();
-                                }
                                 return null;
                             },
                             _getValue: function () {
@@ -2246,7 +2251,7 @@ Siviglia.Utils.buildClass(
                             __proxySet: function (val, m) {
                                 return function (target, prop, value, receiver) {
 
-                                    try {
+             //                       try {
 
                                         if (reserved.indexOf(prop) >= 0) {
                                             target[prop] = value;
@@ -2301,11 +2306,11 @@ Siviglia.Utils.buildClass(
                                         }
 
                                         return true;
-                                    } catch (e) {
+               /*                     } catch (e) {
                                         m.fireEvent("ERROR", {})
                                         throw new Siviglia.types.BaseTypeException(m.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {});
                                         return false;
-                                    }
+                                    }*/
                                 }
                             },
                             buildProxy: function (val) {
@@ -2462,6 +2467,10 @@ Siviglia.Utils.buildClass(
                                 this.subNode.destruct();
                             this.subNode = null;
                         },
+                        isContainer:function()
+                        {
+                           return true;
+                        },
                         _setValue: function (val) {
 
                             this.reset();
@@ -2469,8 +2478,9 @@ Siviglia.Utils.buildClass(
                             var typeDef=Siviglia.issetOr(typeInfo["def"],typeInfo["name"]);
                             this.currentType = typeInfo["name"];
                             this.subNode = Siviglia.types.TypeFactory.getType({fieldName:"",path:this.__fieldNamePath}, typeDef, this.__parent,this.forceType == null ? val : null,this.__validationMode);
+                            this.forceType=null;
                             // Si despues de est, el subNodo no tiene valor, le asignamos un valor vacio.
-                            if(!this.subNode.__hasOwnValue())
+                            if(!this.subNode.__hasOwnValue() && this.subNode.isContainer())
                                 this.subNode.apply({},Siviglia.types.BaseType.VALIDATION_MODE_NONE);
                             this.__value = this.subNode;
                             // Solo necesitamos eventizar si el cambio de tipo se produce por un cambio de un TYPE_FIELD
@@ -2613,7 +2623,9 @@ Siviglia.Utils.buildClass(
                             if (byType) {
                                 if (this.forceType !== null) {
                                     var curType = this.forceType;
-                                    this.forceType = null;
+                                    // Aun no ponemos forceType a null, esto hay que hacerlo en el setValue,
+                                    // para que se establezca a null el valor del subnodo.
+                                    //this.forceType = null;
                                     return {name: curType, def: this.__definition.ALLOWED_TYPES[curType]};
                                 } else {
                                     for (var k = 0; k < this.__definition["ON"].length; k++) {

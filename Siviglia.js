@@ -1128,8 +1128,11 @@ Siviglia.Utils.buildClass({
                                             }
                                             else
                                             {
-                                                if(typeof v=="object")
+                                                if(typeof v=="object") {
+                                                    if(typeof v.__type__ !== "undefined")
+                                                        return JSON.stringify(v.getValue());
                                                     return JSON.stringify(v);
+                                                }
                                                 else
                                                     return v;
                                             }
@@ -1698,6 +1701,7 @@ Siviglia.Utils.buildClass(
                         this.Expando("sivcall");
                     },
                     destruct: function () {
+                        if(this.paramObj!==null)
                         this.paramObj.removeListeners(this);
                     },
                     methods: {
@@ -1705,6 +1709,7 @@ Siviglia.Utils.buildClass(
                             this.method = node.data("sivcall");
                             this.node = node;
                             this.stack=stack;
+                            this.paramObj=null;
                             // Noa aniadimos como listener de los parametros.
                             // Nota: los parametros se parsean antes, ya que existen antes en el array de
                             // expandos existentes.
@@ -1731,7 +1736,7 @@ Siviglia.Utils.buildClass(
                         },
                         update: function () {
                             var params = null;
-                            if (Siviglia.isset(this.paramObj))
+                            if (this.paramObj!==null)
                                 params = this.paramObj.getValues();
 
                             if (this.method.substr(0, 1) == ".") {
@@ -2365,7 +2370,9 @@ Siviglia.Utils.buildClass(
                                     this.__altLayout==null?this.__name:this.__altLayout,
                                     this.__currentParamsValues,null, tempNode,  this.__stack);
                                 this.__view.__build().then(function(){
-                                    m.rootNode = m.__view.getNode().children();
+                                    // Importante no usar aqui .children(), ya que omite los comentarios,
+                                    // que son necesarios para sivIf
+                                    m.rootNode = $(m.__view.getNode()[0].childNodes);
                                     m.rootNode.insertAfter($(m.node[0]));
                                     m.node.remove();
                                     m.node = m.rootNode;
