@@ -1569,7 +1569,8 @@
                                 },
                                 initialize:function(params)
                                 {
-                                    this.buildNewItemWidget();
+                                    if(this.hasSimpleType)
+                                        this.buildNewItemWidget();
                                 },
                                 onRemoveClicked:function(node,params)
                                 {
@@ -1680,7 +1681,7 @@
                                 "VALUE":"VALUE"
                             };
 
-                            var currentType=params.type.getCurrentType();
+                            var currentType=params.type.getCurrentAllowedType();
 
                             this.typeSelector=Siviglia.types.TypeFactory.getType ({fieldName:"selector",fieldPath:"/"}, {
                                 "TYPE":"String",

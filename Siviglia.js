@@ -1,6 +1,15 @@
 if (typeof Siviglia === 'undefined') {
     Siviglia = {};
 }
+// Exception hook para jQuery
+jQuery.Deferred.exceptionHook = function( error, stack ) {
+
+    // Support: IE 8 - 9 only
+    // Console exists when dev tools are open, which can happen at any time
+    if ( window.console && window.console.warn && error  ) {
+        window.console.warn( "jQuery.Deferred exception: " + error.message, error.stack, stack );
+    }
+};
 // PinkySwear : https://github.com/timjansen/pinkyswear.js
 (function (e) {
 

@@ -2543,7 +2543,7 @@ Siviglia.Utils.buildClass(
                                 // Vemos si en el tipo actual, existe ese campo, o si es un campo que debe estar "oculto", ya
                                 // que igual no existe en el tipo actual, y sólo está ahi por si se quiere cambiar el valor del tipo.
                                 // Esto solo tiene sentido si el subNodo es un container
-                                if (m.subNode.isContainer() && !Siviglia.empty(m.subNode.__definition.FIELDS[fieldName]))
+                                if (m.subNode.isContainer() && typeof m.subNode.__definition.FIELDS!=="undefined" && !Siviglia.empty(m.subNode.__definition.FIELDS[fieldName]))
                                     def.enumerable = false;
                                 Object.defineProperty(val, fieldName, def);
                             }
@@ -2707,11 +2707,7 @@ Siviglia.Utils.buildClass(
 
                         isValidType: function (v) {
                             var list = this.getAllowedTypes();
-                            for (var k in list) {
-                                if (v == k)
-                                    return true;
-                            }
-                            return false;
+                            return typeof list[v]!=="undefined";
                         },
                         getAllowedTypes: function () {
                             if (Siviglia.type(this.__definition.ALLOWED_TYPES) === "array") {
@@ -2734,9 +2730,19 @@ Siviglia.Utils.buildClass(
                             return result;
                         },
                         getCurrentType: function () {
-
                             return this.currentType;
-
+                        },
+                        getCurrentAllowedType:function(){
+                            if(this.currentType===null)
+                                return null;
+                            // Si el tipo actual esta listado en ALLOWED_TYPES, ése es el allowed Type.
+                            if(this.isValidType(this.currentType))
+                                return this.currentType;
+                            // Si no estaba listado, pero en ALLOWED_TYPES hay una key "*", devolvemos "*"
+                            if(typeof this.__definition.ALLOWED_TYPES["*"]!=="undefined")
+                                return "*";
+                            // TODO : Este tipo tendria un valor no válido...raro.
+                            return null;
                         },
                         getCurrentTypeObj: function () {
                             return this.subNode;
@@ -2747,6 +2753,8 @@ Siviglia.Utils.buildClass(
                             // solo el campo tipo puesto:
                             if (!Siviglia.empty(this.__definition.TYPE_FIELD)) {
                                 var newObj = {};
+                                // Ojo, si el valor es "*", el campo TYPE se pondrá a "*" tambien...
+                                // Si setCurrentType se ha llamado desde un formulario, al pintar el UI, en el campo TYPE habrá un "*"
                                 newObj[this.__definition.TYPE_FIELD] = type;
                                 this.setValue(newObj);
                             } else {
