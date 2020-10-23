@@ -183,7 +183,7 @@
 {
     background-color: var(--contrast-1);
     list-style-type: none;
-    padding-left: 4px;
+    padding-left: 0;
     /* max-height: 150px; */
     overflow-y: auto;
     margin-top: 0px;
@@ -196,6 +196,8 @@
     margin-bottom: 2px;
     padding-bottom: 1px;
     border-bottom: 1px solid var(--dark-lighter-color);
+    padding-left: 10px;
+    padding-right: 25px;
 }
 .Dictionary-keylist-item a:hover {
     color: var(--light-color);
@@ -207,6 +209,7 @@
 }
 .Dictionary-removeButton:before, .arraySimpleValue-removeButton:before {
     content:var(--icon-trash);
+    padding-right: 5px;
 }
 .Dictionary-removeButton, .arraySimpleValue-removeButton {
     font-family:var(--icon-font);
@@ -284,4 +287,22 @@
     cursor: pointer;
     display: inline-block;
     min-width: auto;
+}
+
+/* ocultar el input del container cuando se tiene FIXED */
+
+.StdInputContainer.TYPE.String {
+    display: none;
+}
+
+/* Custom class (seleccionado) for active element in Dictionary */
+li.Dictionary-keylist-item.seleccionado {
+    font-weight: 600;
+    background-color: var(--contrast-0);
+    font-style: italic;
+    border-left: 10px solid #b05a1c;
+}
+
+li.Dictionary-keylist-item.seleccionado:hover {
+    font-style: none;
 }
