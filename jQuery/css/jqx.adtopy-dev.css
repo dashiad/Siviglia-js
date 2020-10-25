@@ -14,6 +14,8 @@
     --jqx-border-color: rgba(221, 221, 221, 1);
     --jqx-border-radius: 5px;
     --jqx-font-family: "Rubik", Helvetica, Arial, serif;
+    /* Cambiando esta fuente, afecta a TODO el formulario y se pone la fuente modo retro
+    --jqx-font-family: "MainFont", "Rubik", Helvetica, Arial, serif;     */
     --jqx-font-size: 16px;
     --jqx-header-text-color:rgba(85, 85, 85, 1);
     --jqx-header-background-color: rgba(248, 248, 248, 1);

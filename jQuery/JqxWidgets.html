@@ -421,6 +421,9 @@
 
                             if (d.LABEL == null)
                                 d.LABEL= 'dato';
+                            
+                            // if (d.FIXED !== null)
+
 
                             var opts = {
                                 placeHolder:Siviglia.issetOr(this.inputParams["placeholder"],"Insertar "+ d.LABEL +"...")
@@ -1104,6 +1107,28 @@
                                     this.currentType=this.type["*"+this.currentKey];
                                     this.hasCurrentKey=true;
 
+
+                                    // Custom class for active element in Dictionary
+                                    var elements_with_selected = document.getElementsByClassName("seleccionado");
+
+                                    // Eliminacion de clases con dicho valor "seleccionado"
+                                    for (var i=0; i<elements_with_selected.length; i++){
+                                        elements_with_selected[i].classList.remove("seleccionado");
+                                    }
+
+                                    // Teniendo el nodo, nos posicionamos en el elemento a insertar
+                                    // la nueva clase "seleccionado"
+                                    if (node !== null){
+                                        var value_selected = node[0].parentElement.parentNode;
+                                        value_selected.classList.add("seleccionado");
+                                    }
+                                    /*TODO, cuando el nodo está null.
+                                    
+                                    Es decir, cuando se ha insertado un dato nuevo, 
+                                    ver la forma de añadirle esa clase "seleccionado"
+                                    ¿con document.getElement...?
+                                    */ 
+                                        
                                 },
                                 displayInput:function(node,key)
                                 {
