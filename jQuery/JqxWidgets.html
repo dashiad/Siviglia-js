@@ -1604,23 +1604,21 @@
                                 {
                                     if(this.hasSimpleType) {
                                         if (!this.newInstance.__isEmpty()) {
-                                            var newInstance=this.newInstance.getValue();
-                                            var curVal=this.type.getValue();
+
                                             if(curVal===null)
-                                                this.type.setValue([newInstance]);
+                                                this.type.setValue([null]);
                                             else
-                                                this.type.getValue().push(newInstance);
+                                                this.type.getValue().push(null);
                                         }
                                         this.newItemSelector.inputNode.focus();
                                     }
                                     else
                                     {
-                                        var newInstance=this.type.getValueInstance(0,null);
                                         var curVal=this.type.getValue();
                                         if(curVal===null)
-                                            this.type.setValue([newInstance]);
+                                            this.type.setValue([null]);
                                         else
-                                            this.type.getValue().push(newInstance);
+                                            this.type.getValue().push(null);
                                         this.setSelected(this.type.getValue().length-1);
                                     }
                                 },
@@ -1632,6 +1630,10 @@
                                 {
                                     if(idx==this.currentSelection)
                                         return;
+                                    if(this.type.length > 0)
+                                    {
+                                        var qq=this.type[0];
+                                    }
                                     this.currentSelection=idx;
                                     var factory=new Siviglia.inputs.jqwidgets.Factory();
                                     factory.getInput(this.type.getValue()["*"+idx],{},this.form).then(function(instance){
@@ -1894,7 +1896,11 @@
                                 this.form=params.form;
                                 this.parent=params.parent;
                                 this.field=params.key;
-                                this.innerType=this.parent["*"+this.field];
+                                if(typeof this.parent.getPath!=="undefined")
+                                    this.innerType=this.parent.getPath("#*"+this.field);
+                                else
+                                    this.innerType=this.parent["*"+this.field];
+
                                 this.fieldName=params.key;
                                 this.fieldDef=this.innerType.getDefinition();
                                 this.innerInput=null;
@@ -1910,7 +1916,7 @@
                                 var typeDef=this.innerType.getDefinition();
                                 this.rootNode.addClass(typeDef["TYPE"]);
                                 this.inputNode.addClass(this.fieldName);
-                                this.labelNode.addClass(this.fieldName);                                
+                                this.labelNode.addClass(this.fieldName);
                                 if(this.innerType.__isRequired())
                                     this.requiredNode.addClass("required");
                             },
@@ -2619,7 +2625,7 @@
         <div class="arrayValues">
             <div data-sivLoop="/*type" data-contextIndex="current">
                 <span class="arraySimpleValue">
-                    <span data-sivValue="title|[%/@current%]::[%/@current%]"></span>                    
+                    <span data-sivValue="title|[%/@current%]::[%/@current%]"></span>
                     <i class="arraySimpleValue-removeButton" data-sivevent="click" data-sivCallback="onRemoveItem" data-sivparams='{"index":"/@current-index"}' data-sivValue="title|Eliminar [%/@current%]"></i>
                 </span>
             </div>
@@ -2634,7 +2640,7 @@
                 <div class="arrayValues" style="width:300px;min-height:50px;margin-bottom:5px">
                     <div data-sivLoop="/*type" data-contextIndex="current">
                         <a class="arrayValueComplex" data-sivEvent="click" data-sivParams='{"key":"@current-index"}' data-sivCallback="getInputFor" class="label label-primary" data-sivValue="[%/@current-index%]"></a>
-                        <span data-sivValue="title|Eliminar [%/@current-index%]" class="arraySimpleValue-removeButton" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"[%@current-index%]"}'></span>
+                        <span data-sivValue="title|Eliminar [%/@current-index%]" class="arraySimpleValue-removeButton" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"@current-index"}'></span>
                     </div>
                 </div>
                 <div style="border:1px solid black" data-sivId="currentItemNode">

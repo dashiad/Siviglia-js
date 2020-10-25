@@ -203,6 +203,8 @@ Siviglia.Utils.buildClass(
                         VALIDATION_MODE_STRICT: 3 // Validacion de tipo, s
                     },
                     construct: function (name, def, parentType, val, validationMode) {
+                        this.__iid__=Siviglia.types.BaseType.insCounter;
+                        Siviglia.types.BaseType.insCounter++;
                         this.__type__ = "BaseType";
                         this.__controller=null;
                         this.__setParent(parentType, name);
@@ -1763,6 +1765,15 @@ Siviglia.Utils.buildClass(
                             enumerable: false,
                             configurable: true
                         });
+                        Object.defineProperty(v, "__basetype__", {
+                            get: function () {
+                                return m;
+                            },
+                            set: function (v) {
+                            },
+                            enumerable: false,
+                            configurable: true
+                        });
                         this.__valueSet = true;
                         this.disableEvents(false);
 
@@ -2124,6 +2135,15 @@ Siviglia.Utils.buildClass(
                                     }
                                     , enumerable: false, configurable: true
                                 });
+                                Object.defineProperty(val, "__basetype__", {
+                                    get: function () {
+                                        return m;
+                                    },
+                                    set: function (v) {
+                                    },
+                                    enumerable: false,
+                                    configurable: true
+                                });
 
 
                                 var keys = [];
@@ -2240,8 +2260,8 @@ Siviglia.Utils.buildClass(
                                 return function (target, prop) {
                                     var ret = val[prop];
                                     delete val[prop];
-                                    val["*" + prop].removeListeners(m);
-                                    val["*" + prop].destruct();
+                                //    val["*" + prop].removeListeners(m);
+                                //    val["*" + prop].destruct();
                                     delete val["*" + prop];
                                     target["[[KEYS]]"] = m.getKeys(val);
                                     target.__ev__.fireEvent("CHANGE", {object: target, value: m.__currentProxy});
@@ -2258,7 +2278,15 @@ Siviglia.Utils.buildClass(
                                             return;
                                         }
                                         var isNewProp = false;
-                                        if (!target.hasOwnProperty("*" + prop)) {
+                                        if(!target.hasOwnProperty("*"+prop))
+                                        {
+                                            isNewProp = true;
+                                        }
+                                        else
+                                        {
+                                  //          target["*"+prop].destruct();
+                                        }
+
                                             var instance = m.getValueInstance(prop, value);
                                             Object.defineProperty(target, "*" + prop, {
                                                 get: function () {
@@ -2280,22 +2308,29 @@ Siviglia.Utils.buildClass(
                                                 }
                                                 , enumerable: false, configurable: true
                                             })
-                                            Object.defineProperty(m, prop, {
-                                                get: function () {
-                                                    return target[prop]
-                                                },
-                                                set: function (v) {
-                                                    target[prop] = v;
-                                                    return true;
-                                                }
-                                                , enumerable: false, configurable: true
-                                            })
+                                        Object.defineProperty(m, prop, {
+                                            get: function () {
+                                                return instance.getValue()
+                                            },
+                                            set: function (v) {
+                                                instance.setValue(v);
+                                                return true;
+                                            }
+                                            , enumerable: false, configurable: true
+                                        });
+                                    Object.defineProperty(target, "__basetype__", {
+                                        get: function () {
+                                            return m;
+                                        },
+                                        set: function (v) {
+                                        },
+                                        enumerable: false,
+                                        configurable: true
+                                    });
 
-                                            isNewProp = true;
-                                        } else {
-                                            target["*" + prop].setValue(value)
-                                        }
-                                        target[prop] = value;
+
+
+                                    target[prop] = value;
 
                                         // OJO: Solo lanzamos evento si la propiedad es nueva, o sea, no habia una propiedad "*".
                                         if (isNewProp) {
@@ -2800,6 +2835,24 @@ Siviglia.Utils.buildClass(
                         Siviglia.Path.eventize(this, "[[KEYS]]");
                         this.Proxifier();
                         this.BaseType(name, definition, parent,value, validationMode);
+                        var arrObj = Object.getOwnPropertyNames(Array.prototype);
+                        var m=this;
+                        for( var k=0;k<arrObj.length;k++ ) {
+                            (function(prop){
+                            Object.defineProperty(m, prop, {
+                                get: function () {
+                                    if(m.__currentProxy)
+                                        return m.__currentProxy[prop];
+                                },
+                                set: function (v) {
+                                    if(m.__currentProxy)
+                                        m.__currentProxy[prop]=v;
+                                },
+                                enumerable: false,
+                                configurable: true
+                            });
+                            })(arrObj[k]);
+                        }
                     },
                     destruct:function()
                     {
@@ -2872,13 +2925,18 @@ Siviglia.Utils.buildClass(
                                         // La mejor forma de recalcular las keys, es que, o cambie el numero de keys,
                                         // o alguien haya dicho que el objeto esta dirty.
                                         val["[[KEYS]]"] = m.getKeys();
-                                        if (!m.eventsDisabled) {
-                                            target.__ev__.fireEvent("CHANGE", {
-                                                object: target,
-                                                property: prop,
-                                                value: undefined
-                                            });
-                                            m.onChange();
+                                        if (!m.disabledEvents) {
+                                            try {
+                                                target.__ev__.fireEvent("CHANGE", {
+                                                    object: target,
+                                                    property: prop,
+                                                    value: undefined
+                                                });
+                                            }catch(e)
+                                            {
+                                                var tt=11;
+                                            }
+                                       //     m.onChange();
                                         }
                                     }
                                     return true;
@@ -2886,6 +2944,19 @@ Siviglia.Utils.buildClass(
                                 return parentFunc.apply(this, arguments);
                             }
 
+                        },
+                        // La unica diferencia de esto, con la clase base, es que no se lanza un evento CHANGE al borrar una key
+                        // Borrar una key en un array significa que se va a modificar length, y es entonces cuando se tiene que lanzar el evento.
+                        __proxyDeleteProperty: function (val, m) {
+                            return function (target, prop) {
+                                var ret = val[prop];
+                                delete val[prop];
+                              //  val["*" + prop].removeListeners(m);
+                              //  val["*" + prop].destruct();
+                                delete val["*" + prop];
+                                target["[[KEYS]]"] = m.getKeys(val);
+                                return ret!==null?ret:true;
+                            }
                         },
                         updateChildren: function (val) {
                             var m = this;
@@ -3208,6 +3279,7 @@ Siviglia.Utils.buildClass(
     }
 );
 
+Siviglia.types.BaseType.insCounter=0;
 /* big.js v1.0.1 https://github.com/MikeMcl/big.js/LICENCE */
 (function (e) {
     "use strict";

@@ -1533,6 +1533,131 @@
         return status && countListeners() == 0;
     }, true);
 
+    runTest("Comprobaciones de Array (5)",
+        "Se comprueba el funcionamiento del borrado de elementos de un array",
+        {
+            "FIELDS": {
+                "f3": {
+                    "TYPE": "Array",
+                    "ELEMENTS": {
+                        "TYPE": "Container",
+                        "FIELDS":{
+                            "f1":{
+                                "TYPE":"String",
+                                "MINLENGTH":4
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        function (def) {
+            var t1 = new Siviglia.model.BaseTypedObject(
+                def
+            );
+            var f=t1["*f3"];
+            var nErrors = 0;
+            var nChanges = 0;
+
+            f.addListener("CHANGE", null, function () {
+                nChanges++
+            });
+
+            f=[{"f1":"abcde"},{"f1":"fghi"},{"f1":"jklm"}];
+
+            f.splice(1,1);
+            var status=f[0].f1==="abcde" && f[1].f1==="jklm" && f.length===2;
+
+
+            t1.destruct();
+
+            return status && countListeners() == 0;
+        }, true);
+
+    runTest("Comprobaciones de Array (6)",
+        "Se comprueba el funcionamiento del borrado de elementos de un array,con TypeSwitchers y Containers",
+        {
+            "FIELDS": {
+                "f3": {
+                    "TYPE": "Array",
+                    "ELEMENTS": {
+                        "TYPE": "TypeSwitcher",
+                        "TYPE_FIELD":"TYPE",
+                        "ALLOWED_TYPES":{
+                            "T1":{
+                                "TYPE":"Container",
+                                "FIELDS":{
+                                    "TYPE":{
+                                        "TYPE":"String",
+                                        "FIXED":"T1"
+                                    }   ,
+                                    "CAMPO":{
+                                        "TYPE":"String"
+                                    }
+                                }
+                            },
+                            "T2":{
+                                "TYPE":"Container",
+                                "FIELDS":{
+                                    "TYPE":{
+                                        "TYPE":"String",
+                                        "FIXED":"T2"
+                                    }   ,
+                                    "CAMPO2":{
+                                        "TYPE":"String"
+                                    }
+                                }
+                            },
+                            "T3":{
+                                "TYPE":"Container",
+                                "FIELDS":{
+                                    "TYPE":{
+                                        "TYPE":"String",
+                                        "FIXED":"T3"
+                                    }   ,
+                                    "CAMPO3":{
+                                        "TYPE":"String"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        function (def) {
+            var t1 = new Siviglia.model.BaseTypedObject(
+                def
+            );
+            var f=t1["*f3"];
+            var nErrors = 0;
+            var nChanges = 0;
+
+            f.addListener("CHANGE", null, function () {
+                nChanges++
+            });
+            var a1={"TYPE":"T1","CAMPO":"abcde"};
+            var a2={"TYPE":"T2","CAMPO2":"fghi"};
+            var a3={"TYPE":"T3","CAMPO3":"jklm"};
+            f.setValue([a1,a2,a3]);
+
+            f.splice(1,1);
+            var status=f[0].CAMPO==="abcde" && f[1].CAMPO3==="jklm" && f.length===2;
+
+            // El splice ha movido el elemento que antes estaba en 2, a la posicion 1. Para que esto funcione, ha
+            // habido que crear un nuevo typeswitcher en 1, con el valor del typeswitcher que habia en 2.
+            // Lo importante, es que ese valor siga apuntando al mismo objeto, de forma que sigue siendo el mismo
+            // valor referenciado por a3. Asi que si cambiamos a3, lo que hay en f[1] tiene que cambiar tambien.
+
+            a3.CAMPO3="JORGITO";
+            status= status && f[1].CAMPO3==="JORGITO";
+
+            t1.destruct();
+
+            return status && countListeners() == 0;
+        }, true);
+
+
     runTest("Comprobaciones de Enum (1)",
         "Comprobaciones simples del tipo Enum",
         {
@@ -2037,16 +2162,16 @@
             nSources++;
         });
         t1.f4={"aa":"uno","bb":"dos"};
-        var status=(nChanges4==1 && nChanges3==0 && nSources==1 );
+        var status=(nChanges4==1 && nChanges3==1 && nSources==1 );
         t1.f3="aa";
         t1.save();
-        status = status && (nChanges3==1 && t1.f3=="aa");
+        status = status && (nChanges3==2 && t1.f3=="aa");
         t1.f4["cc"]="tres";
         status=status && (nChanges4==2 && nSources==2);
 
         t1.f3="cc";
         t1.save();
-        status=status && (nChanges3==2 && t1.f3=="cc");
+        status=status && (nChanges3==3 && t1.f3=="cc");
         t1.destruct();
         status = status && countListeners()===0;
         return status;
