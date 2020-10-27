@@ -11,9 +11,11 @@
     <script src="../../SivigliaTypes.js"></script>
     <script src="../../../jqwidgets/jqx-all.js"></script>
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.light.css">
-    <script>
+    <link rel="stylesheet" href="../../jQuery/css/jqx.base.css">
+    <link rel="stylesheet" href="../../jQuery/css/jqx.adtopy-dev.css">
+    <link rel="stylesheet" href="../../jQuery/css/JqxWidgets.css">
+    <link rel="stylesheet" href="../../../../reflection/css/style.css">    
+<script>
         var Siviglia = Siviglia || {};
         Siviglia.config = {
             baseUrl: 'http://editor.adtopy.com/',
@@ -28,10 +30,10 @@
 
         };
         Siviglia.Model.initialize(Siviglia.config);
-    </script>
+</script>
 
 </head>
-<body>
+<body style="background-color:#EEE; background-image:none;">
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 <div style="display:none">
 

@@ -1,6 +1,5 @@
 <link rel='stylesheet prefetch' href='http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css'>
-<link rel="stylesheet" href="/reflection/css/style.css">
-
+<link rel="stylesheet" type="text/css" href="/reflection/css/style.css">
 
 <script src='http://statics.adtopy.com/node-modules/d3/dist/d3.min.js'></script>
 <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
@@ -12,7 +11,7 @@
 
 <script src="http://statics.adtopy.com/packages/jqwidgets/jqx-all.js"></script>
 <script src="http://statics.adtopy.com/packages/jqwidgets/globalization/globalize.js"></script>
-<link rel="stylesheet" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.base.css">
-<link rel="stylesheet" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.light.css">
-
-
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.base.css">
+<link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.light.css">
+<link rel="stylesheet" type="text/css" href="../jQuery/css/jqx.adtopy-dev.css">
+<link rel="stylesheet" type="text/css" href="../jQuery/css/JqxWidgets.css">

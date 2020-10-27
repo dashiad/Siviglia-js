@@ -18,8 +18,8 @@
     <script src="../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="/reflection/css/style.css">
     <link rel="stylesheet" href="../jQuery/JqxWidgets.css">
-    <link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
+    <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
 
     <style type="text/css">
         #svgChart {
@@ -30,7 +30,7 @@
 </head>
 <style type="text/css">
 </style>
-<body style="background-color:#EEE">
+<body style="background-color:#EEE; background-image:none;">
 <?php include_once("../jQuery/JqxViews.html"); ?>
 <?php include_once("../jQuery/JqxTypes.html"); ?>
 <?php include_once("../jQuery/JqxWidgets.html"); ?>

@@ -13,8 +13,8 @@
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="../../jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" href="../../../../reflection/css/style.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.adtopy-dev.css">
+    <link rel="stylesheet" href="../../jQuery/css/jqx.base.css">
+    <link rel="stylesheet" href="../../jQuery/css/jqx.adtopy-dev.css">
 
     <script>
         var Siviglia = Siviglia || {};
@@ -34,7 +34,7 @@
 </script>
 
 </head>
-<body>
+<body style="background-color:#EEE; background-image:none;">
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 <?php include_once(__DIR__."/../../jQuery/JqxLists.html");?>
 <div style="display:none">

@@ -19,8 +19,8 @@
     <script src="../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="/reflection/css/style.css">
     <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
-    <link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
+    <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
     <link rel="stylesheet"
           href="highlight/styles/ir-black.css">
     <script src="highlight/highlight.pack.js"></script>
@@ -104,7 +104,7 @@
 </head>
 <style type="text/css">
 </style>
-<body style="background-color:#EEE">
+<body style="background-color:#EEE; background-image:none;">
 <?php include_once("../jQuery/JqxWidgets.html"); ?>
 <?php include_once("../jQuery/JqxLists.html"); ?>
 
@@ -113,7 +113,8 @@
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-	    var DEVELOP_MODE=13;  // All tests
+        var DEVELOP_MODE=13;
+	    // var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");

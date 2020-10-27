@@ -306,3 +306,6 @@ li.Dictionary-keylist-item.seleccionado {
 li.Dictionary-keylist-item.seleccionado:hover {
     font-style: none;
 }
+
+/* ocultacion campo "help" en StdInputContainer si esta vacio */
+.help.hidden-help { display: none; }

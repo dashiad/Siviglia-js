@@ -1,4 +1,9 @@
-<link rel="stylesheet" type="text/css" href="../../../reflection/css/style.css">
+<!-- Comentado para quitar este warning de la consola:
+    "El recurso se ha interpretado como Hoja de estilo pero se ha transferido con el tipo MIME text/html"
+
+    Ya se carga ese fichero .css en \sites\reflection\widgets\PAGE\PAGE.wid
+
+    <link rel="stylesheet" type="text/css" href="../../../reflection/css/style.css"> -->
 <style>
     .remove, .NewItemString .add {
         font-family:'IcoMoon'
@@ -1931,9 +1936,8 @@
                                 this.fieldName=params.key;
                                 this.fieldDef=this.innerType.getDefinition();
                                 this.innerInput=null;
-                                // SI NO HAY AYUDA, LO QUE HAY QUE HACER, ES OCULTAR EL DIV
-                                // QUE TIENE LA AYUDA. PARA HACER ESO, SE LE PONE UN SIVID , Y
-                                // EN INITIALIZE, SE LE OCULTA.
+                                // Si el campo HELP de la definition está vacía, guardamos string vacio
+                                // para que en el Initialize, ocultarlo por el sivId "helpNode"
                                 this.help=Siviglia.issetOr(this.fieldDef["HELP"],"");
                                 this.label=Siviglia.issetOr(this.fieldDef["LABEL"],"");
                             },
@@ -1944,6 +1948,10 @@
                                 this.rootNode.addClass(typeDef["TYPE"]);
                                 this.inputNode.addClass(this.fieldName);
                                 this.labelNode.addClass(this.fieldName);
+                                // Si campo ayuda vacio, ocultamos el div partiendo del sivid 'helpNode'
+                                if (this.help === ""){                                    
+                                    this.helpNode.addClass("hidden-help");
+                                }
                                 if(this.innerType.__isRequired())
                                     this.requiredNode.addClass("required");
                             },
