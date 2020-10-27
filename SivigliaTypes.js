@@ -472,7 +472,11 @@ Siviglia.Utils.buildClass(
                             {
                                 if(!Siviglia.isset(ctxStack))
                                     ctxStack=new Siviglia.Path.ContextStack();
-                                var ctx=new Siviglia.Path.BaseObjectContext(this,this.__getPathPrefix(),ctxStack);
+                                var prefix=this.__getPathPrefix();
+                                var ctx=new Siviglia.Path.BaseObjectContext(this,prefix,ctxStack);
+                                // Si el prefijo no es "#', añadimos tambien este mismo objeto con el prefijo '#'
+                                if(prefix!=='#')
+                                    ctx=new Siviglia.Path.BaseObjectContext(this,"#",ctxStack);
                                 var path=new Siviglia.Path.PathResolver(ctxStack,path);
                                 this.__resolvers.push(path);
                                 return path.getPath();
@@ -3260,7 +3264,7 @@ Siviglia.Utils.buildClass(
 
 
 
-                        this.Container("", d, null, value, Siviglia.types.BaseType.VALIDATION_MODE_SIMPLE);
+                        this.Container("", d, null, value, Siviglia.types.BaseType.VALIDATION_MODE_NONE);
                         this.__definedPromise.resolve(this);
                     },
                     ready: function () {
