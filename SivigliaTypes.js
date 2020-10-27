@@ -649,9 +649,11 @@ Siviglia.Utils.buildClass(
                                 return this.__definition;
                             },
                             save: function () {
-                                if(this.__hasSource() && this.__valueSet)
+                                if(this.__hasSource() && this.__valueSet )
                                 {
-                                    this.__checkSource(this.__value);
+                                    var s=this.__getSource();
+                                    if (!s.isAsync() )
+                                        this.__checkSource(this.__value);
                                 }
                                 if (this.__isErrored())
                                     throw new Siviglia.model.BaseTypedException(this.__fieldNamePath,Siviglia.model.BaseTypedException.ERR_CANT_SAVE_ERRORED_FIELD);
