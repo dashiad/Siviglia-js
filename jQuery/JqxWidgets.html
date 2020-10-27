@@ -421,7 +421,7 @@
 
                             if (d.LABEL == null)
                                 d.LABEL= 'dato';
-                            
+
                             // if (d.FIXED !== null)
 
 
@@ -1123,12 +1123,12 @@
                                         value_selected.classList.add("seleccionado");
                                     }
                                     /*TODO, cuando el nodo está null.
-                                    
-                                    Es decir, cuando se ha insertado un dato nuevo, 
+
+                                    Es decir, cuando se ha insertado un dato nuevo,
                                     ver la forma de añadirle esa clase "seleccionado"
                                     ¿con document.getElement...?
-                                    */ 
-                                        
+                                    */
+
                                 },
                                 displayInput:function(node,key)
                                 {
@@ -1627,19 +1627,21 @@
                                 },
                                 onNewItem:function()
                                 {
+                                    var curVal=this.type.getValue();
                                     if(this.hasSimpleType) {
+                                        debugger;
                                         if (!this.newInstance.__isEmpty()) {
-
+                                            var newValue=this.newInstance.getValue();
                                             if(curVal===null)
-                                                this.type.setValue([null]);
+                                                this.type.setValue([newValue]);
                                             else
-                                                this.type.getValue().push(null);
+                                                this.type.getValue().push(newValue);
                                         }
                                         this.newItemSelector.inputNode.focus();
                                     }
                                     else
                                     {
-                                        var curVal=this.type.getValue();
+
                                         if(curVal===null)
                                             this.type.setValue([null]);
                                         else

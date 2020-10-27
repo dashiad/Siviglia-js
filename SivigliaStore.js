@@ -491,8 +491,12 @@ Siviglia.Utils.buildClass(
                             this.autoCompleteField=this.ds.getDynamicParam();
                             if(typeof source["PARAMS"]!=="undefined")
                             {
+                                // $this->parent apunta al tipo de dato al que pertenece el source.
+                                // $this->parent->parent apunta al container que contiene al tipo al que pertenece el source.
+                                var ctxStack=new Siviglia.Path.ContextStack();
+                                var ctx=new Siviglia.Path.BaseObjectContext(this.getParent().__parent,"#",ctxStack);
                                 var encoded=JSON.stringify(source["PARAMS"]);
-                                this.pstring = new Siviglia.Path.ParametrizableString(encoded, this.stack);
+                                this.pstring = new Siviglia.Path.ParametrizableString(encoded, ctxStack);
                                 this.pstring.addListener("CHANGE",this,"onListener");
                             }
                         },
