@@ -22,9 +22,13 @@
     padding: var(--StdInputContainer-padding);
     display: flex;    
     color: var(--light-color);
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
+    flex-direction: row;
     border-bottom: var(--StdInputContainer-border-bottom);
+    width: 95%;
 }
+
+.required { padding: 10px 10px 0 0; }
 
 .StdInputContainer > .required:before {
     font-family: var(--icon-font);
@@ -43,7 +47,7 @@
 .StdInputContainer .label {
     min-width:var(--input-label-min-width);
     max-width:var(--input-label-max-width);
-    margin: var(--label-StdInputContainer-margin-bottom);
+    margin: var(--label-StdInputContainer-margin-bottom) var(--label-StdInputContainer-margin-bottom) var(--label-StdInputContainer-margin-bottom) 0;
     font-size: var(--label-StdInputContainer-font-size);
     color: var(--color-label-edit-model);
 }
@@ -71,12 +75,13 @@
 .StdInputContainer.Dictionary:after,
 .StdInputContainer.TypeSwitcher:after {
     content:'';
-    width:100%
+    /* width:100% */
 }
 .StdInputContainer > .help {
-    order: 3;
     font-size: smaller;    
     color: var(--color-help);
+    margin-left: 10px;
+    padding: inherit;
 }
 .StdInputContainer.Container> .help,
 .StdInputContainer.Dictionary> .help,
@@ -238,11 +243,15 @@
 }
 .StdInputContainer.TypeSwitcher:after {
     content:'';
-    width:100%
+    /* width:100% */
 }
 
 .StdInputContainer.TypeSwitcher > .input {
     order:1;
+}
+
+.StdInputContainer.TypeSwitcher {
+    display: inline-grid;
 }
 
 
@@ -296,16 +305,79 @@
 }
 
 /* Custom class (seleccionado) for active element in Dictionary */
-li.Dictionary-keylist-item.seleccionado {
-    font-weight: 600;
-    background-color: var(--contrast-0);
-    font-style: italic;
+li.Dictionary-keylist-item.seleccionado {    
+    background-color: var(--contrast-0);    
     border-left: 10px solid #b05a1c;
 }
 
-li.Dictionary-keylist-item.seleccionado:hover {
-    font-style: none;
-}
+li.Dictionary-keylist-item.seleccionado a { color: var(--white-color-font); letter-spacing: 1px; }
+
+li.Dictionary-keylist-item.seleccionado a:hover { font-style: none; color: var(--help-tooltip-font-color); }
+
 
 /* ocultacion campo "help" en StdInputContainer si esta vacio */
-.help.hidden-help { display: none; }
+.help.hidden-help, .help.tooltip.hidden-help { display: none; }
+
+
+.StdInputContainer.Array, .StdInputContainer.TypeSwitcher, .ContainerInput.TypeSwitcher {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: unset;    
+}
+
+.StdInputContainer.SOURCE.Container, .StdInputContainer.STORAGE.Container, .StdInputContainer.MYSQL.Container {
+    margin-bottom: var(--StdInputContainer-margin-bottom);
+    font-size: var(--StdInputContainer-font-size);
+    margin-top: var(--StdInputContainer-margin-top);
+    padding: var(--StdInputContainer-padding);
+    display: flex;
+    color: var(--light-color);
+    flex-wrap: wrap;
+    flex-direction: row;
+    border-bottom: var(--StdInputContainer-border-bottom);
+    width: 95%;
+}
+
+
+/* helpNode estilos para stdInputContainer de los nodos */
+.help.tooltip { 
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+span.tooltiptext{
+    visibility: hidden;
+    width: var(--help-tooltip-width);
+    background-color: var(--help-tooltip-bg-color);
+    color: var(--help-tooltip-font-color);
+    text-align: center;
+    padding: var(--help-tooltip-padding);
+    border-radius: var(--help-tooltip-border-radius);    
+    border: solid var(--help-tooltip-border-size) var(--help-tooltip-border-color);
+    position: absolute;
+    z-index: 1; 
+    margin-left: -84px;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.help.tooltip:hover span.tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+/* Estilo para el scrollbar dentro ventanas widgets */
+::-webkit-scrollbar { width: 20px; }
+
+::-webkit-scrollbar-thumb {    
+    background-color: #b3b6b9;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover { background-color: #677989; }
+::-webkit-scrollbar-track { background-color: transparent; }
+::-webkit-scrollbar-thumb:horizontal { background-color: transparent; display: none; }
