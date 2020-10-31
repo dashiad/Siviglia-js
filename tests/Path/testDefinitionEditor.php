@@ -13,8 +13,9 @@
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
 
     <!-- CSS bases -->
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../../jQuery/css/jqx.base.css">
+    <link rel="stylesheet" href="../../jQuery/css/jqx.adtopy-dev.css">
+    <link rel="stylesheet" href="../../jQuery/css/jqx.darkblue.css">
 
     <!-- este tira de variables css del segundo style.css -->
     <link rel="stylesheet" href="../../jQuery/css/JqxWidgets.css">
@@ -51,7 +52,7 @@
 
 </head>
 <!-- <body class="dark-layout" style="background-color:#F2F4F4;"> -->
-<body>
+<body style="background-color:#EEE; background-image:none;">
 <?php include_once(__DIR__."/../../jQuery/JqxWidgets.html"); ?>
 
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->

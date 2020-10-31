@@ -10,7 +10,8 @@
 <script src="../../Model.js"></script> 
 <script src="../../../jqwidgets/jqx-all.js"></script>
 <script src="../../../jqwidgets/globalization/globalize.js"></script>
-<link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
+<link rel="stylesheet" href="../../jQuery/css/jqx.base.css">
+<link rel="stylesheet" href="../../jQuery/css/jqx.adtopy-dev.css">
 <link rel="stylesheet" href="../../jQuery/css/JqxWidgets.css">
 <link rel="stylesheet" href="../../../../reflection/css/style.css">
 

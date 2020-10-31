@@ -20,8 +20,8 @@
     <script src="../../../jqwidgets/globalization/globalize.js"></script>
 
     <!-- CSS bases -->
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../../jQuery/css/jqx.base.css">
+    <link rel="stylesheet" href="../../jQuery/css/jqx.adtopy-dev.css">
 
     <!-- este tira de variables css del segundo style.css -->
     <link rel="stylesheet" href="../../jQuery/css/JqxWidgets.css">
@@ -49,7 +49,7 @@
 </head>
 <style type="text/css">
 </style>
-<body style="background-color:#EEE">
+<body style="background-color:#EEE; background-image:none;">
 <?php include_once("../../jQuery/JqxWidgets.html"); ?>
 <div style="display:none">
     <div data-sivWidget="Siviglia.model.reflection.MetaDefinition.forms.Add" data-widgetCode="Siviglia.model.reflection.MetaDefinition.forms.Add">

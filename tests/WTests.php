@@ -19,8 +19,8 @@
     <script src="../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="/reflection/css/style.css">
     <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
-    <link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="../../jqwidgets/styles/jqx.light.css">
+    <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
+    <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
     <link rel="stylesheet"
           href="highlight/styles/ir-black.css">
     <script src="highlight/highlight.pack.js"></script>
@@ -104,7 +104,7 @@
 </head>
 <style type="text/css">
 </style>
-<body style="background-color:#EEE">
+<body style="background-color:#EEE; background-image:none;">
 <?php include_once("../jQuery/JqxWidgets.html"); ?>
 <?php include_once("../jQuery/JqxLists.html"); ?>
 

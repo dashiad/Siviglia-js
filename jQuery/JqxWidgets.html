@@ -1,5 +1,3 @@
-<script src="../../../../../../model/reflection/objects/Model/js/Siviglia/forms/Edit.js"></script>
-<link rel="stylesheet" type="text/css" href="../../../reflection/css/style.css">
 <style>
     .remove, .NewItemString .add {
         font-family:'IcoMoon'
@@ -122,8 +120,6 @@
                                 // Se crea el layout y se le pasa la instancia.
 
                                 d.resolve(instance);
-                                if(typeof form!=="undefined")
-                                    form.registerInput(instance,p.type);
 
                             })
                             return d;
@@ -437,8 +433,8 @@
                             };
                             if (d.MINLENGTH)
                                 opts.minLength = d.MINLENGTH;
-                            //if (d.MAXLENGTH)
-                            //    opts.maxLength = d.MAXLENGTH;
+                            if (d.MAXLENGTH)
+                                opts.maxLength = d.MAXLENGTH;
                             return opts;
 
                         },
@@ -1059,6 +1055,8 @@
                             if(this.currentWidget)
                                 this.currentWidget.destruct();
                             this.currentWidget=null;
+
+
                         },
                         methods:
                             {
@@ -1121,9 +1119,11 @@
 
                                     // Hacemos esto para evitar doble repintado del widget, ya que hay
                                     // listeners para ambas variables.
+                                    console.log("CLICK");
                                     this.currentKey=params.key;
                                     this.currentType=this.type["*"+this.currentKey];
                                     this.hasCurrentKey=true;
+
 
                                     // Custom class for active element in Dictionary
                                     var elements_with_selected = document.getElementsByClassName("seleccionado");
@@ -1160,6 +1160,7 @@
                                     var v=this.type.getValue();
                                     delete v[params.key];
                                     //this.type.removeItem(params.key);
+
                                 },
                                 onAdd:function(val)
                                 {
@@ -1763,6 +1764,7 @@
                                 this.rootNode.addClass(this.fieldName);
                                 var typeDef=this.innerType.getDefinition();
                                 this.rootNode.addClass(typeDef["TYPE"]);
+
                                 this.inputNode.addClass(this.fieldName);
                             },
                             focus:function()
@@ -1804,15 +1806,29 @@
                             preInitialize:function(params)
                             {
                                 this.SimpleInputContainer$preInitialize(params);
+                                // SI NO HAY AYUDA, LO QUE HAY QUE HACER, ES OCULTAR EL DIV
+                                // QUE TIENE LA AYUDA. PARA HACER ESO, SE LE PONE UN SIVID , Y
+                                // EN INITIALIZE, SE LE OCULTA.
                                 this.help=Siviglia.issetOr(this.fieldDef["HELP"],"");
                                 this.label=Siviglia.issetOr(this.fieldDef["LABEL"],"");
                             },
                             initialize:function(params)
                             {
                                 this.SimpleInputContainer$initialize(params);
+
                                 this.labelNode.addClass(this.fieldName);
-                                if(this.innerType.__isRequired())
+                                // SI NO HAY AYUDA, LO QUE HAY QUE HACER, ES OCULTAR EL DIV
+                                // QUE TIENE LA AYUDA. PARA HACER ESO, SE LE PONE UN SIVID , Y
+                                // EN INITIALIZE, SE LE OCULTA.
+                                if (this.help === ""){
+                                    this.helpNode.addClass("hidden-help");
+                                }
+                                if(this.innerType.__isRequired()){
                                     this.requiredNode.addClass("required");
+                                }else{
+                                    // para forzar a no mostrar el div del nodo ni siquiera
+                                    this.requiredNode[0].style.display = "none";
+                                }
                             }
                         }
                 },
@@ -2351,7 +2367,6 @@
 
                 <div class="Dictionary-heading" data-sivValue="/*title" class="title"></div>
                 <div class="Dictionary-body">
-                    <!--<div class="container-fluid">-->
                     <p class="text-info description" data-sivValue="/*description"></p>
 
                     <div data-sivIf="[%/*hasSimpleType%] == false" >
@@ -2375,14 +2390,6 @@
                                             </div>
                                         </ul>
                                         Añadir:
-
-                                        <!-- añade las claves introducidas funciona bien! -->
-                                        <!-- <ul  class="Dictionary-keys" data-sivLoop="/*type/[[KEYS]]" data-contextIndex="current">
-                                            <li role="presentation">
-                                                <button class="Form-button Dictionary-button" data-sivValue="/@current/LABEL" data-sivEvent="click" data-sivCallback="onLabelClicked" data-sivParams='{"key":"/@current/LABEL"}'></button>
-                                                <span class="Dictionary-removeButton" data-sivEvent="click" data-sivCallback="onRemoveClicked" data-sivParams='{"key":"/@current/LABEL"}'></span>
-                                            </li>
-                                        </ul> -->
                                     </div>
                                     <div class="Dictionary-newItemWidget">
                                         <div data-sivView="Siviglia.inputs.jqwidgets.NewItem" data-sivParams='{"parentInput":"/*self","type":"/*type"}'></div>
@@ -2396,15 +2403,9 @@
                                             <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"key":"/*currentKey","parent":"/*type","form":"/*form","controller":"/*self"}'>
                                             </div>
                                         </div>
-
-                                        <!--<div data-sivValue="/*type/__definition/LABEL"></div>
-                                        <div class="currentWidget" data-sivCall="getInputFor" data-sivParams='{"key":"/*currentKey"}'>
-                                        </div>-->
                                     </div>
                                 </div>
                         </div>
-
-
 
                     </div>
                     <div data-sivIf="[%/*hasSimpleType%] == true" >
@@ -2429,8 +2430,6 @@
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Container" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Container">
         <div class="ContainerInput">
 
-                <!--<div class="panel-heading" data-sivValue="/*title" class="title"></div>-->
-
                     <p class="text-info description" data-sivValue="/*description"></p>
                     <div data-sivIf="[%/*hasGlobalErrors%] == true">
                         <div class="globalErrors">
@@ -2451,7 +2450,7 @@
 
         </div>
     </div>
-    <!--
+<!--
     ----------------------------------------------------------------------------------------
 -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.FlexContainer" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.FlexContainer">
@@ -2511,9 +2510,9 @@
         </div>
         </div>
     </div>
-    <!--
+<!--
     ------------------------------------------------------------------------------------------------------
-    -->
+-->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.TypeSwitcher" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.TypeSwitcher">
         <div class="TypeSwitcherInput">
 
@@ -2528,9 +2527,9 @@
 
         </div>
     </div>
-     <!--
-            ---------------------------------------------------------------------------------------
-            -->
+<!--
+    ---------------------------------------------------------------------------------------
+-->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.NewItem" data-widgetParams="parentObject,parentNode" data-widgetCode="Siviglia.inputs.jqwidgets.NewItem">
         <div class="NewItem">
             <div style="display:table-row">
@@ -2540,9 +2539,9 @@
             </div>
         </div>
     </div>
-    <!--
-            ---------------------------------------------------------------------------------------
-            -->
+<!--
+    ---------------------------------------------------------------------------------------
+-->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Form" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Form">
         <div class="Form">
@@ -2552,7 +2551,6 @@
         </div>
     </div>
 
-
     <div data-sivWidget="Siviglia.inputs.jqwidgets.FilteringForm" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.FilteringForm">
         <div class="Form FilteringForm">
@@ -2560,13 +2558,13 @@
         </div>
 
     </div>
-    <!--
+<!--
     ---
     -->
 
-    <!--
-            ---------------------------------------------------------------------------------------
-            -->
+<!--
+    ---------------------------------------------------------------------------------------
+-->
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.ByFieldContainer" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.ByFieldContainer">
@@ -2594,11 +2592,11 @@
         </div>
 
 
-    <!------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------->
 
-    <!--
-            ---------------------------------------------------------------------------------------
-            -->
+<!--
+    ---------------------------------------------------------------------------------------
+-->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.MenuContainer" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.MenuContainer">
         <div data-sivId="menuNode">
@@ -2606,9 +2604,11 @@
             </div>
         </div>
     </div>
-    <!--
-            ---------------------------------------------------------------------------------------
-            -->
+
+<!--
+    ---------------------------------------------------------------------------------------
+-->
+
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Menu" data-widgetParams="controller" data-widgetCode="Siviglia.inputs.jqwidgets.Menu">
         <ul style="width:250px">
         <div data-sivLoop="/*menu" data-contextIndex="current" data-sivnested="false">
@@ -2618,6 +2618,7 @@
         </div>
         </ul>
     </div>
+
     <!--
             ---------------------------------------------------------------------------------------
             -->
@@ -2631,12 +2632,14 @@
 <div data-sivWidget="Siviglia.inputs.jqwidgets.StdInputContainer" data-widgetParams="key,parent,form,controller" data-widgetCode="Siviglia.inputs.jqwidgets.StdInputContainer">
     <div class="StdInputContainer">
 
-            <div class="label" data-sivId="labelNode" data-sivValue="/*label"></div>
-            <div data-sivId="helpNode" class="help" data-sivValue="/*help"></div>
+            <div data-sivId="requiredNode" title="Requerido"></div>
+            <div data-sivId="labelNode" class="label" data-sivValue="/*label"></div>
+            <div data-sivId="helpNode" class="help tooltip">
+                <span data-sivValue="/*help" class="tooltiptext"></span>
+            </div>
 
-            <div class="input" data-sivId="inputNode" data-sivCall="getInputFor" data-sivParams="{}"></div>
+            <div data-sivId="inputNode" class="input" data-sivCall="getInputFor" data-sivParams="{}"></div>
 
-            <div data-sivId="requiredNode"></div>
             <div style="clear:both"></div>
     </div>
 </div>
