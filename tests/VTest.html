@@ -77,7 +77,7 @@
 
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-        var DEVELOP_MODE=0;  // All tests
+        var DEVELOP_MODE=53;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
         var DEVELOP_MODE = urlParams.get("test");
@@ -2149,7 +2149,6 @@
         var nExcp = 0;
 
         try{
-            // Ojo, la siguiente linea va a disparar un onChange, porque el source se chequea a posteriori
             t1.f3="aa";
             // Y con el save, dara una excepcion
             t1.save();
@@ -2162,16 +2161,16 @@
             nSources++;
         });
         t1.f4={"aa":"uno","bb":"dos"};
-        var status=(nChanges4==1 && nChanges3==1 && nSources==1 );
+        var status=(nChanges4==1 && nChanges3===0 && nSources==1 );
         t1.f3="aa";
         t1.save();
-        status = status && (nChanges3==2 && t1.f3=="aa");
+        status = status && (nChanges3===1 && t1.f3=="aa");
         t1.f4["cc"]="tres";
         status=status && (nChanges4==2 && nSources==2);
 
         t1.f3="cc";
         t1.save();
-        status=status && (nChanges3==3 && t1.f3=="cc");
+        status=status && (nChanges3===2 && t1.f3=="cc");
         t1.destruct();
         status = status && countListeners()===0;
         return status;

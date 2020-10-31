@@ -110,10 +110,11 @@
 
 
 
+
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-	    var DEVELOP_MODE=13;  // All tests
+	    var DEVELOP_MODE=27;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");
@@ -1077,27 +1078,27 @@
         '<div data-sivWidget="Test.Input1" data-widgetParams="" data-widgetCode="Test.Input1">'+
         '<div class="type">'+
         '<div class="label">Cadena</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"stringType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"stringType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Enum</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"enumType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"enumType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Entero</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"integerType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"integerType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Decimal</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"decimalType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"decimalType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Texto</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"textType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"textType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Boolean</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"booleanType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"booleanType"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input1"></div>',
@@ -1176,7 +1177,7 @@
         '<div data-sivWidget="Test.Input1" data-widgetParams="" data-widgetCode="Test.Input1">'+
         '<div class="type">'+
         '<div class="label">Cadena</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"stringType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"stringType"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input1"></div>',
@@ -1229,19 +1230,19 @@
         '<div data-sivWidget="Test.Input2" data-widgetParams="" data-widgetCode="Test.Input2">'+
         '<div class="type">'+
         '<div class="label">Combo con source Array</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"comboType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"comboType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Combo enlazado 1, con source Array</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"comboType2a"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"comboType2a"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Combo enlazado 2 (dependiente) con source Array</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"comboType2b"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"comboType2b"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Combo enlazado 3 (dependiente de 2) con source Array</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"comboType2c"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"comboType2c"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input2"></div>',
@@ -1370,17 +1371,149 @@
             })
         }
     )
+    runTest("Seleccion de paths","Forzado de mostrado de campos ocultos con JqxWidgets<br>"+
+        "Se muestra un formulario con los diferentes tipos de container, y se busca forzar el mostrado de unos campos u otros, aunque estén ocultos.<br>"+
+        "",
+        '<div data-sivWidget="Test.ShowFields" data-widgetParams="" data-widgetCode="Test.ShowFields">'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
+        '                         data-sivParams=\'{"key":"ROOT","parent":"/*typedObj","form":"/*self"}\'>\n' +
+        '                    </div>'+
+        '</div>',
+        '<div data-sivView="Test.ShowFields"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "ShowFields": {
+                        inherits: "Siviglia.inputs.jqwidgets.Form",
+                        methods: {
+                            preInitialize: function (params) {
+
+                                this.factory = Siviglia.types.TypeFactory;
+                                this.self = this;
+                                this.typeCol = [];
+                                /* STRING **************************/
+                                this.typedObj = new Siviglia.model.BaseTypedObject({
+                                    "FIELDS": {
+                                    "ROOT":{
+                                        "LABEL":"ROOT",
+                                            "TYPE":"Dictionary",
+                                            "VALUETYPE":{
+                                            "LABEL":"INNERCONT",
+                                                "TYPE": "Container",
+                                                "FIELDS":
+                                            {
+                                                "f3":{
+                                                "LABEL":"F3",
+                                                    "TYPE":"String"
+                                            },
+                                                "f4": {
+                                                "LABEL":"F4",
+                                                    "TYPE": "Array",
+                                                    "ELEMENTS": {
+                                                    "LABEL": "TypeSwitcher",
+                                                        "TYPE": "TypeSwitcher",
+                                                        "TYPE_FIELD": "TYPE",
+                                                        "ALLOWED_TYPES": {
+                                                        "TYPE_ONE": {
+                                                            "LABEL":"TYPEONE",
+                                                            "TYPE": "Container",
+                                                            "FIELDS": {
+                                                                "f1": {
+                                                                    "LABEL": "Field 1-1",
+                                                                    "TYPE": "String"
+                                                                },
+                                                                "f2": {
+                                                                    "LABEL": "Field 2-1",
+                                                                    "TYPE": "Integer"
+                                                                },
+                                                                "TYPE":{
+                                                                    "LABEL":"Tipo",
+                                                                    "TYPE":"String",
+                                                                    "FIXED":"TYPE_ONE"
+                                                                }
+                                                            }
+                                                        },
+                                                        "TYPE_TWO": {
+                                                            "LABEL":"TYPETWO",
+                                                                "TYPE": "Container",
+                                                                "FIELDS": {
+                                                                "f1": {
+                                                                    "LABEL": "Field 2-1",
+                                                                        "TYPE": "String"
+                                                                },
+                                                                "f2": {
+                                                                    "LABEL": "Field 2-2",
+                                                                        "TYPE": "Integer"
+                                                                },
+                                                                    "TYPE":{
+                                                                        "LABEL":"Tipo",
+                                                                        "TYPE":"String",
+                                                                        "FIXED":"TYPE_TWO"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            }
+                                        }
+                                    }
+                                }
+                                );
+                                this.typedObj.setValue({"ROOT":{
+                                    "dict1":{f3:"f3d1",f4:[
+                                            {"TYPE":"TYPE_ONE",f1:"f1-1","f2":1},
+                                            {"TYPE":"TYPE_TWO",f1:"f1-1-a","f2":2},
+                                        ]},
+                                        "dict2":{f3:"f3d2",f4:[
+                                                {"TYPE":"TYPE_ONE",f1:"f1-2","f2":3},
+                                                {"TYPE":"TYPE_TWO",f1:"f1-2-a","f2":4},
+                                            ]},
+                                        "dict3":{f3:"f3d3",f4:[
+                                                {"TYPE":"TYPE_ONE",f1:"f1-3","f2":5},
+                                                {"TYPE":"TYPE_TWO",f1:"f1-3-a","f2":6},
+                                            ]}
+                                }});
+                                return this.Form$preInitialize({bto:this.typedObj});
+                            },
+                            initialize: function (params) {
+                                var paths=[
+                                    "/ROOT/dict2/f3",
+                                    "/ROOT/dict3/f4/f1",
+                                    "/ROOT/dict1/f4/f2"
+                                ]
+                                var idx=0;
+                                var m=this;
+                                this.showPath(paths[1]);
+                 /*               setInterval(function(){
+                                   m.showPath(paths[idx]);
+                                   idx=(idx+1)%paths.length;
+                                },5000);*/
+                            },
+                            show: function () {
+                            },
+
+                        }
+                    }
+
+                }
+
+            })
+        }
+    )
     runTest("Inputs Simples","Tercera prueba de JqxWidgets<br>"+
         "Se prueban 2 cadenas dependientes, con source remoto<br>"+
         "",
         '<div data-sivWidget="Test.Input3" data-widgetParams="" data-widgetCode="Test.Input3">'+
         '<div class="type">'+
         '<div class="label">String con source DATASOURCE (MODEL LIST)</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"modelSelector"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"modelSelector"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">String con source DATASOURCE enlazado (MODEL FIELDS)</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"fieldSelector"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"fieldSelector"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input3"></div>',
@@ -1421,7 +1554,7 @@
                                                     "MODEL": "/model/reflection/Model",
                                                     "DATASOURCE": "FieldList",
                                                     "PARAMS": {
-                                                        "model": "[%#../modelSelector%]"
+                                                        "model": "[%#modelSelector%]"
                                                     },
                                                     "LABEL": "NAME",
                                                     "VALUE": "FIELD"
@@ -1449,7 +1582,7 @@
         '<div data-sivWidget="Test.Input4" data-widgetParams="" data-widgetCode="Test.Input4">'+
         '<div class="type">'+
         '<div class="label">Container:</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"simpleContainer"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleContainer"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input4"></div>',
@@ -1507,7 +1640,7 @@
         '<div data-sivWidget="Test.Input5" data-widgetParams="" data-widgetCode="Test.Input5">'+
         '<div class="type">'+
         '<div class="label">Container:</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"simpleContainer"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleContainer"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input5"></div>',
@@ -1572,7 +1705,7 @@
         '<div data-sivWidget="Test.Input6" data-widgetParams="" data-widgetCode="Test.Input6">'+
         '<div class="type">'+
         '<div class="label">Dictionary:</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"simpleDictionary"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleDictionary"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input6"></div>',
@@ -1638,7 +1771,7 @@
         '<div data-sivWidget="Test.Input7" data-widgetParams="" data-widgetCode="Test.Input7">'+
         '<div class="type">'+
         '<div class="label">Dictionary:</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"simpleDictionary"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleDictionary"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input7"></div>',
@@ -1693,7 +1826,7 @@
         '<div data-sivWidget="Test.Input8" data-widgetParams="" data-widgetCode="Test.Input8">'+
         '<div class="type">'+
         '<div class="label">Array:</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"simpleArray"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleArray"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input8"></div>',
@@ -1748,7 +1881,7 @@
         '<div data-sivWidget="Test.Input9" data-widgetParams="" data-widgetCode="Test.Input9">'+
         '<div class="type">'+
         '<div class="label">Array:</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"simpleArray"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleArray"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input9"></div>',
@@ -1812,7 +1945,7 @@
         '<div data-sivWidget="Test.Input10" data-widgetParams="" data-widgetCode="Test.Input10">'+
         '<div class="type">'+
         '<div class="label">Type Switcher:</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"simpleTypeSwitcher"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleTypeSwitcher"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input10"></div>',
@@ -1932,7 +2065,7 @@
         '<div data-sivWidget="Test.Input11" data-widgetParams="" data-widgetCode="Test.Input11">'+
         '<div class="type">'+
         '<div class="label">Type Switcher:</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"cont1"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"cont1"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input11"></div>',
@@ -2003,7 +2136,7 @@
         '<div data-sivWidget="Test.DefCont" data-widgetParams="" data-widgetCode="Test.DefCont">'+
         '<div class="type">'+
         '<div class="label">Container:</div>'+
-        '<div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"simpleContainer"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleContainer"}\'></div>'+
         '</div>'+
         '<input type="button" data-sivEvent="click" data-sivCallback="doSubmit" ></input>'+
         '</div>',
@@ -2106,43 +2239,43 @@
         '<div data-sivWidget="Test.ListViewerForm" data-widgetCode="Test.ListViewerForm">\n' +
         '        <div class="input">\n' +
         '            <div class="label">Id</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"id_page"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"id_page"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">id_site</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"id_site"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"id_site"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">namespace</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"namespace"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"namespace"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">Tag</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"tag"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"tag"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">name</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"name"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"name"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">date_add</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"date_add"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"date_add"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">date_modified</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"date_modified"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"date_modified"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">id_type</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"id_type"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"id_type"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">isPrivate</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"isPrivate"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"isPrivate"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">Path</div>\n' +
-        '            <div class="inputContainer" data-sivCall="getInputFor" data-sivParams=\'{"key":"path"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"path"}\'></div>\n' +
         '        </div>\n' +
         '    </div>\n' +
         '\n' +

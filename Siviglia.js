@@ -1482,8 +1482,17 @@ Siviglia.Path.Proxify=function(obj,ev)
                 __disableEvents__=value;
                 return true;
             }
+            var mustFire=false;
+
+            if(
+                ((typeof curVal[prop]==="undefined" || curVal[prop]===null) && (typeof val!=="undefined" && val!==null))
+                ||
+                ((typeof curVal[prop]!=="undefined" && curVal[prop]!==null) && (typeof val==="undefined" || val===null))
+            )
+                mustFire=true;
             curVal[prop]=value;
-            if(!__disableEvents__) {
+
+            if(mustFire && !__disableEvents__) {
                 if ((!isArray && prop[0]!='_' ) || (isArray && prop !== "length") )
                     ev.fireEvent("CHANGE", {object: obj, value: value});
             }

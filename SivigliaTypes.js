@@ -411,8 +411,16 @@ Siviglia.Utils.buildClass(
                                     this.__value = null;
                                     this.__valueSet = false;
                                     this.__clear();
+
                                     if (hasChanged) {
                                         this.__setDirty(true);
+                                    }
+                                    if (validationMode === Siviglia.types.BaseType.VALIDATION_MODE_STRICT) {
+                                        if (this.__isRequired()) {
+                                            var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED);
+                                            this.__setErrored(e);
+                                            throw e;
+                                        }
                                     }
                                     return;
                                 }
@@ -913,7 +921,12 @@ Siviglia.Utils.buildClass(
                             _validate: function () {
                                 var val=this.__value;
                                 return val === true || val === false || val.toLowerCase() == "true" || val.toLowerCase() == "false";
+                            },
+                            _equals:function(val)
+                            {
+                                return this.__value==val;
                             }
+
                         }
                 },
             DateTimeException:
@@ -1016,6 +1029,11 @@ Siviglia.Utils.buildClass(
                                     odate = value;
                                 return odate;
                             },
+                            _equals:function(val)
+                            {
+                                return this.fromDateValue(this.createDate(val))===this.__value;
+
+                            },
                             serialize: function () {
                                 return this.__value;
                             },
@@ -1084,6 +1102,10 @@ Siviglia.Utils.buildClass(
                                 }
                                 return -1;
 
+                            },
+                            _equals:function(val)
+                            {
+                                return this.__value===val || this.getLabel()===val;
                             },
                             __checkSource:function(val)
                             {
@@ -1450,7 +1472,7 @@ Siviglia.Utils.buildClass(
                                     target = this.__definition['FIELDS'][0];
                                 return Siviglia.types.TypeFactory.getRelationFieldTypeInstance(obj, target);
                             },
-                            hasSource: function () {
+                            __hasSource: function () {
                                 //return false;
                                 return true;
                             },
@@ -2221,7 +2243,7 @@ Siviglia.Utils.buildClass(
                                 var keys = this.getKeys()
                                 return array_compare(val, keys, false);
                             },
-                            hasSource: function () {
+                            __hasSource: function () {
                                 return !Siviglia.empty(this.__definition["SOURCE"]);
                             },
                             getSource: function (controller, params) {
@@ -3266,7 +3288,7 @@ Siviglia.Utils.buildClass(
 
 
 
-                        this.Container("", d, null, value, Siviglia.types.BaseType.VALIDATION_MODE_NONE);
+                        this.Container("", d, null, value);
                         this.__definedPromise.resolve(this);
                     },
                     ready: function () {
