@@ -165,9 +165,14 @@
                           stateType.removeListeners(this);
                       }
                       this.type.removeListeners(this);
+                      for(var k in this.subWidgets)
+                      {
+                          this.subWidgets[k].destruct();
+                      }
                     },
                     methods: {
                         preInitialize: function (params) {
+                            this.subWidgets={};
                             this.errored = false;
                             this.controller = this.parentView;
                             this.stateDriven=false;
@@ -188,6 +193,7 @@
                             this.hasHelpMessage = (this.helpMessage != null ? true : false);
                             this.inputParams = Siviglia.issetOr(params.inputParams, {});
                             this.formParams=Siviglia.issetOr(params.formParams,{});
+
                         },
                         initialize: function (params) {
                             var opts = this.getDefaultInputOptions();
@@ -261,6 +267,17 @@
                                     },500);
                                 }
                             }
+                            if(this.pathToShow!==null)
+                                this.showPath();
+
+                        },
+                        addSubWidget:function(field,widget)
+                        {
+                            this.subWidgets[field]=widget;
+                        },
+                        removeSubWidget:function(field)
+                        {
+                            delete this.subWidgets[field];
                         },
                         debounce:function(func, wait, immediate) {
                             var timeout;
@@ -318,23 +335,10 @@
                                 );
                             }
                         },
-
-                        showPath:function(path)
+                        showPath:function()
                         {
-                            if(path.length!=1) {
-                                console.error("Invalid error path:" + exception.path);
-                            }
-                            else
-                            {
-                                if(this.inputWrapper)
-                                {
-                                    this.inputWrapper.focus();
-                                    if(this.inputNode)
-                                        this.inputNode.focus();
-                                }
-                                else
-                                    this.focus();
-                            }
+                            // El tipo base no hace nada
+                            this.pathToShow=null;
                         },
                         focus:function()
                         {
@@ -1076,6 +1080,7 @@
                                     this.currentType=null;
                                     this.params=params;
                                     this.currentErrors={};
+
                                 },
 
                                 initialize:function(params)
@@ -1087,10 +1092,14 @@
                                 },
                                 showPath:function(path)
                                 {
-                                    // Se hace una copia propia
-                                    this.pathToShow=path.slice(0,path.length);
-                                    this.currentKey=this.pathToShow.shift();
-                                    this.hasCurrentKey=true;
+                                    var key=path.shift();
+                                    if(typeof this.subWidgets[key]!=="undefined")
+                                        this.subWidgets[key]=path;
+                                    else {
+                                        this.pathToShow = path;
+                                        this.currentKey = key
+                                        this.hasCurrentKey = true;
+                                    }
                                 },
                                 buildNewItemWidget:function(node,params)
                                 {
@@ -1119,7 +1128,7 @@
 
                                     // Hacemos esto para evitar doble repintado del widget, ya que hay
                                     // listeners para ambas variables.
-                                    console.log("CLICK");
+
                                     this.currentKey=params.key;
                                     this.currentType=this.type["*"+this.currentKey];
                                     this.hasCurrentKey=true;
@@ -1198,14 +1207,15 @@
                                 }
                                 return groups;
                             },
-                            // En este layout, los inputs de todos los campos del container estan
-                            // siempre visibles, por lo que el widget existe, y solo le tenemos que pedir que muestre el path.
+
                             showPath:function(path)
                             {
-                                // Se hace una copia propia
-                                this.pathToShow=path.slice(0,path.length);
-                                var currentKey=this.pathToShow.shift();
-                                this.subwidgets[currentKey].showPath(this.pathToShow);
+                                var key=path.shift();
+                                if(typeof this.subWidgets[key]!=="undefined")
+                                    this.subWidgets[key].showPath(path);
+                                else
+                                    this.pathToShow=path;
+
                             }
                         }
                     },
@@ -1409,8 +1419,13 @@
                                 showPath:function(path)
                                 {
                                     // Se hace una copia propia
-                                    this.pathToShow=path.slice(0,path.length);
-                                    this.setSelected(this.pathToShow.shift());
+                                    var key=path.shift();
+                                    if(typeof this.subWidgets[key]!=="undefined")
+                                        this.subWidgets[key].showPath(path);
+                                    else {
+                                        this.pathToShow = path;
+                                        this.setSelected(key);
+                                    }
                                 },
                                 onRemoveClicked:function(node,params)
                                 {
@@ -1745,8 +1760,16 @@
                                 this.form=params.form;
                                 // parent se refiere al parent type
                                 this.parent=params.parent;
-                                this.pathToShow=Siviglia.issetOr(params.pathToShow,null);
+                                var pathToShow=Siviglia.issetOr(params.pathToShow,null);
                                 this.field=params.key;
+                                this.willFocus=false;
+                                if(pathToShow!==null && pathToShow[0]===this.field)
+                                {
+                                    if(pathToShow.length===1)
+                                        this.willFocus=true;
+                                    else
+                                        this.pathToShow=pathToshow;
+                                }
                                 // controller se refiere al input o form que contiene este inputContainer
                                 this.controller=typeof params.controller==="undefined"?this.form:params.controller;
                                 if(typeof this.parent.getPath!=="undefined")
@@ -1761,6 +1784,10 @@
                             },
                             initialize:function()
                             {
+                                if(this.controller)
+                                    this.controller.addSubWidget(this.field,this);
+
+                                else
                                 this.rootNode.addClass(this.fieldName);
                                 var typeDef=this.innerType.getDefinition();
                                 this.rootNode.addClass(typeDef["TYPE"]);
@@ -1770,6 +1797,10 @@
                             focus:function()
                             {
                                 this.rootNode[0].scrollIntoView();
+                            },
+                            showPath:function(path)
+                            {
+                                this.innerInput.showPath(path);
                             },
                             getInputFor:function(node,params)
                             {
