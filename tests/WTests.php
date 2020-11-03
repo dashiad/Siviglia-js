@@ -114,8 +114,8 @@
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-	    //var DEVELOP_MODE=27;  // All tests
-        var DEVELOP_MODE=0; // Latest test
+	    var DEVELOP_MODE=0;  // All tests
+        //var DEVELOP_MODE=-1; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");
     }
@@ -1445,9 +1445,9 @@
         '<div data-sivWidget="Test.Map2" data-widgetCode="Test.Map2">z<div data-sivId="target"></div>q</div>'+
         '<div data-sivWidget="Test.MapTest" data-widgetParams="" data-widgetCode="Test.MapTest">'+
         //'   <div data-sivView="Test.Map1" data-viewName=\'map1\'></div>'+
-        '   <div data-sivLoop="/*instances" data-contextIndex="current"><div>'+
+        '   <div data-sivLoop="/*instances" data-contextIndex="current">'+
         '       <div data-sivView="Test.Map2" data-viewName=\'map2-[%@current-index%]\'></div>'+
-        '   </div></div>'+
+        '   </div>'+
         '</div>',
         '<div data-sivView="Test.MapTest"></div>',
         function(){

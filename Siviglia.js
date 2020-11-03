@@ -1903,12 +1903,28 @@ Siviglia.Utils.buildClass(
 
 
                                 for (var j = 0; j < this.origHTML.length; j++) {
+                                    // Por qué hay que crear un fakeParent:
+                                    // Si un loop contiene la creacion de una vista, pasa lo siguiente:
+                                    // <div data-sivLoop="/*miarray" ...><div data-sivView="...."></div></div>
+                                    // La vista, se parsea, crea sus nodos, y lo que va a intentar, es poner esos nodos
+                                    // como *hermanos* del nodo que contiene sivView, y luego, eliminar el nodo que contiene sivView,
+                                    // para que así no quede rastro de él. Pero el problema es que el nodo que contiene data-sivView,
+                                    // que ha sido clonado por el sivLoop, no tiene padre...es un clon que aun no está en el DOM..asi que no
+                                    // puede tener hermanos...
+                                    // Asi que creamos un padre "fake", para que el contenido del cloneNode tenga un padre..y asi, si hay
+                                    // una vista, el clone pueda tener un padre.
                                     var curNode = this.origHTML[j].cloneNode(true);
+                                    var fakeParent=$("<div></div>");
+                                    fakeParent.append(curNode);
                                     if (curNode.nodeType == 1)
-                                        this.oManager.parse($(curNode));
+                                        this.oManager.parse(fakeParent);
                                         //reference.parentNode.insertBefore(curNode, reference.nextSibling);
-                                        newNodes.push({node:$(curNode),value:value});
-                                        newNode.append($(curNode));
+                                        newNodes.push({node: fakeParent.contents(), value: value});
+                                        var l=fakeParent[0].childNodes.length;
+                                        for(var s=0;s<l;s++) {
+
+                                            newNode[0].appendChild(fakeParent[0].childNodes[0]);
+                                        }
                                         //reference = curNode;
                                 }
 
@@ -1930,7 +1946,7 @@ Siviglia.Utils.buildClass(
                                     return;
                                 }
                             }
-                            var newChildren=$(newNode).children();
+                            var newChildren=$(newNode).contents();
                             if(newChildren.length===0)
                                 newChildren=$("<div></div>");
                             newChildren.insertBefore(this.node[0]);
@@ -2348,7 +2364,7 @@ Siviglia.Utils.buildClass(
                                     value.remove();
                             }.bind(this));
                             Siviglia.UI.viewStack.pop();
-                            this.rootNode=this.widgetNode.children();
+                            this.rootNode=this.widgetNode.contents();
                             // Chequeamos si todos los elementos han sido resueltos
                             this.__setSubViewResolved(null);
 
