@@ -1422,7 +1422,7 @@ Siviglia.Utils.buildClass(
                     construct: function (name, def, parentType, val, validationType) {
                         var stdDef = {
                             TYPE: 'Password',
-                            MINLENGTH: 6,
+                            MINLENGTH: 5,
                             MAXLENGTH: 16,
                             TRIM: true
                         };
