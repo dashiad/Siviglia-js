@@ -2444,7 +2444,17 @@ Siviglia.Utils.buildClass(
                                     value.remove();
                             }.bind(this));
                             Siviglia.UI.viewStack.pop();
-                            this.rootNode=this.widgetNode.contents();
+                            var children=[];
+                            /*
+                            for(var j=0;j<this.widgetNode.length;j++)
+                            {
+                                var curNode=this.widgetNode[j];
+                                for(l=0;l<curNode.childNodes.length;l++)
+                                    children.push(curNode.childNodes[l]);
+                            }*/
+                            //this.rootNode=$(children);//this.widgetNode.children();
+                            this.rootNode=this.widgetNode.children();
+
                             // Chequeamos si todos los elementos han sido resueltos
                             this.__setSubViewResolved(null);
 
