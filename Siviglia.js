@@ -1525,7 +1525,7 @@ Siviglia.UI = {
         'sivcss': 'CssExpando',
         'sivattr': 'AttrExpando',
         'sivcall': 'CallExpando',
-        'sivdojo': 'DojoExpando'
+        'sivpromise': 'PromiseExpando'
     },
     viewStack: []
 };
@@ -2026,6 +2026,7 @@ Siviglia.Utils.buildClass(
                         }
                     }
                 },
+
                 IfExpando: {
                     inherits: "Expando",
                     construct: function () {
@@ -2107,6 +2108,85 @@ Siviglia.Utils.buildClass(
                         }
                     }
                 },
+                PromiseExpando:{
+                    inherits: "Expando",
+                    construct: function () {
+                        this.oManager = null;
+                        this.Expando("sivpromise");
+                    },
+                    methods: {
+                        _initialize: function (node, nodeManager, stack, nodeExpandos) {
+
+                            this.origHTML = [];
+                            this.childNodes=[];
+                            while (node[0].childNodes.length>0) {
+                                var n = node[0].childNodes[0];
+                                var s = n.cloneNode(true);
+                                n.parentElement.removeChild(n);
+                                this.origHTML.push(n);
+                            }
+                            this.origDisplay = node[0].style.display;
+                            // Se crea un comentario en la posicion del nodo
+                            this.commentNode=document.createComment("SivPromiseReference");
+                            $(this.commentNode).insertBefore(node);
+
+                            this.resolver = new Siviglia.Path.PathResolver(stack, node.data("sivpromise"));
+                            this.resolver.addListener("CHANGE", this, "update", "PromiseExpando:" + this.str);
+                            this.resolver.getPath();
+                            return false;
+                        },
+                        update: function (event, params) {
+                            var value=params.value;
+                            if(value.then)
+                                value.then(function(){this.restoreContent()}.bind(this))
+                        },
+                        restoreContent: function () {
+                            this.removeCurrentChildren();
+
+                            this.oManager = new Siviglia.UI.HTMLParser(this.stack);
+                            //this.node.html("");
+
+                            var curNode;
+                            // Se crea un container temporal para todos los clones.
+                            // Esto es necesario para que los expandos que sustituyen su nodo (como loop, if, view),
+                            // puedan colocar su contenido "detras" del nodo que los define. Pero para que exista ese "detras",
+                            // el nodo que los define tenia que tener un padre.
+                            var tempContainer=document.createElement("div");
+                            for (var j = 0; j < this.origHTML.length; j++) {
+                                curNode = this.origHTML[j].cloneNode(true);
+                                tempContainer.appendChild(curNode);
+                            }
+                            // Se parsea el padre temporal.
+                            this.oManager.parse($(tempContainer));
+                            // Y ahora, se extraen del temporal, y se colocan detras del comentario de marca.
+                            var lastNode=$(this.commentNode);
+                            while(tempContainer.childNodes.length>0)
+                            {
+                                curNode=$(tempContainer.childNodes[0]);
+                                curNode.insertAfter(lastNode);
+                                lastNode=curNode;
+                                this.childNodes.push(lastNode);
+                            }
+                            //this.node.css("display", this.origDisplay);
+                            this.dontRecurse = false;
+                        },
+                        removeCurrentChildren:function()
+                        {
+                            if (this.oManager)
+                                this.oManager.destruct();
+                            for(var k=0;k<this.childNodes.length;k++)
+                            {
+                                this.childNodes[k].remove();
+                            }
+                            this.childNodes=[];
+                        },
+                        removeContent: function () {
+                            this.removeCurrentChildren();
+                            this.node.css("display", "none");
+                            this.dontRecurse = true;
+                        }
+                    }
+                }
             }
     }
 )

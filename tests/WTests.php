@@ -114,7 +114,7 @@
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-	    var DEVELOP_MODE=0;  // All tests
+	    var DEVELOP_MODE=28;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");
@@ -1495,6 +1495,37 @@
             })
         }
     )
+    runTest("Promise Expando","El expando Promise, ejecuta sus contenidos cuando una promesa se resuelve"
+        ,
+        '<div data-sivWidget="Test.PromiseTest" data-widgetParams="" data-widgetCode="Test.PromiseTest">'+
+        '   <div data-sivPromise="/*myPromise" data-contextIndex="current">'+
+        '       Hola!'+
+        '   </div>'+
+        '</div>',
+        '<div data-sivView="Test.PromiseTest"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "PromiseTest": {
+                        inherits: "Siviglia.UI.Expando.View",
+                        methods: {
+                            preInitialize: function (params) {
+                                this.myPromise=SMCPromise();
+                                setTimeout(function(){
+                                    this.myPromise.resolve()
+                                }.bind(this),3000)
+                            },
+                            initialize: function (params) {
+                            }
+                        }
+                    }
+                }
+
+            })
+        }
+    )
+
 
     runTest("Seleccion de paths","Forzado de mostrado de campos ocultos con JqxWidgets<br>"+
         "Se muestra un formulario con los diferentes tipos de container, y se busca forzar el mostrado de unos campos u otros, aunque estén ocultos.<br>"+
