@@ -114,8 +114,8 @@
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-	    var DEVELOP_MODE=27;  // All tests
-        //var DEVELOP_MODE=-1; // Latest test
+	    //var DEVELOP_MODE=27;  // All tests
+        var DEVELOP_MODE=0; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");
     }
@@ -1371,6 +1371,131 @@
             })
         }
     )
+    runTest("Esperando que los subwidgets sean creados","Se crean vistas que dependen de otras vistas, y que se van a resolver en momentos diferentes,<br>"+
+        "La vista raiz debe esperar a que todas las subVistas esten listas, antes de mostrar un mensaje.<br>"+
+        "",
+            '<div data-sivWidget="Test.Waiter1" data-widgetCode="Test.Waiter1"></div>'+
+            '<div data-sivWidget="Test.Waiter2" data-widgetCode="Test.Waiter2">'+
+            '   <div data-sivView="Test.Waiter1" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
+            '</div>'+
+            '<div data-sivWidget="Test.WaiterTest" data-widgetParams="" data-widgetCode="Test.WaiterTest">'+
+            '   <div data-sivView="Test.Waiter1" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
+            '   <div data-sivView="Test.Waiter2" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
+            '</div>',
+            '<div data-sivView="Test.WaiterTest"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "WaiterTest": {
+                        inherits: "Siviglia.UI.Expando.View",
+                        methods: {
+                            preInitialize: function (params) {
+                                this.waitComplete().then(function(){
+                                    this.showMessage();
+                                }.bind(this))
+                                this.randSecs=this.getRandSeconds();
+
+                                if(typeof params!=="undefined" &&
+                                    typeof params.wait!=="undefined")
+                                {
+                                    var p=SMCPromise();
+                                    setTimeout(function(){
+                                        p.resolve()}.bind(this),params.wait);
+                                    return p;
+                                }
+                            },
+                            initialize: function (params) {
+                            },
+                            showMessage:function(){console.log("WAITERTEST: LISTO")},
+                            getRandSeconds:function(){
+                                return 1000;
+                            }
+                        }
+                    },
+                    "Waiter1":{
+                        inherits:"Test.WaiterTest",
+                        methods:{
+                            showMessage:function(){console.log("WAITERTEST 1: LISTO")},
+                            getRandSeconds:function(){
+                                return 1000;
+                            }
+                        }
+                    },
+                    "Waiter2":{
+                        inherits:"Test.WaiterTest",
+                        methods:{
+                            showMessage:function(){console.log("WAITERTEST 2: LISTO")},
+                            getRandSeconds:function(){
+                                return 3000;
+                            }
+                        }
+                    }
+
+                }
+
+            })
+        }
+    )
+
+    runTest("Vistas Nombradas","Usando data-viewName, es posible mapear widgets en el widget padre.<br>"+
+        "El valor de esta propiedad es una parametrizable string.<br>"+
+        "",
+        '<div data-sivWidget="Test.Map1" data-widgetCode="Test.Map1">a<div data-sivId="target"></div>b</div>'+
+        '<div data-sivWidget="Test.Map2" data-widgetCode="Test.Map2">z<div data-sivId="target"></div>q</div>'+
+        '<div data-sivWidget="Test.MapTest" data-widgetParams="" data-widgetCode="Test.MapTest">'+
+        //'   <div data-sivView="Test.Map1" data-viewName=\'map1\'></div>'+
+        '   <div data-sivLoop="/*instances" data-contextIndex="current"><div>'+
+        '       <div data-sivView="Test.Map2" data-viewName=\'map2-[%@current-index%]\'></div>'+
+        '   </div></div>'+
+        '</div>',
+        '<div data-sivView="Test.MapTest"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "MapTest": {
+                        inherits: "Siviglia.UI.Expando.View",
+                        methods: {
+                            preInitialize: function (params) {
+                                this.instances={};
+                                for(var k=0;k<2;k++)
+                                {
+                                    this.instances["prueba-"+k]="hola";
+                                }
+
+                            },
+                            initialize: function (params) {
+                                this.waitComplete().then(function(){
+                                    //this.map1.showLabel(" SOY MAP 1");
+                                    for(var k=0;k<2;k++)
+                                    {
+                                        this["map2-prueba-"+k].showLabel("SOY MAP2, INSTANCIA "+k);
+                                    }
+                                }.bind(this));
+                            },
+                        }
+                    },
+                    "Map1":{
+                        inherits:"Siviglia.UI.Expando.View",
+                        methods:{
+                            preInitialize:function(){},
+                            initialize:function(){},
+                            showLabel:function(label){
+                                this.target.html(label)
+                            },
+                        }
+                    },
+                    "Map2":{
+                        inherits:"Test.Map1"
+                    }
+
+                }
+
+            })
+        }
+    )
+
     runTest("Seleccion de paths","Forzado de mostrado de campos ocultos con JqxWidgets<br>"+
         "Se muestra un formulario con los diferentes tipos de container, y se busca forzar el mostrado de unos campos u otros, aunque estén ocultos.<br>"+
         "",
@@ -1996,7 +2121,7 @@
                             initialize: function (params) {
                             },
                             show: function () {
-                            },
+                            }
 
                         }
                     }

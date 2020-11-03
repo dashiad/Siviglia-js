@@ -241,7 +241,11 @@
                                     {
                                         default:
                                         case "Field":{
-                                            colSpec={text:curIt.Label,datafield:curIt.Field};
+                                            colSpec={text:curIt.Label,datafield:curIt.Field,cellsrenderer:function(row,columnfield,value,defaulthtml,columnproperties,rowdata)
+                                                {
+                                                    return ""+value;
+                                                }
+                                            };
                                         }break;
 
                                         case "PString":{
@@ -382,6 +386,7 @@
                             var baseOpt={
                                 pageable: true,
                                 autoheight: true,
+                                //autorowheight:true,
                                 sortable: true,
                                 altrows: true,
                                 enabletooltips: true,

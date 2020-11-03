@@ -267,13 +267,26 @@
                                     },500);
                                 }
                             }
-                            if(this.pathToShow!==null)
-                                this.showPath();
-
                         },
                         addSubWidget:function(field,widget)
                         {
+
                             this.subWidgets[field]=widget;
+                            if(this.pathToShow!==null && this.pathToShow[0]===field) {
+                                widget.showPath(this.pathToShow);
+                                this.pathToShow=null;
+                            }
+                        },
+                        showPath:function(path)
+                        {
+                            if(this.subWidgets[path[0]]!==null)
+                                this.subWidgets[path[0]].showPath(path);
+                            else
+                                this.pathToShow=path;
+                        },
+                        getPathToShow:function()
+                        {
+                            return this.pathToShow;
                         },
                         removeSubWidget:function(field)
                         {
@@ -335,11 +348,7 @@
                                 );
                             }
                         },
-                        showPath:function()
-                        {
-                            // El tipo base no hace nada
-                            this.pathToShow=null;
-                        },
+
                         focus:function()
                         {
                             this.rootNode[0].scrollIntoView();
@@ -1092,12 +1101,12 @@
                                 },
                                 showPath:function(path)
                                 {
-                                    var key=path.shift();
+                                    var key=path[0];
                                     if(typeof this.subWidgets[key]!=="undefined")
-                                        this.subWidgets[key]=path;
+                                        this.subWidgets[key].showPath(path);
                                     else {
                                         this.pathToShow = path;
-                                        this.currentKey = key
+                                        this.currentKey = key;
                                         this.hasCurrentKey = true;
                                     }
                                 },
@@ -1210,7 +1219,6 @@
 
                             showPath:function(path)
                             {
-                                var key=path.shift();
                                 if(typeof this.subWidgets[key]!=="undefined")
                                     this.subWidgets[key].showPath(path);
                                 else
@@ -1419,7 +1427,6 @@
                                 showPath:function(path)
                                 {
                                     // Se hace una copia propia
-                                    var key=path.shift();
                                     if(typeof this.subWidgets[key]!=="undefined")
                                         this.subWidgets[key].showPath(path);
                                     else {
@@ -1602,6 +1609,8 @@
                             {
                               if(this.subNode)
                                   this.subNode.showPath(path);
+                              else
+                                  this.pathToShow=path;
                             },
                         getTypeFromValue:function(val)
                         {
@@ -1767,8 +1776,10 @@
                                 {
                                     if(pathToShow.length===1)
                                         this.willFocus=true;
-                                    else
-                                        this.pathToShow=pathToshow;
+                                    else {
+                                        pathToShow.shift();
+                                        this.pathToShow = pathToshow;
+                                    }
                                 }
                                 // controller se refiere al input o form que contiene este inputContainer
                                 this.controller=typeof params.controller==="undefined"?this.form:params.controller;
@@ -2103,6 +2114,7 @@
                                         }
                                     }
                                 }
+
                                 // Ahora en minIndex tenemos el input con el indice minimo.
                                 // Pero queda aun un paso: hay que enviarle el path *a partir de el*, o sea,
                                 // si el error estaba en /a/b/c  y hemos encontrado /a/b, el path que le enviamos debe ser sólo "c"
@@ -2115,6 +2127,10 @@
                                     splicedPath.splice(0,nEls-1);
                                     // Y, finalmente, pasar ese path al input:
                                     maxVal.input.showPath(splicedPath);
+                                }
+                                else
+                                {
+                                    // No se ha encontrado ningun input...Lo ponemos en
                                 }
                             },
                             onSubmit:function(indexes,vals)

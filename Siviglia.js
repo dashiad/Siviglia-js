@@ -85,7 +85,7 @@ SMCPromise.when=function(p)
 Siviglia.all = function (promiseArray) {
     var allPromise = $.Deferred();
 
-    if (!SMC.isset(promiseArray) || promiseArray.length == 0) {
+    if (!Siviglia.isset(promiseArray) || promiseArray.length == 0) {
         allPromise(true, []);
     } else {
         var n = promiseArray.length;
@@ -1572,14 +1572,11 @@ Siviglia.Utils.buildClass(
                                 for(var k=0;k<n.childNodes.length;k++) {
                                     actualNodes.push(n.childNodes[k]);
                                 }
-
-
                                 //for(var k=0;k<n.childNodes.length;k++) {
                                 for(var k=0;k<actualNodes.length;k++) {
                                         nextNode = actualNodes[k].nextElementSibling;
                                         m.recurseHTML($(actualNodes[k]), applyFunc);
                                 }
-
                                 node.trigger("endChildren");
                             },
                             destroyExpandos: function () {
@@ -1603,13 +1600,14 @@ Siviglia.Utils.buildClass(
                                             curRoot[dataset["sivid"]] = node;
                                     }
                                     for (k in Siviglia.UI.expandos) {
-                                        if (dataset[k])
+                                        if (dataset[k]) {
                                             newExpandos[k] = new Siviglia.UI.Expando[Siviglia.UI.expandos[k]]();
+                                        }
                                     }
-
                                     for (var k in newExpandos) {
                                         retValue = retValue && newExpandos[k]._initialize($(node), this, this.stack, newExpandos);
                                         this.expandos.push(newExpandos[k]);
+
                                     }
                                     return retValue;
                                 };
@@ -2223,11 +2221,26 @@ Siviglia.Utils.buildClass(
                         this.parentView=Siviglia.UI.viewStack[Siviglia.UI.viewStack.length-1];
                     else
                         this.parentView=null;
+                    this.__builtPromise=SMCPromise();
+                    this.__completedPromise=SMCPromise();
+                    this.__built=false;
+                    this.__subViews=[];
+                    this.__parentView=null;
+                    if(Siviglia.UI.viewStack.length>0)
+                    {
+                        this.__parentView=Siviglia.UI.viewStack[Siviglia.UI.viewStack.length-1];
+                        this.__parentView.__addSubView(this,this.__builtPromise);
+                    }
+
+
+
                 },
                 destruct:function()
                 {
                     // Necesitamos saber si hemos sido destruidos desde el preInitialize.
                     this.destroyed=true;
+                    if(this.__parentView)
+                        this.__parentView.__removeSubView(this);
                     if(this.oManager)
                         this.oManager.destruct();
                 },
@@ -2247,7 +2260,9 @@ Siviglia.Utils.buildClass(
                                 this.__composeHtml(w);
                                 this.parseNode();
                                 this.initialize(this.__params);
+
                                 p.resolve(this);
+                                this.__builtPromise.resolve();
                             }.bind(this);
                             if(typeof returned!=="undefined" && returned.then)
                                 returned.then(f);
@@ -2259,6 +2274,54 @@ Siviglia.Utils.buildClass(
                         else
                             f(widgetFactory.getInstance(this.__template));
                         return p;
+                    },
+                    __addSubView:function(view)
+                    {
+                        this.__subViews.push({view:view,promise:view.__builtPromise,resolved:false});
+                        view.waitComplete().then(function(){
+                            this.__setSubViewResolved(view);
+                        }.bind(this));
+                    },
+                    __setSubViewResolved:function(view)
+                    {
+                        if(this.__built)
+                            return;
+                        var allResolved=true;
+                        for(var k=0;k<this.__subViews.length;k++)
+                        {
+                            var c=this.__subViews[k];
+                            if(!c.resolved)
+                            {
+                                if(c.view===view)
+                                    c.resolved=true;
+                                else
+                                    allResolved=false;
+                            }
+                        }
+                        if(allResolved)
+                        {
+                            this.__builtPromise.then(function(){
+                                this.__built=true;
+                                this.__completedPromise.resolve();
+                            }.bind(this));
+                        }
+                    },
+                    // Este metodo se debe usar para esperar a que todas las
+                    // vistas hijas hayan terminado.
+                    waitComplete:function()
+                    {
+                        return this.__completedPromise;
+                    },
+                    __removeSubView:function(view)
+                    {
+                        for(var k=0;k<this.__subViews.length;k++)
+                        {
+                            if(this.__subViews[k].view===view) {
+                                this.__subViews.splice(k, 1);
+                                break;
+                            }
+                        }
+                        this.__setSubViewResolved(null);
                     },
                     __composeHtml: function (widget) {
 
@@ -2286,6 +2349,8 @@ Siviglia.Utils.buildClass(
                             }.bind(this));
                             Siviglia.UI.viewStack.pop();
                             this.rootNode=this.widgetNode.children();
+                            // Chequeamos si todos los elementos han sido resueltos
+                            this.__setSubViewResolved(null);
 
                         }catch(e)
                         {
@@ -2322,6 +2387,9 @@ Siviglia.Utils.buildClass(
                     this.__params = null;
                     this.__str=null;
                     this.__altLayout=null;
+                    this.__viewName=null;
+
+
                 },
                 destruct: function () {
                     if (this.__view !== null)
@@ -2330,6 +2398,19 @@ Siviglia.Utils.buildClass(
                 methods:
                     {
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
+                            var dataset = node.data();
+                            if(typeof dataset["viewname"]!=="undefined")
+                            {
+                                // Se ve si el nodo indica que hay que mapear el nodo a un id determinado de la
+                                // vista padre.
+                                // Para ello, se recoge la propiedad data-viewName, que se resuelve como una
+                                // parametrizable string, con el stack del padre, y sin eventos (tiene que resolverse inmediatamente)
+                                var curRoot = stack.getRoot("*");
+                                var str = new Siviglia.Path.ParametrizableString(dataset["viewname"], stack,{useListeners:false});
+                                var parsed=str.parse();
+                                if(parsed)
+                                    this.__viewName=parsed;
+                            }
 
                             // Listener de nombre de vista: Es el propio del Expando.
                             var altLayout = node.data("sivlayout");
@@ -2397,6 +2478,13 @@ Siviglia.Utils.buildClass(
                                     if(oldView)
                                         oldView.destruct();
                                     m.__view.onAddedToDom();
+                                    // Se mapea el nombre de la instancia de la vista, sobre el padre.
+                                    if(m.__viewName!==null)
+                                    {
+                                        var parentView=m.__stack.getRoot("*");
+                                        if(parentView)
+                                            parentView[m.__viewName]=m.__view;
+                                    }
                                     p.resolve()
                                 });
 
@@ -2414,6 +2502,7 @@ Siviglia.Utils.buildClass(
             }
         }
     });
+
 Siviglia.UI.Expando.WidgetExpando.prototype.widgets={};
 Siviglia.UI.Expando.WidgetExpando.prototype.widgetPromises={};
 Siviglia.Utils.load=function(assets)
