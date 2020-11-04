@@ -2096,9 +2096,9 @@ input[type="text"].jqx-input:-ms-input-placeholder, input[type="text"].jqx-widge
     box-sizing: border-box;
     color: var(--jqx-tabs-content-text-color);
     background-color: var(--jqx-tabs-content-background-color);
-    /* border: 1px solid var(--jqx-tabs-border-color); */
     border-top-color: transparent;
     padding: 15px;
+    height: fit-content !important; /* sobreescribe bien la altura dentro de las tabs */
 }
 
 .jqx-tabs-bar {
