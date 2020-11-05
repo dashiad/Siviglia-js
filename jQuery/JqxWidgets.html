@@ -1501,6 +1501,16 @@
                                         this.currentItem.destruct();
                                         this.currentItemNode.html("");
                                     }
+
+                                    // Eliminacion de clases con dicho valor "array_selected"
+                                    var elements_with_selected = document.getElementsByClassName("array_selected");
+                                    for (var i=0; i<elements_with_selected.length; i++) {
+                                        elements_with_selected[i].classList.remove("array_selected");
+                                    }
+                                    
+                                    // insertamos el clase "array_selected" en el nodo adecuado.
+                                    this.currentItemNode[0].previousElementSibling.children[idx*2].classList.add("array_selected");
+
                                     this.currentSelection=idx;
                                     instance=new Siviglia.inputs.jqwidgets.SimpleInputContainer(
                                       "Siviglia.inputs.jqwidgets.SimpleInputContainer",
@@ -2543,15 +2553,13 @@
         </div>
         <div data-sivIf="[%/*hasSimpleType%] == false" >
             <div style="display:flex;flex-direction:row;flex-wrap:nowrap">
-                <div class="arrayValues" style="width:300px;min-height:50px;margin-bottom:5px">
+                <div class="arrayContainerComplexValues">
                     <div data-sivLoop="/*type" data-contextIndex="current">
-                        <a class="arrayValueComplex" data-sivEvent="click" data-sivParams='{"key":"@current-index"}' data-sivCallback="getInputFor" class="label label-primary" data-sivValue="[%/@current-index%]"></a>
+                        <a class="arrayValueComplex" data-sivId="currentArrayNode" data-sivEvent="click" data-sivParams='{"key":"@current-index"}' data-sivCallback="getInputFor" class="label label-primary" data-sivValue="[%/@current-index%]"></a>
                         <span data-sivValue="title|Eliminar [%/@current-index%]" class="arraySimpleValue-removeButton" data-sivEvent="click" data-sivCallback="onRemoveItem" data-sivParams='{"index":"@current-index"}'></span>
                     </div>
                 </div>
-                <div style="border:1px solid black" data-sivId="currentItemNode">
-
-                </div>
+                <div class="contentRelatedArrayComplex" data-sivId="currentItemNode"></div>
             </div>
             <button class="button-add" data-sivId="addSimpleItem"  data-sivEvent="click" data-sivCallback="onNewItem">Add</button>
         </div>

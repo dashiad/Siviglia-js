@@ -269,7 +269,7 @@
     cursor: cell;
 }
 
-/* Array Styles */
+/* Array Styles (simple & complex) */
 .arrayValues { margin-bottom: var(--ArraySimpleValue-margin-bottom); }
 
 .arraySimpleValue {
@@ -286,17 +286,36 @@
 
 .arraySimpleValue:hover, .arrayValueComplex:hover { color: var(--ArraySimpleValue-font-color-hover); background: var(--ArraySimpleValue-background-color-hover); }
 
+a.arrayValueComplex.array_selected, span.arraySimpleValue.array_selected {
+    background-color: var(--contrast-0);
+    border: 3px solid var(--ArraySimpleValue-border-color);
+}
+
 .arrayValueComplex {
-    padding: var(--ArraySimpleValue-padding);
-    border-radius: var(--ArraySimpleValue-border-radius);
-    border: var(--ArraySimpleValue-border-size) solid var(--ArraySimpleValue-border-color);
-    color: var(--ArraySimpleValue-font-color) !important;
-    background: var(--ArraySimpleValue-background-color);
-    font-size: var(--ArraySimpleValue-font-size) !important;
+    padding: var(--ArrayComplexValue-padding);
+    border-radius: var(--ArrayComplexValue-border-radius);
+    border: var(--ArrayComplexValue-border-size) solid var(--ArrayComplexValue-border-color);
+    color: var(--ArrayComplexValue-font-color) !important;
+    background: var(--ArrayComplexValue-background-color);
+    font-size: var(--ArrayComplexValue-font-size) !important;
     cursor: pointer;
     display: inline-block;
     min-width: auto;
+    margin-bottom: var(--ArrayComplexValue-margin-bottom);
 }
+
+.arrayContainerComplexValues {
+    width: var(--ArrayComplexValue-container-width);
+    margin-bottom: var(--ArrayComplexValue-container-margin-bottom);
+}
+
+.contentRelatedArrayComplex { 
+    width: var(--ArrayComplex-contentRelated-width);
+    border-radius: var(--ArrayComplex-contentRelated-border-radius);
+    border: var(--ArrayComplex-contentRelated-border-size) solid var(--contrast-0);
+    height: fit-content;
+}
+
 
 /* ocultar el input del container cuando se tiene FIXED */
 
