@@ -76,7 +76,7 @@
                             }
                             p.type=type;
                             p.form=form;
-                            p.pathToShow=typeof params.pathToShow==="undefined"?null:params.pathToShow;
+
 
 
 
@@ -186,13 +186,14 @@
                             // input, y que consiste en el input, la label, la ayuda,etc
                             this.inputWrapper=Siviglia.issetOr(params.inputWrapper,null);
                             this.type = params.type;
-                            this.pathToShow=Siviglia.issetOr(params.pathToShow,null);
+
                             this.type.addListener("CHANGE",this,"onTypeChanged");
                             this.type.addListener("ERROR",null,function(){console.dir("ON_ERROR")});
                             this.helpMessage = Siviglia.issetOr(this.type.__definition.HELP, null);
                             this.hasHelpMessage = (this.helpMessage != null ? true : false);
                             this.inputParams = Siviglia.issetOr(params.inputParams, {});
                             this.formParams=Siviglia.issetOr(params.formParams,{});
+
 
                         },
                         initialize: function (params) {
@@ -272,21 +273,11 @@
                         {
 
                             this.subWidgets[field]=widget;
-                            if(this.pathToShow!==null && this.pathToShow[0]===field) {
-                                widget.showPath(this.pathToShow);
-                                this.pathToShow=null;
-                            }
                         },
                         showPath:function(path)
                         {
-                            if(this.subWidgets[path[0]]!==null)
-                                this.subWidgets[path[0]].showPath(path);
-                            else
-                                this.pathToShow=path;
-                        },
-                        getPathToShow:function()
-                        {
-                            return this.pathToShow;
+                            // Aqui no deberia llegar nunca.En los tipos basicos, showPath
+                            // tendría que ser utilizado en el inputWrapper, que no lo pasaría al input final.
                         },
                         removeSubWidget:function(field)
                         {
@@ -1099,14 +1090,14 @@
                                 {
 
                                 },
-                                showPath:function(path)
+                                showPath:function(key)
                                 {
-                                    var key=path[0];
-                                    if(typeof this.subWidgets[key]!=="undefined")
-                                        this.subWidgets[key].showPath(path);
-                                    else {
-                                        this.pathToShow = path;
+                                    // Showpath solo tiene que seleccionar la key del path, en caso de que
+                                    // no fuera la seleccionada.
+                                    if(typeof this.subWidgets[key]==="undefined")
+                                    {
                                         this.currentKey = key;
+                                        if(this.hasCurrentKey===false)
                                         this.hasCurrentKey = true;
                                     }
                                 },
@@ -1219,11 +1210,7 @@
 
                             showPath:function(path)
                             {
-                                if(typeof this.subWidgets[key]!=="undefined")
-                                    this.subWidgets[key].showPath(path);
-                                else
-                                    this.pathToShow=path;
-
+                                // Un container, en un showPath, no deberia hacer nada...Ya que siempre muestra todos sus campos..
                             }
                         }
                     },
@@ -1424,15 +1411,14 @@
                                     if(this.hasSimpleType)
                                         this.buildNewItemWidget();
                                 },
-                                showPath:function(path)
+                                showPath:function(key)
                                 {
+                                    this.waitComplete().then(function(){
                                     // Se hace una copia propia
-                                    if(typeof this.subWidgets[key]!=="undefined")
-                                        this.subWidgets[key].showPath(path);
-                                    else {
-                                        this.pathToShow = path;
+                                    if(typeof this.subWidgets[key]==="undefined")
                                         this.setSelected(key);
-                                    }
+
+                                    }.bind(this));
                                 },
                                 onRemoveClicked:function(node,params)
                                 {
@@ -1504,12 +1490,11 @@
                                     this.currentSelection=idx;
                                     instance=new Siviglia.inputs.jqwidgets.SimpleInputContainer(
                                       "Siviglia.inputs.jqwidgets.SimpleInputContainer",
-                                        {controller:this,form:this.form,key:idx,parent:this.type,pathToShow:this.pathToShow},
+                                        {controller:this,form:this.form,key:idx,parent:this.type},
                                         {},
                                         $("<div></div>"),
                                         new Siviglia.Path.ContextStack()
                                     );
-
                                     instance.__build().then(function(){
                                         this.currentItem=instance;
                                         this.currentItemNode.append(this.currentItem.rootNode);
@@ -1607,10 +1592,7 @@
                             },
                             showPath:function(path)
                             {
-                              if(this.subNode)
-                                  this.subNode.showPath(path);
-                              else
-                                  this.pathToShow=path;
+                                // Un TypeSwitcher no tendria por que hacer nada en showPath
                             },
                         getTypeFromValue:function(val)
                         {
@@ -1760,27 +1742,20 @@
                         if(this.innerInput!==null)
                             this.innerInput.destruct();
                         this.rootNode.html("");
-                        this.controller.removeSubWidget(this.field,this);
+                        if(this.controller!==null)
+                            this.controller.removeSubWidget(this.field,this);
+                        this.form.unregisterInput(this);
                     },
                     methods:
                         {
                             preInitialize:function(params)
                             {
                                 this.form=params.form;
+                                this.innerInput=null;
+                                this.controller=null;
                                 // parent se refiere al parent type
                                 this.parent=params.parent;
-                                var pathToShow=Siviglia.issetOr(params.pathToShow,null);
                                 this.field=params.key;
-                                this.willFocus=false;
-                                if(pathToShow!==null && pathToShow[0]===this.field)
-                                {
-                                    if(pathToShow.length===1)
-                                        this.willFocus=true;
-                                    else {
-                                        pathToShow.shift();
-                                        this.pathToShow = pathToshow;
-                                    }
-                                }
                                 // controller se refiere al input o form que contiene este inputContainer
                                 this.controller=typeof params.controller==="undefined"?this.form:params.controller;
                                 if(typeof this.parent.getPath!=="undefined")
@@ -1788,9 +1763,13 @@
                                 else
                                     this.innerType=this.parent["*"+this.field];
 
+
                                 this.fieldName=params.key;
                                 this.fieldDef=this.innerType.getDefinition();
                                 this.innerInput=null;
+                                this.pathToShow=null;
+                                this.form.registerInput(this,this.innerType);
+
 
                             },
                             initialize:function()
@@ -1809,15 +1788,20 @@
                             {
                                 this.rootNode[0].scrollIntoView();
                             },
-                            showPath:function(path)
+                            showPath:function(key)
                             {
-                                this.innerInput.showPath(path);
+
+                                    if(this.innerInput)
+                                        this.innerInput.showPath(key);
+                                    else
+                                        this.pathToShow=key;
+
                             },
                             getInputFor:function(node,params)
                             {
                                 var factory=new Siviglia.inputs.jqwidgets.Factory()
                                 //this.curType=this.type.getField(key);
-                                return factory.getInput(this.innerType,{controller:this,inputWrapper:this,pathToShow:this.pathToShow},this.form).then(
+                                return factory.getInput(this.innerType,{controller:this,inputWrapper:this},this.form).then(
                                     function(instance){
                                         if(this.innerInput!=null) {
                                             this.innerInput.destruct();
@@ -1833,7 +1817,9 @@
                                             }
                                         }
                                         delete this.currentErrors[key];*/
-
+                                        if(this.pathToShow!==null)
+                                            instance.showPath(this.pathToShow);
+                                        this.pathToShow=null;
 
                                     }.bind(this));
                             }
@@ -1935,6 +1921,8 @@
                                 this.__erroredInputs={};
                                 this.__containerWidget=null;
                                 this.__errorNode=null;
+                                this.__pathToShow=null;
+                                this.__pathToShowMaxMatch=0;
                                 if(typeof params.model==="undefined") {
                                     this._type = params.bto;
                                     this.setupBto();
@@ -2075,6 +2063,35 @@
                             registerInput:function(input,type)
                             {
                                 this.registeredInputs.push({input:input,type:type});
+                                if(this.__pathToShow!==null) {
+                                    var spliced = type.__fieldNamePath.split("/");
+                                    if(spliced[0]==="")
+                                        spliced.shift();
+                                    var n=0;
+                                    while(n<this.__pathToShow.length && spliced[n]==this.__pathToShow[n])
+                                        n++;
+
+                                    if(n > this.__pathToShowMaxMatch)
+                                    {
+                                        if(n===this.__pathToShow.length) {
+                                            input.focus();
+                                            this.__pathToShow=null;
+                                        }
+                                        else
+                                        {
+                                            this.__pathToShowMaxMatch=n;
+                                            input.showPath(this.__pathToShow[n]);
+                                        }
+                                    }
+                                }
+                            },
+                            unregisterInput:function(input)
+                            {
+                                for(var k=0;k<this.registeredInputs.length;k++)
+                                {
+                                    if(this.registeredInputs[k].input===input)
+                                        this.registeredInputs.splice(k,1);
+                                }
                             },
                             // A diferencia del resto de metodos showPath, en este caso, el path es una string.
                             showPath:function(path)
@@ -2086,7 +2103,7 @@
                                 // Para encontrar ese minimo path, se reconstruye el path del error, y se hace un replace
                                 // de ese path, en el path de cada tipo, con "". La cadena minima resultante, es el input
                                 // que buscamos.
-
+                                this.waitComplete().then(function(){
                                 var rPath=path;
                                 var splicedPath=path.split("/");
                                 splicedPath.shift();
@@ -2121,17 +2138,18 @@
                                 if(maxlen >= 0)
                                 {
                                     var found=maxVal.type.__fieldNamePath.split("/");
-                                    var nEls=found.length;
-                                    // Este es el numero de elementos que tenemos que eliminar del array original, menos 1, ya que los
-                                    // inputs, lo primero que hacen, es eliminar el primer elemento del path.
-                                    splicedPath.splice(0,nEls-1);
-                                    // Y, finalmente, pasar ese path al input:
-                                    maxVal.input.showPath(splicedPath);
+                                    if(found[0]=="")
+                                        found.shift();
+                                    this.__pathToShow=splicedPath;
+                                    this.__pathToShowMaxMatch=found.length;
+                                    maxVal.input.showPath(splicedPath[found.length]);
                                 }
                                 else
                                 {
-                                    // No se ha encontrado ningun input...Lo ponemos en
+                                    // No se ha encontrado ningun input...Lo sacamos por consola
+                                    console.error("Form: Path not found in showPath: "+path);
                                 }
+                                }.bind(this));
                             },
                             onSubmit:function(indexes,vals)
                             {

@@ -114,7 +114,7 @@
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-	    var DEVELOP_MODE=28;  // All tests
+	    var DEVELOP_MODE=29;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");
@@ -1637,16 +1637,21 @@
                             initialize: function (params) {
                                 var paths=[
                                     "/ROOT/dict2/f3",
-                                    "/ROOT/dict3/f4/f1",
-                                    "/ROOT/dict1/f4/f2"
+                                    "/ROOT/dict3/f4/0/f1",
+                                    "/ROOT/dict1/f4/1/f2"
                                 ]
                                 var idx=0;
                                 var m=this;
-                                this.showPath(paths[1]);
-                 /*               setInterval(function(){
+                                m.showPath(paths[1]);
+                                setTimeout(function(){
+                                    m.showPath(paths[2]);
+
+                                },3000)
+                                /*
+                                setInterval(function(){
                                    m.showPath(paths[idx]);
                                    idx=(idx+1)%paths.length;
-                                },5000);*/
+                                },3000);*/
                             },
                             show: function () {
                             },

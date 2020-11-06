@@ -69,9 +69,12 @@ Siviglia.Utils.buildClass(
                             if(this.plainCtx) {
                                 this.stack.removeContext(this.plainCtx);
                                 this.plainCtx.destruct();
+                                this.plainCtx=null;
                             }
-                            if(this.pstring)
+                            if(this.pstring) {
                                 this.pstring.destruct();
+                                this.pstring=null;
+                            }
                         },
                         methods:
                             {

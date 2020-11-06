@@ -1970,7 +1970,8 @@ Siviglia.Utils.buildClass(
                     },
                     destruct: function () {
                         this.reset();
-                        this.node.unbind();
+                        if(this.node)
+                            this.node.unbind();
                     },
                     methods: {
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
@@ -2018,11 +2019,13 @@ Siviglia.Utils.buildClass(
                             return true;
                         },
                         reset: function () {
-                            var attr = this.node.data(this.expandoTag);
-                            var events = attr.split(",");
-                            events.map(function (item) {
-                                this.node.unbind(item);
-                            }.bind(this));
+                            if(this.node) {
+                                var attr = this.node.data(this.expandoTag);
+                                var events = attr.split(",");
+                                events.map(function (item) {
+                                    this.node.unbind(item);
+                                }.bind(this));
+                            }
                         }
                     }
                 },
