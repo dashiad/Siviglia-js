@@ -114,7 +114,7 @@
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-	    var DEVELOP_MODE=29;  // All tests
+	    var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");
