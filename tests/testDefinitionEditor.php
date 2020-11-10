@@ -38,7 +38,7 @@
 
 
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->
-<div data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Add"></div>
+<div data-sivView="Siviglia.model.reflection.DataSource.forms.Edit" data-sivParams='{"className":"/model/web/Page/datasources/FullList","datasourceName":"FullList"}'></div>
 <script>
 
 

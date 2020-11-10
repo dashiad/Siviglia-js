@@ -1184,7 +1184,7 @@
                         destruct:function(){
 
                             for(var k in this.registeredInputs)
-                                this.registeredInputs[k].destruct();
+                                this.registeredInputs[k].input.destruct();
 
                         },
                         methods: {
@@ -1493,7 +1493,7 @@
                                     for (var i=0; i<elements_with_selected.length; i++) {
                                         elements_with_selected[i].classList.remove("array_selected");
                                     }
-                                    
+
                                     // insertamos el clase "array_selected" en el nodo adecuado.
                                     this.currentItemNode[0].previousElementSibling.children[idx*2].classList.add("array_selected");
 
@@ -1832,8 +1832,19 @@
                                         this.pathToShow=null;
 
                                     }.bind(this));
+                            },
+                            getInner:function()
+                            {
+                                return this.innerInput;
+                            },
+                            clearErrors:function()
+                            {
+                                this.innerInput.clearErrors();
+                            },
+                            showError:function(e)
+                            {
+                                this.innerInput.showError(e);
                             }
-
 
                         }
                 },
@@ -2010,7 +2021,7 @@
                                     for(var k=0;k<this.registeredInputs.length;k++) {
                                         try{
 
-                                            this.registeredInputs[k].input.save();
+                                            this.registeredInputs[k].input.getInner().save();
                                             this.registeredInputs[k].input.clearErrors();
                                         }catch(e)
                                         {
