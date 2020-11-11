@@ -12,8 +12,17 @@
     padding-bottom: 1px;
     color: var(--error-color);
     border-bottom: 2px solid var(--dark-color);
+    font-size: var(--error-font-size);
 }
 .widField {}
+
+.widError ul { list-style-type: none; }
+.widError > ul > li:before {
+    font-family: var(--icon-font);
+    color: var(--error-color);
+    content: var(--icon-message-alt-error);
+    margin-right: 5px;
+}
 
 .StdInputContainer {
     margin-bottom: var(--StdInputContainer-margin-bottom);
@@ -274,6 +283,7 @@
 
 .arraySimpleValue {
     margin-right: var(--ArraySimpleValue-margin-right);
+    margin-bottom: var(--ArraySimpleValue-margin-bottom2);
     padding: var(--ArraySimpleValue-padding);
     border-radius: var(--ArraySimpleValue-border-radius);
     border: var(--ArraySimpleValue-border-size) solid var(--ArraySimpleValue-border-color);

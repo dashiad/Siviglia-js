@@ -347,40 +347,56 @@
                                 this.inputNode.focus();
                         },
                         showError: function (message,dontAppend) {
-                            var d = new Date();
-                            this.tooltip = this.tooltipNode.jqxTooltip(
-                                {
-                                    name: d + d.getMilliseconds(),
-                                    animationShowDelay: 'fast',
-                                    autoHide: false,
-                                    closeOnClick: false,
-                                    position: 'right',
-                                    theme:'errored'
-                                });
-                            this.tooltipIds=this.tooltipNode.data().jqxTooltip.instance.IDArray;
-                            this.tooltipNode.jqxTooltip({content: message});
-                            this.tooltipNode.jqxTooltip("open");
-                            this.tooltipNode.addClass("errored");
+                            // Se guarda referencia del puntero al nodo del error <span...>
+                            this.errorNode = this.inputWrapper.errorNode;
+                            
+                            // Nos guardamos si hay excepcion en el tipo
+                            var exception_input_path = this.type.__errorException;
+
+                            // Comprobamos la excepción del tipo. Si es distinto de null, es cuando SI se pinta/muestra el error
+                            if (exception_input_path !== null){
+                                if (typeof this.errorNode !== "undefined"){
+                                    this.errorNode.style.display = "";          // hacemos que se vea el <span> eliminando el display: none
+                                    this.errorNode.innerText = message;         // insertamos el mensaje de error en el span del input.
+                                    this.inputWrapper.inputNode[0].children[1].classList.add("show-errored");   // ponemos clase de error en el input 
+                                }
+                            }                          
+                                                       
+                            // Añadimos path de error de dicho input
                             this.form.appendError(this.type.getFullPath(),this);
                         },
                         clearErrors: function () {
-                            if (this.tooltip) {
-                                this.tooltipNode.jqxTooltip('destroy');
-                                this.tooltip = null;
-                                for(var k=0;k<this.tooltipIds.length;k++)
-                                {
-                                    var od=this.tooltipIds[k].tooltipID;
-                                    var el=document.getElementById(od);
-                                    if(el && el.parentElement)
-                                        el.parentElement.removeChild(el);
-                                }
+                            // Nos guardamos si hay excepcion en el tipo
+                            var exception_input_path = this.type.__errorException;
+                            
+                            // Comprobamos que no esté vacío el inputWrapper
+                            if (this.inputWrapper !== null) {
+                                
+                                // Se guarda referencia del puntero al nodo del error <span...>
+                                this.errorNode = this.inputWrapper.errorNode;
+
+                                // Comprobamos la excepción del tipo. Si es distinto de null, es cuando NO se elimina el error
+                                if (exception_input_path === null) {
+
+                                    // Comprobación para evitar dar un error en la consola
+                                    if (typeof this.inputWrapper.rootNode[0].children[3] !== "undefined") {
+                                        // quitamos los estilos de errores del nodo de error y más abajo del input
+                                        this.errorNode.style.display = "none";
+                                        this.errorNode.innerText = "";
+                                    }
+
+                                    // Se quita la clase que resalta el error del input
+                                    if (typeof this.inputNode !== "undefined") {
+                                        this.inputNode.removeClass("show-errored");
+                                        //console.dir("CLEAR_ERROR");
+                                    }
+
+                                }// if__exception_input_path
                             }
-                            if(this.inputNode)
-                                this.inputNode.removeClass("errored");
+                            
+                            // Si no está vacío el formulario, se llama a la función que se encarga de eliminar el path del error
                             if(this.form!==null)
-                                this.form.clearError(this.type.getFullPath(),this);
-                            /*if(this.validator)
-                             ths.validator.hide();*/
+                                this.form.clearError(this.type.getFullPath(),this);                            
                         },
                         getJqxWidgetName: function () {
                             return "jqxInput";
@@ -1819,6 +1835,9 @@
                                         }
                                         this.innerInput=instance;
                                         //this.innerInput.setInputWrapper(this);
+                                        if (typeof instance.inputWrapper.rootNode[0].children[3] !== "undefined")
+                                            this.errorNode=instance.inputWrapper.rootNode[0].children[3].children[0];
+
                                         this.inputNode.append(instance.rootNode);
                                         /*var ce=this.currentErrors[key]
                                         if(ce) {
@@ -1860,6 +1879,7 @@
                                 // EN INITIALIZE, SE LE OCULTA.
                                 this.help=Siviglia.issetOr(this.fieldDef["HELP"],"");
                                 this.label=Siviglia.issetOr(this.fieldDef["LABEL"],"");
+                                this.errorNode="";
                             },
                             initialize:function(params)
                             {
@@ -2722,7 +2742,9 @@
                 <span data-sivValue="/*help" class="tooltiptext"></span>
             </div>
 
-            <div data-sivId="inputNode" class="input" data-sivCall="getInputFor" data-sivParams="{}"></div>
+            <div data-sivId="inputNode" class="input" data-sivCall="getInputFor" data-sivParams="{}">
+                <span data-sivId="errorNode" class="errorNodetext" style="display: none"></span>
+            </div>
 
             <div style="clear:both"></div>
     </div>

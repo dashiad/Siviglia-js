@@ -2460,3 +2460,26 @@ input[type="text"].jqx-input:-ms-input-placeholder, input[type="text"].jqx-widge
 .inputs.container > div {
     margin-bottom: 12px;
 }
+
+
+/* Estilos de error para los inputs (sustitución de los tooltips de jqxwidgets)  */
+
+input[type="text"].show-errored, input[type="textarea"].show-errored, input[type="password"].show-errored, .jqx-input.show-errored {
+    border: 3px solid #fd2727 !important;
+}
+
+/* .jqx-combobox-content, .jqx-input, .jqx-input-content, .jqx-combobox-content input */
+
+span.errorNodetext {
+    font-size: 15px;
+    color: #fd2727;
+    display: block;
+    margin-bottom: 5px;
+}
+
+span.errorNodetext:before {
+    font-family: var(--icon-font);
+    color: #fd2727;
+    content: var(--icon-message-alt-error);
+    margin-right: 5px;
+}
