@@ -544,7 +544,7 @@ Siviglia.Utils.buildClass({
                     };
                     if(typeof meta.TYPES !=="undefined")
                         definition["TYPES"]=meta.TYPES;
-                    this.BaseTypedObject(definition,null,true);
+                    this.BaseTypedObject(definition,null,Siviglia.types.BaseType.VALIDATION_MODE_NONE);
 
                     if(params===null)
                         params={};

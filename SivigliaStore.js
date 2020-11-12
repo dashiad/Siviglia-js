@@ -128,7 +128,7 @@ Siviglia.Utils.buildClass(
                                 getLabel:function(row)
                                 {
                                     if(typeof this.source["LABEL_EXPRESSION"]==="undefined")
-                                        return row[this.source["LABEL"]];
+                                        return row[Siviglia.issetOr(this.source["LABEL"],"LABEL")];
                                     var ctxStack=new Siviglia.Path.ContextStack();
                                     var plainCtx = new Siviglia.Path.BaseObjectContext(row, "/", ctxStack);
                                     var p=new Siviglia.Path.ParametrizableString(this.source["LABEL_EXPRESSION"],ctxStack,{useListeners:false})
@@ -136,7 +136,7 @@ Siviglia.Utils.buildClass(
                                 },
                                 getValueField:function()
                                 {
-                                    return this.source["VALUE"];
+                                    return Siviglia.issetOr(this.source["VALUE"],"VALUE");
                                 },
                                 addContext:function(ctx)
                                 {

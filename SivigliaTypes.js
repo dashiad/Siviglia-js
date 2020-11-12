@@ -1244,7 +1244,7 @@ Siviglia.Utils.buildClass(
                                 }
                                 return true;
                             },
-                            _setValue: function (val) {
+                            _setValue: function (val,validationMode) {
                                 this.__value = val;
                                 this.__localValidate();
 
@@ -1389,7 +1389,7 @@ Siviglia.Utils.buildClass(
                     inherits: 'BaseType',
                     methods:
                         {
-                            _setValue: function (val) {
+                            _setValue: function (val,validationMode) {
                                 if (Siviglia.types.isObject(val)) {
                                     // Se supone que es un Big.
                                     val = val.toString();
@@ -1551,8 +1551,29 @@ Siviglia.Utils.buildClass(
                 {
                     inherits: 'BaseType'
                 },
+            Model:{
+                inherits:'String',
 
+                construct:function(name,def,parentType,val,validationType)
+                {
+                    def["SOURCE"]= {
+                        "TYPE":"DataSource",
+                        "MODEL":'\\model\\reflection\\Model',
+                        "DATASOURCE":'ModelList',
+                        "VALUE":"smallName",
+                        "LABEL_EXPRESSION":"[%/package%] > [%/smallName%]"
+                    };
+                    this.String(name,def,parentType,val,validationType);
 
+                },
+                methods:{
+                    _setValue: function (v, validationMode) {
+                        v=v.replace(/\\/g,"/");
+                        this.__value=v;
+                        this.__valueSet=true;
+                    }
+                }
+            },
             Container: {
                 inherits: 'BaseType',
                 construct: function (name, def, parentType, val, validationType) {
@@ -1746,8 +1767,8 @@ Siviglia.Utils.buildClass(
                         var m = this;
                         if (!Siviglia.isset(validationMode))
                             validationMode = this.__validationMode;
-
-                        this.reset();
+                        if(this.__valueSet)
+                            this.reset();
                         // Limpiamos el valor interno.
                         this.__value = v;
                         this.disableEvents(true);
@@ -2081,7 +2102,7 @@ Siviglia.Utils.buildClass(
                             isContainer: function () {
                                 return true;
                             },
-                            proxify: function (val) {
+                            proxify: function (val,validationMode) {
 
                                 if (val === null) {
                                     if (this.__value !== null) {
@@ -2218,7 +2239,7 @@ Siviglia.Utils.buildClass(
                                 this.__value = this.__currentProxy;
                                 this.disableEvents(true);
                                 ev.addListener("CHANGE", this, "onChange");
-                                this.updateChildren(val);
+                                this.updateChildren(val,validationMode);
                                 this.disableEvents(false);
                                 return this.__currentProxy;
                             },
@@ -2403,16 +2424,21 @@ Siviglia.Utils.buildClass(
                         copy: function (val) {
                             this.setValue(val);
                         },
-                        _setValue: function (val) {
+                        _setValue: function (val,validationMode) {
                             this.__currentProxy = this.proxify(val);
                             //this["[[KEYS]]"]=this.getKeys();
                         },
-                        updateChildren: function (val) {
+                        updateChildren: function (val,validationMode) {
                             var m = this;
+                            var oldValidationMode=this.__validationMode;
+                            if(typeof validationMode!=="undefined") {
+                                this.__validationMode = validationMode;
+                            }
 
                             for (var k in val) {
                                 m.__currentProxy[k] = val[k];
                             }
+                            this.__validationMode=oldValidationMode;
                             if (!this.eventsDisabled())
                                 this.onChange();
                         },
@@ -2534,7 +2560,7 @@ Siviglia.Utils.buildClass(
                         {
                            return true;
                         },
-                        _setValue: function (val) {
+                        _setValue: function (val,validationMode) {
 
                             this.reset();
                             var typeInfo = this.getTypeFromValue(val);
@@ -2891,11 +2917,8 @@ Siviglia.Utils.buildClass(
                         _validate: function () {
                             return true;
                         },
-                        _setValue: function (val) {
-
-                            this.__currentProxy = this.proxify(val);
-
-
+                        _setValue: function (val,validationMode) {
+                            this.__currentProxy = this.proxify(val,validationMode);
                         },
                         /*apply: function (val,validationMode) {
 
@@ -2986,13 +3009,16 @@ Siviglia.Utils.buildClass(
                                 return ret!==null?ret:true;
                             }
                         },
-                        updateChildren: function (val) {
+                        updateChildren: function (val,validationMode) {
                             var m = this;
-
+                            var oldValidationMode=this.__validationMode;
+                            if(typeof validationMode!=="undefined") {
+                                this.__validationMode = validationMode;
+                            }
                             for (var k = 0; k < val.length; k++) {
                                 this.__currentProxy[k]=val[k];
-
                             }
+                            this.__validationMode=oldValidationMode;
 
                             if (!this.eventsDisabled())
                                 this.onChange();
@@ -3244,9 +3270,10 @@ Siviglia.Utils.buildClass(
         classes: {
             BaseTypedObject: {
                 inherits: 'Siviglia.types.Container',
-                construct: function (defOrUrl, value, relaxed) {
+                construct: function (defOrUrl, value, validationMode) {
                     this.EventManager();
                     this.PathAble();
+                    this.__validationMode=Siviglia.issetOr(validationMode,Siviglia.types.BaseType.VALIDATION_MODE_COMPLETE);
                     this.__definedPromise = $.Deferred();
 
                     // Un basetypedobject siempre tiene definidos los campos. Es por eso que le damos un valor
@@ -3288,7 +3315,7 @@ Siviglia.Utils.buildClass(
 
 
 
-                        this.Container("", d, null, value);
+                        this.Container("", d, null, value,this.__validationMode);
                         this.__definedPromise.resolve(this);
                     },
                     ready: function () {

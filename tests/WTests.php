@@ -1696,14 +1696,7 @@
                                         modelSelector:
                                             {
                                                 "LABEL":"ModelSelector",
-                                                "TYPE": "String",
-                                                "SOURCE": {
-                                                    "TYPE": "DataSource",
-                                                    "MODEL": "/model/reflection/Model",
-                                                    "DATASOURCE": "ModelList",
-                                                    "LABEL": "smallName",
-                                                    "VALUE": "smallName"
-                                                }
+                                                "TYPE": "Model"
                                             },
 
                                         fieldSelector:

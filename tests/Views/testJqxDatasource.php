@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="../../jQuery/css/jqx.base.css">
     <link rel="stylesheet" href="../../jQuery/css/jqx.adtopy-dev.css">
     <link rel="stylesheet" href="../../jQuery/css/JqxWidgets.css">
-    <link rel="stylesheet" href="../../../../reflection/css/style.css">    
+    <link rel="stylesheet" href="../../../../reflection/css/style.css">
 <script>
         var Siviglia = Siviglia || {};
         Siviglia.config = {
@@ -73,14 +73,7 @@
                                     "model":{
                                         "LABEL":"Select Model",
                                         "description":"qqqq",
-                                        "TYPE":"String",
-                                        "SOURCE":{
-                                            "TYPE":"DataSource",
-                                            "MODEL":"/model/reflection/Model",
-                                            "DATASOURCE":"ModelList",
-                                            "LABEL":"smallName",
-                                            "VALUE":"smallName"
-                                        }
+                                        "TYPE":"Model"
                                     }
                                 }
                             }

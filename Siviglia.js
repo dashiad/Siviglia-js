@@ -1394,7 +1394,10 @@ Siviglia.Path.eventize=function(obj,propName) {
                     return v;
                 },
                 set: function (val) {
-
+                    // Si estamos haciendo set de exactamente el mismo valor, y ese valor es simple,
+                    // retornamos.
+                        if(typeof val!=="object" && val===v)
+                            return;
                         if (typeof val === "object" && val !== null)
                             v = Siviglia.Path.Proxify(val, ev);
                         else
