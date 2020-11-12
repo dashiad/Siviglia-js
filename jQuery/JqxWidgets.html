@@ -349,7 +349,7 @@
                         showError: function (message,dontAppend) {
                             // Se guarda referencia del puntero al nodo del error <span...>
                             this.errorNode = this.inputWrapper.errorNode;
-                            
+
                             // Nos guardamos si hay excepcion en el tipo
                             var exception_input_path = this.type.__errorException;
 
@@ -358,20 +358,20 @@
                                 if (typeof this.errorNode !== "undefined"){
                                     this.errorNode.style.display = "";          // hacemos que se vea el <span> eliminando el display: none
                                     this.errorNode.innerText = message;         // insertamos el mensaje de error en el span del input.
-                                    this.inputWrapper.inputNode[0].children[1].classList.add("show-errored");   // ponemos clase de error en el input 
+                                    this.inputWrapper.inputNode[0].children[1].classList.add("show-errored");   // ponemos clase de error en el input
                                 }
-                            }                          
-                                                       
+                            }
+
                             // Añadimos path de error de dicho input
                             this.form.appendError(this.type.getFullPath(),this);
                         },
                         clearErrors: function () {
                             // Nos guardamos si hay excepcion en el tipo
                             var exception_input_path = this.type.__errorException;
-                            
+
                             // Comprobamos que no esté vacío el inputWrapper
                             if (this.inputWrapper !== null) {
-                                
+
                                 // Se guarda referencia del puntero al nodo del error <span...>
                                 this.errorNode = this.inputWrapper.errorNode;
 
@@ -393,10 +393,10 @@
 
                                 }// if__exception_input_path
                             }
-                            
+
                             // Si no está vacío el formulario, se llama a la función que se encarga de eliminar el path del error
                             if(this.form!==null)
-                                this.form.clearError(this.type.getFullPath(),this);                            
+                                this.form.clearError(this.type.getFullPath(),this);
                         },
                         getJqxWidgetName: function () {
                             return "jqxInput";
@@ -731,8 +731,10 @@
                             else {
                                 var item = this.inputNode.jqxComboBox('getItemByValue', toSet);
                                 if (item) {
-                                    this.inputNode.jqxComboBox('selectItem', item);
                                     this.inputNode.jqxComboBox('val', item.label);
+                                    setTimeout(function(){
+                                        this.inputNode.jqxComboBox('selectItem', item);
+                                    }.bind(this),100);
                                 }
                             }
                             this.changing = false;
@@ -1755,7 +1757,7 @@
                                     }
                                 },
                                 onAdd: function () {
-                                    this.type.setValue(this.inputNode.val());
+                                    this.type.setValue(this.subInput.inputNode.val());
                                     this.type.save();
 
                                     this.parentInput.onAdd(this.subInput.getValue());

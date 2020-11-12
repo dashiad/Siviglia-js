@@ -119,7 +119,7 @@ Siviglia.Utils.buildClass(
                                 },
                                 getLabelField:function()
                                 {
-                                    return this.source["LABEL"];
+                                    return Siviglia.issetOr(this.source["LABEL"],"LABEL");
                                 },
                                 getLabelExpression:function()
                                 {
