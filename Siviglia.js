@@ -1661,7 +1661,14 @@ Siviglia.Utils.buildClass(
                             this.str = new Siviglia.Path.ParametrizableString(pString, stack);
                             if(!contextual)
                                 this.str.addListener("CHANGE", this, "_update", "BaseExpando:" + this.expandoTag);
-                            var v=this.str.parse();
+                            var v;
+                            try {
+                                v = this.str.parse();
+                            }catch(e)
+                            {
+                                console.warn("Valor nulo para path en expando:"+this.expandoTag+"::"+pString+".Se envia un valor nulo al expando.");
+                                v=null;
+                            }
                             if(contextual)
                                 this.update(v);
                             return true;
@@ -1802,7 +1809,8 @@ Siviglia.Utils.buildClass(
                                         // Por ahora, simplemente enviamos un null.El widget debera saber que hacer.
                                         if(param.valid===false)
                                             m.updateParams(key,null);
-                                        m.updateParams(key,param.value);
+                                        else
+                                            m.updateParams(key,param.value);
                                     });
                                     m.paths.push(pr);
                                     pr.getPath();

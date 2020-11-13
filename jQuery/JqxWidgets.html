@@ -1787,6 +1787,10 @@
                                 // parent se refiere al parent type
                                 this.parent=params.parent;
                                 this.field=params.key;
+                                if(this.parent===null)
+                                {
+                                    console.warn("WARNING:Se intenta mostrar un input para el  campo "+params.key+", pero el valor del padre es nulo");
+                                }
                                 // controller se refiere al input o form que contiene este inputContainer
                                 this.controller=typeof params.controller==="undefined"?this.form:params.controller;
                                 if(typeof this.parent.getPath!=="undefined")
