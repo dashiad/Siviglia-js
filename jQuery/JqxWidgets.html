@@ -360,7 +360,7 @@
                                     this.errorNode.innerText = message;         // insertamos el mensaje de error en el span del input.
                                     this.inputWrapper.inputNode[0].children[1].classList.add("show-errored");   // ponemos clase de error en el input
                                 }
-                            }
+                            }                           
 
                             // Añadimos path de error de dicho input
                             this.form.appendError(this.type.getFullPath(),this);
@@ -368,6 +368,7 @@
                         clearErrors: function () {
                             // Nos guardamos si hay excepcion en el tipo
                             var exception_input_path = this.type.__errorException;
+                            var input_required = this.type.__definition.REQUIRED;
 
                             // Comprobamos que no esté vacío el inputWrapper
                             if (this.inputWrapper !== null) {
@@ -375,23 +376,36 @@
                                 // Se guarda referencia del puntero al nodo del error <span...>
                                 this.errorNode = this.inputWrapper.errorNode;
 
-                                // Comprobamos la excepción del tipo. Si es distinto de null, es cuando NO se elimina el error
-                                if (exception_input_path === null) {
+                                // si es vacio el campo y está requerido, mostrar error:
+                                if ( typeof this.inputWrapper.rootNode[0].children[3] !== "undefined"    &&
+                                     this.inputWrapper.rootNode[0].children[3].children[1].value === ""  && 
+                                     input_required) {
+                                        // lanzamos una excepcion con el codigo de error de campo requerido (5)
+                                        var e = new Siviglia.types.BaseTypeException(this.type.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED, this.type.__definition);
+                                        this.type.__setErrored(e);
+                                        throw e;
+                                }else{
 
-                                    // Comprobación para evitar dar un error en la consola
-                                    if (typeof this.inputWrapper.rootNode[0].children[3] !== "undefined") {
-                                        // quitamos los estilos de errores del nodo de error y más abajo del input
-                                        this.errorNode.style.display = "none";
-                                        this.errorNode.innerText = "";
-                                    }
+                                    // Comprobamos la excepción del tipo. Si es distinto de null, es cuando NO se elimina el error
+                                    if (exception_input_path === null) {
 
-                                    // Se quita la clase que resalta el error del input
-                                    if (typeof this.inputNode !== "undefined") {
-                                        this.inputNode.removeClass("show-errored");
-                                        //console.dir("CLEAR_ERROR");
-                                    }
+                                        // Comprobación para evitar dar un error en la consola
+                                        if (typeof this.inputWrapper.rootNode[0].children[3] !== "undefined") {
+                                            // quitamos los estilos de errores del nodo de error y más abajo del input
+                                            this.errorNode.style.display = "none";
+                                            this.errorNode.innerText = "";
+                                        }
 
-                                }// if__exception_input_path
+                                        // Se quita la clase que resalta el error del input
+                                        if (typeof this.inputNode !== "undefined") {
+                                            this.inputNode.removeClass("show-errored");
+                                            //console.dir("CLEAR_ERROR");
+                                        }
+
+                                    }// if__exception_input_path
+
+                                }
+                                
                             }
 
                             // Si no está vacío el formulario, se llama a la función que se encarga de eliminar el path del error
@@ -1883,10 +1897,7 @@
                         {
                             preInitialize:function(params)
                             {
-                                this.SimpleInputContainer$preInitialize(params);
-                                // SI NO HAY AYUDA, LO QUE HAY QUE HACER, ES OCULTAR EL DIV
-                                // QUE TIENE LA AYUDA. PARA HACER ESO, SE LE PONE UN SIVID , Y
-                                // EN INITIALIZE, SE LE OCULTA.
+                                this.SimpleInputContainer$preInitialize(params);                                
                                 this.help=Siviglia.issetOr(this.fieldDef["HELP"],"");
                                 this.label=Siviglia.issetOr(this.fieldDef["LABEL"],"");
                                 this.errorNode="";
@@ -1895,10 +1906,7 @@
                             {
                                 this.SimpleInputContainer$initialize(params);
 
-                                this.labelNode.addClass(this.fieldName);
-                                // SI NO HAY AYUDA, LO QUE HAY QUE HACER, ES OCULTAR EL DIV
-                                // QUE TIENE LA AYUDA. PARA HACER ESO, SE LE PONE UN SIVID , Y
-                                // EN INITIALIZE, SE LE OCULTA.
+                                this.labelNode.addClass(this.fieldName);                                
                                 if (this.help === ""){
                                     this.helpNode.addClass("hidden-help");
                                 }
