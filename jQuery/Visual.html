@@ -83,7 +83,8 @@
                         var ow = this.svgWidth;
                         var oh = this.svgHeight;
                         this.svg = d3.select(this.svgNode[0])
-                            .attr("width", ow)
+                            //.attr("width", ow)
+                            .attr("width", "100%")  // para que el ancho del arbol svg se adapte 100% al ancho de la ventana
                             .attr("height", oh)
                             .call(zoomBehaviours)
                             .append("g")
