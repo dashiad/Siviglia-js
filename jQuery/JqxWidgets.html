@@ -718,10 +718,10 @@
                                 remoteAutoComplete: true,
                                 displayMember: this.getLabelField(),
                                 valueMember: this.getValueField(),
-                                autoDropDownHeight: true,
                                 width: '100%',
-                                height: 25,
-                                placeHolder:Siviglia.issetOr(this.inputParams["placeholder"],"--Select"),
+                                //height: '80%',
+                                autoItemsHeight: true,
+                                placeHolder:Siviglia.issetOr(this.inputParams["placeholder"],"--Seleccionar..."),
                                 search: function (str) {
                                     console.log("SEARCHING");
                                     self.source.search(str);
@@ -2658,10 +2658,11 @@
 -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.NewItem" data-widgetParams="parentObject,parentNode" data-widgetCode="Siviglia.inputs.jqwidgets.NewItem">
         <div class="NewItem">
-            <div style="display:table-row">
-                <div style="display:table-cell" data-sivId="inputNode">
+            <div style="width: 100%;">
+                <div style="width: 80% !important; display: contents;" data-sivId="inputNode"></div>
+                <div>
+                    <div class="NewItem-addButton" data-sivEvent="click" data-sivCallback="onAdd" class="add"></div>
                 </div>
-                <div style="display:table-cell;vertical-align: top;line-height: 1.0;font-size: 20px;"><div class="NewItem-addButton" data-sivEvent="click" data-sivCallback="onAdd" class="add"></div></div>
             </div>
         </div>
     </div>

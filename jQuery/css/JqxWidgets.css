@@ -266,14 +266,13 @@
 
 .NewItem {}
 .NewItem-addButton {
-    width:20px;
-    height:20px;
-    margin-top:3px;
+    margin-top: 5px;
+    text-align: center;
 }
 .NewItem-addButton:before {
     content: var(--icon-add);
     font-family: var(--icon-font);
-    font-size: 27px;
+    font-size: 28px;
     color: var(--contrast-0);
     cursor: cell;
 }
@@ -398,9 +397,10 @@ span.tooltiptext{
 
 
 /* Estilo para el scrollbar dentro ventanas widgets */
-::-webkit-scrollbar { width: 20px; }
+::-webkit-scrollbar { display: none; }
 
-::-webkit-scrollbar-thumb {    
+::-webkit-scrollbar-thumb {
+    display: none;
     background-color: #b3b6b9;
     border-radius: 20px;
     border: 6px solid transparent;
