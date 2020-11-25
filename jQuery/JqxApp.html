@@ -50,21 +50,58 @@
                                 m.widgetContainer.append(m.currentWidget.rootNode);
                                 p.resolve();
                             })
+                            m.currentWidget.addListener("REQUEST_CLOSE",this,closeWindow);
                         });
                         return p;
+                    },
+                    closeWindow:function()
+                    {
+
                     }
                 }
 
             },
             "SubApp":{
                 "inherits":"Siviglia.UI.Expando.View",
+                destruct:function()
+                {
+                    this.windowNode.remove();
+                },
                 methods:{
-                    preInitialize:function(params){},
-                    initialize:function(params){},
+                    preInitialize:function(params){
+                        this.windowNode=null;
+                        this.titleNode=null;
+                        this.contentNode=null;
+                    },
+                    initialize:function(params){
+                        this.waitComplete().then(function(){
+                            for(var k=0;k<this.__subViews.length;k++)
+                            {
+                                this.__subViews[k].view.addListener("REQUEST_CLOSE",this,"onClose");
+                            }
+                        }.bind(this));
+                    },
+                    initializeWindow:function(params)
+                    {
+                        this.windowNode=params.windowNode;
+                        this.titleNode=params.titleNode;
+                        this.contentNode=params.contentNode;
+                        this.windowNode.on("close",function(){this.destruct()}.bind(this));
+
+
+                    },
                     getWindowPreferences:function()
                     {
                         return {windowWidth:640,windowHeight:480,windowTitle:"Anonymous App"};
-                    }
+                    },
+                    onClose:function(){
+
+                        if(this.windowNode)
+                            this.windowNode.jqxWindow("close");
+                    },
+                    getTitleNode:function(){return this.titleNode;},
+                    getContentNode:function(){return this.contentNode;},
+                    getWindowNode:function(){return this.windowNode;}
                 }
             },
             "Menu":{

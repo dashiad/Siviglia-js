@@ -1977,6 +1977,7 @@
                                 this.__model=null;
                                 this._type=null;
                                 this.registeredInputs=[];
+                                this.inputsByField={};
                                 this.__erroredInputs={};
                                 this.__containerWidget=null;
                                 this.__errorNode=null;
@@ -2122,6 +2123,7 @@
                             registerInput:function(input,type)
                             {
                                 this.registeredInputs.push({input:input,type:type});
+                                this.inputsByField[type.__fieldNamePath]=input;
                                 if(this.__pathToShow!==null) {
                                     var spliced = type.__fieldNamePath.split("/");
                                     if(spliced[0]==="")
@@ -2148,9 +2150,15 @@
                             {
                                 for(var k=0;k<this.registeredInputs.length;k++)
                                 {
-                                    if(this.registeredInputs[k].input===input)
-                                        this.registeredInputs.splice(k,1);
+                                    if(this.registeredInputs[k].input===input) {
+                                        delete this.inputsByField[this.registeredInputs[k].type.__fieldNamePath];
+                                        this.registeredInputs.splice(k, 1);
+                                    }
                                 }
+                            },
+                            getInputByPath:function(path)
+                            {
+                                return Siviglia.issetOr(this.inputsByField[path],null);
                             },
                             // A diferencia del resto de metodos showPath, en este caso, el path es una string.
                             showPath:function(path)
