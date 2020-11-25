@@ -2317,7 +2317,10 @@ Siviglia.Utils.buildClass(
             },
 
             View: {
-                construct: function (template, params, widgetParams,node,  context) {
+                construct: function (template, params, widgetParams,node,  context,parentExpando) {
+
+                    this.parentExpando=Siviglia.issetOr(parentExpando);
+
                     this.__template = template;
                     this.__params = params;
                     this.__node = node;
@@ -2336,14 +2339,13 @@ Siviglia.Utils.buildClass(
                     this.__built=false;
                     this.__subViews=[];
                     this.__parentView=null;
-                    if(Siviglia.UI.viewStack.length>0)
+                    if(this.parentExpando!==null)
                     {
-                        this.__parentView=Siviglia.UI.viewStack[Siviglia.UI.viewStack.length-1];
-                        this.__parentView.__addSubView(this,this.__builtPromise);
+                        if(Siviglia.UI.viewStack.length>0)
+                        {
+                            this.__setParentView(Siviglia.UI.viewStack[Siviglia.UI.viewStack.length-1]);
+                        }
                     }
-
-
-
                 },
                 destruct:function()
                 {
@@ -2355,6 +2357,11 @@ Siviglia.Utils.buildClass(
                         this.oManager.destruct();
                 },
                 methods: {
+                    __setParentView:function(view)
+                    {
+                        this.__parentView=view;
+
+                    },
                     __build: function () {
                         var widgetFactory = new Siviglia.UI.Expando.WidgetFactory();
                        // var p=$.Deferred();
@@ -2388,11 +2395,11 @@ Siviglia.Utils.buildClass(
                     __addSubView:function(view)
                     {
                         this.__subViews.push({view:view,promise:view.__builtPromise,resolved:false});
-                        view.waitComplete().then(function(){
-                            this.__setSubViewResolved(view);
+                        view.waitComplete().then(function(builtView){
+                            this.__setSubViewResolved(view,builtView);
                         }.bind(this));
                     },
-                    __setSubViewResolved:function(view)
+                    __setSubViewResolved:function(view,replaceWith)
                     {
                         if(this.__built)
                             return;
@@ -2402,8 +2409,13 @@ Siviglia.Utils.buildClass(
                             var c=this.__subViews[k];
                             if(!c.resolved)
                             {
-                                if(c.view===view)
-                                    c.resolved=true;
+                                if(c.view===view) {
+                                    c.resolved = true;
+                                    if(Siviglia.isset(replaceWith)) {
+                                        c.view = replaceWith;
+                                        c.view.__setParentView(this);
+                                    }
+                                }
                                 else
                                     allResolved=false;
                             }
@@ -2503,12 +2515,35 @@ Siviglia.Utils.buildClass(
                 construct: function () {
                     this.Expando('sivview');
                     this.__view = null;
+                    this.__builtPromise=SMCPromise();
                     this.__name = null;
                     this.__params = null;
                     this.__str=null;
                     this.__altLayout=null;
                     this.__viewName=null;
+                    this.__parentView=null;
+                    if(Siviglia.UI.viewStack.length>0)
+                    {
+                        this.__parentView=Siviglia.UI.viewStack[Siviglia.UI.viewStack.length-1];
+                        // Cuidado!!! Aqui estamos metiendo en el padre el ViewExpando, NO LA VIEW EN SI
+                        // Una vista hija puede haber sido creada de 2 formas:
+                        // Por código: en ese caso, el padre tiene control completo sobre la vista que acaba de crear.
+                        // El padre quiere ser avisado de cuándo esa vista está completa.
+                        // Este modelo incluye código ejecutado en sivCalls, etc.
+                        // Por plantilla: en ese caso, el padre lo que crea es un ViewExpando, el cual luego
+                        // tiene que cargar la vista real, etc,etc.
+                        // La vista no tiene acceso directo al padre, ya que ha sido creada por el Expando
+                        // Asi que lo que vamos a hacer, es meter al Expando en la lista de vistas del padre,
+                        // La vista padre, va a esperar a que la promesa del expando se cumpla, y esa promesa, a
+                        // su vez, va a esperar a que la promesa de la vista interna, se cumpla.
+                        // Pero, a la vez, lo que quiere el padre, es que en su array de vistas, haya *vistas*, no
+                        // viewExpandos, y hemos dicho que el Expando es quien se agrega al padre.
+                        // Es por eso que, cuando finalmente la vista interna se completa, lo cual provoca que el Expando
+                        // se complete, el Expando avisa al padre pasando la instancia de la vista interna, para que
+                        // el padre cambie la referencia que tenía (que apuntaba al Expando), por la referencia a la vista interna.
+                        this.__parentView.__addSubView(this,this.__builtPromise);
 
+                    }
 
                 },
                 destruct: function () {
@@ -2549,7 +2584,6 @@ Siviglia.Utils.buildClass(
                             this.__params=typeof nodeExpandos["sivparams"]=="undefined"?null:nodeExpandos["sivparams"];
                             if (this.__params)
                                 this.__params.addListener("CHANGE", this, "__updateParams", "ViewExpando:" + this.__method);
-
                             this.Expando$_initialize(node, nodeManager, stack, nodeExpandos);
 
                             return false;
@@ -2562,6 +2596,10 @@ Siviglia.Utils.buildClass(
 
 
                             this.__rebuild();
+                        },
+                        waitComplete:function()
+                        {
+                            return this.__builtPromise;
                         },
                         __rebuild:function()
                         {
@@ -2587,7 +2625,13 @@ Siviglia.Utils.buildClass(
                                 var tempNode=$("<div class='inner'></div>");
                                 this.__view = new obj.context[obj.object](
                                     this.__altLayout==null?this.__name:this.__altLayout,
-                                    this.__currentParamsValues,null, tempNode,  this.__stack);
+                                    this.__currentParamsValues,null, tempNode,  this.__stack,this);
+                                this.__view.waitComplete().then(function(){
+                                    if(this.__parentView!==null) {
+                                        this.__builtPromise.resolve(this.__view);
+                                    }
+                                    p.resolve()
+                                }.bind(this))
                                 this.__view.__build().then(function(){
                                     // Importante no usar aqui .children(), ya que omite los comentarios,
                                     // que son necesarios para sivIf
@@ -2598,14 +2642,7 @@ Siviglia.Utils.buildClass(
                                     if(oldView)
                                         oldView.destruct();
                                     m.__view.onAddedToDom();
-                                    // Se mapea el nombre de la instancia de la vista, sobre el padre.
-                                    if(m.__viewName!==null)
-                                    {
-                                        var parentView=m.__stack.getRoot("*");
-                                        if(parentView)
-                                            parentView[m.__viewName]=m.__view;
-                                    }
-                                    p.resolve()
+
                                 });
 
                             }).bind(this);
