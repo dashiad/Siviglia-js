@@ -360,7 +360,7 @@
                                     this.errorNode.innerText = message;         // insertamos el mensaje de error en el span del input.
                                     this.inputWrapper.inputNode[0].children[1].classList.add("show-errored");   // ponemos clase de error en el input
                                 }
-                            }                           
+                            }
 
                             // Añadimos path de error de dicho input
                             this.form.appendError(this.type.getFullPath(),this);
@@ -378,12 +378,12 @@
 
                                 // si es vacio el campo y está requerido, mostrar error:
                                 if ( typeof this.inputWrapper.rootNode[0].children[3] !== "undefined"    &&
-                                     this.inputWrapper.rootNode[0].children[3].children[1].value === ""  && 
+                                     this.inputWrapper.rootNode[0].children[3].children[1].value === ""  &&
                                      input_required) {
                                         // lanzamos una excepcion con el codigo de error de campo requerido (5)
                                         var e = new Siviglia.types.BaseTypeException(this.type.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED, this.type.__definition);
                                         this.type.__setErrored(e);
-                                        throw e;
+                                        //throw e;
                                 }else{
 
                                     // Comprobamos la excepción del tipo. Si es distinto de null, es cuando NO se elimina el error
@@ -405,7 +405,7 @@
                                     }// if__exception_input_path
 
                                 }
-                                
+
                             }
 
                             // Si no está vacío el formulario, se llama a la función que se encarga de eliminar el path del error
@@ -715,7 +715,7 @@
                                 autoComplete: true,
                                 autoBind: false,
                                 minLength: 1,
-                                remoteAutoComplete: true,
+                                remoteAutoComplete: this.type.__getSource().getDynamicField()!==null,
                                 displayMember: this.getLabelField(),
                                 valueMember: this.getValueField(),
                                 autoDropDownHeight: true,
@@ -723,7 +723,7 @@
                                 height: 25,
                                 placeHolder:Siviglia.issetOr(this.inputParams["placeholder"],"--Select"),
                                 search: function (str) {
-                                    console.log("SEARCHING");
+                                    console.log("SEARCHING:"+str);
                                     self.source.search(str);
                                    // self.searchString = str;
                                    // self.refresh();
@@ -747,7 +747,9 @@
                                 if (item) {
                                     this.inputNode.jqxComboBox('val', item.label);
                                     setTimeout(function(){
+                                        this.changing=true;
                                         this.inputNode.jqxComboBox('selectItem', item);
+                                        this.changing=false;
                                     }.bind(this),100);
                                 }
                             }
@@ -828,14 +830,14 @@
                                 else {
                                     self.type.unset();
                                     this.inputNode.jqxComboBox('selectItem',-1);
-                                    this.inputNode.jqxComboBox('val','');
+                                  //  this.inputNode.jqxComboBox('val','');
                                 }
                             }
                             else
                             {
                                 //self._setInputValue(null);
                                 this.inputNode.jqxComboBox('selectItem',-1);
-                                this.inputNode.jqxComboBox('val','');
+                                //this.inputNode.jqxComboBox('val','');
                             }
                         }
 
@@ -1455,9 +1457,10 @@
 
                                     }.bind(this));
                                 },
-                                onRemoveClicked:function(node,params)
+                                onRemoveClicked:function(node,params,evName,event)
                                 {
                                     this.type.splice(params.key,1);
+                                    event.stopPropagation();
                                 },
                                 buildNewItemWidget:function(node,params)
                                 {
@@ -1472,11 +1475,12 @@
                                         this.newItemNode.append(this.newItemSelector.rootNode);
                                     }.bind(this));
                                 },
-                                onRemoveItem:function(node,params)
+                                onRemoveItem:function(node,params,evName,event)
                                 {
                                     var idx=params.index;
                                     var v=this.type.getValue();
                                     v.splice(idx,1);
+                                    event.stopPropagation()
                                 },
                                 // Sobreescrito para evitar la llamada a la clase base.
                                 onTypeChanged:function()
@@ -1511,8 +1515,9 @@
                                         this.setSelected(this.type.getValue().length-1);
                                     }
                                 },
-                                getInputFor: function (node, params) {
+                                getInputFor: function (node, params,evName,event) {
                                     this.setSelected(params.key)
+                                    event.stopPropagation();
                                 },
                                 setSelected:function(idx)
                                 {
@@ -1897,7 +1902,7 @@
                         {
                             preInitialize:function(params)
                             {
-                                this.SimpleInputContainer$preInitialize(params);                                
+                                this.SimpleInputContainer$preInitialize(params);
                                 this.help=Siviglia.issetOr(this.fieldDef["HELP"],"");
                                 this.label=Siviglia.issetOr(this.fieldDef["LABEL"],"");
                                 this.errorNode="";
@@ -1906,7 +1911,7 @@
                             {
                                 this.SimpleInputContainer$initialize(params);
 
-                                this.labelNode.addClass(this.fieldName);                                
+                                this.labelNode.addClass(this.fieldName);
                                 if (this.help === ""){
                                     this.helpNode.addClass("hidden-help");
                                 }

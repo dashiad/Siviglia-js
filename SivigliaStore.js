@@ -103,14 +103,34 @@ Siviglia.Utils.buildClass(
                                 },
                                 onData:function(data)
                                 {
+                                    data=this.filterByLabel(data);
                                     this.valid=(data!==null);
-                                    this.data=data;
+                                    if(this.valid)
+                                        this.data=this.filterByLabel(data);
+                                    else
+                                        this.data=data;
                                     //var encoded=JSON.stringify(data);
                                     //if(encoded===this.lastData)
                                     //    return;
                                     ///this.lastData=encoded;
                                     this.fireEvent(Siviglia.Data.BaseDataSource.EVENT_LOADED,{value:data,valid:this.valid});
                                     this.fireEvent(Siviglia.Data.BaseDataSource.CHANGE,{value:data,valid:this.valid});
+                                },
+                                filterByLabel:function(data)
+                                {
+                                    if(this.searchString==null || this.searchString==="")
+                                        return data;
+                                   var result=[];
+                                   var labelField=this.getLabelField();
+                                   var r=new RegExp(this.searchString)
+                                   for(var k=0;k<data.length;k++)
+                                   {
+                                       if(r.test(data[k][labelField]))
+                                       {
+                                           result.push(data[k]);
+                                       }
+                                   }
+                                    return result;
                                 },
                                 onListener:function(event,param)
                                 {
@@ -358,17 +378,7 @@ Siviglia.Utils.buildClass(
                                             var data = params.value;
                                             if(data===null)
                                                 return this.onData([]);
-                                            if(typeof data[0]==="object")
-                                                return this.onData(data);
-                                            var res=[];
-                                            var re=null;
-                                            if(this.searchString!==null)
-                                                re=new RegExp("/"+this.searchString+"/");
-                                            for(var k=0;k<data.length;k++) {
-                                                if(!re || re.match(data[k]) )
-                                                    res.push({"VALUE":data[k],"INDEX":k,"LABEL":data[k]});
-                                            }
-                                            this.onData(res);
+                                            return this.onData(data);
                                         }
                                     }
                                 }
@@ -490,8 +500,6 @@ Siviglia.Utils.buildClass(
                             this.BaseDataSource(source,controller,stack);
                             this.pstring=null;
                             this.ds=new Siviglia.Model.DataSource(this.source["MODEL"],this.source["DATASOURCE"],null);
-
-                            this.autoCompleteField=this.ds.getDynamicParam();
                             if(typeof source["PARAMS"]!=="undefined")
                             {
                                 // $this->parent apunta al tipo de dato al que pertenece el source.
@@ -521,7 +529,7 @@ Siviglia.Utils.buildClass(
                                 },
                                 hasAutoComplete:function()
                                 {
-                                    return false;
+                                    return this.getDynamicField()!==null;
                                 },
                                 fetch:function()
                                 {
@@ -564,7 +572,12 @@ Siviglia.Utils.buildClass(
                                 },
                                 getDynamicField:function()
                                 {
-                                    return this.ds.getDynamicParam();
+                                    var def=this.ds.getDefinition();
+                                    var labelField=this.getLabelField();
+                                    var targetDynField="DYN_"+labelField;
+                                    if(Siviglia.isset(def.FIELDS.params.FIELDS[targetDynField]))
+                                        return targetDynField;
+                                    return null;
                                 }
 
                             }
