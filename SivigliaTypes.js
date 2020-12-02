@@ -3720,18 +3720,21 @@ Siviglia.i18n.es.base.getErrorFromServerException = function (exName, exValue) {
 }
 
 Siviglia.i18n.es.base.getErrorFromJsException = function (ex) {
-    var src = ex.type.replace(/Exception$/, '');
-    var p = Siviglia.i18n.es.base.errors[src];
-    if (!p)
-        return null;
-    var str = Siviglia.i18n.es.base.errors[src][ex.code];
-    if (ex.params) {
-        for (var k in ex.params) {
-            str = str.replace("%" + k + "%", ex.params[k]);
+    // comprobacion para evitar error: https://hastebin.com/joqifuzoka.apache
+    if (typeof ex.type !== "undefined")
+        var src = ex.type.replace(/Exception$/, '');
+        
+        var p = Siviglia.i18n.es.base.errors[src];
+        if (!p)
+            return null;
+        var str = Siviglia.i18n.es.base.errors[src][ex.code];
+        if (ex.params) {
+            for (var k in ex.params) {
+                str = str.replace("%" + k + "%", ex.params[k]);
+            }
         }
-    }
-    return str;
-
+        return str;
+    
 }
 
 
