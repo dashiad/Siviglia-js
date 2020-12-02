@@ -201,28 +201,15 @@ use lib\output\html\renderers\js\Siviglia;
                             var opts = this.getDefaultInputOptions();
                             for (var k in this.inputParams)
                                 opts[k] = this.inputParams[k];
-                            if(!this.type.__isEditable())
-                                opts.disabled=true;
-                            var controller=this.type.__getController();
 
-                            if(controller!==null && controller.getStateDef()!==null)
-                            {
-                                var stDef=controller.getStateDef();
-                                var stateType=stDef.getStateFieldObj();
-                                if(stateType!==this.type)
-                                {
-                                    this.stateDriven=true;
-                                    this.__checkEditable=function(ev){
-                                        this.callInp({disabled:!this.type.__isEditable()});
-                                    }
-                                    stateType.addListener("CHANGE",this,"__checkEditable");
-                                    this.stateDriven=true;
-                                }
-                            }
                             this.createInput(opts);
+                            if(!this.type.__isEditable())
+                                this.disable();
+                            this.checkState();
+
                             this.inputNode[this.getJqxWidgetName()]('theme', 'light');
                             var m = this;
-                            this.tooltipNode=this.inputNode;
+
                             var changeFunc=this.debounce(
                                 function () {
                                     if (m.changing)
@@ -267,6 +254,28 @@ use lib\output\html\renderers\js\Siviglia;
                                         Siviglia.i18n.es.base.getErrorFromJsException(error)
                                     );
                                     },500);
+                                }
+                            }
+                        },
+                        checkState:function()
+                        {
+                            var controller=this.type.__getController();
+
+                            if(controller!==null && controller.getStateDef()!==null)
+                            {
+                                var stDef=controller.getStateDef();
+                                var stateType=stDef.getStateFieldObj();
+                                if(stateType!==this.type)
+                                {
+                                    this.stateDriven=true;
+                                    this.__checkEditable=function(ev){
+                                        if(this.type.__isEditable())
+                                            this.enable();
+                                        else
+                                            this.disable();
+                                    }.bind(this);
+                                    stateType.addListener("CHANGE",this,"__checkEditable");
+                                    this.stateDriven=true;
                                 }
                             }
                         },
@@ -361,7 +370,7 @@ use lib\output\html\renderers\js\Siviglia;
                                     this.errorNode.innerText = message;         // insertamos el mensaje de error en el span del input.
                                     this.inputWrapper.inputNode[0].children[1].classList.add("show-errored");   // ponemos clase de error en el input
                                 }
-                            }                           
+                            }
 
                             // Añadimos path de error de dicho input
                             this.form.appendError(this.type.getFullPath(),this);
@@ -389,7 +398,7 @@ use lib\output\html\renderers\js\Siviglia;
                                         // lanzamos una excepcion con el codigo de error de campo requerido (5)
                                         var e = new Siviglia.types.BaseTypeException(this.type.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED, this.type.__definition);
                                         this.type.__setErrored(e);
-                                        throw e;
+                                        //throw e;
                                 }else{
 
                                     // Comprobamos la excepción del tipo. Si es distinto de null, es cuando NO se elimina el error
@@ -411,7 +420,7 @@ use lib\output\html\renderers\js\Siviglia;
                                     }// if__exception_input_path
 
                                 }
-                                
+
                             }
 
                             // Si no está vacío el formulario, se llama a la función que se encarga de eliminar el path del error
@@ -721,7 +730,7 @@ use lib\output\html\renderers\js\Siviglia;
                                 autoComplete: true,
                                 autoBind: false,
                                 minLength: 1,
-                                //remoteAutoComplete: true,
+                                remoteAutoComplete: this.type.__getSource().getDynamicField()!==null,
                                 displayMember: this.getLabelField(),
                                 valueMember: this.getValueField(),
                                 width: '100%',
@@ -729,7 +738,7 @@ use lib\output\html\renderers\js\Siviglia;
                                 autoItemsHeight: true,
                                 placeHolder:Siviglia.issetOr(this.inputParams["placeholder"],"--Seleccionar..."),
                                 search: function (str) {
-                                    console.log("SEARCHING");
+                                    console.log("SEARCHING:"+str);
                                     self.source.search(str);
                                    // self.searchString = str;
                                    // self.refresh();
@@ -753,7 +762,9 @@ use lib\output\html\renderers\js\Siviglia;
                                 if (item) {
                                     this.inputNode.jqxComboBox('val', item.label);
                                     setTimeout(function(){
+                                        this.changing=true;
                                         this.inputNode.jqxComboBox('selectItem', item);
+                                        this.changing=false;
                                     }.bind(this),100);
                                 }
                             }
@@ -834,14 +845,14 @@ use lib\output\html\renderers\js\Siviglia;
                                 else {
                                     self.type.unset();
                                     this.inputNode.jqxComboBox('selectItem',-1);
-                                    this.inputNode.jqxComboBox('val','');
+                                  //  this.inputNode.jqxComboBox('val','');
                                 }
                             }
                             else
                             {
                                 //self._setInputValue(null);
                                 this.inputNode.jqxComboBox('selectItem',-1);
-                                this.inputNode.jqxComboBox('val','');
+                                //this.inputNode.jqxComboBox('val','');
                             }
                         }
 
@@ -1207,7 +1218,7 @@ use lib\output\html\renderers\js\Siviglia;
                                     );
                                     this.newItemWidget.__build().then(function(){node.append(tempNode);})
                                 },
-                                onLabelClicked:function(node, params)
+                                onLabelClicked:function(node, params,evName,event)
                                 {
                                     if(this.currentWidget!=null) {
 
@@ -1243,9 +1254,11 @@ use lib\output\html\renderers\js\Siviglia;
                                     ver la forma de añadirle esa clase "seleccionado"
                                     ¿con document.getElement...?
                                     */
+                                    if(typeof event!=="undefined")
+                                        event.stopPropagation();
 
                                 },
-                                onRemoveClicked:function(node,params,event)
+                                onRemoveClicked:function(node,params,evName,event)
                                 {
                                     if(params.key==this.currentKey && this.currentWidget!=null)
                                     {
@@ -1257,6 +1270,7 @@ use lib\output\html\renderers\js\Siviglia;
                                     this.currentWidget=null;
                                     var v=this.type.getValue();
                                     delete v[params.key];
+                                    event.stopPropagation();
                                     //this.type.removeItem(params.key);
 
                                 },
@@ -1509,9 +1523,10 @@ use lib\output\html\renderers\js\Siviglia;
 
                                     }.bind(this));
                                 },
-                                onRemoveClicked:function(node,params)
+                                onRemoveClicked:function(node,params,evName,event)
                                 {
                                     this.type.splice(params.key,1);
+                                    event.stopPropagation();
                                 },
                                 buildNewItemWidget:function(node,params)
                                 {
@@ -1526,11 +1541,27 @@ use lib\output\html\renderers\js\Siviglia;
                                         this.newItemNode.append(this.newItemSelector.rootNode);
                                     }.bind(this));
                                 },
-                                onRemoveItem:function(node,params)
+                                onRemoveItem:function(node,params,evName,event)
                                 {
                                     var idx=params.index;
                                     var v=this.type.getValue();
                                     v.splice(idx,1);
+                                    if(idx===this.currentSelection)
+                                    {
+                                        if(this.type.getValue().length>0)
+                                            this.setSelected(0);
+                                        else
+                                        {
+                                            this.currentSelection=-1;
+                                            if(this.currentItem) {
+                                                this.currentItem.destruct();
+                                                this.currentItemNode.html("");
+                                            }
+                                        }
+
+                                    }
+
+                                    event.stopPropagation()
                                 },
                                 // Sobreescrito para evitar la llamada a la clase base.
                                 onTypeChanged:function()
@@ -1565,8 +1596,9 @@ use lib\output\html\renderers\js\Siviglia;
                                         this.setSelected(this.type.getValue().length-1);
                                     }
                                 },
-                                getInputFor: function (node, params) {
+                                getInputFor: function (node, params,evName,event) {
                                     this.setSelected(params.key)
+                                    event.stopPropagation();
                                 },
                                 setSelected:function(idx)
                                 {
@@ -1601,6 +1633,127 @@ use lib\output\html\renderers\js\Siviglia;
                                 }
                             }
                     },
+                SourcedArray:{
+                    inherits:'BaseInput',
+                    destruct:function()
+                    {
+                        this.type.getSource().removeListeners(this);
+                        if(this.valueListBox!==null)
+                            this.valueListBox.jqxListBox("destruct");
+                        if(this.sourceListBox!==null)
+                            this.sourceListBox.jqxListBox("destruct");
+
+                    },
+                    methods:
+                        {
+                            preInitialize:function(params)
+                            {
+                                this.BaseInput$preInitialize(params);
+                                this.source=this.type.getSource();
+                                this.valueListBox=null;
+                                this.sourceListBox=null;
+                                this.reindexedData=null;
+                            },
+                            initialize:function(params)
+                            {
+
+                                // Los sources tienen un campo LABEL y un campo VALUE.
+                                // Pero en este input, si el LABEL y el VALUE no son el mismo campo,
+                                // el valor del tipo no es lo que queremos tener en el input, sino la
+                                // label correspondiente.
+                                // O sea, que hay que coger todos los valores del source, e ir, uno a uno, mirando si
+                                // tipo ya contiene el valor, o no. Si contiene el valor, incluir en el input la label asociada.
+
+                                // En el initialize, se van a quedar vacios ambos combos, hasta que se cargue la fuente.
+
+                                var preferences=this.getDefaultInputOptions();
+                                this.type.addListener("CHANGE",this,"onTypeChanged");
+                                preferences.width=Siviglia.issetOr(preferences.width,200);
+                                preferences.height=Siviglia.issetOr(preferences.height,200);
+                                Object.assign(preferences,
+                                    {
+                                        allowDrop: true,
+                                        allowDrag: true,
+                                        displayMember:"label",
+                                        valueMember:"value",
+                                        source: [], width: 200, height: 250,
+                                        dragEnd: function (dragItem, dropItem) {
+                                            console.dir(dragItem);
+                                        }.bind(this),
+                                        renderer: function (index, label, value) {
+                                            return "<span>"+label+"</span>";
+                                        }.bind(this)
+                                    }
+                                );
+                                this.valueListBox.jqxListBox(preferences);
+                                preferences=this.getDefaultInputOptions();
+                                preferences.width=Siviglia.issetOr(preferences.width,200);
+                                preferences.height=Siviglia.issetOr(preferences.height,200);
+                                Object.assign(preferences,{
+                                    allowDrop: true, allowDrag: true, source: [], width: 200, height: 250,
+                                    displayMember:"label",
+                                    valueMember:"value",
+                                    dragEnd: function (dragItem, dropItem) {
+                                        console.log("EN EL OTRO");
+                                        console.dir(dragItem);
+                                    }.bind(this),
+                                    renderer: function (index, label, value) {
+                                        return label;
+                                    }.bind(this)
+                                });
+                                this.sourceListBox.jqxListBox(preferences);
+                                this.checkState();
+                                this.source=params.type.getSource();
+                                this.source.addListener("CHANGE",this, "onSourceChanged");
+                                this.source.fetch();
+                            },
+                            onSourceChanged:function(evName,params)
+                            {
+                                debugger;
+                                var sourceData=[];
+                                var typeData=[];
+                                if(!params.valid)
+                                {
+                                    this.disable();
+                                }
+                                else {
+                                    if(this.type.__isEditable())
+                                    {
+                                        this.enable();
+                                        var assigned=this.getInputDataFromType(params.value);
+                                        sourceData=assigned.source;
+                                        typeData=assigned.type;
+                                    }
+                                }
+                                this.valueListBox.jqxListBox({"source":typeData});
+                                this.sourceListBox.jqxListBox({"source":sourceData});
+                            },
+                            getInputDataFromType:function(sourceData)
+                            {
+
+                                var curVal=[];
+                                if(this.type.__hasOwnValue())
+                                    curVal=this.type.__getSourcedValue();
+                                this.reindexedData={};
+                                var valueField=this.source.getLabelField();
+                                var type=[];
+                                var source=[];
+                                for(var k=0;k<sourceData.length;k++)
+                                {
+                                    var label=this.source.getLabel(sourceData[k]);
+                                    this.reindexedData[label]=sourceData[k];
+                                    var value=sourceData[k][valueField];
+                                    if(curVal.indexOf(value)>=0)
+                                        type.push({"label":label,"value":value});
+                                    else
+                                        source.push({"label":label,"value":value});
+                                }
+                                return {source:source,type:type};
+                            },
+                            enable:function(){},
+                            disable:function(){}
+                        }
+                },
                 TypeSwitcher: {
                     inherits: 'BaseInput',
                     destruct:function()
@@ -1785,7 +1938,8 @@ use lib\output\html\renderers\js\Siviglia;
                                 preInitialize:function(params)
                                 {
                                     var typeDefinition={
-                                        "TYPE":"String"
+                                        "TYPE":"String",
+                                        "MINLENGTH":1
                                     };
                                     if(Siviglia.isset(params.type.__definition.SOURCE))
                                         typeDefinition["SOURCE"]=params.type.__definition.SOURCE;
@@ -1825,12 +1979,19 @@ use lib\output\html\renderers\js\Siviglia;
                                     }
                                 },
                                 onAdd: function () {
-                                    this.type.setValue(this.subInput.inputNode.val());
-                                    this.type.save();
-
+                                    this.errorNode.css({"display":"none"});
+                                    try {
+                                        this.type.setValue(this.subInput.inputNode.val());
+                                        this.type.save();
+                                    }catch(e)
+                                    {
+                                        var message= Siviglia.i18n.es.base.getErrorFromJsException(e)
+                                        this.errorNode.css({"display":"block"});
+                                        this.errorNode.html(message);
+                                        return;
+                                    }
                                     this.parentInput.onAdd(this.subInput.getValue());
                                     this.subInput.inputNode.val(null);
-
                                 }
                             }
                     },
@@ -1951,7 +2112,7 @@ use lib\output\html\renderers\js\Siviglia;
                         {
                             preInitialize:function(params)
                             {
-                                this.SimpleInputContainer$preInitialize(params);                                
+                                this.SimpleInputContainer$preInitialize(params);
                                 this.help=Siviglia.issetOr(this.fieldDef["HELP"],"");
                                 this.label=Siviglia.issetOr(this.fieldDef["LABEL"],"");
                                 this.errorNode="";
@@ -1960,7 +2121,7 @@ use lib\output\html\renderers\js\Siviglia;
                             {
                                 this.SimpleInputContainer$initialize(params);
 
-                                this.labelNode.addClass(this.fieldName);                                
+                                this.labelNode.addClass(this.fieldName);
                                 if (this.help === ""){
                                     this.helpNode.addClass("hidden-help");
                                 }
@@ -2765,6 +2926,18 @@ use lib\output\html\renderers\js\Siviglia;
 <!--
     ------------------------------------------------------------------------------------------------------
 -->
+
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.SourcedArray" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.SourcedArray" class="SourcedArrayType">
+        <div style="float: left;" data-sivId="sourceListBox">
+        </div>
+        <div style="margin-left: 20px; float: left;" data-sivId="valueListBox">
+        </div>
+    </div>
+    <!--
+    ------------------------------------------------------------------------------------------------------
+-->
+
+
     <div data-sivWidget="Siviglia.inputs.jqwidgets.TypeSwitcher" data-widgetParams="parentObject,parentNode,value" data-widgetCode="Siviglia.inputs.jqwidgets.TypeSwitcher">
         <div class="TypeSwitcherInput">
 
@@ -2784,6 +2957,9 @@ use lib\output\html\renderers\js\Siviglia;
 -->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.NewItem" data-widgetParams="parentObject,parentNode" data-widgetCode="Siviglia.inputs.jqwidgets.NewItem">
         <div class="NewItem">
+            <div style="width:100%">
+                <span class="errorNodetext" style="display:none" data-sivId="errorNode"></span>
+            </div>
             <div style="width: 100%;">
                 <div style="width: 80% !important; display: contents;" data-sivId="inputNode"></div>
                 <div>

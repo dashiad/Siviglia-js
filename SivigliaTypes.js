@@ -337,6 +337,12 @@ Siviglia.Utils.buildClass(
                                 );
                                 return this.__source;
                             },
+                            // Por defecto, los valores dependientes de un source, es el propio valor.
+                            // Esto no es asi en los diccionarios, donde el valor que depende del source, son las keys.
+                            __getSourcedValue:function()
+                            {
+                                return this.getValue();
+                            },
                             setFlags: function (flags) {
                                 this.__flags |= flags;
                             },
@@ -493,7 +499,7 @@ Siviglia.Utils.buildClass(
                                 return null;
                             },
                             __isEmptyValue: function (val) {
-                                return typeof val === "undefined" || val === null || val === "";
+                                return typeof val === "undefined" || val === null;
                             },
                             _setValue: function (v, validationMode) {
                                 this.__value = v;
@@ -2445,6 +2451,12 @@ Siviglia.Utils.buildClass(
                         getValue: function () {
                             return this.__currentProxy;
                         },
+                        __getSourcedValue:function()
+                        {
+                            if(!this.__valueSet)
+                                return null;
+                            return Object.keys(this.getPlainValue());
+                        },
                         getPlainValue: function () {
                             if (!this.__valueSet)
                                 return null;
@@ -2970,6 +2982,7 @@ Siviglia.Utils.buildClass(
                             var m = this;
                             var parentFunc = m.Proxifier$__proxySet(val, m);
                             return function (target, prop, value, receiver) {
+
                                 if (prop == "length") {
                                     if (val.length !== value) {
                                         val.length = value;

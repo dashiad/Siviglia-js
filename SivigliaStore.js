@@ -60,9 +60,7 @@ Siviglia.Utils.buildClass(
                             this.valid=false;
                             this.searchString=null;
                             this.EventManager();
-                            this.lastData=null;
-                            this.lastPString=null;
-
+                            this.__unfiltered=null;
                         },
                         destruct:function()
                         {
@@ -75,6 +73,7 @@ Siviglia.Utils.buildClass(
                                 this.pstring.destruct();
                                 this.pstring=null;
                             }
+                            this.controller.removeListeners(this);
                         },
                         methods:
                             {
@@ -101,16 +100,64 @@ Siviglia.Utils.buildClass(
                                 {
 
                                 },
-                                onData:function(data)
-                                {
-                                    this.valid=(data!==null);
-                                    this.data=data;
+                                onData:function(data) {
+                                    data = this.filterByLabel(data);
+                                    this.valid = (data !== null);
+                                    if (this.valid)
+                                        this.data = this.filterByLabel(data);
+                                    else
+                                        this.data = data;
+                                    if (typeof this.source["UNIQUE"] !== "undefined" && this.source["UNIQUE"] === true) {
+
+                                            this.__unfiltered = this.data;
+                                            this.controller.removeListeners(this);
+                                            this.controller.addListener("CHANGE",this,"filterData");
+                                            this.filterData(this.data,this.valid);
+
+                                    }
+                                    this.notify(this.data,this.valid);
                                     //var encoded=JSON.stringify(data);
                                     //if(encoded===this.lastData)
                                     //    return;
                                     ///this.lastData=encoded;
-                                    this.fireEvent(Siviglia.Data.BaseDataSource.EVENT_LOADED,{value:data,valid:this.valid});
-                                    this.fireEvent(Siviglia.Data.BaseDataSource.CHANGE,{value:data,valid:this.valid});
+                                },
+                                filterData:function(data,valid)
+                                {
+                                    if(valid) {
+                                        var curVal = this.controller.__getSourcedValue();
+                                        if (Siviglia.isArray(curVal)) {
+                                            var valueField = this.getValueField();
+                                            var newData = [];
+                                            for (var k = 0; k < this.__unfiltered.length; k++) {
+                                                if (curVal.indexOf(this.__unfiltered[k][valueField]) >= 0)
+                                                    continue;
+                                                newData.push(this.__unfiltered[k]);
+                                            }
+                                            this.data = newData;
+                                        } else
+                                            this.data = this.filterData();
+                                    }
+                                    this.notify(data,valid);
+                                },
+                                notify:function(data,valid){
+                                    this.fireEvent(Siviglia.Data.BaseDataSource.EVENT_LOADED,{value:data,valid:valid});
+                                    this.fireEvent(Siviglia.Data.BaseDataSource.CHANGE,{value:data,valid:valid});
+                                },
+                                filterByLabel:function(data)
+                                {
+                                    if(this.searchString==null || this.searchString==="")
+                                        return data;
+                                   var result=[];
+                                   var labelField=this.getLabelField();
+                                   var r=new RegExp(this.searchString)
+                                   for(var k=0;k<data.length;k++)
+                                   {
+                                       if(r.test(data[k][labelField]))
+                                       {
+                                           result.push(data[k]);
+                                       }
+                                   }
+                                    return result;
                                 },
                                 onListener:function(event,param)
                                 {
@@ -169,6 +216,12 @@ Siviglia.Utils.buildClass(
                                 {
                                     this.searchString=str;
                                     this.fetch();
+                                },
+                                getUnfiltered:function()
+                                {
+                                    // Ojo, aqui no se comprueba que ya se haya cargado...Hay que asegurarse
+                                    // de que aqui se llama sólo si se ha hecho un fetch.
+                                    return this.__unfiltered;
                                 }
                             }
                     },
@@ -358,17 +411,7 @@ Siviglia.Utils.buildClass(
                                             var data = params.value;
                                             if(data===null)
                                                 return this.onData([]);
-                                            if(typeof data[0]==="object")
-                                                return this.onData(data);
-                                            var res=[];
-                                            var re=null;
-                                            if(this.searchString!==null)
-                                                re=new RegExp("/"+this.searchString+"/");
-                                            for(var k=0;k<data.length;k++) {
-                                                if(!re || re.match(data[k]) )
-                                                    res.push({"VALUE":data[k],"INDEX":k,"LABEL":data[k]});
-                                            }
-                                            this.onData(res);
+                                            return this.onData(data);
                                         }
                                     }
                                 }
@@ -490,8 +533,6 @@ Siviglia.Utils.buildClass(
                             this.BaseDataSource(source,controller,stack);
                             this.pstring=null;
                             this.ds=new Siviglia.Model.DataSource(this.source["MODEL"],this.source["DATASOURCE"],null);
-
-                            this.autoCompleteField=this.ds.getDynamicParam();
                             if(typeof source["PARAMS"]!=="undefined")
                             {
                                 // $this->parent apunta al tipo de dato al que pertenece el source.
@@ -521,7 +562,7 @@ Siviglia.Utils.buildClass(
                                 },
                                 hasAutoComplete:function()
                                 {
-                                    return false;
+                                    return this.getDynamicField()!==null;
                                 },
                                 fetch:function()
                                 {
@@ -564,7 +605,12 @@ Siviglia.Utils.buildClass(
                                 },
                                 getDynamicField:function()
                                 {
-                                    return this.ds.getDynamicParam();
+                                    var def=this.ds.getDefinition();
+                                    var labelField=this.getLabelField();
+                                    var targetDynField="DYN_"+labelField;
+                                    if(Siviglia.isset(def.FIELDS.params.FIELDS[targetDynField]))
+                                        return targetDynField;
+                                    return null;
                                 }
 
                             }
