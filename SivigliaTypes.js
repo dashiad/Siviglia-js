@@ -2930,6 +2930,10 @@ Siviglia.Utils.buildClass(
                             return true;
                         },
                         _setValue: function (val,validationMode) {
+                            // Corrección de valor cuando el array se inicializa desde un TypeSwitcher, 
+                            // el cual enviará como valor inicial el valor {}
+                            if ( Siviglia.typeOf(val)==="object" && Object.keys(val).length===0 ) 
+                                val=[];                            
                             this.__currentProxy = this.proxify(val,validationMode);
                         },
                         /*apply: function (val,validationMode) {
@@ -3736,7 +3740,7 @@ Siviglia.i18n.es.base.getErrorFromJsException = function (ex) {
     // comprobacion para evitar error: https://hastebin.com/joqifuzoka.apache
     if (typeof ex.type !== "undefined")
         var src = ex.type.replace(/Exception$/, '');
-        
+
         var p = Siviglia.i18n.es.base.errors[src];
         if (!p)
             return null;
