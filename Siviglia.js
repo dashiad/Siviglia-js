@@ -483,6 +483,7 @@ Siviglia.Utils.buildClass({
                     return;
                 }
                 this.destroyListeners();
+                delete Siviglia.Dom.existingManagers[this._ev_id];
             },
             methods: {
                 addListener: function (evType, object, method, description) {
@@ -542,7 +543,7 @@ Siviglia.Utils.buildClass({
 
                 },
                 destroyListeners: function () {
-                    delete Siviglia.Dom.existingManagers[this._ev_id];
+
                     for (var k in this._ev_listeners) {
                         for (var j = 0; j < this._ev_listeners[k].length; j++) {
                           //  console.debug("DELETING LISTENER " + this._ev_listeners[k][j].id);

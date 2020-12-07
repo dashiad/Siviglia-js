@@ -253,6 +253,12 @@
             s++;
         return s;
     }
+    function countManagers() {
+        var s = 0;
+        for (var k in Siviglia.Dom.existingManagers)
+            s++;
+        return s;
+    }
 
     function showResult(name,doc,def,callback,testNumber,expected,result,exception)
     {
@@ -272,7 +278,7 @@
         nDiv.className="testDiv "+className;
         var divTitle=document.createElement("div");
         nDiv.appendChild(divTitle);
-        divTitle.innerHTML = "Test " + testNumber + " (" + name + ") : " + message+" <i style='font-size:10px'>[listeners:"+countListeners()+"]</i>";
+        divTitle.innerHTML = "Test " + testNumber + " (" + name + ") : " + message+" <i style='font-size:10px'>[listeners:"+countListeners()+" Managers:"+countManagers()+"]</i>";
         divTitle.className="testTitle";
         var divDoc=document.createElement("div")
         divDoc.innerHTML=doc;
@@ -1380,9 +1386,9 @@
         } catch (e) {
             nExcp++;
         }
-        var secondStatus = ( nChanges == 0 && nExcp == 1);
+        var secondStatus = ( nChanges == 1 && nExcp == 1);
         t1.f3 = ["uu"];
-        var thirdStatus = (t1.f3.length == 1 && t1.f3[0] == "uu" && nChanges == 1);
+        var thirdStatus = (t1.f3.length == 1 && t1.f3[0] == "uu" && nChanges == 2);
         t1.destruct();
         return firstStatus && secondStatus && thirdStatus && countListeners() == 0;
     }, true);
@@ -1415,11 +1421,11 @@
         } catch (e) {
             nExcp++;
         }
-        var secondStatus = (t1.f3.length == 0 && nChanges == 1 && nExcp == 1);
+        var secondStatus = (t1.f3.length == 1 && nChanges == 2 && nExcp == 1);
         t1.f3.push("aaa");
-        var thirdStatus = (t1.f3.length == 1 && nChanges == 2 && nExcp == 1);
+        var thirdStatus = (t1.f3.length == 2 && nChanges == 3 && nExcp == 1);
         t1.f3.shift();
-        var fourthStatus = (t1.f3.length == 0 && nChanges == 3);
+        var fourthStatus = (t1.f3.length == 1 && nChanges == 4);
         t1.destruct();
         return firstStatus && secondStatus && thirdStatus && fourthStatus && countListeners() == 0;
     }, true);
@@ -1458,9 +1464,9 @@
         } catch (e) {
             nExcp++;
         }
-        var secondStatus = ( nChanges == 0 && nExcp == 1);
+        var secondStatus = ( nChanges == 1 && nExcp == 1);
         t1.f3 = [{sf1: "aaa", sf2: 20}];
-        var thirdStatus = (t1.f3.length == 1 && nChanges == 1 && nExcp == 1);
+        var thirdStatus = (t1.f3.length == 1 && nChanges == 2 && nExcp == 1);
         var curPath = t1.f3[0]["*sf1"].__getFieldPath();
         var fourthStatus = (curPath == "/f3/0/sf1");
         t1.destruct();
@@ -1637,7 +1643,7 @@
                 nChanges++
             });
             var a1={"TYPE":"T1","CAMPO":"abcde"};
-            var a2={"TYPE":"T2","CAMPO2":"fghi"};
+            var a2={"TYPE":"T2"};
             var a3={"TYPE":"T3","CAMPO3":"jklm"};
             f.setValue([a1,a2,a3]);
 
@@ -1657,6 +1663,236 @@
             return status && countListeners() == 0;
         }, true);
 
+    runTest("Comprobaciones de Array (7)", "Utilizacion de arrays planos js. Es importante ver que, para vincular un array js con un array controlado por un tipo, es necesario sobreescribir la variable inicial, con el valor devuelto por setValue(), o, en caso de usar el constructor de tipo para establecer el valor, "+
+        "reasignar la variable a lo que devuelva getValue().<br>En el ejemplo, hay 2 lineas que parecen equivalentes:<br> t1.f3=arr;<br>arr=t1.f3<br>" +
+            "pero no lo son: al asignarse t1.f3, se construye un proxy alrededor del valor. Cuando se obtiene el valor de nuevo, t1.f3 devuelve el proxy, no el array original."+
+        " por lo que en la primera linea, arr es un array javascript normal.Tras la segunda linea, arr es un proxy a ese array.",
+        {
+            "FIELDS": {
+                "f3": {
+                    "TYPE": "Array",
+                    "ELEMENTS": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "TYPE": {
+                                "TYPE": "String",
+                                "FIXED": "T1"
+                            },
+                            "CAMPO": {
+                                "TYPE": "String"
+                            },
+                            "CAMPO2": {
+                                "TYPE": "String",
+                                "MAXLENGTH":2
+                            }
+                        }
+                    },
+                }
+            }
+        },
+        function (def) {
+            var t1 = new Siviglia.model.BaseTypedObject(
+                def
+            );
+            var arr=[{"TYPE":"T1","CAMPO":"abcde"},{"TYPE":"T2","CAMPO":"abcde"},{"TYPE":"T3","CAMPO":"abcde"}];
+
+            // Importante!! Parece que las dos lineas siguientes no van a cambiar lo que hay en arr, pero sí que
+            // lo van a hacer!
+            t1.f3=arr;
+            arr=t1.f3;
+
+            var nChanges=0;
+            t1["*f3"].addListener("CHANGE",function(evName,params){
+                nChanges++;
+            });
+            arr.push({"TYPE":"T5","CAMPO":"qqq"});
+            var status=(nChanges===1 && t1.f3.length===4);
+            var excpThrown=false;
+            try{
+                // Debe dar excepcion, ya que CAMPO2 tiene un MAXLENGTH
+                arr.push({"TYPE":"T6","CAMPO2":"ssssss"})
+            }catch(e)
+            {
+                excpThrown=true;
+            }
+            status=status && excpThrown===true;
+
+            t1.destruct();
+
+            return status && countListeners() == 0;
+        }, true);
+
+    runTest("Comprobaciones de Array (8)", "Tests de comportamiento de Arrays, cuando se usan referencias.Se crea un basetypedobject con 2 arrays,"+
+            "y se comprueba que al asignar uno al otro, se crea una copia.",
+        {
+            "FIELDS": {
+                "field1": {
+                    "TYPE": "Array",
+                    "ELEMENTS": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "F1": {
+                                "TYPE": "String"
+                            }
+                        }
+                    }
+                },
+                "field2": {
+                    "TYPE": "Array",
+                    "ELEMENTS": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "F1": {
+                                "TYPE": "String",
+                                "MAXLENGTH":3
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        function (def) {
+
+            var t1 = new Siviglia.model.BaseTypedObject(
+                def
+            );
+            var arr=[{"F1":"ab"},{"F1":"cdefgth"},{"F1":"yy"},{"F1":"uu"}];
+            var f1_changes=0;
+            var f2_changes=0;
+
+            t1["*field1"].addListener("CHANGE",null,function(evName,param){
+                f1_changes++;
+            })
+            t1["*field2"].addListener("CHANGE",null,function(evName,param){
+                f2_changes++;
+            })
+            t1.field1=arr;
+            var status=f1_changes===1;
+            var exceptionThrown=false;
+            try {
+                t1.field2 = t1.field1;
+            }catch(e)
+            {
+                exceptionThrown=true;
+            }
+
+            status = status && exceptionThrown && f1_changes==1 && f2_changes==1;
+
+            t1.destruct();
+            return status && countListeners() == 0;
+        }, true);
+
+
+    runTest("Comprobaciones de Referencias a Dictionary", "Test equivalente al anterior, pero usando Dictionarys en vez de Arrays.",
+        {
+            "FIELDS": {
+                "field1": {
+                    "TYPE": "Dictionary",
+                    "VALUETYPE": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "F1": {
+                                "TYPE": "String"
+                            }
+                        }
+                    }
+                },
+                "field2": {
+                    "TYPE": "Dictionary",
+                    "VALUETYPE": {
+                        "TYPE": "Container",
+                        "FIELDS": {
+                            "F1": {
+                                "TYPE": "String",
+                                "MAXLENGTH":3
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        function (def) {
+
+            var t1 = new Siviglia.model.BaseTypedObject(
+                def
+            );
+            var dict={"a":{"F1":"ab"},"b":{"F1":"cdefgth"},"c":{"F1":"yy"},"d":{"F1":"uu"}};
+            var f1_changes=0;
+            var f2_changes=0;
+
+            t1["*field1"].addListener("CHANGE",null,function(evName,param){
+                f1_changes++;
+            })
+            t1["*field2"].addListener("CHANGE",null,function(evName,param){
+                f2_changes++;
+            })
+            t1.field1=dict;
+            var status=f1_changes===1;
+            var exceptionThrown=false;
+            try {
+                t1.field2 = t1.field1;
+            }catch(e)
+            {
+                exceptionThrown=true;
+            }
+
+            status = status && exceptionThrown && f1_changes==1 && f2_changes==1;
+
+            var d1s=t1.field1;
+
+            d1s["x"]={"F1":"ttt"};
+            status = status && f1_changes===2;
+            delete d1s["a"];
+            status=status && f1_changes===3 && typeof(t1.field1.a)==="undefined";
+
+            var d2s=t1.field2;
+            exceptionThrown=false;
+            try{
+                d2s["x"]={"F1":"xxxxxxxx"}
+            }catch(e)
+            {
+                exceptionThrown=true;
+            }
+            status=status && f2_changes===2;
+
+            t1.destruct();
+            return status && countListeners() == 0;
+        }, true);
+
+
+    runTest("Container inicializado a partir de objeto plano javascript",
+        "Se comprueba el funcionamiento de container inicializado a partir de un objeto plano javascript",
+        {
+            "FIELDS": {
+                            "F1":{
+                                "TYPE":"Container",
+                                "FIELDS":{
+                                    "TYPE":{
+                                        "TYPE":"String",
+                                        "FIXED":"T1"
+                                    }   ,
+                                    "CAMPO":{
+                                        "TYPE":"String"
+                                    },
+                                    "CAMPO2":{
+                                        "TYPE":"String"
+                                    }
+                                }
+                            }
+                    }
+        },
+        function (def) {
+            var t1 = new Siviglia.model.BaseTypedObject(
+                def
+            );
+            var a={};
+            t1.F1=a;
+            var nChanges=0;
+            t1.F1["*CAMPO2"].addListener("CHANGE",function(ev,params){nChanges++;})
+            a.CAMPO2="lala";
+            t1.destruct();
+            return nChanges==1;
+        }, true);
 
     runTest("Comprobaciones de Enum (1)",
         "Comprobaciones simples del tipo Enum",
@@ -2456,70 +2692,6 @@
         var vv=JSON.stringify(t1.getPlainValue());
         var asserts=(vv==="{\"f2\":{\"aa\":{\"f4\":[{\"sf1\":\"aa\",\"sf2\":5},{\"sf1\":\"bb\",\"sf2\":15},{\"sf1\":\"cc\",\"sf2\":25}]}}}");
         t1.destruct();
-        return asserts && countListeners()==0;
-    });
-    runTest("Array Reference Counter",
-        "Pruebas de contador de referencias: Un array javascript es compartido por 2 BTOs, y la destruccion de los listeners debe ocurrir cuando ninguno de los dos btos apunta ya al array.Cambios en el array tienen que disparar 'onChange' en ambos BTOS",
-        {
-            "FIELDS": {
-                "f3": {
-                    "TYPE": "Integer",
-                    "SOURCE":{
-                        "TYPE":"Path",
-                        "PATH":"#../f4",
-                        "LABEL":"sf1",
-                        "VALUE":"sf2"
-                    }
-                },
-                "f4": {
-                    "TYPE": "Array",
-                    "ELEMENTS": {
-                        "TYPE": "Container",
-                        "FIELDS": {
-                            "sf1": {"TYPE": "String", "MINLENGTH": 2},
-                            "sf2": {"TYPE": "Integer"}
-                        }
-                    }
-                }
-            }
-        },
-        function (def){
-
-        // Se crea una primera instancia, y se le asigna un valor:
-        var t1 = new Siviglia.model.BaseTypedObject(def);
-        var nChanges1=0;
-        t1["*f4"].addListener("CHANGE",function(){nChanges1++});
-        var v=[{sf1:"aa",sf2:5},{sf1:"bb",sf2:15},{sf1:"cc",sf2:25}];
-
-        t1.f4=v;
-
-
-        // Nos aseguramos de que solo se ha producido 1 change
-        var asserts=(nChanges1==1);
-
-        // Ahora v pasa a ser el valor de t1.f4:
-        v=t1.f4;
-        v.push({sf1:"dd",sf2:55});
-        asserts=asserts && (nChanges1==2);
-        // Creamos otra instancia con la misma definicion
-        var nChanges2=0;
-        var t2=new Siviglia.model.BaseTypedObject(def);
-        t2["*f4"].addListener("CHANGE",function(){nChanges2++});
-        t2.f4=v;
-
-        asserts= asserts && (nChanges2==1);
-        // Se comprueba que v ahora tiene 2 referencias:
-        asserts= asserts && (v.__refcount__==2);
-        // Cambiamos el valor de v, y vemos si se han llamado ambos listeners:
-        v.push({sf1:"dd",sf2:55});
-        asserts= asserts && (nChanges1==3 && nChanges2==2);
-        // Destruimos t1, y vemos si se decrementa el contador de referencias:
-        t1.destruct();
-        asserts=asserts && (v.__refcount__==1 && v.__destroyed__==false);
-        // Destruimos t2, y vemos si se decrementa el contador de referencias, y el objeto esta destruido.
-        t2.destruct();
-        asserts=asserts && (v.__refcount__==0 && v.__destroyed__==true);
-        // Finalmente, nos aseguramos que despues de todo esto, el numero de listeners es cero.
         return asserts && countListeners()==0;
     });
 

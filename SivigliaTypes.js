@@ -350,7 +350,7 @@ Siviglia.Utils.buildClass(
                                 return this.__flags;
                             },
                             setValue: function (val) {
-                                    this.apply(val, this.__validationMode);
+                                    return this.apply(val, this.__validationMode);
 
                             },
                             __setDirty: function (dirty,noEvent) {
@@ -448,7 +448,7 @@ Siviglia.Utils.buildClass(
                                 if(this.__value && this.__value.hasOwnProperty("__destroy__"))
                                     this.__value.__destroy__();
 
-                                this._setValue(val, validationMode);
+                                var retVal=this._setValue(val, validationMode);
                                 this.__valueSet = true;
                                 if(this.__isDynamic())
                                 {
@@ -480,7 +480,7 @@ Siviglia.Utils.buildClass(
                                     this.__setErrored(e);
                                     throw e;
                                 }
-
+                                return retVal;
                             },
                             getPath:function(path,ctxStack)
                             {
@@ -503,6 +503,7 @@ Siviglia.Utils.buildClass(
                             },
                             _setValue: function (v, validationMode) {
                                 this.__value = v;
+                                return this.__value;
                             },
                             validate: function (validationMode) {
                                 try {
@@ -802,6 +803,7 @@ Siviglia.Utils.buildClass(
                             },
                             _setValue: function (val) {
                                 this.__value = parseInt(val);
+                                return this.__value;
                             },
                             _validate: function () {
                                 var val=this.__value;
@@ -894,6 +896,7 @@ Siviglia.Utils.buildClass(
                                 if (this.__definition.TRIM)
                                     val = val.trim();
                                 this.__value = val;
+                                return this.__value;
                             }
                         }
                 },
@@ -923,6 +926,7 @@ Siviglia.Utils.buildClass(
                         {
                             _setValue: function (val) {
                                 this.__value = (val === true || val === "1" || val === "true");
+                                return this.__value;
                             },
                             _validate: function () {
                                 var val=this.__value;
@@ -1004,6 +1008,7 @@ Siviglia.Utils.buildClass(
                                 this.dateValue = c;
 
                                 this.__value = this.fromDateValue(c);
+                                return this.__value;
                             },
                             getDateValue: function () {
                                 return this.dateValue;
@@ -1099,6 +1104,7 @@ Siviglia.Utils.buildClass(
                                     this.__value = this.findIndexOf(val);
                                 } else
                                     this.__value = parseInt(val);
+                                return this.__value;
                             },
                             findIndexOf: function (str) {
                                 var v = this.__definition.VALUES;
@@ -1183,7 +1189,7 @@ Siviglia.Utils.buildClass(
                                 st.enable();
                             st.changeState(val);
                         }
-                        this.Enum$_setValue(val);
+                        return this.Enum$_setValue(val);
 
                     },
                     onStateChangeComplete:function()
@@ -1253,6 +1259,7 @@ Siviglia.Utils.buildClass(
                             _setValue: function (val,validationMode) {
                                 this.__value = val;
                                 this.__localValidate();
+                                return this.__value;
 
                             }
                         }
@@ -1401,6 +1408,7 @@ Siviglia.Utils.buildClass(
                                     val = val.toString();
                                 }
                                 this.__value = val;
+                                return this.__value;
 
                             },
                             _validate: function () {
@@ -1577,6 +1585,7 @@ Siviglia.Utils.buildClass(
                         v=v.replace(/\\/g,"/");
                         this.__value=v;
                         this.__valueSet=true;
+                        return this.__value;
                     }
                 }
             },
@@ -1831,6 +1840,7 @@ Siviglia.Utils.buildClass(
                         });
                         this.__valueSet = true;
                         this.disableEvents(false);
+                        return v;
 
                 //        this.onChange();
                     },
@@ -2124,7 +2134,7 @@ Siviglia.Utils.buildClass(
                                     val.__ev__.addListener("CHANGE", this, "onChange");
                                     this.__currentProxy = val;
                                     this.__value = val;
-
+                                    this.updateChildren(val,validationMode);
                                     return val;
                                 }
 
@@ -2342,7 +2352,7 @@ Siviglia.Utils.buildClass(
                                   //          target["*"+prop].destruct();
                                         }
 
-                                            var instance = m.getValueInstance(prop, value);
+                                            var instance = m.getValueInstance(prop, null);
                                             Object.defineProperty(target, "*" + prop, {
                                                 get: function () {
                                                     return instance
@@ -2386,7 +2396,13 @@ Siviglia.Utils.buildClass(
 
 
                                     target[prop] = value;
-
+                                    var exceptionThrown=null;
+                                    try {
+                                        instance.apply(value, m.__validationMode);
+                                    }catch(e)
+                                    {
+                                        exceptionThrown=e;
+                                    }
                                         // OJO: Solo lanzamos evento si la propiedad es nueva, o sea, no habia una propiedad "*".
                                         if (isNewProp) {
                                             target["[[KEYS]]"] = m.getKeys(val);
@@ -2394,8 +2410,11 @@ Siviglia.Utils.buildClass(
                                                 target.__ev__.fireEvent("CHANGE", {object: target, value: value});
                                             }
                                         }
-
-                                        return true;
+                                    if(exceptionThrown)
+                                    {
+                                        throw exceptionThrown;
+                                    }
+                                    return true;
                /*                     } catch (e) {
                                         m.fireEvent("ERROR", {})
                                         throw new Siviglia.types.BaseTypeException(m.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {});
@@ -2431,7 +2450,22 @@ Siviglia.Utils.buildClass(
                             this.setValue(val);
                         },
                         _setValue: function (val,validationMode) {
+                            if(typeof val==="object" && Object.keys(val).length===0)
+                            {
+                                // Si es un array vacio, hacemos una copia.
+                                // Esto es para no compartir el array con el "mundo exterior", de forma
+                                // que se pueda asignar la referencia a más de 1 tipo
+                                val={};
+                            }
+                            else
+                            {
+                                if(typeof val.__basetype__!=="undefined") {
+                                    val = JSON.parse(JSON.stringify(val.__basetype__.getPlainValue()));
+                                }
+                            }
+
                             this.__currentProxy = this.proxify(val);
+                            return this.__currentProxy;
                             //this["[[KEYS]]"]=this.getKeys();
                         },
                         updateChildren: function (val,validationMode) {
@@ -2440,13 +2474,26 @@ Siviglia.Utils.buildClass(
                             if(typeof validationMode!=="undefined") {
                                 this.__validationMode = validationMode;
                             }
-
+                            var thrownException=null;
                             for (var k in val) {
-                                m.__currentProxy[k] = val[k];
+                                try {
+                                    m.__currentProxy[k] = val[k];
+                                }catch(e)
+                                {
+                                    if(thrownException===null)
+                                        thrownException=e;
+                                }
                             }
                             this.__validationMode=oldValidationMode;
-                            if (!this.eventsDisabled())
+                            // Ojo, lanzamos el evento, aunque haya una excepcion pendiente...
+                            if (!thrownException && !this.eventsDisabled())
                                 this.onChange();
+                            if(thrownException) {
+                                this.disableEvents(false);
+                                this.onChange()
+                                throw thrownException;
+                            }
+
                         },
                         getValue: function () {
                             return this.__currentProxy;
@@ -2486,7 +2533,14 @@ Siviglia.Utils.buildClass(
                         },
 
                         addItem: function (key, val) {
-                            this.__currentProxy[key] = Siviglia.issetOr(val, null);
+
+                            try {
+                                this.__currentProxy[key] = Siviglia.issetOr(val, null);
+                            }catch(e)
+                            {
+                                this.onChange();
+                                throw e;
+                            }
                         },
                         getKeyLabel: function (key) {
                             return key;
@@ -2587,6 +2641,7 @@ Siviglia.Utils.buildClass(
                             // Solo necesitamos eventizar si el cambio de tipo se produce por un cambio de un TYPE_FIELD
                             if (typeof this.__definition.TYPE_FIELD !== "undefined")
                                 this._eventize(val);
+                            return val;
                         },
                         _eventize: function (val) {
                             var m = this;
@@ -2879,7 +2934,7 @@ Siviglia.Utils.buildClass(
                                 // Vamos a pasar a setValue un objeto vacio, {}, pero vamos a forzar que getTypeFromValue, devuelva
                                 // el tipo que queremos, en vez de pasar los tests de "ON", y luego establezca su valor a null
                                 this.forceType = type;
-                                this.setValue({});
+                                return this.setValue({});
                             }
 
 
@@ -2930,7 +2985,22 @@ Siviglia.Utils.buildClass(
                             return true;
                         },
                         _setValue: function (val,validationMode) {
+                            if(val.length===0)
+                            {
+                                // Si es un array vacio, hacemos una copia.
+                                // Esto es para no compartir el array con el "mundo exterior", de forma
+                                // que se pueda asignar la referencia a más de 1 tipo
+                                val=[];
+                            }
+                            else
+                            {
+                                if(typeof val.__basetype__!=="undefined") {
+                                    val = JSON.parse(JSON.stringify(val.__basetype__.getPlainValue()));
+                                }
+                            }
+
                             this.__currentProxy = this.proxify(val,validationMode);
+                            return this.__currentProxy;
                         },
                         /*apply: function (val,validationMode) {
 
@@ -3028,13 +3098,25 @@ Siviglia.Utils.buildClass(
                             if(typeof validationMode!=="undefined") {
                                 this.__validationMode = validationMode;
                             }
+                            var thrownException=null;
                             for (var k = 0; k < val.length; k++) {
-                                this.__currentProxy[k]=val[k];
+                                try {
+                                    this.__currentProxy[k] = val[k];
+                                }catch(e)
+                                {
+                                    if(thrownException==null)
+                                        thrownException=e;
+                                }
                             }
                             this.__validationMode=oldValidationMode;
-
-                            if (!this.eventsDisabled())
+                            if (!thrownException && !this.eventsDisabled())
                                 this.onChange();
+                            if(thrownException!==null) {
+                                this.disableEvents(false);
+                                this.onChange();
+                                throw thrownException;
+                            }
+
                         },
                         getValue: function () {
                             return this.__value;
@@ -3062,6 +3144,7 @@ Siviglia.Utils.buildClass(
                         getValueInstance: function (idx, value) {
                             var name=(this.__currentProxy !== null)?idx:"0";
                             var ins=Siviglia.types.TypeFactory.getType({fieldName:name,path:this.__fieldNamePath}, this.__definition["ELEMENTS"], this,null);
+                            if(value!==null)
                             ins.apply(value,this.__validationMode);
                             return ins;
                         },
