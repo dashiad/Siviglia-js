@@ -29,6 +29,10 @@ Siviglia.Utils.buildClass(
 						}
 						return this.delta = exp;
 					},
+					_setValue: function(val, validationMode) {
+						debugger;
+						console.log(val);
+					},
 					getDate: function(sign, value, period) {
 						var date = new Date(this.getValue());
 						delta = this.setDelta(sign, value, period);
@@ -38,87 +42,120 @@ Siviglia.Utils.buildClass(
 				}
 			},
 			DateTimeInterval: {
-				inherits: 'BaseType',
-				methods: {
-					construct: function(name, def, parentType, val, validationMode) {
-						this.def = {
-							'FIELDS': {
-								'years': {
-									'TYPE': 'Integer',
-									'LABEL': 'Años',
-									'DEFAULT': 0,
-									'MIN': 0
-								},
-								'months': {
-									'TYPE': 'Integer',
-									'LABEL': 'Meses',
-									'DEFAULT': 0,
-									'MIN': 0
-								},
-								'days': {
-									'TYPE': 'Integer',
-									'LABEL': 'Días',
-									'DEFAULT': 0,
-									'MIN': 0
-								},
-								'hours': {
-									'TYPE': 'Integer',
-									'LABEL': 'Horas',
-									'DEFAULT': 0,
-									'MIN': 0
-								},
-								'minutes': {
-									'TYPE': 'Integer',
-									'LABEL': 'Minutos',
-									'DEFAULT': 0,
-									'MIN': 0
-								},
-								'seconds': {
-									'TYPE': 'Integer',
-									'LABEL': 'Segundos',
-									'DEFAULT': 0,
-									'MIN': 0
-								}
-							}
-						};
-						this.BaseType(name, this.def, parentType, val, validationMode);
+				inherits: 'Container',
+				constants: {
+					PERIODS: {
+						"default": ["years", "months", "days", "hours", "minutes", "seconds"],
+						"en-US": ["years", "months", "days", "hours", "minutes", "seconds"],
+						"es-ES": ["años", "meses", "días", "horas", "minutos", "segundos"],
 					},
+				},
+				construct: function(name, def, parentType, val, validationMode) {
+					var stdDef = {
+						'TYPE': "DateTimeInterval",
+						'FIELDS': {
+							'years': {
+								'TYPE': 'Integer',
+								'LABEL': 'Años',
+								'DEFAULT': 0,
+								'MIN': 0
+							},
+							'months': {
+								'TYPE': 'Integer',
+								'LABEL': 'Meses',
+								'DEFAULT': 0,
+								'MIN': 0
+							},
+							'days': {
+								'TYPE': 'Integer',
+								'LABEL': 'Días',
+								'DEFAULT': 0,
+								'MIN': 0
+							},
+							'hours': {
+								'TYPE': 'Integer',
+								'LABEL': 'Horas',
+								'DEFAULT': 0,
+								'MIN': 0
+							},
+							'minutes': {
+								'TYPE': 'Integer',
+								'LABEL': 'Minutos',
+								'DEFAULT': 0,
+								'MIN': 0
+							},
+							'seconds': {
+								'TYPE': 'Integer',
+								'LABEL': 'Segundos',
+								'DEFAULT': 0,
+								'MIN': 0
+							}
+						}
+					};
+					var fullDef = this.__overrideDefinition(def, stdDef);
+					this.Container(name, fullDef, parentType, val, validationMode);
+				},
+				methods: {
+					isValid: function() {
+						var sum = 0;
+						for (field in this.__fields) {
+							sum += this.__fields[field].getValue();
+						}
+						return sum;
+					}
 				}
 			},
 			DateTimeRange: {
-				inherits: 'BaseType',
-				methods: {
-					construct: function(name, def, parentType, val, validationMode) {
-						def = {
-							FIELDS: {
-								startDate: {
-									TYPE: "DateTimeRelative",
-									LABEL: "Fecha de inicio"
-								},
-								endDate: {
-									TYPE: "DateTimeRelative",
-									LABEL: "Fecha de fin"
-								},
-								interval: {
-									TYPE: "DateTimeInterval",
-									LABEL: "Intervalo"
-								}
+				inherits: 'Container',
+				construct: function(name, def, parentType, val, validationMode) {
+					var stdDef = {
+						TYPE: "DateTimeRange",
+						FIELDS: {
+							startDate: {
+								TYPE: "DateTime",
+								LABEL: "Fecha de inicio"
 							},
-						};
-						this.BaseType(name, def, parentType, val, validationMode);
-					},
+							endDate: {
+								TYPE: "DateTimeRelative",
+								LABEL: "Fecha de fin"
+							},
+							interval: {
+								TYPE: "DateTimeInterval",
+								LABEL: "Intervalo"
+							}
+						},
+					};
+					var fullDef = this.__overrideDefinition(def, stdDef);
+					this.Container(name, fullDef, parentType, val, validationMode);
+				},
+				methods: {
 					getValue: function() {
-						var currentDate = this.startDate;
-						var fields = this.interval.getDefinition();
+						var def = {
+							TYPE: 'Array',
+							VALUETYPE: {
+								TYPE: 'String'
+							}
+						};
 						var list = [];
-						while (currentDate<=this.endDate) {
-							list.push(currentDate); // lo meteremos en un tipo Array de valores DateTime
-							for(var field in fields) {
-								//console.log(field);
-								n = this.field.getValue();
-								currentDate = n[field].after(currentDate);
+						
+						var currentDate = new Date(this.__fields.startDate);
+						var endDate = new Date(this.__fields.endDate);
+						var fields = this.__fields.interval.__fields;
+						
+						if (this.__fields.interval.isValid() && currentDate<=endDate) {
+							while (currentDate <= endDate) {
+								var currentTypeDate = Siviglia.types.TypeFactory.getType("", {TYPE: "DateTime"}, null, currentDate);
+								list.push(currentTypeDate); // lo meteremos en un tipo Array de valores DateTime
+								for (var field in fields) {
+									n = this.__fields.interval.__fields[field].getValue();
+									var exp = n + ".." + field + ".after(currentDate)";
+									currentDate = eval(exp);
+								}
 							}
 						}
+						//var value = Siviglia.types.TypeFactory.getType("range", def, null, null);
+						//value._setValue(list);
+						//return value;
 						return list;
 					},
 				}
@@ -201,11 +238,11 @@ librería an.hour.ago MODIFICADA
 		}
 	};
 
-	$ND.valueOf = function() {	
+	$ND.valueOf = function() {
 		return {
 			type: this.type,
 			value: this.value
-		};	
+		};
 	};
 
 	def($ND, 'ago', function() {
@@ -281,11 +318,11 @@ librería an.hour.ago MODIFICADA
 	units = {
 		millisecond: { type: "millisecond", value: 1 },
 		second: seconds = { type: "millisecond", value: 1000 },
-		minute: minutes = { type: "millisecond", value: 60*1000 },
-		hour: hours = { type: "millisecond", value: 60*60*1000 },
-		day: days = { type: "millisecond", value: 24*60*60*1000 },
-		week: weeks = { type: "millisecond", value: 7*24*60*60*1000 },
-		fortnight: { type: "millisecond", value: 2*7*24*60*60*1000 },
+		minute: minutes = { type: "millisecond", value: 60 * 1000 },
+		hour: hours = { type: "millisecond", value: 60 * 60 * 1000 },
+		day: days = { type: "millisecond", value: 24 *  60 * 60 *  1000 },
+		week: weeks = { type: "millisecond", value: 7 * 24 * 0  * 60 * 1000 },
+		fortnight: { type: "millisecond", value: 2 * 7 * 24 * 60 * 60 * 1000 },
 		month: months = { type: "month", value: 1 }, // existe la propiedad, pero no tiene un valor fijo
 		year: years = { type: "year", value: 1 } // existe la propiedad, pero no tiene un valor fijo
 	};
