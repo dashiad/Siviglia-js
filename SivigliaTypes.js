@@ -337,6 +337,12 @@ Siviglia.Utils.buildClass(
                                 );
                                 return this.__source;
                             },
+                            // Por defecto, los valores dependientes de un source, es el propio valor.
+                            // Esto no es asi en los diccionarios, donde el valor que depende del source, son las keys.
+                            __getSourcedValue:function()
+                            {
+                                return this.getValue();
+                            },
                             setFlags: function (flags) {
                                 this.__flags |= flags;
                             },
@@ -493,7 +499,7 @@ Siviglia.Utils.buildClass(
                                 return null;
                             },
                             __isEmptyValue: function (val) {
-                                return typeof val === "undefined" || val === null || val === "";
+                                return typeof val === "undefined" || val === null;
                             },
                             _setValue: function (v, validationMode) {
                                 this.__value = v;
@@ -2445,6 +2451,12 @@ Siviglia.Utils.buildClass(
                         getValue: function () {
                             return this.__currentProxy;
                         },
+                        __getSourcedValue:function()
+                        {
+                            if(!this.__valueSet)
+                                return null;
+                            return Object.keys(this.getPlainValue());
+                        },
                         getPlainValue: function () {
                             if (!this.__valueSet)
                                 return null;
@@ -2918,6 +2930,10 @@ Siviglia.Utils.buildClass(
                             return true;
                         },
                         _setValue: function (val,validationMode) {
+                            // Corrección de valor cuando el array se inicializa desde un TypeSwitcher, 
+                            // el cual enviará como valor inicial el valor {}
+                            if ( Siviglia.typeOf(val)==="object" && Object.keys(val).length===0 ) 
+                                val=[];                            
                             this.__currentProxy = this.proxify(val,validationMode);
                         },
                         /*apply: function (val,validationMode) {
@@ -2970,6 +2986,7 @@ Siviglia.Utils.buildClass(
                             var m = this;
                             var parentFunc = m.Proxifier$__proxySet(val, m);
                             return function (target, prop, value, receiver) {
+
                                 if (prop == "length") {
                                     if (val.length !== value) {
                                         val.length = value;
@@ -3720,18 +3737,21 @@ Siviglia.i18n.es.base.getErrorFromServerException = function (exName, exValue) {
 }
 
 Siviglia.i18n.es.base.getErrorFromJsException = function (ex) {
-    var src = ex.type.replace(/Exception$/, '');
-    var p = Siviglia.i18n.es.base.errors[src];
-    if (!p)
-        return null;
-    var str = Siviglia.i18n.es.base.errors[src][ex.code];
-    if (ex.params) {
-        for (var k in ex.params) {
-            str = str.replace("%" + k + "%", ex.params[k]);
-        }
-    }
-    return str;
+    // comprobacion para evitar error: https://hastebin.com/joqifuzoka.apache
+    if (typeof ex.type !== "undefined")
+        var src = ex.type.replace(/Exception$/, '');
 
+        var p = Siviglia.i18n.es.base.errors[src];
+        if (!p)
+            return null;
+        var str = Siviglia.i18n.es.base.errors[src][ex.code];
+        if (ex.params) {
+            for (var k in ex.params) {
+                str = str.replace("%" + k + "%", ex.params[k]);
+            }
+        }
+        return str;
+    
 }
 
 

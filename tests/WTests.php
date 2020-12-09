@@ -114,7 +114,7 @@
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-	    var DEVELOP_MODE=0;  // All tests
+	    var DEVELOP_MODE=-1;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");
@@ -2509,6 +2509,73 @@
                     }
                 }
             });
+        }
+    )
+    runTest("Source exclusivo","Prueba de source exclusivo, donde los elementos de un source, no pueden repetirse en el valor asociado. <br>",
+        '<div data-sivWidget="Test.ExSource" data-widgetParams="" data-widgetCode="Test.ExSource">'+
+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"exSource"}\'></div>'+
+        '</div>'+
+        '</div>',
+        '<div data-sivView="Test.ExSource"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "ExSource": {
+                        inherits: "Siviglia.inputs.jqwidgets.Form",
+                        methods: {
+                            preInitialize: function (params) {
+
+                                this.factory = Siviglia.types.TypeFactory;
+                                this.self = this;
+                                this.typeCol = [];
+                                /* STRING **************************/
+                                this.typedObj = new Siviglia.model.BaseTypedObject({
+                                    "FIELDS": {
+                                        exSource:
+                                            {
+                                                "LABEL":"FieldSelector",
+                                                "TYPE": "Array",
+                                                "SOURCE": {
+                                                    "TYPE": "Array",
+                                                    "ELEMENTS":{
+                                                        "TYPE": "Integer"
+                                                    },
+                                                    "DATA": [
+                                                        {"a": 1, "message": "Opcion 1"},
+                                                        {"a": 2, "message": "Opcion 2"},
+                                                        {"a": 3, "message": "Opcion 3"},
+                                                        {"a": 4, "message": "Opcion 4"},
+                                                        {"a": 5, "message": "Opcion 5"},
+                                                        {"a": 6, "message": "Opcion 6"},
+                                                        {"a": 7, "message": "Opcion 7"}
+                                                    ],
+                                                    "LABEL": "message",
+                                                    "VALUE": "a"
+                                                }
+                                            }
+                                    },
+                                    "INPUTPARAMS":{
+                                        "/exSource":{
+                                            "INPUT": "SourcedArray",
+                                        }
+                                    }
+                                });
+
+                                return this.Form$preInitialize({bto:this.typedObj});
+                            },
+                            initialize: function (params) {
+                            },
+                            show: function () {
+                            }
+
+                        }
+                    }
+
+                }
+
+            })
         }
     )
 
