@@ -358,7 +358,8 @@ use lib\output\html\renderers\js\Siviglia;
                         },
                         showError: function (message,dontAppend) {
                             // Se guarda referencia del puntero al nodo del error <span...>
-                            this.errorNode = this.inputWrapper.errorNode;
+                            if (this.inputWrapper !== null)
+                                this.errorNode = this.inputWrapper.errorNode;
 
                             // Nos guardamos si hay excepcion en el tipo
                             var exception_input_path = this.type.__errorException;
@@ -373,7 +374,8 @@ use lib\output\html\renderers\js\Siviglia;
                             }
 
                             // Añadimos path de error de dicho input
-                            this.form.appendError(this.type.getFullPath(),this);
+                            if (this.form !== null)
+                                this.form.appendError(this.type.getFullPath(),this);
                         },
                         clearErrors: function () {
                             // Nos guardamos si hay excepcion en el tipo
@@ -2077,7 +2079,15 @@ use lib\output\html\renderers\js\Siviglia;
                                         if (typeof instance.inputWrapper.rootNode[0].children[3] !== "undefined")
                                             this.errorNode=instance.inputWrapper.rootNode[0].children[3].children[0];
 
-                                        this.inputNode.append(instance.rootNode);
+                                        // Comprobación si un tipo es FIXED o no, para mostrarlo como string-raw o input
+                                        if (this.innerType.__definition.FIXED === this.innerType.__value) {
+                                            // String-raw del tipo si es Fixed
+                                            this.inputNode.text(this.innerType.__value);                                            
+                                        } else {
+                                            // mostramos el input creado
+                                            this.inputNode.append(instance.rootNode);
+                                        }
+                                                                                    
                                         /*var ce=this.currentErrors[key]
                                         if(ce) {
                                             for(var k=0;k<ce.length;k++) {

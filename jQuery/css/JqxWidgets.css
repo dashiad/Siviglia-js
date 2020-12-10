@@ -393,6 +393,14 @@ span.tooltiptext{
     opacity: 1;
 }
 
+/* Estilo para el String-raw si un TYPE tiene FIXED en su definition */
+.input.TYPE {
+    margin: var(--label-StdInputContainer-margin-bottom) 0 var(--label-StdInputContainer-margin-bottom) 0;
+    font-size: var(--string-raw-font-size);
+    color: var(--color-label-edit-model);
+    font-style: italic;
+}
+
 
 /* Estilo para el scrollbar dentro ventanas widgets */
 ::-webkit-scrollbar { display: none; }
