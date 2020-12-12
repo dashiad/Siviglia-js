@@ -177,6 +177,7 @@
                     "TIPO1": {
                         "TYPE": "Container",
                         "FIELDS": {
+                            "TYPE":{"TYPE": "String"},
                             "f3": {"TYPE": "String", "MINLENGTH": 2},
                             "f4": {"TYPE": "Integer"}
                         }
@@ -184,6 +185,7 @@
                     "TIPO2": {
                         "TYPE": "Container",
                         "FIELDS": {
+                            "TYPE":{"TYPE": "String"},
                             "f1": {"TYPE": "String", "MINLENGTH": 2},
                             "f2": {"TYPE": "Integer"}
                         }
@@ -198,6 +200,7 @@
                     "TIPO3": {
                         "TYPE": "Container",
                         "FIELDS": {
+                            "TYPE":{"TYPE": "String"},
                             "f3": {"TYPE": "String", "MINLENGTH": 2},
                             "f4": {"TYPE": "Integer"}
                         }
@@ -205,6 +208,7 @@
                     "TIPO4": {
                         "TYPE": "Container",
                         "FIELDS": {
+                            "TYPE":{"TYPE": "String"},
                             "f1": {"TYPE": "String", "MINLENGTH": 2},
                             "f2": {"TYPE": "Integer"}
                         }
@@ -220,6 +224,7 @@
                     "TIPO6": {
                         "TYPE": "Container",
                         "FIELDS": {
+                            "TYPE":{"TYPE": "String"},
                             "f3": {"TYPE": "String", "MINLENGTH": 2},
                             "f4": {"TYPE": "Integer"}
                         }
@@ -227,6 +232,7 @@
                     "TIPO7": {
                         "TYPE": "Container",
                         "FIELDS": {
+                            "TYPE":{"TYPE": "String"},
                             "f1": {"TYPE": "String", "MINLENGTH": 2},
                             "f2": {"TYPE": "Integer"}
                         }
@@ -248,16 +254,12 @@
     var runningTests=false;
     var cbStack=[];
     function countListeners() {
-        var s = 0;
-        for (var k in Siviglia.Dom.existingListeners)
-            s++;
-        return s;
+        return Object.keys(Siviglia.Dom.existingListeners).length
+
     }
-    function countManagers() {
-        var s = 0;
-        for (var k in Siviglia.Dom.existingManagers)
-            s++;
-        return s;
+    function countManagers()
+    {
+        return Object.keys(Siviglia.Dom.existingManagers).length;
     }
 
     function showResult(name,doc,def,callback,testNumber,expected,result,exception)
@@ -357,8 +359,9 @@
         function(def) {
             var cnt = Siviglia.types.TypeFactory.getType("",def,null,null);
             cnt.setValue({"one":"tres","two":"lalas"});
-            var result=("tres"===cnt.one);
-            return result && "lalas"===cnt.two;
+            var result=("tres"===cnt.one) && "lalas"===cnt.two;
+            cnt.destruct();
+            return result;
         });
     runTest("Container: Prueba de campo requerido", "El campo two es requerido, lo cual provoca error.Hay que fijarse en que esta comprobacion se efectua al llamarse a save(), no antes, ya que no podemos saber a priori si esos campos se van a establecer después.Hay que tener en cuenta que la validacion de formularios, y cualquier intento de enviar un BTO al servidor, tiene primero que llamar a save() del objeto.",
         def2,
@@ -375,6 +378,7 @@
                 // Tiene que estar errored.
                 thrown=true;
             }
+            cnt.destruct();
             return result && thrown;
         });
     runTest("Container: Prueba de campo erroneo","Se asigna un campo que no valida (cadena demasiado corta)",
@@ -390,6 +394,7 @@
             result=(result && e.type=="StringException" && e.code==Siviglia.types.StringException.ERR_TOO_SHORT);
             thrown=true;
         }
+        cnt.destruct();
         return result && thrown;
     });
     runTest("Container: Prueba de campo vacio","Se asigna un valor nulo, y se testea la funcion HasOwnValue",
@@ -397,7 +402,9 @@
         function(def){
             var cnt = Siviglia.types.TypeFactory.getType("",def,null,null);
             cnt.setValue(null);
-            return cnt.__hasOwnValue()==false;
+            var status=cnt.__hasOwnValue()==false;
+            cnt.destruct();
+            return status;
         }
     )
     runTest("Container: Valor inicial nulo","Se comprueba que un container al que no se le ha asignado un valor, tiene un valor nulo",
@@ -406,6 +413,7 @@
         {
             var cnt = Siviglia.types.TypeFactory.getType("",def,null,null);
             var n=cnt.getValue();
+            cnt.destruct();
             return n===null;
         }
     )
@@ -416,7 +424,9 @@
             var cnt = Siviglia.types.TypeFactory.getType("",def,null,null);
             cnt.setValue({"one":"tres","two":"lalas"});
             var tmp=cnt.getValue();
-            return tmp.three===null && tmp.four===null;
+            var status=tmp.three===null && tmp.four===null;
+            cnt.destruct();
+            return status;
         });
     runTest("Container: Valor por defecto de campos","Se comprueba que se aplica el valor por defecto cuando el campo se establece a nulo",
     def1,
@@ -424,7 +434,9 @@
         {
             var cnt = Siviglia.types.TypeFactory.getType("",def,null,null);
             cnt.setValue({"one":null,two:null});
-            return cnt.two==="Hola";
+            var status= cnt.two==="Hola";
+            cnt.destruct();
+            return status;
         }
     )
     runTest("Container: Valor nulo cuando todos los campos son nulos","Se comprueba que, si los campos de un container son nulos, y no tienen KEEP_KEY_ON_EMPTY, el valor del container es nulo,al convertirlo a un valor plano.",
@@ -433,7 +445,9 @@
         {
             var cnt = Siviglia.types.TypeFactory.getType("",def,null,null);
             cnt.setValue({"one":null,two:null});
-            return null===cnt.getPlainValue();
+            var status=null===cnt.getPlainValue();
+            cnt.destruct();
+            return status;
         }
     )
     runTest("Container: Valor no nulo cuando todos los campos son nulos, preservando keys","Se comprueba que, si los campos de un container son nulos, pero tienen PRESERVE_KEYS_ON_NULL, el valor del container no es nulo, al convertirlo en un valor plano.",
@@ -443,6 +457,7 @@
             var cnt = Siviglia.types.TypeFactory.getType("",def,null,null);
             cnt.setValue({"one":null,two:null});
             var plain=cnt.getPlainValue();
+            cnt.destruct();
             return null===plain.one;
         }
     )
@@ -479,6 +494,7 @@
             cnt.setValue(v);
             var result= "Lala" === cnt.getPath("#two");
             cnt.destruct();
+            v.__destroy__();
             return result;
         }
     )
@@ -658,15 +674,21 @@
 
     runTest("Comprobacion de nulos (1)","Se prueba que un valor no asignado devuelve nulo", def,function (def) {
         var t1 = new Siviglia.model.BaseTypedObject(def);
-        return t1.f2===null;
+        var status=t1.f2===null;
+        t1.destruct();
+        return status;
     }, true);
     runTest("Comprobacion de nulos (2)","Se prueba que un valor no asignado devuelve nulo", def,function (def) {
         var t1 = new Siviglia.model.BaseTypedObject(def);
-        return t1.f3===null;
+        var status=t1.f3===null;
+        t1.destruct();
+        return status;
     }, true);
     runTest("Comprobacion de nulos (3)","Se prueba que un valor no asignado devuelve nulo", def,function (def) {
         var t1 = new Siviglia.model.BaseTypedObject(def);
-        return t1.f4===null;
+        var status=t1.f4===null;
+        t1.destruct();
+        return status;
     }, true);
     runTest("Comprobacion TS 1", "Primera comprobacion de funcionamiento de un typeswitcher.Se ve que una vez establecido el tipo, los campos internos existen. Hay que tener en cuenta que hay que establecer al menos 1 campo, ya que, si no, el container tendria todos los campos a nulo, y, sin KEEP_KEY_ON_EMPTY, el container en si seria nulo.",
         def,
@@ -674,15 +696,19 @@
         var t1 = new Siviglia.model.BaseTypedObject(def);
         t1.f2 = {TYPE: "TIPO1","f3":"aaa"};
         var s=t1.f2.f3;
-        return typeof t1.f2.f3 !== "undefined" && typeof t1.f2["*f3"] !== "undefined" &&
+        var status= typeof t1.f2.f3 !== "undefined" && typeof t1.f2["*f3"] !== "undefined" &&
                typeof t1.f2.f4 !== "undefined" && typeof t1.f2["*f4"] !== "undefined";
+        t1.destruct();
+        return status;
     }, true);
     runTest("Comprobacion TS 2", "Comprobacion del funcionamiento de IMPLICIT_TYPE: Si a un typeswitcher se le asigna un valor que no tiene el campo definido como campo de tipo, se utiliza el tipo indicado por IMPLICIT_TYPE",
         def,
         function (def) {
         var t1 = new Siviglia.model.BaseTypedObject(def);
         t1.f3 = {f3:"qqq"};
-        return typeof t1.f3.f3 !== "undefined" && typeof t1.f3["*f3"] !== "undefined" && typeof t1.f3.f4 !== "undefined" && typeof t1.f3["*f4"] !== "undefined";
+        var status= typeof t1.f3.f3 !== "undefined" && typeof t1.f3["*f3"] !== "undefined" && typeof t1.f3.f4 !== "undefined" && typeof t1.f3["*f4"] !== "undefined";
+            t1.destruct();
+            return status;
     }, true);
     runTest("Comprobacion TS 3", "Comprobacion de que en un typeswitcher, al cambiar de tipo (primero se crea un tipo implicito, y luego un TIPO4), los campos pertenecientes al primer tipo, ya no estan definidos.",
         def,
@@ -691,14 +717,18 @@
         t1.f3 = {f3:"aaa"};
         var result=typeof t1.f3.f3 !=="undefined";
         t1.f3 = {"TYPE": "TIPO4"}
-        return result && typeof t1.f3.f3 == "undefined" && typeof t1.f3["*f3"] == "undefined" && typeof t1.f3.f4 == "undefined" && typeof t1.f3["*f4"] == "undefined";
+        var status= result && typeof t1.f3.f3 == "undefined" && typeof t1.f3["*f3"] == "undefined" && typeof t1.f3.f4 == "undefined" && typeof t1.f3["*f4"] == "undefined";
+        t1.destruct();
+        return status;
     }, true);
     runTest("Comprobacion TS 4", "Comprobacion de acceso a un TypeSwitcher a traves de campos",def,
         function (def) {
         var t1 = new Siviglia.model.BaseTypedObject(def);
         t1.f4 = {value: {f3: "hola", f4: 25}};
         t1.f4.value.f3 = "pepito"
-        return t1.f4.value.f3==="pepito";
+        var status= t1.f4.value.f3==="pepito";
+        t1.destruct();
+        return status;
     });
     runTest("Comprobacion Listener TS 1", "Comprobacion del funcionamiento de listeners sobre typeswitchers: se establece un listener para escuchar cuando cambia el tipo del typeswitcher",def,
         function (def) {
@@ -785,7 +815,7 @@
                 e1=2;
         } catch (e) {
         }
-
+        t2.destruct();
         return e1===1;
     });
     runTest("Comprobacion de getPath en BaseTypedObject / TypeSwitcher",
@@ -819,6 +849,7 @@
         var t1 = new Siviglia.model.BaseTypedObject(def);
         t1.f3 = {TYPE: "TIPO3", value: {sf3: "lala"}};
         var path = t1.f3.value["*sf3"].__getFieldPath();
+        t1.destruct();
         return path == "/f3/value/sf3";
     }, true);
 
@@ -833,7 +864,9 @@
         function (def) {
         var t2 = new Siviglia.model.BaseTypedObject(def);
         var r = t2.getPlainValue();
-        return typeof r["f2"] == "undefined" && r.f1 === null;
+        var status=typeof r["f2"] == "undefined" && r.f1 === null;
+        t2.destruct();
+        return status;
     }, true);
     runTest("Comprobacion de DEFAULT en BaseTypedObject", "Se establece el valor por defecto de un BaseTypedObject completo",
         {
@@ -851,7 +884,9 @@
         },
         function (def) {
         var t2 = new Siviglia.model.BaseTypedObject(def);
-        return t2.f2 == "hola" && t2.TIPO2.f2 == 50;
+        var status= t2.f2 == "hola" && t2.TIPO2.f2 == 50;
+        t2.destruct();
+        return status;
     }, true);
     runTest("Comprobacion de save() en Container",
         "Se intenta guardar un objeto Container con un valor interno que es requerido.Cuando ese valor se establece, se deja de lanzar la excepcion",
@@ -887,6 +922,7 @@
         }
         t2.TIPO2.f1 = "lala";
         t2.save();
+        t2.destruct();
         return result;
 
     }, true);
@@ -918,7 +954,9 @@
         var t2 = new Siviglia.model.BaseTypedObject(def);
         t2.TIPO2 = {"f1": "hola", "TIPO7": {f1: "Prueba", f2: 55}};
         var path = t2.TIPO2.TIPO7["*f2"].__getFieldPath();
-        return path == "/TIPO2/TIPO7/f2";
+        var status=path == "/TIPO2/TIPO7/f2";
+        t2.destruct();
+        return status;
 
     }, true);
 
@@ -962,7 +1000,9 @@
         var nKeys = 0;
         for (var k in r.f1)
             nKeys++;
-        return nKeys == 0 && typeof r.TIPO2 !== "undefined" && r.TIPO2 != null && typeof r.TIPO2.TIPO7 == "undefined" && r.TIPO2.f1 == null;
+        var status= nKeys == 0 && typeof r.TIPO2 !== "undefined" && r.TIPO2 != null && typeof r.TIPO2.TIPO7 == "undefined" && r.TIPO2.f1 == null;
+        t2.destruct();
+        return status;
 
     }, true)
     runTest("Comprobacion de getPath / DEFAULT en Dictionary",
@@ -1133,11 +1173,12 @@
 
         t1.destruct();
 
+
         // Sin embargo, hay que tener en cuenta que el listener de h.q es ahora "anonimo".
         // h.q no tiene un destruct (era un objeto plano), pero mantiene una referencia a un EventListener,
         // por lo que aun debe haber 1 listener activo.
         status = status && countListeners()==1;
-
+            h.__destroy__();
         // Se limpian manualmente los listeners.
         Siviglia.Dom.existingListeners=[];
         return status;
@@ -1182,7 +1223,9 @@
         var t1 = new Siviglia.model.BaseTypedObject(def);
 
         var v = t1.f3.value.sf4;
-        return v == 10;
+        var status= v == 10;
+        t1.destruct();
+        return status;
     }, true);
 
     runTest("Comprobaciones de TypeSwitcher (1)",
@@ -1524,11 +1567,10 @@
 
 
         t1.destruct();
+        h.__destroy__();
 
-        // Sin embargo, hay que tener en cuenta que el listener de h.q es ahora "anonimo".
-        // h.q no tiene un destruct (era un objeto plano), pero mantiene una referencia a un EventListener,
-        // por lo que aun debe haber 1 listener activo.
-        status = status && countListeners()==1;
+
+        status = status && countListeners()==0;
 
         // Se limpian manualmente los listeners.
         Siviglia.Dom.existingListeners=[];
@@ -1539,46 +1581,6 @@
         return status && countListeners() == 0;
     }, true);
 
-    runTest("Comprobaciones de Array (5)",
-        "Se comprueba el funcionamiento del borrado de elementos de un array",
-        {
-            "FIELDS": {
-                "f3": {
-                    "TYPE": "Array",
-                    "ELEMENTS": {
-                        "TYPE": "Container",
-                        "FIELDS":{
-                            "f1":{
-                                "TYPE":"String",
-                                "MINLENGTH":4
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        function (def) {
-            var t1 = new Siviglia.model.BaseTypedObject(
-                def
-            );
-            var f=t1["*f3"];
-            var nErrors = 0;
-            var nChanges = 0;
-
-            f.addListener("CHANGE", null, function () {
-                nChanges++
-            });
-
-            f=[{"f1":"abcde"},{"f1":"fghi"},{"f1":"jklm"}];
-
-            f.splice(1,1);
-            var status=f[0].f1==="abcde" && f[1].f1==="jklm" && f.length===2;
-
-
-            t1.destruct();
-
-            return status && countListeners() == 0;
-        }, true);
 
     runTest("Comprobaciones de Array (6)",
         "Se comprueba el funcionamiento del borrado de elementos de un array,con TypeSwitchers y Containers",
@@ -1652,11 +1654,24 @@
 
             // El splice ha movido el elemento que antes estaba en 2, a la posicion 1. Para que esto funcione, ha
             // habido que crear un nuevo typeswitcher en 1, con el valor del typeswitcher que habia en 2.
+
             // Lo importante, es que ese valor siga apuntando al mismo objeto, de forma que sigue siendo el mismo
             // valor referenciado por a3. Asi que si cambiamos a3, lo que hay en f[1] tiene que cambiar tambien.
+            // NOTA: LO ANTERIOR NO ES POSIBLE: EL TYPESWITCHER QUE HABIA EN 2, EVENTIZO EL OBJETO a3 PARA QUE APUNTARA A ÉL.
+            // SI LUEGO ESE OBJETO PASA A SER EL VALOR DEL TYPESWITCHER QUE SE CREA EN 1, SOLO HABRIA 2 POSIBILIDADES:
+            // 1) RE-EVENTIZAR a3 PARA QUE AHORA APUNTE AL TYPESWITCHER NUEVO. ESTO NO ES POSIBLE, PORQUE NADIE GARANTIZA
+            // QUE EL TYPESWITCHER QUE HAY EN 2 (Y QUE LO EVENTIZÓ INICIALMENTE), VAYA A DESAPARECER: LO SIGUE USANDO. SERIA
+            // UN VALOR COMPARTIDO
+            // 2) NO RE-EVENTIZAR : a3 SEGUIRIA APUNTANDO A TYPESWITCHER 2, QUE VA A SER DESTRUIDO.
+            // ASI QUE NO QUEDA MAS REMEDIO QUE HACER UNA COPIA!
 
+            // a3.CAMPO3="JORGITO";
+            a3=f[1];
             a3.CAMPO3="JORGITO";
-            status= status && f[1].CAMPO3==="JORGITO";
+
+
+
+           status= status && f[1].CAMPO3==="JORGITO";
 
             t1.destruct();
 
@@ -1853,9 +1868,11 @@
             {
                 exceptionThrown=true;
             }
+
             status=status && f2_changes===2;
 
             t1.destruct();
+
             return status && countListeners() == 0;
         }, true);
 
@@ -2195,8 +2212,8 @@
         var t1 = new Siviglia.model.BaseTypedObject(def);
 
         var changed = 0;
-        var source = t1["*f3"].__getSource();
-        source.addListener("CHANGE", null, function (ev, params) {
+
+        t1["*f3"].addListener("CHANGE", null, function (ev, params) {
             changed = 1;
         });
         var nExcp = 0;
@@ -2330,10 +2347,12 @@
         btype.save();
 
         // Prueba dos : el fetch deberia devolver null, porque la combinacion f1=d y f2=b no esta soportada:
+            // Ademas, f3 va a quedar ahora incorrecto, ya que el source ahora es null, por lo que no puede tener
+            // el valor "1"
 
-        btype.f1 = "d";
+            btype.f1 = "d";
 
-        status = status && (nChanges===3 && nValids===1 && curData==null);
+        status = status && btype["*f3"].__isErrored()==true && (nChanges===3 && nValids===1 && curData==null);
 
 
         // Se cambia f2 a "c":
@@ -2343,7 +2362,7 @@
 
         btype.destruct();
         status = status && countListeners()==0;
-        $n=11;
+
         return status;
 
     }, true);
@@ -2386,8 +2405,6 @@
 
         try{
             t1.f3="aa";
-            // Y con el save, dara una excepcion
-            t1.save();
         }catch(e)
         {
             nExcp++;
@@ -2396,9 +2413,11 @@
         t1["*f3"].__getSource().addListener("CHANGE",null,function(){
             nSources++;
         });
+        var status=t1["*f3"].__isErrored();
         t1.f4={"aa":"uno","bb":"dos"};
-        var status=(nChanges4==1 && nChanges3===0 && nSources==1 );
-        t1.f3="aa";
+        // Al cambiar f4 a ese valor, f3 pasa a ser valido, asi que habra cambiado, y ya no tendra error
+        status=status && t1["*f3"].__isErrored()===false && (nChanges4==1 && nChanges3===1 && nSources==1 );
+
         t1.save();
         status = status && (nChanges3===1 && t1.f3=="aa");
         t1.f4["cc"]="tres";
@@ -2411,6 +2430,55 @@
         status = status && countListeners()===0;
         return status;
     }, true);
+
+    runTest("Source tipo PATH, con valores unicos",
+        "Pruebas de source de tipo path, con valores unicos.Tenemos un array con tipos simples (String), cuyo source son las keys de un diccionario. Hay que asegurarse"+
+        " de que en el array no hay elementos duplicados.",
+        {
+            "FIELDS": {
+                "f3": {
+                    "TYPE": "Array",
+                    "ELEMENTS":{
+                        "TYPE":"String"
+                    },
+                    "SOURCE":{
+                        "TYPE":"Path",
+                        "PATH":"#../f4/[[KEYS]]",
+                        "LABEL":"LABEL",
+                        "VALUE":"VALUE",
+                        "UNIQUE":true
+                    }
+                },
+                "f4": {
+                    "TYPE": "Dictionary",
+                    "VALUETYPE":{
+                        "TYPE":"String"
+                    }
+                }
+            }
+        },
+        function (def) {
+            var t1 = new Siviglia.model.BaseTypedObject(
+                def
+            );
+            // Intentamos meter un valor en el array, cuando la fuente esta vacia..
+            var thrown=false;
+            try{
+                t1.f3=["hola"];
+            }catch(e)
+            {
+                thrown=true;
+            }
+            var status=thrown && t1["*f3"].__isErrored();
+            // Se introduce ahora esa key en el diccionario:
+            t1.f4={"hola":"val_hola"};
+            // Y ahora, automaticamente, el campo f3 ya no deberia tener error:
+            status=status && !t1["*f3"].__isErrored();
+
+            t1.destruct();
+            status = status && countListeners()===0;
+            return status;
+        }, true);
 
     runTest("Source tipo Remoto",
         "Comprobacion de source de tipo remoto, mezclado con parametros en la URL que define el source. A diferencia de otros sources, los remotos solo se comprueban si el validationMode es COMPLETE, o cuando se hace el save().Hay que tener en cuenta que cuando este objeto esta vacio, y mientras no se asigna el valor que completa la URL, el source pueder llamar a onChange, pero estara marcado como invalid. Como al finalizar el test, lo que hay es una promesa que tiene que cumplirse, no estaran destruidos todos los listeners (no se ha destruido el basetypedobject) cuando se salga de la funcion. Se añade un then a la promesa, para destruir el bto con sus listeners.",
@@ -2473,7 +2541,9 @@
         function (def) {
         var t1 = new Siviglia.model.BaseTypedObject(def);
         t1.f4={"LABEL":"Probando"};
-        return t1.f4.LABEL=="Probando";
+        var status= t1.f4.LABEL=="Probando";
+        t1.destruct();
+        return status;
     }, true);
 
     runTest("Tipo Custom Remoto: BaseType, definido via Metadata",
@@ -2491,7 +2561,9 @@
         t1.f4={TYPE:"DateTime"};
         t1.f4.LABEL="Probando";
         t1.f4.TYPE.STRICTLYPAST=true;
-        return t1.f4.LABEL=="Probando" && t1.f4["*STRICTLYPAST"].__definition.TYPE=="Boolean";
+        var status= t1.f4.LABEL=="Probando" && t1.f4["*STRICTLYPAST"].__definition.TYPE=="Boolean";
+        t1.destruct();
+        return status;
     }, true);
     runTest("Typeswitcher extended 1",
         "Especificacion de typeswitcher basados en el tipo de dato de un cierto campo existente en el valor asignado al TypeSwicther.Esto es, en la clave 'ON' del TypeSwitcher, existe un campo FIELD",
@@ -2552,6 +2624,7 @@
         t1.f1={"ft":{"s1":1,"s2":2}};
         st1=st1 && JSON.stringify(t1["*f1"].subNode.__definition)=='{"TYPE":"Container","FIELDS":{"ft":{"TYPE":"Container","FIELDS":{"s1":{"TYPE":"Integer"},"s2":{"TYPE":"Integer"}}},"f2":{"TYPE":"String"}}}';
         t1.f1.f2="Cambiado?";
+        t1.destruct();
         return st1;
     });
 
@@ -2608,6 +2681,7 @@
         var st1=(JSON.stringify(t1.getPlainValue())=='{"f1":{"ft":["a","b","c"],"f2":true}}');
         t1.f1={aa:1};
         st1=st1 && JSON.stringify(t1["*f1"].subNode.__definition)=='{"TYPE":"Container","FIELDS":{"aa":{"TYPE":"Integer"},"f2":{"TYPE":"String"}}}';
+        t1.destruct();
         return st1;
     });
 
@@ -2711,6 +2785,7 @@
         var status=(p==="/a");
         cnt.setValue({});
         status = status && "/a/one"===cnt["*one"].__getFieldPath();
+        cnt.destruct();
         return status;
     });
 
@@ -2752,6 +2827,7 @@
                 keys.push(dFields[k].__getFieldName());
             status=status && keys.length==2;
             status=status && keys.indexOf("one")>=0 && keys.indexOf("two")>=0;
+            cnt.destruct();
             return status;
         }
     );
@@ -2793,7 +2869,7 @@
                 'STATES' : {
                     'STATES' : {
                         'E1' : {
-                            'FIELDS' : {'EDITABLE' : ['one','two']}
+                            'FIELDS' : {'EDITABLE' : ['one','two','inner']}
                         },
                         'E2' : {
                             'ALLOW_FROM':["E1"],
@@ -2840,6 +2916,7 @@
                     foundTwo=true;
                 }
             status=status && dFields.length==2 && foundOne && foundTwo;
+            cnt.destruct();
             return status;
         });
 
@@ -2887,7 +2964,7 @@
                     status = status && true===st.hasStates();
                     status = status && JSON.stringify(def["STATES"])===JSON.stringify(st.getStates());
                     status = status && "E1"===st.getDefaultState();
-                    status = status && cnt["*state"]===st.getStateFieldObj();
+                    status = status && cnt["*state"]===st.getStateType();
                     status = status && 0===st.getStateId("E1");
                     status = status && 2===st.getStateId("E3");
                     status = status && false===st.isFinalState("E1");
@@ -2930,6 +3007,7 @@
                     status = status && st.getRequiredFields("E1").length===0;
                     var reqFields=st.getRequiredFields("E3");
                     status = status && "three"===reqFields[0];
+                    cnt.destruct();
                     return status;
             }
         );
@@ -2978,7 +3056,7 @@
             }catch(e)
             {
                 thrown=true;
-                result=result && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_NOT_EDITABLE_IN_STATE);
+                result=result && e.path==="/a/three" && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_NOT_EDITABLE_IN_STATE);
             }
             result=result && thrown;
 
@@ -3003,21 +3081,17 @@
                 cnt.state="E3";
             }catch(e)
             {
-                result=result && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD);
+                // Ahora mismo, hay 3 campos con errores: one, (de arriba), state y three (que es requerido)
+                result=result && e.path==="/a/state" && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION)
+                               && cnt.getErroredFields().length===3;
                 thrown=true;
             }
-            result=result && thrown;
+            result=result && thrown && cnt["*state"].__isErrored()==true;
 
             // Rellenamos el campo faltante, y esperamos que esta vez si que se acepte el cambio de estado
             cnt.three="www";
-            thrown=false;
-            try {
-                cnt.state = "E3";
-            }catch(e)
-            {
-                thrown=true;
-            }
-            result=result && thrown===false;
+            // Y en este punto, cnt.state debe haber completado su transicion:
+            result=result && cnt.state===2;
 
             // Ahora estamos en un estado final. No deberia ser posible movernos de este estado, por dos motivos:
             // porque ningun otro estado lo tiene en el ALLOW_FROM, y porque es un estado final. Pero es esta
@@ -3030,6 +3104,7 @@
                 result=result && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_FINAL_STATE);
                 thrown=true;
             }
+            cnt.destruct();
             return result && thrown;
         });
     runTest(
@@ -3088,7 +3163,7 @@
             }catch(e)
             {
                 thrown=true;
-                result=result && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD);
+                result=result && e.path==="/a/state" && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION);
             }
             result=result && true==thrown;
 
@@ -3098,6 +3173,7 @@
             result=result && 2===cnt.state;
             result=result && null===cnt.three;
             result=result && "AAA"===cnt.one;
+            cnt.destruct();
             return result;
 
         });
@@ -3513,6 +3589,7 @@
 
             result=result && "one"===inf[0].__getFieldName();
             result=result && 1===inf.length;
+            ob.destruct();
             return result;
         });
     d1 = defInstance.getDefinition2();
@@ -3545,6 +3622,7 @@
             result=result && false==obj["*one"].__isErrored();
             result=result && null==obj["*one"].__getError();
             result=result && false==obj.__isErrored();
+            obj.destruct();
             return result;
     });
     d1 = defInstance.getDefinition2();
@@ -3555,6 +3633,7 @@
         ,
         function(def) {
             var obj= new Siviglia.model.BaseTypedObject(def);
+
             var result="status"==obj.getStateField();
             result=result && 'None'==obj["*status"].getLabel();
             obj.three="thr";
@@ -3568,44 +3647,54 @@
                 result=result && true==obj.__isErrored();
                 erroredFields=obj.getErroredFields();
                 result=result && 1== erroredFields.length;
-                var error=erroredFields[0].__getError();
-                result=result && error.type=='BaseTypeException';
-                result=result && error.code==Siviglia.model.BaseTypedException.ERR_NOT_EDITABLE_IN_STATE;
                 thrown=true;
             }
             result=result && true==thrown;
             // Ese ultimo cambio de estado no deberia lanzar excepciones
             obj.status="Other";
+            obj.destruct();
             return result;
     });
     d1 = defInstance.getDefinition2();
     runTest(
-        "Comprobacion de errores generados por cambios de estado",
+        "Comprobacion de errores generados por cambios de estado (2)",
         "Se comprueba que los errores generados por cambios de estado, se asignan correctamente a los campos que los generan.La excepcion lanzada, y la que se almacena en el objeto, es la misma (de hecho, es el mismo objeto)",
         d1
         ,
         function(def) {
+
             var obj= new Siviglia.model.BaseTypedObject(def);
-            obj.status="Other";
+            obj.status="None";
             var thrown=false;
             var result=true;
+
             try{
                 obj.status="Another";
             }
             catch(e) {
                 thrown=true;
-                result=result && e.type=='BaseTypeException';
-                result=result && e.code===Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD;
-                result=result && true==obj.__isErrored();
                 var errored=obj.getErroredFields();
-                result=result && 1==errored.length;
+                result=result && 2==errored.length;
                 result=result && "/three"==errored[0].__getFieldPath();
-                exception=errored[0].__getError();
+                var exception=errored[0].__getError();
                 result=result && exception.type=='BaseTypeException';
                 result=result && exception.code==Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD;
 
+                exception=errored[1].__getError();
+                result=result && exception.type=='BaseTypeException';
+                result=result && exception.code==Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION;
+                result=result && exception.path==="/status";
+                thrown=true;
             }
-            result=result && true==thrown;
+
+
+            // Ahora, establecemos el campo que nos falta, y vemos si al establecer ese campo, el cambio de estado
+            // se completa, y el container pasa a tener cero errores.
+            obj.three="lala";
+            var nErrors=obj.getErroredFields();
+
+            result=result && true===thrown && nErrors.length===0 && obj["*status"].__isErrored()===false;
+            obj.destruct();
             return result;
     });
     d1 = defInstance.getDefinition2();
@@ -3618,7 +3707,9 @@
             var obj= new Siviglia.model.BaseTypedObject(def);
         obj.three="Test";
         obj.status="Another";
-        return "Another"==obj["*status"].getLabel();
+        var result= "Another"==obj["*status"].getLabel();
+        obj.destruct();
+        return result;
     });
     d1 = defInstance.getDefinition2();
     runTest(
@@ -3640,6 +3731,7 @@
                 result = e.type == 'BaseTypeException';
                 result = result && e.code == Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_STATE_TO;
             }
+            obj.destruct();
             return result && thrown;
     });
     /**
@@ -3671,6 +3763,7 @@
                 var erroredField=errored[0];
                 result=result && erroredField.__getFieldName()==="status";
             }
+            obj.destruct();
             return result && thrown;
     });
     d1 = defInstance.getDefinition2();
@@ -3691,6 +3784,7 @@
                 result = e.type == 'BaseTypeException';
                 result = result && e.code == Siviglia.model.BaseTypedException.ERR_UNKNOWN_STATE;
             }
+            obj.destruct();
             return result && thrown;
     });
 
@@ -3771,6 +3865,7 @@
                 result = e.type == 'BaseTypeException';
                 result = result && e.code == Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_STATE;
             }
+            obj.destruct();
         return result && thrown;
     });
     d1 = defInstance.getDefinition4();
@@ -3786,6 +3881,7 @@
             obj.status="None";
             var result=true;
             result=result && true==obj.__testedOk;
+            obj.destruct();
             return result;
 
         });
@@ -3808,6 +3904,7 @@
         //Ademas, al haber entrado al estado Last, tiene que haberse ejecutado
         // el TEST_OK, por lo que __testedOk debe ser true
         result=result && true==obj.__testedOk;
+        obj.destruct();
         return result;
     });
 
@@ -3832,6 +3929,7 @@
                 result = e.type == 'BaseTypeException';
                 result = result && e.code == Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_FINAL_STATE;
             }
+            obj.destruct();
             return result && thrown;
 
         });
@@ -3848,6 +3946,7 @@
             var result=true;
             // Se ha tenido que ejecutar el callback "TWO" via el estado "*"
             result=result && "set"==obj.__two;
+            obj.destruct();
             return result;
         });
     d1 = defInstance.getDefinition5();
@@ -3864,6 +3963,7 @@
             obj.status="Other";
             // Se ha tenido que ejecutar el callback "TWO" via el estado "*"
             result=result && "three"==obj.__three;
+            obj.destruct();
             return result;
         });
 
@@ -3879,6 +3979,7 @@
             var result=true;
             val=obj.getPath("/one");
             result=result && "str_one"==val;
+            obj.destruct();
             return result;
         });
     d1 = defInstance.getDefinition6();
@@ -3901,6 +4002,7 @@
             result = result && "f1" == val2;
             val3 = obj.getPath("/dict/c2/1");
             result = result && "second" == val3;
+            obj.destruct();
             return result;
         });
     d1 = defInstance.getDefinition6();
@@ -3916,6 +4018,7 @@
             var val=obj.getPath("/{%/one%}/0");
             var result=true;
             result=result && "c1"==val;
+            obj.destruct();
             return result;
         });
     runTest(
@@ -4012,7 +4115,7 @@
             {
                 thrown=true;
                 result = e.type == 'BaseTypeException';
-                result = result && e.code == Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD;
+                result = result && e.code == Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION;
                 isErrored=t.__isErrored();
                 isErrored2=t["*inner"].__isErrored();
                 var e1=t.getErroredFields();
@@ -4023,6 +4126,7 @@
                 result=result && "/inner/three"==path2;
             }
             result=result && thrown;
+            t.destruct();
             return result;
         });
 
@@ -4052,7 +4156,8 @@
             t1.q1={f1:"qq"};
             v=t1.getPlainValue();
             status = status && v.q1.f1==="qq" && v.q1.f2==="Value3";
-            console.dir(v);
+            t1.destruct();
+
             return status;
         }, true);
 

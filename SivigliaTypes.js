@@ -227,11 +227,19 @@ Siviglia.Utils.buildClass(
                         this.__valueSet = false;
                         this.__resolvers=[];
                         this.__flags = 0;
+
+                        this.__unassigned=true;
                         if (typeof def["FIXED"] == true)
                             this.__flags |= Siviglia.types.BaseType.TYPE_NOT_EDITABLE;
 
-                        this.__source = null;
+                        this.__source = this.__getSource();
+                        if(this.__source!==null)
+                        {
+                            this.__source.addListener("CHANGE",this,"__onSourceChanged");
+                        }
+                        this.__sourceException=false;
                         this.__sourceFactory = null;
+                        this.__sourceChecked=false;
                         this.__referencedField = null;
                         if (Siviglia.isset(def["FIXED"])) {
                             this.apply(def["FIXED"], Siviglia.types.BaseType.VALIDATION_MODE_NONE);
@@ -251,6 +259,7 @@ Siviglia.Utils.buildClass(
                             this.__source.destruct();
                         for(var k=0;k<this.__resolvers.length;k++)
                             this.__resolvers[k].destruct();
+                        this.__value=null;
                     },
 
                     methods:
@@ -324,7 +333,7 @@ Siviglia.Utils.buildClass(
                             __getSource: function () {
                                 if (!this.__hasSource())
                                     return null;
-                                if (this.__source !== null)
+                                if (this.hasOwnProperty("__source"))
                                     return this.__source;
                                 var def = this.__getSourceDefinition();
                                 var factory = new Siviglia.Data.SourceFactory();
@@ -394,6 +403,15 @@ Siviglia.Utils.buildClass(
                                 if (this.__controller)
                                     this.__controller.__clearErroredField(this);
                             },
+                            __clearError:function(e){
+                                if(this.__errorException===e)
+                                {
+                                    this.__errorException=null;
+                                    this.__errored=false;
+                                    if (this.__controller)
+                                        this.__controller.__clearErroredField(this);
+                                }
+                            },
                             apply: function (val, validationMode) {
                                 // Esto no esta tan claro que haya que hacerlo asi.
                                 // Esto sirve para que si lo que se asigna no es un valor javascript normal, sino un BaseType,
@@ -401,11 +419,19 @@ Siviglia.Utils.buildClass(
                                 // Ademas, el hecho de asignar un esto "molesta" sólo en algunas circunstancias, no siempre.
                                 // Habría que tratar esto mejor, comprobando que este tipo, es del mismo tipo que val, copiando su estado (errores, etc),
                                 // y compartiendo el valor.
-                                if(val!==null && typeof val!=="undefined" && typeof val.__type__!=="undefined")
-                                    val=val.getPlainValue();
+                                var wasErrored=this.__errored;
+                                this.__clearErrored();
+                                if(val!==null && typeof val!=="undefined" ){
+                                    if(val.hasOwnProperty("__type__"))
+                                        val=val.getPlainValue();
+                                    if(val.hasOwnProperty("__basetype__"))
+                                        val=val.__basetype__.getPlainValue();
+                                }
 
-                                if (this.__isEditable()) {
-                                if (val === null || this.__isEmptyValue(val)) {
+
+
+                                if (validationMode===Siviglia.types.BaseType.VALIDATION_MODE_NONE || this.__isEditable()) {
+                                if ((val === null || this.__isEmptyValue(val)) && !wasErrored) {
                                     var hasChanged = false;
                                     if (this.__value != null) {
                                         if(this.__value && this.__value.hasOwnProperty("__destroy__"))
@@ -443,13 +469,19 @@ Siviglia.Utils.buildClass(
                                     return;
                                 var willSetDirty=true;
 
-                                if(this.__value===val && !this.__errored)
+                                if(this.__value===this.__getEffectiveValue(val) && !wasErrored)
                                     willSetDirty=false;
                                 if(this.__value && this.__value.hasOwnProperty("__destroy__"))
                                     this.__value.__destroy__();
+                                try {
+                                    var retVal = this._setValue(val, validationMode);
+                                    this.__valueSet = true;
+                                }catch(e)
+                                {
+                                    this.__setErrored(e);
+                                    throw e;
+                                }
 
-                                var retVal=this._setValue(val, validationMode);
-                                this.__valueSet = true;
                                 if(this.__isDynamic())
                                 {
                                     validationMode = Siviglia.types.BaseType.VALIDATION_MODE_NONE;
@@ -498,6 +530,13 @@ Siviglia.Utils.buildClass(
                             __getEmptyValue: function () {
                                 return null;
                             },
+                            // Se utiliza para convertir un valor posible de este tipo, en un valor "real"
+                            // de este tipo. Por ejemplo, a un campo Enum se le puede asignar una string,
+                            // el nombre del estado, pero su valor efectivo seria el id de la label
+                            __getEffectiveValue:function(val)
+                            {
+                                return val;
+                            },
                             __isEmptyValue: function (val) {
                                 return typeof val === "undefined" || val === null;
                             },
@@ -522,17 +561,21 @@ Siviglia.Utils.buildClass(
                                         return true;
                                     }
                                     var res = this._validate();
-                                    if (this.__hasSource() && validationMode >= Siviglia.types.BaseType.VALIDATION_MODE_COMPLETE) {
-                                        var s = this.__getSource();
-                                        if (!s.isAsync() ) {
-                                            this.__checkSource(val);
-                                        }
-                                    }
+                                    this.__validateSource(val,validationMode);
                                     this.__onlyValidating = false;
                                     return res;
                                 }catch(e)
                                 {
                                     throw e;
+                                }
+                            },
+                            __validateSource:function(val,validationMode)
+                            {
+                                if (this.__hasSource() && validationMode >= Siviglia.types.BaseType.VALIDATION_MODE_COMPLETE) {
+                                    var s = this.__getSource();
+                                    if (!s.isAsync() ) {
+                                        this.__checkSource(val);
+                                    }
                                 }
                             },
                             __isRequired: function () {
@@ -553,10 +596,76 @@ Siviglia.Utils.buildClass(
                                         //this.setValue(null);
                                         var e=new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: val});
                                         this.__setErrored(e);
+                                        // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
+                                        // que podemos borrar el error, y volver a poner este campo a "ok"
+                                        this.__sourceException=true;
+                                        this.__sourceChecked=false;
                                         throw e;
                                     }
                                 }
+                                this.__sourceChecked=true;
+                                this.__clearSourceException();
                                 return true;
+                            },
+                            __onSourceChanged:function(evName,params)
+                            {
+                                // Ha cambiado el source.
+                                // Si el source no era valido, y ya lo sabiamos (o no se ha asignado un valor,
+                                // o ya dio una excepcion), simplemente, salimos. Todo sigue igual.
+                                if(this.__sourceChecked===false && params.valid===false)
+                                    return;
+                                if(this.__isEmpty() && !this.__sourceException)
+                                    return;
+                                if(this.__validationMode!==Siviglia.types.BaseType.VALIDATION_MODE_NONE)
+                                {
+                                    // Si el source es valido, comprobamos que el valor asignado sigue pertenciendo al source
+                                    // Nos quedamos con el estado actual de chequeo del source
+                                    var wasChecked=this.__sourceChecked;
+                                    if(params.valid) {
+                                        try {
+                                            this.__checkSource(this.__value);
+                                        }catch(e)
+                                        {
+                                            // El valor no pertenecia al source..
+                                            // Si ya lo sabiamos, no se lanza de nuevo la excepcion
+                                            if(wasChecked===false)
+                                                return;
+                                            // Si no lo sabiamos, creamos una excepcion, y ponemos este objeto a erroneo.
+                                            var e=new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: this.getValue()});
+                                            this.__setErrored(e);
+                                            // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
+                                            // que podemos borrar el error, y volver a poner este campo a "ok"
+                                            this.__sourceException=true;
+                                            this.__sourceChecked=false;
+                                            // No lanzamos la excepcion...
+                                            //throw e;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // El source no es valido.Si no es valido, y el valor actual si lo es, hay que lanzar una excepcion
+                                        if(wasChecked==true)
+                                        {
+                                            var e=new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: this.getValue()});
+                                            this.__setErrored(e);
+                                            // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
+                                            // que podemos borrar el error, y volver a poner este campo a "ok"
+                                            this.__sourceException=true;
+                                            this.__sourceChecked=false;
+                                            //throw e;
+                                        }
+                                    }
+                                }
+                            },
+                            __clearSourceException:function()
+                            {
+                                if(this.__sourceException===true)
+                                {
+                                    this.__sourceException=false;
+                                    this.__clearErrored();
+                                    this.__setDirty(true);
+                                }
+
                             },
                             __localValidate: function () {
                                 return this.validate();
@@ -1145,6 +1254,12 @@ Siviglia.Utils.buildClass(
                             __hasSource: function () {
                                 return true;
                             },
+                            __getEffectiveValue:function(val)
+                            {
+                                if(Siviglia.isString(val))
+                                    return this.getValueFromLabel(val);
+                                return val;
+                            },
                             // Esto se llama en el proceso de validacion.
                             // El problema del Enum es que acepta tanto el indice como el valor,
                             // ambas cosas validan ok. Pero usando el source, solo podríamos utilizar
@@ -1170,27 +1285,79 @@ Siviglia.Utils.buildClass(
                 inherits: 'Enum',
                 construct: function (name, def, parentType, val, validationType) {
                     this.__changing=false;
+                    this.__stateExceptions=[]
+                    this.awaitingChangeOf=null;
+                    this.__danglingState=null;
                     this.BaseType(name,def,parentType,val,validationType);
                 },
                 methods:{
                     _setValue:function(val,validationMode)
                     {
-                        if(val===this.__value)
+
+                        if(this.__getEffectiveValue(val)===this.__value)
                             return;
-                        if(validationMode!==Siviglia.types.BaseType.VALIDATION_MODE_NONE)
-                        {
-                            var st = this.__controller.getStateDef();
+                        var st = this.__controller.getStateDef();
+                        if(validationMode!==Siviglia.types.BaseType.VALIDATION_MODE_NONE) {
 
                             if (st.changingState == true) {
                                 throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_DOUBLESTATECHANGE);
                             }
-                            // Cuando se intenta cambiar el campo de estado de un objeto, hay que comprobar
+                        }
+                            // Esto es necesario porque, si el campo estado tiene un valor por defecto,
+                            // y se llama a este setValue, mientras el padre esta creando (y asignando a __fields)
+                            // este campo, cuando se llega aqui, aún no está asignado a __fields
+                            if (typeof this.__parent.__fields[this.__fieldName] === "undefined")
+                                this.__parent.__fields[this.__fieldName] = this;
+
+
                             if(!st.enabled)
                                 st.enable();
-                            st.changeState(val);
-                        }
-                        return this.Enum$_setValue(val);
+                            try {
+                                st.changeState(val);
+                            }catch(e)
+                            {
+                                if(validationMode!==Siviglia.types.BaseType.VALIDATION_MODE_NONE) {
+                                    // Si la excepcion la genero este campo, la lanzamos tal cual.
+                                    if (e.path === this.getFullPath())
+                                        throw e;
 
+                                    // Si por culpa de un campo, no podemos cambiar de estado, nos ponemos como listener de ese campo, para que cuando cambie,
+                                    // si cambia, se vuelve a intentar completar el cambio de estado.
+                                    // OJO: Aqui se coje el fullpath del campo que ha dado el problema. Sin embargo, se lo vamos
+                                    // a preguntar al controller...Pero no estamos pasando el controllerPath, sino el fullpath...
+
+                                    this.__danglingState = val;
+                                    this.awaitingChangeOf = this.__controller.__getField(e.path);
+                                    this.__stateExceptions.push({obj: this.awaitingChangeOf, exception: e});
+                                    this.awaitingChangeOf.addListener("CHANGE", this, "retryState");
+                                    throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION);
+                                }
+                            }
+                            this.Enum$_setValue(val);
+                  /*      }
+                        else
+                        {
+                            this.Enum$_setValue(val);
+
+                        }*/
+                        if(this.awaitingChangeOf!==null)
+                        {
+                            this.__danglingState=null;
+                            this.awaitingChangeOf.removeListeners(this);
+                            this.awaitingChangeOf=null;
+                        }
+                        if(this.__stateExceptions.length > 0)
+                        {
+                            this.__stateExceptions.map(function(e){
+                                e.obj.__clearError(e);
+                            })
+
+                        }
+                        return val;
+                    },
+                    retryState:function()
+                    {
+                        this.apply(this.__danglingState);
                     },
                     onStateChangeComplete:function()
                     {
@@ -1634,16 +1801,20 @@ Siviglia.Utils.buildClass(
                     if(val!==null)
                         this.setValue(val);
 
-                    this.keysHolder = new Siviglia.Dom.EventManager();
+
                 },
                 destruct: function () {
-                    if (this.__value !== null) {
+                    if (this.__fields !== null) {
                         for (var k in this.__fields) {
                             this.__fields[k].destruct();
                             delete this.__fields[k];
+                            if(this.__value!==null)
+                            {
                             delete this.__value[k];
                             delete this.__value["*"+k];
                         }
+                        }
+                        if(this.__value!==null)
                         delete this.__value["[[KEYS]]"];
                     }
                     if (this.__stateDef)
@@ -1723,6 +1894,14 @@ Siviglia.Utils.buildClass(
                         var fs=this.__definition["FIELDS"];
                         if(name[0]===this.__getPathPrefix())
                             name=name.substr(1);
+                        else
+                        {
+                            if(name[0]==="/")
+                            {
+                                var localPath=name.replace(this.__fieldNamePath+"/","");
+                                name=localPath;
+                            }
+                        }
                         if(Siviglia.isset(fs[name])) {
                             if (Siviglia.empty(this.__fields[name]))
                                 this.__buildField(name,fs[name],null,null)
@@ -1764,10 +1943,11 @@ Siviglia.Utils.buildClass(
                             if(this.__value.hasOwnProperty("__destroy__"))
                                 this.__value.__destroy__();
                         }
-                        for(var k in this.__definition["FIELDS"])
+
+                        /*for(var k in this.__definition["FIELDS"])
                         {
                             this.__createFields(k,this.__definition["FIELDS"][k]);
-                        }
+                        }*/
                     },
                     __clearErrored: function () {
                         if (this.__errored === false && this.__erroredFields===null)
@@ -1782,8 +1962,8 @@ Siviglia.Utils.buildClass(
                         var m = this;
                         if (!Siviglia.isset(validationMode))
                             validationMode = this.__validationMode;
-                        if(this.__valueSet)
-                            this.reset();
+
+                        this.reset();
                         // Limpiamos el valor interno.
                         this.__value = v;
                         this.disableEvents(true);
@@ -1952,6 +2132,7 @@ Siviglia.Utils.buildClass(
                                 this.__controller.clearErroredField(this);
                             this.setDirty(true);
                             this.__erroredFields=null;
+                            this.__errored=false;
                         }
                     },
                     __findField: function (name) {
@@ -2106,11 +2287,20 @@ Siviglia.Utils.buildClass(
                     construct: function () {
                         this.__currentProxy = null;
                         this.reserved = reserved = ["__isProxy__", "__ev__", "__refcount__", "__destroyed__", "__disableEvents__", "[[KEYS]]", "*[[KEYS]]"];
-                        ;
+
 
                     },
                     destruct: function () {
+
+                        if(this.__currentProxy) {
+                            if (typeof this.__currentProxy.__ev__ !== "undefined")
+                                this.__currentProxy.__ev__.destruct();
+                        }
+                        if(this.__value && this.__value.hasOwnProperty("__destroy__"))
+                            this.__value.__destroy__();
                         this.reset();
+                        if(this.hasOwnProperty("*[[KEYS]]"))
+                            this["*[[KEYS]]"].destruct();
 
                     },
                     methods:
@@ -2139,7 +2329,6 @@ Siviglia.Utils.buildClass(
                                 }
 
                                 var ev = new Siviglia.Dom.EventManager();
-                                var keysEv = new Siviglia.Dom.EventManager();
                                 // Estamos en setValue, no queremos que se disparen "onChanges" de mas:
                                 this.reset();
                                 var nReferences = 0;
@@ -2182,6 +2371,7 @@ Siviglia.Utils.buildClass(
                                     }
                                     , enumerable: false, configurable: true
                                 });
+
                                 Object.defineProperty(val, "__destroyed__", {
                                     get: function () {
                                         return destroyed;
@@ -2327,7 +2517,8 @@ Siviglia.Utils.buildClass(
                                     delete val[prop];
                                 //    val["*" + prop].removeListeners(m);
                                 //    val["*" + prop].destruct();
-                                    delete val["*" + prop];
+                                    val["*" + prop].destruct();
+                                    delete val["*"+prop];
                                     target["[[KEYS]]"] = m.getKeys(val);
                                     target.__ev__.fireEvent("CHANGE", {object: target, value: m.__currentProxy});
                                     return ret;
@@ -2342,14 +2533,16 @@ Siviglia.Utils.buildClass(
                                             target[prop] = value;
                                             return;
                                         }
+
                                         var isNewProp = false;
+                                        var oldProp;
                                         if(!target.hasOwnProperty("*"+prop))
                                         {
                                             isNewProp = true;
                                         }
                                         else
                                         {
-                                  //          target["*"+prop].destruct();
+                                            oldProp=target["*"+prop];
                                         }
 
                                             var instance = m.getValueInstance(prop, null);
@@ -2378,7 +2571,11 @@ Siviglia.Utils.buildClass(
                                                 return instance.getValue()
                                             },
                                             set: function (v) {
-                                                instance.setValue(v);
+                                                // Esta linea se introduce tras ver un problema con Array.splice
+                                                if(typeof v.__basetype__!=="undefined")
+                                                    instance.setValue(v.__basetype__.getPlainValue());
+                                                else
+                                                    instance.setValue(v);
                                                 return true;
                                             }
                                             , enumerable: false, configurable: true
@@ -2392,10 +2589,13 @@ Siviglia.Utils.buildClass(
                                         enumerable: false,
                                         configurable: true
                                     });
-
-
+                                    if(!isNewProp)
+                                    {
+                                        oldProp.destruct();
+                                    }
 
                                     target[prop] = value;
+
                                     var exceptionThrown=null;
                                     try {
                                         instance.apply(value, m.__validationMode);
@@ -2403,6 +2603,7 @@ Siviglia.Utils.buildClass(
                                     {
                                         exceptionThrown=e;
                                     }
+
                                         // OJO: Solo lanzamos evento si la propiedad es nueva, o sea, no habia una propiedad "*".
                                         if (isNewProp) {
                                             target["[[KEYS]]"] = m.getKeys(val);
@@ -2440,6 +2641,16 @@ Siviglia.Utils.buildClass(
                         Siviglia.Path.eventize(this, "[[KEYS]]");
                         this.Proxifier();
                         this.BaseType(name, def, parent,value, validationMode)
+                    },
+                    destruct:function()
+                    {
+                        if(this.__currentProxy)
+                        {
+                            for(var k in this.__currentProxy)
+                            {
+                                this["*"+k].destruct();
+                            }
+                        }
                     },
 
                     methods: {
@@ -2504,6 +2715,12 @@ Siviglia.Utils.buildClass(
                                 return null;
                             return Object.keys(this.getPlainValue());
                         },
+                        // Esta funcion indica que, al comprobar el source, hay que ver las *keys* del tipo.
+                        // Esto es usado por proxySet.
+                        getSourcedProperty:function()
+                        {
+                            return "KEY";
+                        },
                         getPlainValue: function () {
                             if (!this.__valueSet)
                                 return null;
@@ -2559,7 +2776,7 @@ Siviglia.Utils.buildClass(
                             }
                             return err;
                         },
-                        __checkSource: function (val) {
+                       /* __checkSource: function (val) {
                             // Esto solo deberia llamarse si el modo de validacion es complete.
                             if (this.__hasSource()) {
                                 var s = this.__getSource();
@@ -2569,12 +2786,15 @@ Siviglia.Utils.buildClass(
                                         //this.setValue(null);
                                         var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: k});
                                         this.__setErrored(e);
+                                        this.__sourceException=true;
                                         throw e;
                                     }
                                 }
+                                this.__clearSourceException();
                             }
+
                             return true;
-                        },
+                        },*/
                     }
                 },
 
@@ -2647,6 +2867,13 @@ Siviglia.Utils.buildClass(
                             var m = this;
                             var tmpObject = {};
                             //WorkAround para eventize:
+                            Object.defineProperty(val, "__basetype__", {
+                                enumerable: false,
+                                configurable: true,
+                                get: function () {
+                                    return m;
+                                }
+                            })
                             Object.defineProperty(val, "__isProxy__", {
                                 enumerable: false,
                                 configurable: true,
@@ -2977,13 +3204,35 @@ Siviglia.Utils.buildClass(
                     },
                     destruct:function()
                     {
-                        if(this.__value && this.__value.hasOwnProperty("__destroy__"))
-                            this.__value.__destroy__();
+                        if(this.__currentProxy)
+                        {
+                            for(var k=0;k<this.__currentProxy.length;k++)
+                            {
+                                this["*"+k].destruct();
+                            }
+                        }
+                        //this.__destroy__();
                     },
                     methods: {
                         _validate: function () {
                             return true;
                         },
+                      /*  __checkSource: function (val) {
+                            // Esto solo deberia llamarse si el modo de validacion es complete.
+                            if (this.__hasSource()) {
+                                var s = this.__getSource();
+                               for(var k=0;k<val.length;k++) {
+                                   if (!s.contains(val[k])) {
+                                       //this.setValue(null);
+                                       var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: val[k]});
+                                       this.__setErrored(e);
+                                       this.__sourceException=true;
+                                       throw e;
+                                   }
+                               }
+                            }
+                            return true;
+                        },*/
                         _setValue: function (val,validationMode) {
                             if(val.length===0)
                             {
@@ -3055,6 +3304,12 @@ Siviglia.Utils.buildClass(
 
                                 if (prop == "length") {
                                     if (val.length !== value) {
+                                        for(var k=value+1;k<=val.length;k++)
+                                        {
+                                            if(typeof val["*"+(k-1)]!=="undefined")
+                                                val["*"+(k-1)].destruct();
+                                        }
+
                                         val.length = value;
                                         // La mejor forma de recalcular las keys, es que, o cambie el numero de keys,
                                         // o alguien haya dicho que el objeto esta dirty.
@@ -3086,7 +3341,7 @@ Siviglia.Utils.buildClass(
                                 var ret = val[prop];
                                 delete val[prop];
                               //  val["*" + prop].removeListeners(m);
-                              //  val["*" + prop].destruct();
+                                val["*" + prop].destruct();
                                 delete val["*" + prop];
                                 target["[[KEYS]]"] = m.getKeys(val);
                                 return ret!==null?ret:true;
@@ -3149,8 +3404,18 @@ Siviglia.Utils.buildClass(
                             return ins;
                         },
                         areContentsSimple: function () {
-                            var n = this.getValueInstance(0);
-                            return !n.isContainer();
+                            var n;
+
+                                n = this.getValueInstance(0);
+                            var isContainer=n.isContainer();
+                            n.destruct();
+                            return !isContainer;
+                        },
+                        // Esta funcion indica que, al comprobar el source, hay que ver los *valores* del tipo.
+                        // Esto es usado por proxySet.
+                        getSourcedProperty:function()
+                        {
+                            return "VALUE";
                         },
 
                         save: function () {
@@ -3367,7 +3632,7 @@ Siviglia.Utils.buildClass(
             BaseTypedObject: {
                 inherits: 'Siviglia.types.Container',
                 construct: function (defOrUrl, value, validationMode) {
-                    this.EventManager();
+                    //this.EventManager();
                     this.PathAble();
                     this.__validationMode=Siviglia.issetOr(validationMode,Siviglia.types.BaseType.VALIDATION_MODE_COMPLETE);
                     this.__definedPromise = $.Deferred();
@@ -3850,7 +4115,7 @@ Siviglia.Utils.buildClass(
                             this.definition = definition;
                             this.pathPrefix = model.__getPathPrefix();
                             this.stateField = null;
-                            this.stateType = null;
+
                             this.oldState = null;
                             this.newState = null;
                             this.hasState=false;
@@ -3878,15 +4143,16 @@ Siviglia.Utils.buildClass(
                                     this.newState = state;
                                     this.newStateLabel = this.getStateLabel(state);
                                 },
+
                                 getNewState: function (state) {
                                     if (this.newState)
                                         return this.newState;
-                                    return this.stateType.getValue();
+                                    return this.getStateType().getValue();
                                 },
                                 getOldState: function (state) {
-                                    if (this.oldState)
+                                    if (this.oldState!==null)
                                         return this.oldState;
-                                    return this.stateType.getValue();
+                                    return this.getStateType().getValue();
                                 },
                                 reset: function () {
                                     this.oldState = null;
@@ -3905,15 +4171,19 @@ Siviglia.Utils.buildClass(
                                         this.stateField = this.definition["STATES"]["FIELD"];
                                         if (this.stateField[0] !== this.pathPrefix)
                                             this.stateField = this.pathPrefix + this.stateField;
-                                        this.stateType = this.model.__getField(this.stateField);
+
                                         this.enabled=true;
                                     }
+                                },
+                                getStateType:function()
+                                {
+                                    return this.model.__getField(this.stateField);
                                 },
 
                                 getCurrentState: function () {
                                     if (!this.hasState)
                                         return null;
-                                    return this.stateType.getValue();
+                                    return this.getStateType().getValue();
                                 },
                                 getStateField: function () {
                                     if (this.hasState)
@@ -3923,15 +4193,14 @@ Siviglia.Utils.buildClass(
                                 getDefaultState: function () {
                                     if (!this.hasState)
                                         return null;
-                                    if (this.stateType.__hasDefaultValue())
-                                        return this.stateType.__getDefaultValue();
+                                    var stateType=this.getStateType();
+                                    if (stateType.__hasDefaultValue())
+                                        return stateType.__getDefaultValue();
                                     return 0;
                                 },
-                                getStateFieldObj: function () {
-                                    return this.stateType;
-                                },
+
                                 getStateId: function (name) {
-                                    return this.stateType.getValueFromLabel(name);
+                                    return this.getStateType().getValueFromLabel(name);
                                 },
                                 isFinalState: function (label) {
                                     if (!Siviglia.isString(label))
@@ -3941,7 +4210,7 @@ Siviglia.Utils.buildClass(
                                 getStateLabel: function (id) {
                                     if (isNaN(id))
                                         return id;
-                                    var labels = this.stateType.getLabels();
+                                    var labels = this.getStateType().getLabels();
                                     return labels[id];
                                 },
 
@@ -3963,7 +4232,7 @@ Siviglia.Utils.buildClass(
                                     for (var k = 0; k < st.length; k++) {
                                         var field = this.model.__getField(st[k]);
                                         if (!field.__hasValue()) {
-                                            var e = new Siviglia.model.BaseTypedException(this.getStateFieldObj().__getFieldPath(),Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD);
+                                            var e = new Siviglia.model.BaseTypedException(this.getStateType().__getFieldPath(),Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD);
                                             field.__setErrored(e);
                                             throw e;
                                         }
@@ -4015,7 +4284,7 @@ Siviglia.Utils.buildClass(
                                     if (fieldName[0] !== this.pathPrefix)
                                         fieldName = this.pathPrefix + fieldName;
                                     if (Siviglia.empty(this.definition["STATES"]["STATES"][stateName]))
-                                        throw new Siviglia.model.BaseTypedException(this.getStateFieldObj().__getFieldPath(),Siviglia.model.BaseTypedException.ERR_UNKNOWN_STATE, {"state": stateName});
+                                        throw new Siviglia.model.BaseTypedException(this.getStateType().__getFieldPath(),Siviglia.model.BaseTypedException.ERR_UNKNOWN_STATE, {"state": stateName});
                                     var st = this.definition["STATES"]["STATES"][stateName];
                                     if (Siviglia.empty(st["FIELDS"]))
                                         return defResult;
@@ -4055,7 +4324,7 @@ Siviglia.Utils.buildClass(
                                             next = this.getStateId(next);
                                         if(next===-1)
                                         {
-                                            var e = new Siviglia.model.BaseTypedException(this.getStateFieldObj().__getFieldPath(),Siviglia.model.BaseTypedException.ERR_UNKNOWN_STATE, {"state": orig});
+                                            var e = new Siviglia.model.BaseTypedException(this.getStateType().__getFieldPath(),Siviglia.model.BaseTypedException.ERR_UNKNOWN_STATE, {"state": orig});
                                             this.model.__setErrored(e);
                                             throw e;
                                         }
@@ -4066,7 +4335,7 @@ Siviglia.Utils.buildClass(
                                     // por ahora, hacemos esto: Si ya hay un newState, rechanzamos el nuevo cambio.
 
                                     if (this.newState)
-                                        throw new Siviglia.model.BaseTypedException(this.getStateFieldObj().__getFieldPath(),Siviglia.model.BaseTypedException.ERR_DOUBLESTATECHANGE, {
+                                        throw new Siviglia.model.BaseTypedException(this.getStateType().__getFieldPath(),Siviglia.model.BaseTypedException.ERR_DOUBLESTATECHANGE, {
                                             "current": this.getCurrentState(),
                                             "new": next,
                                             "middle": this.newState
@@ -4076,7 +4345,7 @@ Siviglia.Utils.buildClass(
                                     if (this.isFinalState(this.oldState)) {
                                         this.changingState = false;
                                         this.newState = null;
-                                        throw new Siviglia.model.BaseTypedException(this.getStateFieldObj().__getFieldPath(),Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_FINAL_STATE, {
+                                        throw new Siviglia.model.BaseTypedException(this.getStateType().__getFieldPath(),Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_FINAL_STATE, {
                                             "current": this.oldStateLabel,
                                             "new": this.newStateLabel
                                         });
@@ -4118,11 +4387,11 @@ Siviglia.Utils.buildClass(
                                             // En JS ignoramos el REJECT_TO
                                             this.changingState = false;
                                             this.newState = null;
-                                            var e = new Siviglia.model.BaseTypedException(this.getStateFieldObj().getFullPath(),Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_STATE_TO, {
+                                            var e = new Siviglia.model.BaseTypedException(this.getStateType().getFullPath(),Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_STATE_TO, {
                                                 "current": actualState,
                                                 "new": next
                                             });
-                                            this.getStateFieldObj().__setErrored(e);
+                                            this.getStateType().__setErrored(e);
                                             throw e;
                                         }
                                     }
@@ -4137,7 +4406,7 @@ Siviglia.Utils.buildClass(
                                     if (!result) {
                                         this.changingState = false;
                                         this.newState = null;
-                                        var e = new Siviglia.model.BaseTypedException(this.getStateFieldObj().getFullPath(),Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_STATE, {
+                                        var e = new Siviglia.model.BaseTypedException(this.getStateType().getFullPath(),Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_STATE, {
                                             "current": actualState,
                                             "new": next
                                         });
@@ -4149,7 +4418,7 @@ Siviglia.Utils.buildClass(
                                     this.changingState = false;
                                     this.oldState = this.newState;
                                     this.newState = null;
-                                    this.getStateFieldObj().onStateChangeComplete();
+                                    this.getStateType().onStateChangeComplete();
                                 },
                                 executeCallbacks: function (type, state, refState) {
                                     if (Siviglia.empty(this.definition["STATES"]["LISTENER_TAGS"]))
@@ -4165,7 +4434,7 @@ Siviglia.Utils.buildClass(
                                     while (dest.__getParent() !== null)
                                         dest = dest.__getParent();
                                     if (dest === null)
-                                        throw new Siviglia.model.BaseTypedException(this.getStateFieldObj().getFullPath(),Siviglia.model.BaseTypedException.ERR_NO_STATE_CONTROLLER, {
+                                        throw new Siviglia.model.BaseTypedException(this.getStateType().getFullPath(),Siviglia.model.BaseTypedException.ERR_NO_STATE_CONTROLLER, {
                                             "state": state,
                                             "callbackType": type
                                         });

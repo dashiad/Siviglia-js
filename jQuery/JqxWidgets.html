@@ -1598,7 +1598,8 @@
                                 this.source=this.type.getSource();
                                 this.valueListBox=null;
                                 this.sourceListBox=null;
-                                this.reindexedData=null;
+                                this.changing=false;
+
                             },
                             initialize:function(params)
                             {
@@ -1624,7 +1625,10 @@
                                         valueMember:"value",
                                         source: [], width: 200, height: 250,
                                         dragEnd: function (dragItem, dropItem) {
-                                            console.dir(dragItem);
+                                            var val=this.type.getValue();
+                                            var idx=val.indexOf(dragItem.value);
+                                            if(idx>=0)
+                                                val.splice(idx,1);
                                         }.bind(this),
                                         renderer: function (index, label, value) {
                                             return "<span>"+label+"</span>";
@@ -1640,8 +1644,13 @@
                                     displayMember:"label",
                                     valueMember:"value",
                                     dragEnd: function (dragItem, dropItem) {
-                                        console.log("EN EL OTRO");
-                                        console.dir(dragItem);
+                                        this.changing=true;
+                                        if(!this.type.__hasOwnValue())
+                                            this.type.setValue([dragItem.value]);
+                                        else
+                                            this.type.getValue().push(dragItem.value);
+                                        console.dir(this.type.getPlainValue());
+                                        this.changing=false;
                                     }.bind(this),
                                     renderer: function (index, label, value) {
                                         return label;
@@ -1674,20 +1683,28 @@
                                 this.valueListBox.jqxListBox({"source":typeData});
                                 this.sourceListBox.jqxListBox({"source":sourceData});
                             },
+                            onTypeChanged:function()
+                            {
+                                if(this.changing===true)
+                                    return;
+                                // Hace un fetch dispara el CHANGE del source,
+                                // que dispara onSourceChanged, que cambiara las opciones.
+                                this.source.fetch();
+                            },
                             getInputDataFromType:function(sourceData)
                             {
 
                                 var curVal=[];
                                 if(this.type.__hasOwnValue())
                                     curVal=this.type.__getSourcedValue();
-                                this.reindexedData={};
-                                var valueField=this.source.getLabelField();
+
+                                var valueField=this.source.getValueField();
                                 var type=[];
                                 var source=[];
                                 for(var k=0;k<sourceData.length;k++)
                                 {
                                     var label=this.source.getLabel(sourceData[k]);
-                                    this.reindexedData[label]=sourceData[k];
+
                                     var value=sourceData[k][valueField];
                                     if(curVal.indexOf(value)>=0)
                                         type.push({"label":label,"value":value});

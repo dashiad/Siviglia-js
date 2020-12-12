@@ -61,6 +61,10 @@ Siviglia.Utils.buildClass(
                             this.searchString=null;
                             this.EventManager();
                             this.__unfiltered=null;
+                            if(Siviglia.isset(this.source["UNIQUE"]))
+                            {
+                                this.controller.addListener("CHANGE",this,"fetch");
+                            }
                         },
                         destruct:function()
                         {
@@ -101,7 +105,6 @@ Siviglia.Utils.buildClass(
 
                                 },
                                 onData:function(data) {
-                                    data = this.filterByLabel(data);
                                     this.valid = (data !== null);
                                     if (this.valid)
                                         this.data = this.filterByLabel(data);
@@ -115,6 +118,7 @@ Siviglia.Utils.buildClass(
                                             this.filterData(this.data,this.valid);
 
                                     }
+
                                     this.notify(this.data,this.valid);
                                     //var encoded=JSON.stringify(data);
                                     //if(encoded===this.lastData)
@@ -137,7 +141,7 @@ Siviglia.Utils.buildClass(
                                         } else
                                             this.data = this.filterData();
                                     }
-                                    this.notify(data,valid);
+
                                 },
                                 notify:function(data,valid){
                                     this.fireEvent(Siviglia.Data.BaseDataSource.EVENT_LOADED,{value:data,valid:valid});
@@ -196,11 +200,40 @@ Siviglia.Utils.buildClass(
                                         if(Siviglia.empty(this.data))
                                             return false;
                                     }
-                                    var valField=this.getValueField();
-                                    for(var k=0;k<this.data.length;k++)
+                                    var valField = this.getValueField();
+                                    if(this.source["UNIQUE"]===true)
                                     {
-                                        if(this.data[k][valField]===value)
+                                        // Si los valores son unicos, lo unico que nos importa saber es si el campo es un
+                                        // array, que no haya valores duplicados.
+                                        // Si fuera un dictionary, y se introdujeran valores duplicados, una key machaca a la otra,
+                                        // asi que lo que controla el source, que son las keys, solo tiene que mirar si todas las keys
+                                        // están contenidas, no buscar duplicados.
+                                        // Los UNIQUE en diccionarios no sirven para validar, sino para mostrar un UI
+                                        var allVals=this.controller.__getSourcedValue();
+                                        if(allVals===null || allVals.length===0)
                                             return true;
+                                        // Creamos una copia:
+                                        var copied=allVals.slice(0);
+                                        var unfiltered=this.__unfiltered;
+                                        for (var k = 0; k < unfiltered.length && copied.length > 0; k++) {
+                                            for(var j=0;j<copied.length;j++) {
+                                                if (unfiltered[k][valField] === copied[j]) {
+                                                    copied.splice(j,1);
+                                                    // En cuanto encontramos uno, vemos si hay un duplicado, porque si lo hay, ya sabemos que hay error.
+                                                    if(copied.indexOf(unfiltered[k][valField])>=0)
+                                                        return false;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        return copied.length===0;
+                                    }
+                                    else {
+
+                                        for (var k = 0; k < this.data.length; k++) {
+                                            if (this.data[k][valField] === value)
+                                                return true;
+                                        }
                                     }
                                     return false;
                                 },
@@ -388,7 +421,7 @@ Siviglia.Utils.buildClass(
                                             var str = this.source["PATH"];
                                             this.pathController = new Siviglia.Path.PathResolver(this.stack, str);
                                             this.pathController.addListener("CHANGE", this, "onListener");
-                                            this.data=res;
+
                                             try {
                                                 var res = this.pathController.getPath();
                                                 if (this.pathController.isValid()) {

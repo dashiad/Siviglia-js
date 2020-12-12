@@ -471,7 +471,11 @@ Siviglia.Utils.buildClass({
                 Siviglia.Dom.existingManagers[this._ev_id] = this;
                 Siviglia.Dom.managerCounter++;
                 this._ev_firing = null;
-                this._ev_listeners = null;
+                // Ojo, por como funciona la herencia, es posible que a un objeto que deriva de EventManager,
+                // se le haya llamado a addListener, lo cual crea el objeto _ev_listeners, posiblemente, antes
+                // de que se llame a este constructor.Es por eso que comprobamos que aun no exista, antes de ponerlo a null.
+                if(!this.hasOwnProperty("_ev_listeners"))
+                    this._ev_listeners = null;
                 this.disabledEvents=false;
             },
             destruct: function () {
@@ -588,7 +592,9 @@ Siviglia.Utils.buildClass({
                     // esos elementos, evitando los listeners de este mismo tipo que se puedan añadir durante
                     // la ejecución del bucle.
                     // Iteramos sobre una copia de los listeners.
-                    var copied = Array.from(this._ev_listeners[event]);
+                    var thrownException=null;
+                    try {
+                        var copied = Array.from(this._ev_listeners[event]);
                         for (k = 0; k < nListeners; k++) {
                             // Si en algun momento los listeners estan a nulo, es que este objeto
                             // se ha destruido.
@@ -608,13 +614,20 @@ Siviglia.Utils.buildClass({
                                 obj.method(event, data, obj.param, target);
                             }
                         }
+                    }catch(e)
+                    {
+                        thrownException=e;
+                    }
                     // The following is a protection code; if marks this object as "notifying",so, if as part of the notification, this object
                     // is destroyed, it will not destroy the listeners, but set the mustDestroy flag to true.
                     this._ev_notifying = false;
-                    if (this._ev_mustDestruct) {
-                        this.destroyListeners();
-                    }
                     this._ev_firing = null;
+                    if (this._ev_mustDestruct) {
+                        this.destruct();
+                    }
+                    if(thrownException)
+                        throw thrownException;
+
                 }
             }
         }
@@ -1341,8 +1354,9 @@ Siviglia.Path.eventize=function(obj,propName) {
             enumerable: false
         });
     }
+    var evManagers=[];
     if (!obj.hasOwnProperty("__evmanagers__")) {
-        var evManagers=[];
+
         Object.defineProperty(obj, "__evmanagers__", {
             get: function () {
                 return evManagers;
@@ -1354,7 +1368,6 @@ Siviglia.Path.eventize=function(obj,propName) {
         });
     }
     if (!obj.hasOwnProperty("__destroy__")) {
-        var evManagers=[];
         Object.defineProperty(obj, "__destroy__", {
             get: function () {
                 return function(){for(var k=0;k<evManagers.length;k++)evManagers[k].destruct()}
