@@ -3234,6 +3234,11 @@ Siviglia.Utils.buildClass(
                             return true;
                         },*/
                         _setValue: function (val,validationMode) {
+                            // Corrección de valor cuando el array se inicializa desde un TypeSwitcher,
+                            // el cual enviará como valor inicial el valor {}
+                            if ( Siviglia.typeOf(val)==="object" && Object.keys(val).length===0 )
+                                val=[];
+
                             if(val.length===0)
                             {
                                 // Si es un array vacio, hacemos una copia.
@@ -4008,7 +4013,7 @@ Siviglia.i18n = (Siviglia.i18n || {});
 Siviglia.i18n.es = (Siviglia.i18n.es || {});
 Siviglia.i18n.es.base = (Siviglia.i18n.es.base || {});
 Siviglia.i18n.es.base.errors = {
-    BaseTyped:{
+    BaseTyped: {
         1: 'Por favor, complete este campo.',
         3: 'Estado no válido',
         4: 'Transición de estado no válida',
@@ -4022,17 +4027,25 @@ Siviglia.i18n.es.base.errors = {
         1: 'Por favor, complete este campo.',
         2: 'Campo no válido',
         5: 'Campo Requerido'},
-    Integer: {100: 'Valor demasiado pequeño', 101: 'Valor demasiado grande', 102: 'Debes introducir un número'},
+    Integer: {
+        100: 'Valor demasiado pequeño',
+        101: 'Valor demasiado grande',
+        102: 'Debes introducir un número'
+    },
     String: {
         100: 'El campo debe tener al menos %min% caracteres',
         101: 'El campo debe tener un máximo de %max% caracteres',
-        102: 'Valor incorrecto'
+        102: 'Valor incorrecto',
+        103: 'El campo no puede tener el valor (%value%)'
     },
     DateTime: {
         100: 'La fecha debe ser posterior a %min%',
         101: 'La fecha debe ser anterior a %max%',
+        102: 'Error de fecha con la hora',
+        103: 'Error de fecha los segundos',
         104: 'La fecha debe ser pasada',
-        105: 'La fecha debe ser futura'
+        105: 'La fecha debe ser futura',
+        106: 'Error de fecha con los minutos'
     },
     File: {
         100: 'El fichero debe tener un tamaño mínimo de %min% Kb',
@@ -4054,10 +4067,38 @@ Siviglia.i18n.es.base.errors = {
         123: 'La imagen debe tener un mínimo de %min% píxeles de altura',
         124: 'La imagen debe tener un máximo de %max% píxeles de altura'
     },
-    TypeSwitcher:
-        {
-            140: 'Tipo no definido'
-        }
+    TypeSwitcher: {
+        101: 'Debes introducir un tipo',
+        102: 'Tipo no permitido',
+        103: 'Contenido del campo (%field%) desconocido',
+        140: 'Tipo no definido'
+    },
+    Array: {
+        101: 'Tipo inválido (%type%) para Array',
+        102: 'Valor inválido para Array',
+        103: 'El valor asignado al Array es un Diccionario'
+    },
+    BankAccount: {
+        1: 'IBAN no válido',
+        2: 'CCC no válido'
+    },
+    // Container también se añaden las excepciones?
+    // lib\model\types\Container.php
+    Container: {
+        101: 'Por favor, complete este campo',
+        102: 'Campo no válido',
+        103: 'Tipo inválido para el campo',
+        104: 'Error, no se puede asignar un campo en un container nulo'
+    },
+    Dictionary: {
+        101: 'El Diccionario no acepta valores del tipo (%type%)',
+        102: 'Valor incorrecto: %type%'
+    },
+    ModelField: {
+        100: 'No se encuentra la referencia a %model% :: %field%'
+    }
+
+
 };
 Siviglia.i18n.es.base.getErrorFromServerException = function (exName, exValue) {
     var messages = [];
@@ -4081,17 +4122,20 @@ Siviglia.i18n.es.base.getErrorFromServerException = function (exName, exValue) {
 }
 
 Siviglia.i18n.es.base.getErrorFromJsException = function (ex) {
-    var src = ex.type.replace(/Exception$/, '');
-    var p = Siviglia.i18n.es.base.errors[src];
-    if (!p)
-        return null;
-    var str = Siviglia.i18n.es.base.errors[src][ex.code];
-    if (ex.params) {
-        for (var k in ex.params) {
-            str = str.replace("%" + k + "%", ex.params[k]);
+    // comprobacion para evitar error: https://hastebin.com/joqifuzoka.apache
+    if (typeof ex.type !== "undefined")
+        var src = ex.type.replace(/Exception$/, '');
+
+        var p = Siviglia.i18n.es.base.errors[src];
+        if (!p)
+            return null;
+        var str = Siviglia.i18n.es.base.errors[src][ex.code];
+        if (ex.params) {
+            for (var k in ex.params) {
+                str = str.replace("%" + k + "%", ex.params[k]);
+            }
         }
-    }
-    return str;
+        return str;
 
 }
 

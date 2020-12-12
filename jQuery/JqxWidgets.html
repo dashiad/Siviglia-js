@@ -1,3 +1,4 @@
+use lib\output\html\renderers\js\Siviglia;
 <style>
     .remove, .NewItemString .add {
         font-family:'IcoMoon'
@@ -357,7 +358,8 @@
                         },
                         showError: function (message,dontAppend) {
                             // Se guarda referencia del puntero al nodo del error <span...>
-                            this.errorNode = this.inputWrapper.errorNode;
+                            if (this.inputWrapper !== null)
+                                this.errorNode = this.inputWrapper.errorNode;
 
                             // Nos guardamos si hay excepcion en el tipo
                             var exception_input_path = this.type.__errorException;
@@ -372,7 +374,8 @@
                             }
 
                             // Añadimos path de error de dicho input
-                            this.form.appendError(this.type.getFullPath(),this);
+                            if (this.form !== null)
+                                this.form.appendError(this.type.getFullPath(),this);
                         },
                         clearErrors: function () {
                             // Nos guardamos si hay excepcion en el tipo
@@ -385,10 +388,15 @@
                                 // Se guarda referencia del puntero al nodo del error <span...>
                                 this.errorNode = this.inputWrapper.errorNode;
 
+                                // comprobacion que el valor de los hijos de rootNode es !== de undefined
+                                // para poder comprobar que está vacío (y ver si es un campo requerido y vacío, lanzar excepción)
+                                var value_node_empty_required = this.inputWrapper.rootNode[0].children[3].children[1].value;                            
+                                if (typeof value_node_empty_required !== "undefined")  //solo si es !== de undefined, asignamos el valor.
+                                    var node_empty_and_required = value_node_empty_required;
+
                                 // si es vacio el campo y está requerido, mostrar error:
-                                if ( typeof this.inputWrapper.rootNode[0].children[3] !== "undefined"    &&
-                                     this.inputWrapper.rootNode[0].children[3].children[1].value === ""  &&
-                                     input_required) {
+                                if ( typeof this.inputWrapper.rootNode[0].children[3] !== "undefined" && 
+                                     node_empty_and_required === ""  &&  input_required) {
                                         // lanzamos una excepcion con el codigo de error de campo requerido (5)
                                         var e = new Siviglia.types.BaseTypeException(this.type.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED, this.type.__definition);
                                         this.type.__setErrored(e);
@@ -667,7 +675,7 @@
                                             }
                                             m.clearErrors();
                                         } catch (e) {
-                                            this.showError(
+                                            m.showError(
                                                 Siviglia.i18n.es.base.getErrorFromJsException(e)
                                             );
                                         }
@@ -1091,6 +1099,54 @@
                     inherits:'String'
                 },
                 UUID:{
+                    inherits:'String'
+                }, // Nuevos tipos de datos
+                BankAccount:{
+                    inherits:'String'
+                },
+                Color:{
+                    inherits:'String'
+                },
+                Description:{
+                    inherits:'String'
+                },
+                Email:{
+                    inherits:'String'
+                },
+                File:{
+                    inherits:'String'
+                },
+                IP:{
+                    inherits:'String'
+                },
+                // Image:{
+                //     inherits:'String'
+                // },                
+                Link:{
+                    inherits:'String'
+                },
+                ModelDatasourceReference:{
+                    inherits:'String'
+                },
+                ModelField:{
+                    inherits:'String'
+                },
+                NIF:{
+                    inherits:'String'
+                },
+                PHPVariable:{
+                    inherits:'String'
+                },
+                // Text:{
+                //     inherits:'String'
+                // },
+                Timestamp:{
+                    inherits:'Date'
+                },
+                UrlPathString:{
+                    inherits:'String'
+                },
+                UserId:{
                     inherits:'String'
                 },
                 Model:{
@@ -2040,7 +2096,15 @@
                                         if (typeof instance.inputWrapper.rootNode[0].children[3] !== "undefined")
                                             this.errorNode=instance.inputWrapper.rootNode[0].children[3].children[0];
 
-                                        this.inputNode.append(instance.rootNode);
+                                        // Comprobación si un tipo es FIXED o no, para mostrarlo como string-raw o input
+                                        if (this.innerType.__definition.FIXED === this.innerType.__value) {
+                                            // String-raw del tipo si es Fixed
+                                            this.inputNode.text(this.innerType.__value);                                            
+                                        } else {
+                                            // mostramos el input creado
+                                            this.inputNode.append(instance.rootNode);
+                                        }
+                                                                                    
                                         /*var ce=this.currentErrors[key]
                                         if(ce) {
                                             for(var k=0;k<ce.length;k++) {
@@ -2675,6 +2739,70 @@
          data-widgetCode="Siviglia.inputs.jqwidgets.Model">
         <div data-sivId="inputNode" class="form-control ComboBoxInput"></div>
     </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.BankAccount" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.BankAccount">
+        <div data-sivId="inputNode" class="form-control BankAccountInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Color" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.Color">
+        <div data-sivId="inputNode" class="form-control ColorInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Description" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.Description">
+        <div data-sivId="inputNode" class="form-control DescriptionInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Email" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.Email">
+        <div data-sivId="inputNode" class="form-control EmailInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.File" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.File">
+        <div data-sivId="inputNode" class="form-control FileInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.IP" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.IP">
+        <div data-sivId="inputNode" class="form-control IPInput"></div>
+    </div>
+    <!-- <div data-sivWidget="Siviglia.inputs.jqwidgets.Image" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.Image">
+        <div data-sivId="inputNode" class="form-control ImageInput"></div>
+    </div> -->
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Link" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.Link">
+        <div data-sivId="inputNode" class="form-control LinkInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.ModelDatasourceReference" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.ModelDatasourceReference">
+        <div data-sivId="inputNode" class="form-control ModelDatasourceReferenceInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.ModelField" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.ModelField">
+        <div data-sivId="inputNode" class="form-control ModelFieldInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.NIF" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.NIF">
+        <div data-sivId="inputNode" class="form-control NIFInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.PHPVariable" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.PHPVariable">
+        <div data-sivId="inputNode" class="form-control PHPVariableInput"></div>
+    </div>
+    <!-- <div data-sivWidget="Siviglia.inputs.jqwidgets.Text" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.Text">
+        <div data-sivId="inputNode" class="form-control TextInput"></div>
+    </div> -->
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Timestamp" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.Timestamp">
+        <div data-sivId="inputNode" class="form-control TimestampInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.UrlPathString" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.UrlPathString">
+        <div data-sivId="inputNode" class="form-control UrlPathStringInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.UserId" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.UserId">
+        <div data-sivId="inputNode" class="form-control UserIdInput"></div>
+    </div>
 
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Dictionary" data-widgetParams="type,inputParams" data-widgetCode="Siviglia.inputs.jqwidgets.Dictionary">
         <div class="DictionaryInput ContainerInput">
@@ -2713,7 +2841,7 @@
                                 <!-- contenido añadido en add.html -->
                                 <div class="Dictionary-current">
                                     <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
-                                        <div style="display:flex" data-sivId="currentI">
+                                        <div style="display:block" data-sivId="currentI">
                                             <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"key":"/*currentKey","parent":"/*type","form":"/*form","controller":"/*self"}'>
                                             </div>
                                         </div>
@@ -2886,9 +3014,6 @@
         </div>
 
     </div>
-<!--
-    ---
-    -->
 
 <!--
     ---------------------------------------------------------------------------------------
@@ -2919,9 +3044,6 @@
             <div style="clear:both"></div>
         </div>
 
-
-<!------------------------------------------------------------------------------------------->
-
 <!--
     ---------------------------------------------------------------------------------------
 -->
@@ -2947,16 +3069,16 @@
         </ul>
     </div>
 
-    <!--
-            ---------------------------------------------------------------------------------------
-            -->
+<!--
+    ---------------------------------------------------------------------------------------
+-->
     <div data-sivWidget="Siviglia.inputs.jqwidgets.SimpleInputContainer" data-widgetParams="key,parent,form,controller" data-widgetCode="Siviglia.inputs.jqwidgets.SimpleInputContainer">
         <div class="input" data-sivId="inputNode" data-sivCall="getInputFor" data-sivParams="{}"></div>
     </div>
 
-    <!--
-                ---------------------------------------------------------------------------------------
-                -->
+<!--
+    ---------------------------------------------------------------------------------------
+-->
 <div data-sivWidget="Siviglia.inputs.jqwidgets.StdInputContainer" data-widgetParams="key,parent,form,controller" data-widgetCode="Siviglia.inputs.jqwidgets.StdInputContainer">
     <div class="StdInputContainer">
 
@@ -2974,11 +3096,19 @@
     </div>
 </div>
 
+<!--
+    ---------------------------------------------------------------------------------------
+-->
+
 <div data-sivWidget="Siviglia.inputs.jqwidgets.StdFormButtons" data-widgetParams="form" data-widgetCode="Siviglia.inputs.jqwidgets.StdFormButtons">
     <div class="StdFormButtons">
         <div class="buttonContainer" data-sivId="buttonContainer"></div>
     </div>
 </div>
+
+<!--
+    ---------------------------------------------------------------------------------------
+-->
 
 <div data-sivWidget="Siviglia.inputs.jqwidgets.Confirm" data-widgetParams="title,message" data-widgetCode="Siviglia.inputs.jqwidgets.Confirm">
     <div data-sivId="windowContainer" class="ConfirmContainer" style="display:none">

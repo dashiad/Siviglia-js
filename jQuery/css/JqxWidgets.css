@@ -30,11 +30,9 @@
     margin-top: var(--StdInputContainer-margin-top);
     padding: var(--StdInputContainer-padding);
     display: flex;    
-    color: var(--light-color);
-    /* flex-wrap: wrap; */
+    color: var(--light-color);    
     flex-direction: row;
-    border-bottom: var(--StdInputContainer-border-bottom);
-    width: 95%;
+    border-bottom: var(--StdInputContainer-border-bottom);    
 }
 
 .required { padding: 10px 10px 0 0; }
@@ -56,7 +54,7 @@
 .StdInputContainer .label {
     min-width:var(--input-label-min-width);
     max-width:var(--input-label-max-width);
-    margin: var(--label-StdInputContainer-margin-bottom) var(--label-StdInputContainer-margin-bottom) var(--label-StdInputContainer-margin-bottom) 0;
+    margin: var(--label-StdInputContainer-margin-bottom) 0 var(--label-StdInputContainer-margin-bottom) 0;
     font-size: var(--label-StdInputContainer-font-size);
     color: var(--color-label-edit-model);
 }
@@ -393,6 +391,14 @@ span.tooltiptext{
 .help.tooltip:hover span.tooltiptext {
     visibility: visible;
     opacity: 1;
+}
+
+/* Estilo para el String-raw si un TYPE tiene FIXED en su definition */
+.input.TYPE {
+    margin: var(--label-StdInputContainer-margin-bottom) 0 var(--label-StdInputContainer-margin-bottom) 0;
+    font-size: var(--string-raw-font-size);
+    color: var(--color-label-edit-model);
+    font-style: italic;
 }
 
 
