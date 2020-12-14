@@ -390,12 +390,12 @@ use lib\output\html\renderers\js\Siviglia;
 
                                 // comprobacion que el valor de los hijos de rootNode es !== de undefined
                                 // para poder comprobar que está vacío (y ver si es un campo requerido y vacío, lanzar excepción)
-                                var value_node_empty_required = this.inputWrapper.rootNode[0].children[3].children[1].value;                            
+                                var value_node_empty_required = this.inputWrapper.rootNode[0].children[3].children[1].value;
                                 if (typeof value_node_empty_required !== "undefined")  //solo si es !== de undefined, asignamos el valor.
                                     var node_empty_and_required = value_node_empty_required;
 
                                 // si es vacio el campo y está requerido, mostrar error:
-                                if ( typeof this.inputWrapper.rootNode[0].children[3] !== "undefined" && 
+                                if ( typeof this.inputWrapper.rootNode[0].children[3] !== "undefined" &&
                                      node_empty_and_required === ""  &&  input_required) {
                                         // lanzamos una excepcion con el codigo de error de campo requerido (5)
                                         var e = new Siviglia.types.BaseTypeException(this.type.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED, this.type.__definition);
@@ -1121,7 +1121,7 @@ use lib\output\html\renderers\js\Siviglia;
                 },
                 // Image:{
                 //     inherits:'String'
-                // },                
+                // },
                 Link:{
                     inherits:'String'
                 },
@@ -1673,6 +1673,8 @@ use lib\output\html\renderers\js\Siviglia;
                                 this.type.addListener("CHANGE",this,"onTypeChanged");
                                 preferences.width=Siviglia.issetOr(preferences.width,200);
                                 preferences.height=Siviglia.issetOr(preferences.height,200);
+
+
                                 Object.assign(preferences,
                                     {
                                         allowDrop: true,
@@ -1681,14 +1683,17 @@ use lib\output\html\renderers\js\Siviglia;
                                         valueMember:"value",
                                         source: [], width: 200, height: 250,
                                         dragEnd: function (dragItem, dropItem) {
+                                            this.changing=true;
                                             var val=this.type.getValue();
                                             var idx=val.indexOf(dragItem.value);
                                             if(idx>=0)
                                                 val.splice(idx,1);
+                                            this.changing=false
+                                            console.dir(this.type.getValue());
                                         }.bind(this),
-                                        renderer: function (index, label, value) {
+                                       /* renderer: function (index, label, value) {
                                             return "<span>"+label+"</span>";
-                                        }.bind(this)
+                                        }.bind(this)*/
                                     }
                                 );
                                 this.valueListBox.jqxListBox(preferences);
@@ -1705,12 +1710,13 @@ use lib\output\html\renderers\js\Siviglia;
                                             this.type.setValue([dragItem.value]);
                                         else
                                             this.type.getValue().push(dragItem.value);
-                                        console.dir(this.type.getPlainValue());
+
                                         this.changing=false;
-                                    }.bind(this),
+                                        console.dir(this.type.getValue());
+                                    }.bind(this)/*,
                                     renderer: function (index, label, value) {
                                         return label;
-                                    }.bind(this)
+                                    }.bind(this)*/
                                 });
                                 this.sourceListBox.jqxListBox(preferences);
                                 this.checkState();
@@ -1720,7 +1726,8 @@ use lib\output\html\renderers\js\Siviglia;
                             },
                             onSourceChanged:function(evName,params)
                             {
-                                debugger;
+                                if(this.changing)
+                                    return;
                                 var sourceData=[];
                                 var typeData=[];
                                 if(!params.valid)
@@ -1731,13 +1738,40 @@ use lib\output\html\renderers\js\Siviglia;
                                     if(this.type.__isEditable())
                                     {
                                         this.enable();
-                                        var assigned=this.getInputDataFromType(params.value);
+                                        var assigned=this.getInputDataFromType(params.src);
                                         sourceData=assigned.source;
                                         typeData=assigned.type;
                                     }
                                 }
-                                this.valueListBox.jqxListBox({"source":typeData});
-                                this.sourceListBox.jqxListBox({"source":sourceData});
+                                var typeSource =
+                                    {
+                                        datatype: "json",
+                                        datafields: [
+                                            { name: 'label' },
+                                            { name: 'value' }
+                                        ],
+                                        id: 'value',
+                                        localdata:typeData
+                                    };
+                                var sourceSource =
+                                    {
+                                        datatype: "json",
+                                        datafields: [
+                                            { name: 'label' },
+                                            { name: 'value' }
+                                        ],
+                                        id: 'value',
+                                        localdata:sourceData
+                                    };
+                                console.log("TYPE:");
+                                console.dir(typeData);
+                                console.log("SOURCE:");
+                                console.log(sourceData);
+                                var typeDataAdapter = new $.jqx.dataAdapter(typeSource);
+                                var sourceDataAdapter = new $.jqx.dataAdapter(sourceSource);
+
+                                this.valueListBox.jqxListBox({"source":typeDataAdapter,displayMember:"label",valueMember:"value"});
+                                this.sourceListBox.jqxListBox({"source":sourceDataAdapter,displayMember:"label",valueMember:"value"});
                             },
                             onTypeChanged:function()
                             {
@@ -1747,7 +1781,7 @@ use lib\output\html\renderers\js\Siviglia;
                                 // que dispara onSourceChanged, que cambiara las opciones.
                                 this.source.fetch();
                             },
-                            getInputDataFromType:function(sourceData)
+                            getInputDataFromType:function(src)
                             {
 
                                 var curVal=[];
@@ -1755,17 +1789,18 @@ use lib\output\html\renderers\js\Siviglia;
                                     curVal=this.type.__getSourcedValue();
 
                                 var valueField=this.source.getValueField();
+                                var unfiltered=this.source.getUnfiltered();
                                 var type=[];
                                 var source=[];
-                                for(var k=0;k<sourceData.length;k++)
+                                for(var k=0;k<unfiltered.length;k++)
                                 {
-                                    var label=this.source.getLabel(sourceData[k]);
-
-                                    var value=sourceData[k][valueField];
+                                    var label=this.source.getLabel(unfiltered[k]);
+                                    var value=unfiltered[k][valueField];
+                                    var item={"label":label,"value":value}
                                     if(curVal.indexOf(value)>=0)
-                                        type.push({"label":label,"value":value});
+                                        type.push(item);
                                     else
-                                        source.push({"label":label,"value":value});
+                                        source.push(item);
                                 }
                                 return {source:source,type:type};
                             },
@@ -2099,12 +2134,12 @@ use lib\output\html\renderers\js\Siviglia;
                                         // Comprobación si un tipo es FIXED o no, para mostrarlo como string-raw o input
                                         if (this.innerType.__definition.FIXED === this.innerType.__value) {
                                             // String-raw del tipo si es Fixed
-                                            this.inputNode.text(this.innerType.__value);                                            
+                                            this.inputNode.text(this.innerType.__value);
                                         } else {
                                             // mostramos el input creado
                                             this.inputNode.append(instance.rootNode);
                                         }
-                                                                                    
+
                                         /*var ce=this.currentErrors[key]
                                         if(ce) {
                                             for(var k=0;k<ce.length;k++) {

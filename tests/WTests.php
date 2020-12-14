@@ -18,8 +18,9 @@
     <script src="../../jqwidgets/jqx-all.js"></script>
     <script src="../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="/reflection/css/style.css">
-    <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
+    <!--<link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">-->
     <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
+    <!--<link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css">-->
     <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
     <link rel="stylesheet"
           href="highlight/styles/ir-black.css">
@@ -2537,11 +2538,12 @@
                                             {
                                                 "LABEL":"FieldSelector",
                                                 "TYPE": "Array",
+                                                "ELEMENTS":{
+                                                    "TYPE": "Integer"
+                                                },
                                                 "SOURCE": {
                                                     "TYPE": "Array",
-                                                    "ELEMENTS":{
-                                                        "TYPE": "Integer"
-                                                    },
+                                                    "UNIQUE":true,
                                                     "DATA": [
                                                         {"a": 1, "message": "Opcion 1"},
                                                         {"a": 2, "message": "Opcion 2"},

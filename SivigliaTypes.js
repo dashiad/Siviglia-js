@@ -587,21 +587,24 @@ Siviglia.Utils.buildClass(
                             __isDefinedAsRequired: function () {
                                 return Siviglia.issetOr(this.__definition.REQUIRED, false);
                             },
-                            __checkSource: function (val) {
+                            __checkSource: function (value) {
                                 // Esto solo deberia llamarse si el modo de validacion es complete.
                                 if (this.__hasSource()) {
                                     var s = this.__getSource();
-
-                                    if (!s.contains(val)) {
-                                        //this.setValue(null);
-                                        var e=new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: val});
-                                        this.__setErrored(e);
-                                        // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
-                                        // que podemos borrar el error, y volver a poner este campo a "ok"
-                                        this.__sourceException=true;
-                                        this.__sourceChecked=false;
-                                        throw e;
-                                    }
+                                    var v=this.__getSourcedValue();
+                                    var checker=function(val) {
+                                        if (!s.contains(val)) {
+                                            //this.setValue(null);
+                                            var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: val});
+                                            this.__setErrored(e);
+                                            // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
+                                            // que podemos borrar el error, y volver a poner este campo a "ok"
+                                            this.__sourceException = true;
+                                            this.__sourceChecked = false;
+                                            throw e;
+                                        }
+                                    }.bind(this);
+                                    (Siviglia.isArray(v)?v:[v]).map(checker);
                                 }
                                 this.__sourceChecked=true;
                                 this.__clearSourceException();
@@ -2329,6 +2332,7 @@ Siviglia.Utils.buildClass(
                                 }
 
                                 var ev = new Siviglia.Dom.EventManager();
+
                                 // Estamos en setValue, no queremos que se disparen "onChanges" de mas:
                                 this.reset();
                                 var nReferences = 0;
@@ -2474,8 +2478,13 @@ Siviglia.Utils.buildClass(
                                 return !Siviglia.empty(this.__definition["SOURCE"]);
                             },
                             getSource: function (controller, params) {
-                                var s = new Siviglia.Data.SourceFactory();
-                                return s.getFromSource(this.__definition.SOURCE, controller, params);
+                                if(!this.__hasSource())
+                                    return null;
+                                if(this.__source===null) {
+                                    var s = new Siviglia.Data.SourceFactory();
+                                    this.__source = s.getFromSource(this.__definition.SOURCE, controller, params);
+                                }
+                                return this.__source;
                             },
                             getSourceLabel: function () {
                                 return "[[VALUE]]";

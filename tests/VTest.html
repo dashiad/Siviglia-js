@@ -77,7 +77,7 @@
 
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-        var DEVELOP_MODE=0;  // All tests
+        var DEVELOP_MODE=-1;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
         var DEVELOP_MODE = urlParams.get("test");
@@ -4157,6 +4157,54 @@
             v=t1.getPlainValue();
             status = status && v.q1.f1==="qq" && v.q1.f2==="Value3";
             t1.destruct();
+
+            return status;
+        }, true);
+
+    runTest("Comprobacion de source en Arrays, al asignar arrays completos",
+        "Se comprueba que, al asignar un array, las funciones de comprobacion de fuentes comprueban todos los elementos del array",
+        {
+            "FIELDS": {
+                "a1": {
+                    "TYPE": "Array",
+                    "ELEMENTS": {
+                        "TYPE": "String"
+                    },
+                    "SOURCE": {
+                        "TYPE":"Path",
+                        "PATH":"#../a2"
+                    }
+                },
+                "a2":{
+                    "TYPE": "Array",
+                    "ELEMENTS":{
+                        "TYPE":"Container",
+                        "FIELDS":{
+                            "LABEL":{"TYPE":"String"},
+                            "VALUE":{"TYPE":"String"}
+                        }
+                    }
+                }
+            }
+        },
+        function (def) {
+            var t1 = new Siviglia.model.BaseTypedObject(def);
+            t1.a2=[{"LABEL":"uno","VALUE":"uno"},
+                {"LABEL":"dos","VALUE":"dos"},
+                {"LABEL":"tres","VALUE":"tres"},
+                ];
+            var thrown=false;
+            try{
+                t1.a1=["cuatro"];
+            }catch(e)
+            {
+                thrown=true;
+            }
+            var status=thrown===true;
+            t1.a2.push(
+                {"LABEL":"cuatro","VALUE":"cuatro"}
+            );
+            status=status && t1["*a1"].__isErrored()===false;
 
             return status;
         }, true);

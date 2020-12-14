@@ -138,8 +138,7 @@ Siviglia.Utils.buildClass(
                                                 newData.push(this.__unfiltered[k]);
                                             }
                                             this.data = newData;
-                                        } else
-                                            this.data = this.filterData();
+                                        }
                                     }
 
                                 },
