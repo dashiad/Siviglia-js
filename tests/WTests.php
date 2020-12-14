@@ -18,17 +18,16 @@
     <script src="../../jqwidgets/jqx-all.js"></script>
     <script src="../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="/reflection/css/style.css">
-    <!--<link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">-->
+    <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
-    <!--<link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css">-->
     <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
+    <!-- <link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css"> -->    
     <link rel="stylesheet"
           href="highlight/styles/ir-black.css">
     <script src="highlight/highlight.pack.js"></script>
     <style type="text/css">
         .resultError {
             background-color: #cc3636;
-
         }
 
         .result {
@@ -100,7 +99,6 @@
             width: 1000px;
             height: 500px
         }
-
     </style>
 </head>
 <style type="text/css">

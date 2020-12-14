@@ -1,4 +1,3 @@
-use lib\output\html\renderers\js\Siviglia;
 <style>
     .remove, .NewItemString .add {
         font-family:'IcoMoon'
@@ -359,7 +358,7 @@ use lib\output\html\renderers\js\Siviglia;
                         showError: function (message,dontAppend) {
                             // Se guarda referencia del puntero al nodo del error <span...>
                             if (this.inputWrapper !== null)
-                                this.errorNode = this.inputWrapper.errorNode;
+                                this.errorNode = this.inputWrapper.errorNode[0];
 
                             // Nos guardamos si hay excepcion en el tipo
                             var exception_input_path = this.type.__errorException;
@@ -367,9 +366,9 @@ use lib\output\html\renderers\js\Siviglia;
                             // Comprobamos la excepción del tipo. Si es distinto de null, es cuando SI se pinta/muestra el error
                             if (exception_input_path !== null){
                                 if (typeof this.errorNode !== "undefined"){
-                                    this.errorNode.style.display = "";          // hacemos que se vea el <span> eliminando el display: none
-                                    this.errorNode.innerText = message;         // insertamos el mensaje de error en el span del input.
-                                    this.inputWrapper.inputNode[0].children[1].classList.add("show-errored");   // ponemos clase de error en el input
+                                    this.errorNode.innerText = message;               // insertamos el mensaje de error en el span del input.                                    
+                                    this.inputNode[0].classList.add("show-errored");  // ponemos clase de error en el input
+                                    this.errorNode.style.display = "";                // hacemos que se vea el <span> eliminando el display: none
                                 }
                             }
 
@@ -386,16 +385,17 @@ use lib\output\html\renderers\js\Siviglia;
                             if (this.inputWrapper !== null) {
 
                                 // Se guarda referencia del puntero al nodo del error <span...>
-                                this.errorNode = this.inputWrapper.errorNode;
+                                this.errorNode = this.inputWrapper.errorNode[0];
 
                                 // comprobacion que el valor de los hijos de rootNode es !== de undefined
                                 // para poder comprobar que está vacío (y ver si es un campo requerido y vacío, lanzar excepción)
-                                var value_node_empty_required = this.inputWrapper.rootNode[0].children[3].children[1].value;
+                                //var value_node_empty_required = this.inputWrapper.rootNode[0].children[3].children[1].value;
+                                var value_node_empty_required = this.inputNode[0].value;
                                 if (typeof value_node_empty_required !== "undefined")  //solo si es !== de undefined, asignamos el valor.
                                     var node_empty_and_required = value_node_empty_required;
 
                                 // si es vacio el campo y está requerido, mostrar error:
-                                if ( typeof this.inputWrapper.rootNode[0].children[3] !== "undefined" &&
+                                if ( typeof this.inputNode !== "undefined" &&
                                      node_empty_and_required === ""  &&  input_required) {
                                         // lanzamos una excepcion con el codigo de error de campo requerido (5)
                                         var e = new Siviglia.types.BaseTypeException(this.type.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED, this.type.__definition);
@@ -407,22 +407,16 @@ use lib\output\html\renderers\js\Siviglia;
                                     if (exception_input_path === null) {
 
                                         // Comprobación para evitar dar un error en la consola
-                                        if (typeof this.inputWrapper.rootNode[0].children[3] !== "undefined") {
-                                            // quitamos los estilos de errores del nodo de error y más abajo del input
-                                            this.errorNode.style.display = "none";
-                                            this.errorNode.innerText = "";
-                                        }
-
-                                        // Se quita la clase que resalta el error del input
                                         if (typeof this.inputNode !== "undefined") {
-                                            this.inputNode.removeClass("show-errored");
-                                            //console.dir("CLEAR_ERROR");
+                                            // quitamos los estilos de errores del nodo de error y más abajo del input                                            
+                                            this.errorNode.innerText = "";
+                                            this.errorNode.style.display = "none";
+                                            this.inputNode[0].classList.remove("show-errored");  // Se quita la clase que resalta el error del input                                                                               
                                         }
 
                                     }// if__exception_input_path
 
                                 }
-
                             }
 
                             // Si no está vacío el formulario, se llama a la función que se encarga de eliminar el path del error
@@ -1681,8 +1675,11 @@ use lib\output\html\renderers\js\Siviglia;
                                         allowDrag: true,
                                         displayMember:"label",
                                         valueMember:"value",
-                                        source: [], width: 200, height: 250,
-                                        dragEnd: function (dragItem, dropItem) {
+                                        source: [], 
+                                        width: 300, 
+                                        height: 250,
+                                        //dragEnd: function (dragItem, dropItem) {
+                                        dragStart: function (dragItem, dropItem) {
                                             this.changing=true;
                                             var val=this.type.getValue();
                                             var idx=val.indexOf(dragItem.value);
@@ -1701,7 +1698,11 @@ use lib\output\html\renderers\js\Siviglia;
                                 preferences.width=Siviglia.issetOr(preferences.width,200);
                                 preferences.height=Siviglia.issetOr(preferences.height,200);
                                 Object.assign(preferences,{
-                                    allowDrop: true, allowDrag: true, source: [], width: 200, height: 250,
+                                    allowDrop: true,
+                                    allowDrag: true,
+                                    source: [],
+                                    width: 300,
+                                    height: 250,
                                     displayMember:"label",
                                     valueMember:"value",
                                     dragEnd: function (dragItem, dropItem) {
@@ -2128,8 +2129,8 @@ use lib\output\html\renderers\js\Siviglia;
                                         }
                                         this.innerInput=instance;
                                         //this.innerInput.setInputWrapper(this);
-                                        if (typeof instance.inputWrapper.rootNode[0].children[3] !== "undefined")
-                                            this.errorNode=instance.inputWrapper.rootNode[0].children[3].children[0];
+                                        if (typeof instance.inputWrapper.errorNode !== "undefined")
+                                            this.errorNode = instance.inputWrapper.errorNode;
 
                                         // Comprobación si un tipo es FIXED o no, para mostrarlo como string-raw o input
                                         if (this.innerType.__definition.FIXED === this.innerType.__value) {
@@ -2177,7 +2178,7 @@ use lib\output\html\renderers\js\Siviglia;
                                 this.SimpleInputContainer$preInitialize(params);
                                 this.help=Siviglia.issetOr(this.fieldDef["HELP"],"");
                                 this.label=Siviglia.issetOr(this.fieldDef["LABEL"],"");
-                                this.errorNode="";
+                                //this.errorNode="";
                             },
                             initialize:function(params)
                             {
@@ -3123,10 +3124,11 @@ use lib\output\html\renderers\js\Siviglia;
                 <span data-sivValue="/*help" class="tooltiptext"></span>
             </div>
 
-            <div data-sivId="inputNode" class="input" data-sivCall="getInputFor" data-sivParams="{}">
+            <div data-sivId="errorNodeField" class="FieldErrorNode">
                 <span data-sivId="errorNode" class="errorNodetext" style="display: none"></span>
+                <div data-sivId="inputNode" class="input" data-sivCall="getInputFor" data-sivParams="{}"></div>
             </div>
-
+                        
             <div style="clear:both"></div>
     </div>
 </div>

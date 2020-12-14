@@ -2846,11 +2846,12 @@ of the horizontal scrollbar.*/
     overflow: hidden;
 }
 
-.jqx-draggable {
+.jqx-draggable {    
 }
 
 .jqx-draggable-dragging {
     border: 0px solid black;
+    width: 300px !important;  /* está relacionado el width con el SourcedArray del Object.assign(preferences) */
 }
 
 .jqx-draggable-disabled {
