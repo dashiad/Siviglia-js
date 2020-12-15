@@ -60,7 +60,7 @@
 }
 
 
-.StdInputContainer > .input { width:100%}
+.StdInputContainer > .input, .FieldErrorNode  { width: 100%; }
 
 
 .StdInputContainer.String,

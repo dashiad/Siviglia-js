@@ -478,6 +478,7 @@
     border-color: #b2b2b2;
     border-color: rgba(0, 0, 0, 0.3);
     background-color: var(--jqx-hovered-state-background-color);
+    width: -webkit-fill-available !important;;
  }
 .jqx-fill-state-pressed {
     color: var(--jqx-active-state-text-color) !important;
@@ -1357,6 +1358,8 @@
     padding-bottom:5px;
     margin:0px;
     border-radius: 0px;
+    width: inherit;
+    cursor: move;
 }
 
 .jqx-listitem-state-normal,
@@ -1513,9 +1516,10 @@
 
 .jqx-listitem-state-selected {
     color: var(--jqx-list-selected-item-state-text-color) !important;
-    background-color: var(--jqx-list-selected-item-state-background-color);
-    background: var(--jqx-list-selected-item-state-background-color); /* Old browsers */
-    border-color: var(--jqx-list-selected-item-state-background-color);
+    background-color: var(--jqx-accent-color);
+    background: var(--jqx-accent-color); /* Old browsers */
+    border-color: var(--jqx-accent-color);
+    width: -webkit-fill-available !important;
 }
 
  .jqx-listmenu-item.jqx-fill-state-pressed {
