@@ -584,7 +584,7 @@ Siviglia.Utils.buildClass({
 
                         this["*data"].apply(response.data,Siviglia.types.BaseType.VALIDATION_MODE_NONE);
                         this["*count"]._setValue(response.count);
-                        this.settings.count=response.count;
+                        this.settings.count=response.count;  // a veces salta una excepción en este valor: https://pastebin.com/KLU5qepf
                         this.settings.start=response.start;
                         this["*start"]._setValue(response.start);
                         this["*end"]._setValue(response.end);
