@@ -162,7 +162,7 @@ use lib\output\html\renderers\js\Siviglia;
                       {
                           var controller=this.type.__getController();
                           var stDef=controller.getStateDef();
-                          var stateType=stDef.getStateFieldObj();
+                          var stateType=stDef.getStateType();
                           stateType.removeListeners(this);
                       }
                       this.type.removeListeners(this);
@@ -264,7 +264,7 @@ use lib\output\html\renderers\js\Siviglia;
                             if(controller!==null && controller.getStateDef()!==null)
                             {
                                 var stDef=controller.getStateDef();
-                                var stateType=stDef.getStateFieldObj();
+                                var stateType=stDef.getStateType();
                                 if(stateType!==this.type)
                                 {
                                     this.stateDriven=true;
@@ -660,7 +660,14 @@ use lib\output\html\renderers\js\Siviglia;
                           //      opts[k] = this.inputParams[k];
                             this.createInput(opts);
                             this.inputNode[this.getJqxWidgetName()]('theme', 'light');
-                            this.type.addListener("ERROR",null,function(){console.log("ON ERROR")});
+                            // Hay 2 motivos para error de un combobox: 1) Valor requerido, 2) Invalid source.
+                            // Si es invalid source, al editar el input, ponemos el valor del tipo a null
+                            this.type.addListener("ERROR",null,function(){
+                                if(this.type.__sourceError!==null)
+                                    this.type.setValue(null);
+                                else
+                                    console.log("ON ERROR")
+                            }.bind(this));
                             var m = this;
                             this.inputNode.on("select", function (ev) {
                                 if(!m.dataBinding && !m.changing) {

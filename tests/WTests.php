@@ -18,7 +18,7 @@
     <script src="../../jqwidgets/jqx-all.js"></script>
     <script src="../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="/reflection/css/style.css">
-    <!--<link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">-->
+    <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
     <!--<link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css">-->
     <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
@@ -115,7 +115,7 @@
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-	    var DEVELOP_MODE=-1;  // All tests
+	    var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");
@@ -1376,12 +1376,14 @@
         "La vista raiz debe esperar a que todas las subVistas esten listas, antes de mostrar un mensaje.<br>"+
         "",
             '<div data-sivWidget="Test.Waiter1" data-widgetCode="Test.Waiter1"></div>'+
+            '<div data-sivWidget="Test.Waiter3" data-widgetCode="Test.Waiter3"></div>'+
             '<div data-sivWidget="Test.Waiter2" data-widgetCode="Test.Waiter2">'+
             '   <div data-sivView="Test.Waiter1" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
             '</div>'+
             '<div data-sivWidget="Test.WaiterTest" data-widgetParams="" data-widgetCode="Test.WaiterTest">'+
             '   <div data-sivView="Test.Waiter1" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
             '   <div data-sivView="Test.Waiter2" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
+            '   <div data-sivView="Test.Waiter3" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
             '</div>',
             '<div data-sivView="Test.WaiterTest"></div>',
         function(){
@@ -1410,7 +1412,7 @@
                             },
                             showMessage:function(){console.log("WAITERTEST: LISTO")},
                             getRandSeconds:function(){
-                                return 1000;
+                                return 2000;
                             }
                         }
                     },
@@ -1429,6 +1431,15 @@
                             showMessage:function(){console.log("WAITERTEST 2: LISTO")},
                             getRandSeconds:function(){
                                 return 3000;
+                            }
+                        }
+                    },
+                    "Waiter3":{
+                        inherits:"Test.WaiterTest",
+                        methods:{
+                            showMessage:function(){console.log("WAITERTEST 3: LISTO")},
+                            getRandSeconds:function(){
+                                return 5000;
                             }
                         }
                     }
@@ -2165,23 +2176,13 @@
     runTest("Formulario de edicion de modelo remoto (I)","En este ejemplo, la plantilla y clase del formulario se declara localmente, pero se inicializa el formulario indicando qué formulario, y qué campos indice hay que cargar del servidor.<br>",
 
        '<div data-sivWidget="Test.Edit1" data-widgetCode="Test.Edit1">\n' +
-        '        <div><div class="label">Nombre</div>\n' +
-        '            <div data-sivCall="getInputFor" data-sivParams=\'{"key":"name"}\'></div>\n' +
-        '        </div>\n' +
-        '        <div><div class="label">Tag</div>\n' +
-        '            <div data-sivCall="getInputFor" data-sivParams=\'{"key":"tag"}\'></div>\n' +
-        '        </div>\n' +
-        '        <div><div class="label">Site</div>\n' +
-        '        <div data-sivCall="getInputFor" data-sivParams=\'{"key":"id_site"}\'></div>\n' +
-        '        </div>\n' +
-        '        <div><div class="label">Private</div>\n' +
-        '        <div data-sivCall="getInputFor" data-sivParams=\'{"key":"isPrivate"}\'></div>\n' +
-        '        </div>\n' +
-        '        <div><div class="label">Path</div>\n' +
-        '        <div data-sivCall="getInputFor" data-sivParams=\'{"key":"path"}\'></div>\n' +
-        '        </div>\n' +
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"name","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"tag","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"id_site","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"isPrivate","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"path","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
         '        <div><input type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar"></div>\n' +
-        '    </div>\n' +
+        '    \n' +
         '</div>\n',
         '<div data-sivView="Test.Edit1" data-sivParams=\'{"id_page":2}\'></div>',
         function(){
@@ -2193,6 +2194,7 @@
                     "methods":{
                         preInitialize:function(params)
                         {
+                            this.self=this;
                             var p={
                                 "keys":params,
                                 "model":"/model/web/Page",

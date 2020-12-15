@@ -398,6 +398,7 @@ Siviglia.Utils.buildClass(
                             __clearErrored: function () {
                                 if (this.__errored === false)
                                     return;
+                                this.__sourceException=null;
                                 this.__errorException = null;
                                 this.__errored = false;
                                 if (this.__controller)
@@ -488,7 +489,7 @@ Siviglia.Utils.buildClass(
                                     this.onChange();
                                 }
 
-                                if (validationMode !== Siviglia.types.BaseType.VALIDATION_MODE_NONE) {
+                                if (val!==null && validationMode !== Siviglia.types.BaseType.VALIDATION_MODE_NONE) {
                                     try {
                                         this.validate(validationMode);
                                         if(willSetDirty)
@@ -596,7 +597,8 @@ Siviglia.Utils.buildClass(
                                         if (!s.contains(val)) {
                                             //this.setValue(null);
                                             var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: val});
-                                            this.__setErrored(e);
+                                            // No lo ponemos a errored. Esto lo hara quien capture esta excepcion.
+                                            //this.__setErrored(e);
                                             // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
                                             // que podemos borrar el error, y volver a poner este campo a "ok"
                                             this.__sourceException = true;
@@ -1958,6 +1960,7 @@ Siviglia.Utils.buildClass(
                         this.__errorException = null;
                         this.__erroredFields=null;
                         this.__errored = false;
+                        this.__sourceException=null;
                         if (this.__controller)
                             this.__controller.__clearErroredField(this);
                     },

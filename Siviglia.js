@@ -2410,6 +2410,8 @@ Siviglia.Utils.buildClass(
                     {
                         this.__subViews.push({view:view,promise:view.__builtPromise,resolved:false});
                         view.waitComplete().then(function(builtView){
+                            if(view.__viewName!==null)
+                                this[view.__viewName]=view.__view;
                             this.__setSubViewResolved(view,builtView);
                         }.bind(this));
                     },
