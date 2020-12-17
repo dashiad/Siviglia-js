@@ -478,7 +478,7 @@
     border-color: #b2b2b2;
     border-color: rgba(0, 0, 0, 0.3);
     background-color: var(--jqx-hovered-state-background-color);
-    width: -webkit-fill-available !important;;
+    /* width: -webkit-fill-available !important;; */
  }
 .jqx-fill-state-pressed {
     color: var(--jqx-active-state-text-color) !important;
@@ -1360,6 +1360,7 @@
     border-radius: 0px;
     width: inherit;
     cursor: move;
+    width: max-content !important;  /* fixed ancho de los items y al div listBoxContent para el SourcedArray */
 }
 
 .jqx-listitem-state-normal,
@@ -1399,6 +1400,7 @@
     color: var(--jqx-list-hovered-item-state-text-color) !important;
     background-color: var(--jqx-list-hovered-item-state-background-color);
     background: var(--jqx-list-hovered-item-state-background-color); /* Old browsers */
+    width: -webkit-fill-available !important;
 }
 
 .jqx-menu-item-hover,
@@ -1520,6 +1522,7 @@
     background: var(--jqx-accent-color); /* Old browsers */
     border-color: var(--jqx-accent-color);
     width: -webkit-fill-available !important;
+    /* width: 300px !important; */
 }
 
  .jqx-listmenu-item.jqx-fill-state-pressed {

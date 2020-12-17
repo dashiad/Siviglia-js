@@ -566,7 +566,7 @@ Siviglia.Utils.buildClass({
                 },
                 destruct:function()
                 {
-                   
+
                 },
                 methods:{
                     freeze:function()
