@@ -255,11 +255,13 @@ Siviglia.Utils.buildClass(
                         this.PathAble();
                     },
                     destruct: function () {
+
                         if (this.__source)
                             this.__source.destruct();
                         for(var k=0;k<this.__resolvers.length;k++)
                             this.__resolvers[k].destruct();
                         this.__value=null;
+
                     },
 
                     methods:
@@ -1801,8 +1803,9 @@ Siviglia.Utils.buildClass(
                     this.__definition=def;
                     // Ojo:si se pasa un valor en el constructor, no se asigna hasta que los campos se hayan construido.
                     this.BaseType(name, def, parentType, null, validationType);
-                    // Se construyen los campos internos.
-
+                    // __innerValue apunta al valor interno del proxy
+                    this.__innerValue=null;
+                    this.__revokeProxy=null;
                     if(val!==null)
                         this.setValue(val);
 
@@ -1813,15 +1816,18 @@ Siviglia.Utils.buildClass(
                         for (var k in this.__fields) {
                             this.__fields[k].destruct();
                             delete this.__fields[k];
-                            if(this.__value!==null)
+                            if(this.__innerValue!==null)
                             {
-                            delete this.__value[k];
-                            delete this.__value["*"+k];
+                                delete this.__innerValue[k];
+                                delete this.__innerValue["*"+k];
+                            }
                         }
-                        }
-                        if(this.__value!==null)
-                        delete this.__value["[[KEYS]]"];
                     }
+                    if(this.__revokeProxy) {
+                        this.__revokeProxy();
+                        this.__revokeProxy=null;
+                    }
+
                     if (this.__stateDef)
                         this.__stateDef.destruct();
                     if(this.__value && this.__value.hasOwnProperty("__destroy__"))
@@ -1928,8 +1934,17 @@ Siviglia.Utils.buildClass(
                     _validate: function () {
                         return true;
                     },
-                    reset: function () {
 
+                    __clear: function () {
+                        this.reset();
+                        this.BaseType$__clear();
+                    },
+                    reset: function () {
+                        if(this.__revokeProxy)
+                        {
+                            this.__revokeProxy();
+                            this.__revokeProxy=null;
+                        }
 
                         if (this.__dirty) {
                             this.__setDirty(false);
@@ -1971,19 +1986,82 @@ Siviglia.Utils.buildClass(
 
                         this.reset();
                         // Limpiamos el valor interno.
-                        this.__value = v;
                         this.disableEvents(true);
                         var stateField=null;
+                        this.__innerValue=v;
                         // Si hay un campo de estado, hay que asignarlo primero.
                         if(this.__stateDef!==null)
                         {
-
                                 m.__buildField(this.__stateFieldName,
                                     this.__definition["FIELDS"][this.__stateFieldName],
                                     Siviglia.issetOr(v[this.__stateFieldName],null),validationMode);
                                 m.__definition["FIELDS"][this.__stateFieldName] = m.__fields[this.__stateFieldName].__definition;
 
                         }
+
+                        Object.defineProperty(v, "[[KEYS]]", {
+                            get: function () {
+                                return m.getKeys();
+                            },
+                            set: function (v) {
+                            },
+                            enumerable: false,
+                            configurable: true
+                        });
+                        Object.defineProperty(v, "__basetype__", {
+                            get: function () {
+                                return m;
+                            },
+                            set: function (v) {
+                            },
+                            enumerable: false,
+                            configurable: true
+                        });
+
+
+
+                        var revocable=Proxy.revocable(v,{
+                           apply:function(target,thisArg,argumentsList)
+                           {
+                               if(this.hasOwnProperty[target])
+                                   target.apply(this,argumentsList);
+                               else
+                                   thisArg.apply(this,argumentsList);
+                           }.bind(this),
+                            get:function(target,property,receiver){
+                               if(typeof v[property]==="undefined")
+                               {
+                                   if(typeof this[property]==="undefined")
+                                   // Si el campo no existe, lanzamos excepcion, pero no ponemos el objeto a "Errored".Técnicamente,  el objeto no está mal,
+                                   // ya que no ha sido modificado.
+                                   throw new Siviglia.types.BaseTypeException(m.getFullPath(), Siviglia.types.BaseTypeException.ERR_NOT_A_FIELD, {});
+                               }
+                               return v[property];
+
+                            }.bind(this),
+                            set:function(target,property,value,receiver){
+                                if(!v.hasOwnProperty(property))
+                                {
+                                    if(typeof this[property]==="undefined")
+                                    // Si el campo no existe, lanzamos excepcion, pero no ponemos el objeto a "Errored".Técnicamente,  el objeto no está mal,
+                                    // ya que no ha sido modificado.
+                                    throw new Siviglia.types.BaseTypeException(m.getFullPath(), Siviglia.types.BaseTypeException.ERR_NOT_A_FIELD, {});
+                                }
+                                v[property]=value;
+                                return value;
+                            }.bind(this),
+                            deleteProperty:function(target,prop){
+                               if(typeof this.__definition["FIELDS"][prop]!=="undefined")
+                               {
+                                   this.__fields[prop].setValue(null);
+                               }
+                               if(prop==="[[KEYS]]")
+                                   return; // No permitimos que se elimine
+                                delete target[prop];
+                            }.bind(this)
+                        });
+                        this.__value=revocable.proxy;
+                        this.__revokeProxy=revocable.revocable;
 
                         this.__iterateOnFieldDefinitions(function (name, def) {
                             if(def["TYPE"]!=="State") {
@@ -2006,27 +2084,9 @@ Siviglia.Utils.buildClass(
                             this.__stateDef.checkState();
                         }
 
-                        Object.defineProperty(v, "[[KEYS]]", {
-                            get: function () {
-                                return m.getKeys();
-                            },
-                            set: function (v) {
-                            },
-                            enumerable: false,
-                            configurable: true
-                        });
-                        Object.defineProperty(v, "__basetype__", {
-                            get: function () {
-                                return m;
-                            },
-                            set: function (v) {
-                            },
-                            enumerable: false,
-                            configurable: true
-                        });
                         this.__valueSet = true;
                         this.disableEvents(false);
-                        return v;
+                        return this.__value;
 
                 //        this.onChange();
                     },
@@ -2047,11 +2107,11 @@ Siviglia.Utils.buildClass(
                         // Se crea el campo si no se habia creado ya.
                         m.__createFields(fieldName,def);
 
-                        if (this.__value && !this.__value.hasOwnProperty("*" + fieldName))
+                        if (this.__innerValue && !this.__innerValue.hasOwnProperty("*" + fieldName))
                         {
                         var dsts=[this];
-                        if(this.__value)
-                            dsts.push(this.__value);
+                        if(this.__innerValue)
+                            dsts.push(this.__innerValue);
                         var dst;
                         for (var s=0;s<dsts.length;s++) {
                             dst = dsts[s];
@@ -2293,7 +2353,8 @@ Siviglia.Utils.buildClass(
                     construct: function () {
                         this.__currentProxy = null;
                         this.reserved = reserved = ["__isProxy__", "__ev__", "__refcount__", "__destroyed__", "__disableEvents__", "[[KEYS]]", "*[[KEYS]]"];
-
+                        this.__innerValue=null;
+                        this.__revokeProxy=null;
 
                     },
                     destruct: function () {
@@ -2316,13 +2377,16 @@ Siviglia.Utils.buildClass(
                             },
                             proxify: function (val,validationMode) {
 
+
+                                if (this.__value !== null) {
+                                    this.reset();
+                                }
                                 if (val === null) {
-                                    if (this.__value !== null) {
-                                        this.reset();
-                                    }
+
                                     this.__value = null;
                                     return this.__value;
                                 }
+                                this.__innerValue=val;
 
                                 if (val.hasOwnProperty("__isProxy__")) {
                                     // Es un array que YA es un proxy. Simplemente, incrementamos el contador de referencias, nos enganchamos a su onChange.
@@ -2336,8 +2400,7 @@ Siviglia.Utils.buildClass(
 
                                 var ev = new Siviglia.Dom.EventManager();
 
-                                // Estamos en setValue, no queremos que se disparen "onChanges" de mas:
-                                this.reset();
+
                                 var nReferences = 0;
                                 var destroyed = false;
                                 var eventsDisabled = false;
@@ -2467,8 +2530,11 @@ Siviglia.Utils.buildClass(
                                     this.__currentProxy.__refcount__--;
                                     this.__currentProxy = null;
                                 }
+                                if(this.__revokeProxy)
+                                    this.__revokeProxy();
                                 this.disableEvents(false);
                             },
+
                             intersect: function (val) {
                                 if (!this.__valueSet)
                                     return val;
@@ -2510,9 +2576,9 @@ Siviglia.Utils.buildClass(
                             },
                             __proxyGet: function (val, m) {
                                 return function (target, prop, receiver) {
-                                    if (target == "getKeys")
+                                    if (prop === "getKeys")
                                         return m.getKeys;
-                                    if (reserved.indexOf(prop) >= 0)
+                                    if (m.reserved.indexOf(prop) >= 0)
                                         return target[prop];
                                     if (prop === Symbol.toStringTag)
                                         return target.toString;
@@ -2636,12 +2702,15 @@ Siviglia.Utils.buildClass(
                                 }
                             },
                             buildProxy: function (val) {
-                                return new Proxy(val, {
+
+                                var revocable= Proxy.revocable(val, {
                                     apply: this.__proxyApply(val, this),
                                     get: this.__proxyGet(val, this),
                                     deleteProperty: this.__proxyDeleteProperty(val, this),
                                     set: this.__proxySet(val, this)
                                 });
+                                this.__revokeProxy=revocable.revoke;
+                                return revocable.proxy;
                             }
                         },
 
@@ -2671,6 +2740,10 @@ Siviglia.Utils.buildClass(
                         },
                         copy: function (val) {
                             this.setValue(val);
+                        },
+                        __clear: function () {
+                            this.reset();
+                            this.BaseType$__clear();
                         },
                         _setValue: function (val,validationMode) {
                             if(typeof val==="object" && Object.keys(val).length===0)
@@ -3286,7 +3359,10 @@ Siviglia.Utils.buildClass(
                         // alternativa, que se llama al modificar length
 
                         // Obtener las key-values de un array es algo complicado, cuando el array no tiene un tipo simple.
-
+                        __clear: function () {
+                            this.reset();
+                            this.BaseType$__clear();
+                        },
                         getKeys: function (val) {
                             if (this.simpleContents === null)
                                 this.simpleContents = this.areContentsSimple();
@@ -3357,10 +3433,12 @@ Siviglia.Utils.buildClass(
                             return function (target, prop) {
                                 var ret = val[prop];
                                 delete val[prop];
-                              //  val["*" + prop].removeListeners(m);
-                                val["*" + prop].destruct();
-                                delete val["*" + prop];
-                                target["[[KEYS]]"] = m.getKeys(val);
+                                if(typeof val["*"+prop]!=="undefined") {
+                                    //  val["*" + prop].removeListeners(m);
+                                    val["*" + prop].destruct();
+                                    delete val["*" + prop];
+                                    target["[[KEYS]]"] = m.getKeys(val);
+                                }
                                 return ret!==null?ret:true;
                             }
                         },
@@ -4537,10 +4615,9 @@ Siviglia.Utils.buildClass(
                                     if (!Siviglia.empty(this.definition["STATES"]["STATES"][this.getStateLabel(stateId)]["ALLOW_FROM"])) {
                                         var allowed = this.definition["STATES"]["STATES"][this.getStateLabel(stateId)]["ALLOW_FROM"];
                                         var result = [];
-
-                                        allowed.forEach(element => {
+                                        allowed.forEach(function(element) {
                                             result.push(this.getStateId(element));
-                                        });
+                                        }.bind(this));
 
                                         return result;
                                     }

@@ -625,7 +625,7 @@ Siviglia.Utils.buildClass(
                                     }
                                     this.ds.unfreeze().then(
                                         function(){
-                                            this.onData(this.ds.data)}.bind(this),
+                                            this.onData(this.ds["*data"].getPlainValue())}.bind(this),
                                         function(){
                                             this.onData(null);
                                         }.bind(this)

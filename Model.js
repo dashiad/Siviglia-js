@@ -566,8 +566,7 @@ Siviglia.Utils.buildClass({
                 },
                 destruct:function()
                 {
-                    for(var k in this.__definition["FIELDS"]["params"]["FIELDS"])
-                        this.params["*"+k].removeListener(this);
+                   
                 },
                 methods:{
                     freeze:function()
@@ -584,8 +583,8 @@ Siviglia.Utils.buildClass({
 
                         this["*data"].apply(response.data,Siviglia.types.BaseType.VALIDATION_MODE_NONE);
                         this["*count"]._setValue(response.count);
-                        this.settings.count=response.count;
-                        this.settings.start=response.start;
+                        this.count=response.count;
+                        //this.settings.start=response.start;
                         this["*start"]._setValue(response.start);
                         this["*end"]._setValue(response.end);
                         this.fireEvent("CHANGE",{});

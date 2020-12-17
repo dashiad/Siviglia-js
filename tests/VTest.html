@@ -532,9 +532,11 @@
                 }
             );
             var val= cnt.getPath("#one/0/f1");
+            var status=typeof val["k1-1"]!=="undefined" && typeof val["k1-2"]!=="undefined" && typeof val["k1-3"]!=="undefined" ;
             cnt.destruct();
-            var n=countListeners();
-            return typeof val["k1-1"]!=="undefined" && typeof val["k1-2"]!=="undefined" && typeof val["k1-3"]!=="undefined" && countListeners()==0;
+
+            status = status && countListeners()==0
+            return status;
         }
     )
     runTest("Container: Obtencion de path 3","Obtencion de un path relativo: Primero se navega hasta un cierto elemento de la estructura, y luego se pide un path relativo",
@@ -717,9 +719,16 @@
         t1.f3 = {f3:"aaa"};
         var result=typeof t1.f3.f3 !=="undefined";
         t1.f3 = {"TYPE": "TIPO4"}
-        var status= result && typeof t1.f3.f3 == "undefined" && typeof t1.f3["*f3"] == "undefined" && typeof t1.f3.f4 == "undefined" && typeof t1.f3["*f4"] == "undefined";
+        var thrown=false;
+        try {
+            var v1 = t1.f3.f3;
+        }
+        catch(e)
+        {
+            thrown=true;
+        }
         t1.destruct();
-        return status;
+        return thrown;
     }, true);
     runTest("Comprobacion TS 4", "Comprobacion de acceso a un TypeSwitcher a traves de campos",def,
         function (def) {
@@ -1270,16 +1279,41 @@
         });
         // Comprobamos que, en este punto, ya que t1.f3.TYPE=="TIPO3" (por el valor por defecto),
         // existen sf3 y sf4:
-        var initStatus = (t1.f3.value.sf3 === "aaa" && typeof t1.f3.value.sf2 == "undefined" && nChanges == 0);
+        var initStatus = (t1.f3.value.sf3 === "aaa" && nChanges == 0);
+        var thrown=false;
+        try{
+            var v1=t1.f3.value.sf2;
+        }catch(e)
+        {
+            thrown=true;
+        }
+        initStatus=initStatus && thrown;
         // Se cambia ahora el tipo del typeswitcher.Tienen que haber desaparecido los tipos anteriores,
         // y aparecer los nuevos campos, aunque esten a nulo.
         t1.f3.TYPE = "TIPO4";
         t1.f3.value={};
-        var secondStatus = (t1.f3.value.sf1 == null && typeof t1.f3.value.sf3 == "undefined" && nChanges == 1);
+        thrown=false;
+        var secondStatus = (t1.f3.value.sf1 == null  && nChanges == 1);
+        try{
+            v1=t1.f3.value.sf3;
+        }catch(e)
+        {
+            thrown=true;
+        }
+        secondStatus=secondStatus && thrown;
         // Se deshace el cambio.
         t1.f3.TYPE = "TIPO3";
         t1.f3.value={};
-        var thirdStatus = (t1.f3.value.sf3 == null && typeof t1.f3.value.sf1 == "undefined" && nChanges == 2);
+
+        var thirdStatus = (t1.f3.value.sf3 == null && nChanges == 2);
+        thrown=false;
+        try{
+            v1=t1.f3.value.sf1;
+        }catch(e)
+        {
+            thrown=true;
+        }
+        thirdStatus=thrown && thirdStatus;
         t1.destruct();
         return initStatus && secondStatus && thirdStatus && countListeners() === 0;
     }, true);
@@ -1322,14 +1356,38 @@
 
         // Comprobamos que, en este punto, ya que t1.f3.TYPE=="TIPO3" (por el valor por defecto),
         // existen sf3 y sf4:
-        var initStatus = (t1.f3.sf3 === "aaa" && typeof t1.f3.sf2 == "undefined");
+        var initStatus = (t1.f3.sf3 === "aaa");
+        var thrown=false;
+        try{
+            var val= t1.f3.sf2;
+        }catch(e)
+        {
+            thrown=true;
+        }
+        initStatus=initStatus && thrown;
         // Se cambia ahora el tipo del typeswitcher.Tienen que haber desaparecido los tipos anteriores,
         // y aparecer los nuevos campos, aunque esten a nulo.
         t1.f3.TYPE = "TIPO4";
-        var secondStatus = (t1.f3.sf1 == null && typeof t1.f3.sf3 == "undefined");
+        var secondStatus = (t1.f3.sf1 == null);
+        thrown=false;
+        try {
+            val=t1.f3.sf3;
+        }catch(e)
+        {
+            thrown=true;
+        }
+        secondStatus=secondStatus && thrown;
         // Se deshace el cambio.
         t1.f3.TYPE = "TIPO3";
-        var thirdStatus = (t1.f3.sf3 == null && typeof t1.f3.sf1 == "undefined");
+        thrown=false;
+        var thirdStatus = (t1.f3.sf3 == null);
+        try{
+            val=t1.f3.sf1;
+        }catch(e)
+        {
+            thrown=true;
+        }
+        thirdStatus=thirdStatus && thrown;
         t1.destruct();
         return initStatus && secondStatus && thirdStatus && countListeners() == 0;
     }, true);
@@ -1396,8 +1454,14 @@
             exceptionThrown=false;
 
             var p=t1.f3;
-            var q=p.F1;
-            status=status && typeof q==="undefined";
+            var thrown=false;
+            try {
+                var q = p.F1;
+            }catch(e)
+            {
+                thrown=true;
+            }
+            status=status && thrown;
             t1.destruct();
             return status && countListeners()===0;
     });
@@ -4205,7 +4269,50 @@
                 {"LABEL":"cuatro","VALUE":"cuatro"}
             );
             status=status && t1["*a1"].__isErrored()===false;
+            t1.destruct();
+            return status;
+        }, true);
 
+    runTest("Revocacion de proxy",
+        "Una vez que se borra un valor de un tipo, las referencias a él provocan un error al accederse a ellas."+
+        "La forma correcta de mantener el valor, es a traves de getPlainValue()",
+        {
+            "FIELDS": {
+                "a1": {
+                    "TYPE": "Array",
+                    "ELEMENTS": {
+                        "TYPE": "String"
+                    }
+                },
+                "a2":{
+                    "TYPE": "Array",
+                    "ELEMENTS":{
+                        "ELEMENTS": {
+                            "TYPE": "String"
+                        }
+                    }
+                }
+            }
+        },
+        function (def) {
+            var t1 = new Siviglia.model.BaseTypedObject(def);
+            t1.a1=["a","b","c"];
+            var s=t1.a1;
+            var s1=t1["*a1"].getPlainValue();
+            t1.a1=null;
+
+            // Acceder a traves de s, da error
+            var thrown=false;
+            try {
+                var q=t1.a1.length;
+            }catch(e)
+            {
+                thrown=true;
+            }
+            // A traves de s1, si es posible acceder a la longitud
+            var status=thrown && s1.length===3;
+
+            t1.destruct();
             return status;
         }, true);
 
