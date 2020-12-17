@@ -227,6 +227,7 @@ Siviglia.Utils.buildClass(
                         this.__valueSet = false;
                         this.__resolvers=[];
                         this.__flags = 0;
+                        this.__saving=false;
 
                         this.__unassigned=true;
                         if (typeof def["FIXED"] == true)
@@ -780,12 +781,14 @@ Siviglia.Utils.buildClass(
                                 return this.__definition;
                             },
                             save: function () {
+                                this.__saving=true;
                                 if(this.__hasSource() && this.__valueSet )
                                 {
                                     var s=this.__getSource();
                                     if (!s.isAsync() )
                                         this.__checkSource(this.__value);
                                 }
+                                this.__saving=false;
                                 if (this.__isErrored())
                                     throw new Siviglia.model.BaseTypedException(this.__fieldNamePath,Siviglia.model.BaseTypedException.ERR_CANT_SAVE_ERRORED_FIELD);
                                 if (!Siviglia.empty(this.__definition.REQUIRED) && (!this.__valueSet || this.__value === ""))
@@ -831,7 +834,8 @@ Siviglia.Utils.buildClass(
                                 return this.getValue();
                             },
                             getPlainValue: function () {
-                                this.save();
+                                if(!this.__saving)
+                                     this.save();
                                 return this.getValue();
                             },
                             serialize: function () {
@@ -1874,7 +1878,8 @@ Siviglia.Utils.buildClass(
                         var nSet = 0;
                         var nFields = 0;
                         var res = {};
-                        this.save();
+                        if(!this.__saving)
+                            this.save();
                         // Se mira si hay que devolver las claves que son nulas.
                         for (var k in this.__definition["FIELDS"]) {
                             nFields++;
@@ -2265,11 +2270,13 @@ Siviglia.Utils.buildClass(
                         this.__setParent(this.__parent, this.__name);
                     },
                     save: function () {
+                        this.__saving=true;
                         for (var k in this.__definition["FIELDS"]) {
                             if(!Siviglia.empty(this.__fields[k]))
                                 this.__fields[k].save();
                         }
                         this.__checkComplete(true);
+                        this.__saving=false;
                         if (this.__erroredFields!==null)
                             throw new Siviglia.model.BaseTypedException(this.__fieldNamePath,Siviglia.model.BaseTypedException.ERR_CANT_SAVE_ERRORED_OBJECT);
                         if(this.__stateDef)
@@ -2809,7 +2816,8 @@ Siviglia.Utils.buildClass(
                         getPlainValue: function () {
                             if (!this.__valueSet)
                                 return null;
-                            this.save();
+                            if(!this.__saving)
+                                this.save();
                             var res = {};
                             var nSet = 0;
                             var nFields = 0;
@@ -2848,6 +2856,7 @@ Siviglia.Utils.buildClass(
                             return key;
                         },
                         save: function () {
+                            this.__saving=true;
                             if (!Siviglia.empty(this.__currentProxy)) {
                                 var err = null;
                                 for (var k in this.__currentProxy) {
@@ -2859,6 +2868,7 @@ Siviglia.Utils.buildClass(
                                 }
                                 this.__checkSource(this.__currentProxy);
                             }
+                            this.__saving=false;
                             return err;
                         },
                        /* __checkSource: function (val) {
@@ -3252,11 +3262,12 @@ Siviglia.Utils.buildClass(
 
                         },
                         save: function () {
-
+                            this.__saving=true;
                             if (!Siviglia.empty(this.subNode)) {
                                 this.subNode.save();
                                 this.__checkSource(this.subNode);
                             }
+                            this.__saving=false;
                         }
                     }
                 },
@@ -3472,7 +3483,8 @@ Siviglia.Utils.buildClass(
                             return this.__value;
                         },
                         getPlainValue: function () {
-                            this.save();
+                            if(!this.__saving)
+                                this.save();
                             var res = [];
                             if (this.__value == null)
                                 return null;
@@ -3514,7 +3526,7 @@ Siviglia.Utils.buildClass(
                         },
 
                         save: function () {
-
+                            this.__saving=true;
                             var err = null;
                             if (!Siviglia.empty(this.__currentProxy)) {
                                 for (var k = 0; k < this.__currentProxy.length; k++) {
@@ -3526,6 +3538,7 @@ Siviglia.Utils.buildClass(
                                 }
                                 this.__checkSource(this.__currentProxy);
                             }
+                            this.__saving=false;
                             return err;
                         }
                     }
