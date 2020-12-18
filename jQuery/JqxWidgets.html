@@ -188,7 +188,10 @@
                             this.type = params.type;
 
                             this.type.addListener("CHANGE",this,"onTypeChanged");
-                            this.type.addListener("ERROR",null,function(){console.dir("ON_ERROR")});
+                            // FELIPE : EL LISTENER DE ERROR, YA NO VA A ESTAR EN EL INPUT, SINO EN EL INPUTCONTAINER
+                            // LO MISMO DEBE PASAR CON EL HELPMESSAGE, YA NO HACE FALTA QUE LO GESTIONE EL INPUT, SINO EL INPUTCONTAINER
+                            //this.type.addListener("ERROR",null,function(){console.dir("ON_ERROR")});
+
                             this.helpMessage = Siviglia.issetOr(this.type.__definition.HELP, null);
                             this.hasHelpMessage = (this.helpMessage != null ? true : false);
                             this.inputParams = Siviglia.issetOr(params.inputParams, {});
@@ -366,7 +369,7 @@
                             // Comprobamos la excepción del tipo. Si es distinto de null, es cuando SI se pinta/muestra el error
                             if (exception_input_path !== null){
                                 if (typeof this.errorNode !== "undefined"){
-                                    this.errorNode.innerText = message;               // insertamos el mensaje de error en el span del input.                                    
+                                    this.errorNode.innerText = message;               // insertamos el mensaje de error en el span del input.
                                     this.inputNode[0].classList.add("show-errored");  // ponemos clase de error en el input
                                     this.errorNode.style.display = "";                // hacemos que se vea el <span> eliminando el display: none
                                 }
@@ -388,7 +391,7 @@
                                 this.errorNode = this.inputWrapper.errorNode[0];
 
                                 // comprobacion que el valor de los hijos de rootNode es !== de undefined
-                                // para poder comprobar que está vacío (y ver si es un campo requerido y vacío, lanzar excepción)                                
+                                // para poder comprobar que está vacío (y ver si es un campo requerido y vacío, lanzar excepción)
                                 // Nota: asegurarse que inputNode no es undefined, para cuando se guarda un modelo no de error (https://pastebin.com/eanSrrX5)
                                 if (typeof this.inputNode !== "undefined"){
                                     var value_node_empty_required = this.inputNode[0].value;
@@ -396,7 +399,7 @@
                                     if (typeof value_node_empty_required !== "undefined")  //solo si es !== de undefined, asignamos el valor.
                                         var node_empty_and_required = value_node_empty_required;
                                 }
-                                
+
 
                                 // si es vacio el campo y está requerido, mostrar error:
                                 if ( typeof this.inputNode !== "undefined" &&
@@ -412,10 +415,10 @@
 
                                         // Comprobación para evitar dar un error en la consola
                                         if (typeof this.inputNode !== "undefined") {
-                                            // quitamos los estilos de errores del nodo de error y más abajo del input                                            
+                                            // quitamos los estilos de errores del nodo de error y más abajo del input
                                             this.errorNode.innerText = "";
                                             this.errorNode.style.display = "none";
-                                            this.inputNode[0].classList.remove("show-errored");  // Se quita la clase que resalta el error del input                                                                               
+                                            this.inputNode[0].classList.remove("show-errored");  // Se quita la clase que resalta el error del input
                                         }
 
                                     }// if__exception_input_path
@@ -661,10 +664,8 @@
                             // Hay 2 motivos para error de un combobox: 1) Valor requerido, 2) Invalid source.
                             // Si es invalid source, al editar el input, ponemos el valor del tipo a null
                             this.type.addListener("ERROR",null,function(){
-                                if(this.type.__sourceError!==null)
+                                if(this.type.__sourceError!==null && this.type.getValue()!==null)
                                     this.type.setValue(null);
-                                else
-                                    console.log("ON ERROR")
                             }.bind(this));
                             var m = this;
                             this.inputNode.on("select", function (ev) {
@@ -1683,13 +1684,13 @@
                                 Object.assign(preferences,
                                     {
                                         // si no se pone width o height, se coge valores por defecto
-                                        width: '250px', 
+                                        width: '250px',
                                         height: '160px', // si altura más pequeña, se pone scroll derecho del div que contiene el listBoxContent
                                         allowDrop: true,
                                         allowDrag: true,
                                         displayMember:"label",
                                         valueMember:"value",
-                                        source: [],                                         
+                                        source: [],
                                         //dragEnd: function (dragItem, dropItem) {
                                         dragStart: function (dragItem, dropItem) {
                                             this.changing=true;
@@ -1716,7 +1717,7 @@
                                     height: '260px',
                                     allowDrop: true,
                                     allowDrag: true,
-                                    source: [],                                    
+                                    source: [],
                                     displayMember:"label",
                                     valueMember:"value",
                                     dragEnd: function (dragItem, dropItem) {
@@ -2125,8 +2126,11 @@
                             showPath:function(key)
                             {
 
-                                    if(this.innerInput)
+                                    if(this.innerInput) {
+                                        if(key===this.innerInput.type.__name.fieldName)
+                                            this.rootNode[0].scrollIntoView();
                                         this.innerInput.showPath(key);
+                                    }
                                     else
                                         this.pathToShow=key;
 
@@ -2143,10 +2147,15 @@
                                         }
                                         this.innerInput=instance;
                                         //this.innerInput.setInputWrapper(this);
-                                        
+                                        // FELIPE:: El listener de error, que antes estaba en el tipo, ahora esta aqui
+                                        this.innerInput.type.addListener("ERROR",this,"showError");
+                                        // FELIPE: Ademas, como ahora se muestra el error, tambien queremos saber cuándo cambia el tipo, para, si
+                                        // el valor de corrige, ocultar el campo de error.Por simplificar, se va a usar el mismo callback.
+                                        this.innerInput.type.addListener("CHANGE",this,"showError");
+
                                         // comprobación que el inputWrapper no sea undefined para quitar error de la consola (https://pastebin.com/dyxxCW0c)
                                         if (typeof instance.inputWrapper !== "undefined" && typeof instance.inputWrapper.errorNode !== "undefined")
-                                            this.errorNode = instance.inputWrapper.errorNode;                                     
+                                            this.errorNode = instance.inputWrapper.errorNode;
 
                                         // Comprobación si un tipo es FIXED o no, para mostrarlo como string-raw o input
                                         if (this.innerType.__definition.FIXED === this.innerType.__value) {
@@ -2164,8 +2173,10 @@
                                             }
                                         }
                                         delete this.currentErrors[key];*/
-                                        if(this.pathToShow!==null)
+                                        if(this.pathToShow!==null) {
+
                                             instance.showPath(this.pathToShow);
+                                        }
                                         this.pathToShow=null;
 
                                     }.bind(this));
@@ -2180,7 +2191,22 @@
                             },
                             showError:function(e)
                             {
-                                this.innerInput.showError(e);
+                                // FELIPE : El showError de inputContainer, lo redirigia al input...No queremos eso.
+                                //this.innerInput.showError(e);
+                                // FELIPE: Lo que queremos es que lo muestre esta misma clase. OJO, este mismo metodo se ha asociado a
+                                // ERROR y CHANGE, asi que le preguntamos el estado al tipo.
+                                var type=this.innerInput.type;
+                                var errored=type.__isErrored();
+                                if(!errored)
+                                {
+                                    // AQUI ACCEDEMOS AL NODO A TRAVES DE SIVID
+                                    this.errorNode.css({"display":"none"});
+                                }
+                                else
+                                {
+                                    this.errorNode.css({"display":"block"});
+                                    this.errorNode.html(Siviglia.i18n.es.base.getErrorFromJsException(type.__getError()));
+                                }
                             }
 
                         }
@@ -2384,7 +2410,7 @@
                                             var path = errors[k].path.split("/");
                                             path.shift();
                                             this.showPath("/"+path.join("/"));
-                                        }                                        
+                                        }
                                     }
                                     return;
                                 }
@@ -2506,7 +2532,7 @@
                                         found.shift();
                                     this.__pathToShow=splicedPath;
                                     this.__pathToShowMaxMatch=found.length;
-                                    maxVal.input.showPath(splicedPath[found.length]);
+                                    maxVal.input.showPath(splicedPath[found.length-1]);
                                 }
                                 else
                                 {
@@ -3147,7 +3173,7 @@
                 <span data-sivId="errorNode" class="errorNodetext" style="display: none"></span>
                 <div data-sivId="inputNode" class="input" data-sivCall="getInputFor" data-sivParams="{}"></div>
             </div>
-                        
+
             <div style="clear:both"></div>
     </div>
 </div>

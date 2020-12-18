@@ -791,8 +791,9 @@ Siviglia.Utils.buildClass(
                                 this.__saving=false;
                                 if (this.__isErrored())
                                     throw new Siviglia.model.BaseTypedException(this.__fieldNamePath,Siviglia.model.BaseTypedException.ERR_CANT_SAVE_ERRORED_FIELD);
-                                if (!Siviglia.empty(this.__definition.REQUIRED) && (!this.__valueSet || this.__value === ""))
-                                    throw new Siviglia.types.BaseTypeException(this.__fieldNamePath,Siviglia.types.BaseTypeException.ERR_REQUIRED);
+                                if (!Siviglia.empty(this.__definition.REQUIRED) && (!this.__valueSet || this.__value === "")) {
+                                    this.__setErrored(new Siviglia.types.BaseTypeException(this.__fieldNamePath, Siviglia.types.BaseTypeException.ERR_REQUIRED));
+                                }
                                 if (this.isDirty())
                                     this.__setDirty(false);
                             },
