@@ -128,16 +128,32 @@
     border-style: var(--input-border-style);
     border-color: var(--input-border-color);
     cursor: pointer;
+    margin-right: var(--StdFormButtons-margin-right);
 }
+.StdFormButtons input[type=button].button-ok:hover { background: #008000d1; }
+.StdFormButtons input[type=button].button-ok:focus { background: var(--StdFormButtons-button-ok-background); }
+
+
 .StdFormButtons input[type=button].button-cancel {
     background: var(--StdFormButtons-button-cancel-background);
-    color: var(--StdFormButtons-button-cancel-color);
+    color: var(--StdFormButtons-button-ok-color);
     min-width: var(--StdFormButtons-button-width);
+    border-width: var(--input-border-width);
+    border-style: var(--input-border-style);
+    border-color: var(--input-border-color);
     cursor: pointer;
 }
+.StdFormButtons input[type=button].button-cancel:hover { background: #ed143dd1; }
+.StdFormButtons input[type=button].button-cancel:focus { background: var(--StdFormButtons-button-cancel-background); }
 
 .StdFormButtons input[type=button].button-disabled {
     filter:brightness(0.5);
+    cursor: not-allowed;
+    color: var(--StdFormButtons-button-ok-color);
+    min-width: var(--StdFormButtons-button-width);
+    border-width: var(--input-border-width);
+    border-style: var(--input-border-style);
+    border-color: var(--input-border-color);
 }
 
 
@@ -403,10 +419,16 @@ span.tooltiptext{
 
 
 /* Estilo para el scrollbar dentro ventanas widgets */
-::-webkit-scrollbar { display: none; }
+::-webkit-scrollbar { 
+    /* display: none;  */
+    width: 20px;
+    cursor: pointer;
+    /* Nota: si se muestra el scroll, hace que la ventana jqx-resize no se pueda redimensionar si hay scroll vertical */
+}
 
 ::-webkit-scrollbar-thumb {
-    display: none;
+    /* display: none; */
+    cursor: pointer;
     background-color: #b3b6b9;
     border-radius: 20px;
     border: 6px solid transparent;
