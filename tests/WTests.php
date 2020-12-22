@@ -113,12 +113,13 @@
 <script>
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-        var DEVELOP_MODE=43;    // Specific test number
+        var DEVELOP_MODE=41;    // Specific test number
 	    // var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
 	var DEVELOP_MODE = urlParams.get("test");
     }
+    var TEST_DESTROY=true;
     var Siviglia=Siviglia || {};
     Siviglia.config={
         baseUrl:'http://reflection.adtopy.com/',
@@ -148,6 +149,12 @@
             s++;
         return s;
     }
+    function countManagers() {
+        var s = 0;
+        for (var k in Siviglia.Dom.existingManagers)
+            s++;
+        return s;
+    }
 
     function showResult(name,doc,template,view,result,callback,testNumber,exception)
     {
@@ -166,6 +173,7 @@
 
     }
     var cbStack=[];
+    Siviglia.debug=true;
     var formatHTML = function(code, stripWhiteSpaces, stripEmptyLines) {
         "use strict";
         var whitespace          = ' '.repeat(4);             // Default indenting 4 whitespaces
@@ -295,6 +303,42 @@
                 nDiv.appendChild(divResult);
                 document.body.appendChild(nDiv);
                 parser.parse($("#testCont"+cItem.number));
+                if(TEST_DESTROY===true && DEVELOP_MODE!==0)
+                {
+                    var onClicked=function(){
+                        var nListeners=countListeners();
+                        var nManagers=countManagers();
+                        var nDiv=document.createElement("div");
+                        nDiv.innerHTML="Listeners:<b>"+nListeners+"</b> Managers:<b>"+nManagers+"</b>";
+                        parser.destruct();
+                        nListeners=countListeners();
+                        nManagers=countManagers();
+
+                        nDiv.innerHTML+="<br>Despues:<br>Listeners:<b>"+nListeners+"</b> Managers:<b>"+nManagers+"</b>";
+                        document.body.prependChild(nDiv);
+                        if(nManagers > 0)
+                        {
+                            for(var k in Siviglia.Dom.existingManagers)
+                            {
+                                console.log("MANAGERS:");
+                                console.dir(Siviglia.Dom.existingManagers[k]);
+                            }
+                        }
+                        if(nListeners>0)
+                        {
+                            for(var k in Siviglia.Dom.existingListeners)
+                            {
+                                console.log("LISTENERS:");
+                                console.dir(Siviglia.Dom.existingListeners[k]);
+                            }
+                        }
+                    }
+                    var button=document.createElement("button");
+                    button.onclick=onClicked;
+                    button.innerHTML="Destroy";
+                    document.body.prependChild(button);
+
+                }
             } catch (e) {
                 console.dir(e);
             }
@@ -971,7 +1015,7 @@
                         inherits: "Siviglia.UI.Expando.View",
                         destruct:function()
                         {
-                            this.instance.destruct();
+                            this.ds.destruct();
                         },
                         methods:{
                             preInitialize:function(params)

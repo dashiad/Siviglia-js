@@ -7,24 +7,24 @@
                   inherits:'Siviglia.inputs.jqwidgets.Form',
                     destruct:function()
                     {
-                        for(var k in this.subwidgets)
+                        for(var k=0;k<this.registeredInputs.length;k++)
                         {
-                            this.subwidgets[k].removeListeners(this);
+                            this.registeredInputs[k].type.removeListeners(this);
                         }
                     },
                     methods:{
                       initialize:function(params)
                       {
                           this.Form$initialize(params);
-                          for(var k in this.subwidgets)
+                          for(var k=0;k<this.registeredInputs.length;k++)
                           {
-                              this.subwidgets[k].addListener("CHANGE",this,"onInputChanged")
+                              this.registeredInputs[k].type.addListener("CHANGE",this,"onInputChanged")
                           }
 
                       },
                         onInputChanged:function()
                         {
-                            console.dir(params);
+                            //console.dir(params);
                         }
                     }
                 },
@@ -341,10 +341,13 @@
                                 this.jqgrid=1;
                                 return this.buildGrid();
                             }
-                            this.jqxDataSource.localdata =  this.ds.getValue().data;
+                            var newData =  this.ds["*data"].getPlainValue();
+                            if(newData===null)
+                                newData=[];
+                            this.jqxDataSource.localdata=newData;
                             this.jqxDataSource.pagenum=this.ds.settings.__start;
                             this.jqxDataSource.pagesize=this.ds.settings.__count;
-                            this.jqxDataSource.totalrecords=this.ds.settings.count;
+                            this.jqxDataSource.totalrecords=this.ds.count;
                             this.dataAdapter.dataBind();
                         },
 
@@ -355,26 +358,26 @@
                                 cache:false,
                                 pagenum:this.ds.settings.__start,
                                 pagesize:this.ds.settings.__count,
-                                totalrecords:this.ds.settings.count,
+                                totalrecords:this.ds.count,
 
 
                                 pager: function (pagenum, pagesize, oldpagenum) {
-                                    if(pageSize!=this.settings.__count)
+                                    if(pageSize!=this.ds.settings.__count)
                                     {
                                         this.ds.freeze();
-                                        this.settings.__count=this.ds.pageSize;
-                                        this.settings.__start=0;
+                                        this.ds.settings.__count=pageSize;
+                                        this.ds.settings.__start=0;
                                         this.ds.unfreeze();
                                         return;
                                     }
-                                    if(pageNum!=this.settings.__start)
-                                        this.settings.__start=pageNum;
+                                    if(pageNum!=this.ds.settings.__start)
+                                        this.ds.settings.__start=pageNum;
 
                                 },
                                 //totalrecords: 1000000
                             };
                             this.dataAdapter = new $.jqx.dataAdapter(this.jqxDataSource);
-                            this.jqxDataSource.localdata =  this.ds.getValue().data;
+                            this.jqxDataSource.localdata =  this.ds.getValue()["*data"].getPlainValue();
 
                             this.dataAdapter.dataBind();
                             //var definition=this.ds.__getDefinition();

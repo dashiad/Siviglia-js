@@ -233,11 +233,8 @@ Siviglia.Utils.buildClass(
                         if (typeof def["FIXED"] == true)
                             this.__flags |= Siviglia.types.BaseType.TYPE_NOT_EDITABLE;
 
-                        this.__source = this.__getSource();
-                        if(this.__source!==null)
-                        {
-                            this.__source.addListener("CHANGE",this,"__onSourceChanged");
-                        }
+                        //this.__source = this.__getSource();
+
                         this.__sourceException=false;
                         this.__sourceFactory = null;
                         this.__sourceChecked=false;
@@ -262,6 +259,15 @@ Siviglia.Utils.buildClass(
                         for(var k=0;k<this.__resolvers.length;k++)
                             this.__resolvers[k].destruct();
                         this.__value=null;
+                        // Si alguien nos ha "proxificado", se elimina el event manager
+                        if(typeof this.__isProxy__!=="undefined"){
+                            if(typeof this.__destruct__!=="undefined")
+                                this.__destruct__();
+                            else{
+                                if(typeof this.__ev__!=="undefined")
+                                    this.__ev__.destruct();
+                            }
+                        }
 
                     },
 
@@ -347,6 +353,7 @@ Siviglia.Utils.buildClass(
                                     this,
                                     stack
                                 );
+                                this.__source.addListener("CHANGE",this,"__onSourceChanged","BaseType-SourceChanged");
                                 return this.__source;
                             },
                             // Por defecto, los valores dependientes de un source, es el propio valor.
@@ -594,6 +601,17 @@ Siviglia.Utils.buildClass(
                             __checkSource: function (value) {
                                 // Esto solo deberia llamarse si el modo de validacion es complete.
                                 if (this.__hasSource()) {
+                                    if(value===null)
+                                    {
+                                        var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: val});
+                                        // No lo ponemos a errored. Esto lo hara quien capture esta excepcion.
+                                        //this.__setErrored(e);
+                                        // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
+                                        // que podemos borrar el error, y volver a poner este campo a "ok"
+                                        this.__sourceException = true;
+                                        this.__sourceChecked = false;
+                                        throw e;
+                                    }
                                     var s = this.__getSource();
                                     var v=this.__getSourcedValue();
                                     var checker=function(val) {
@@ -647,6 +665,7 @@ Siviglia.Utils.buildClass(
                                             this.__sourceChecked=false;
                                             // No lanzamos la excepcion...
                                             //throw e;
+                                            this.setValue(null);
                                         }
                                     }
                                     else
@@ -791,7 +810,7 @@ Siviglia.Utils.buildClass(
                                 this.__saving=false;
                                 if (this.__isErrored())
                                     throw new Siviglia.model.BaseTypedException(this.__fieldNamePath,Siviglia.model.BaseTypedException.ERR_CANT_SAVE_ERRORED_FIELD);
-                                if (!Siviglia.empty(this.__definition.REQUIRED) && (!this.__valueSet || this.__value === "")) {
+                                if (!Siviglia.empty(this.__definition.REQUIRED) && this.__definition.REQUIRED==true && (!this.__valueSet || this.__value === "")) {
                                     this.__setErrored(new Siviglia.types.BaseTypeException(this.__fieldNamePath, Siviglia.types.BaseTypeException.ERR_REQUIRED));
                                 }
                                 if (this.isDirty())
@@ -834,8 +853,8 @@ Siviglia.Utils.buildClass(
                             get: function () {
                                 return this.getValue();
                             },
-                            getPlainValue: function () {
-                                if(!this.__saving)
+                            getPlainValue: function (dontSave) {
+                                if(!this.__saving && typeof dontSave==="undefined")
                                      this.save();
                                 return this.getValue();
                             },
@@ -1110,14 +1129,18 @@ Siviglia.Utils.buildClass(
                                         ex.DateTimeException.ERR_END_YEAR,
                                         {max: this.__definition.ENDYEAR, cur: year});
                                 cur = new Date();
-                                if ('STRICTLYPAST' in this.__definition && cur < odate)
-                                    throw new ex.DateTimeException(
-                                        this.getFullPath(),
-                                        ex.DateTimeException.ERR_STRICTLY_PAST);
-                                if ('STRICTLYFUTURE' in this.__definition && cur > odate)
-                                    throw new ex.DateTimeException(
-                                        this.getFullPath(),
-                                        ex.DateTimeException.ERR_STRICTLY_FUTURE);
+                                if(typeof this.__definition['STRICTLYPAST']!=="undefined") {
+                                    if (this.__definition['STRICTLYPAST']==true && cur < odate)
+                                        throw new ex.DateTimeException(
+                                            this.getFullPath(),
+                                            ex.DateTimeException.ERR_STRICTLY_PAST);
+                                }
+                                if(typeof this.__definition['STRICTLYFUTURE']!=="undefined") {
+                                    if (this.__definition['STRICTLYFUTURE']==true && cur > odate)
+                                        throw new ex.DateTimeException(
+                                            this.getFullPath(),
+                                            ex.DateTimeException.ERR_STRICTLY_FUTURE);
+                                }
                                 return odate;
                             },
                             _setValue: function (val) {
@@ -1341,7 +1364,7 @@ Siviglia.Utils.buildClass(
                                     this.__danglingState = val;
                                     this.awaitingChangeOf = this.__controller.__getField(e.path);
                                     this.__stateExceptions.push({obj: this.awaitingChangeOf, exception: e});
-                                    this.awaitingChangeOf.addListener("CHANGE", this, "retryState");
+                                    this.awaitingChangeOf.addListener("CHANGE", this, "retryState","State-retry");
                                     throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION);
                                 }
                             }
@@ -1868,7 +1891,7 @@ Siviglia.Utils.buildClass(
                         return t;
 
                     },
-                    getPlainValue: function () {
+                    getPlainValue: function (dontSave) {
                        /* if(this.__value===null) {
                             if (typeof this.__definition["SET_ON_EMPTY"] !== "undefined" &&
                                 this.__definition["SET_ON_EMPTY"] == true)
@@ -1879,14 +1902,17 @@ Siviglia.Utils.buildClass(
                         var nSet = 0;
                         var nFields = 0;
                         var res = {};
-                        if(!this.__saving)
+                        if(!this.__saving && typeof dontSave==="undefined")
                             this.save();
                         // Se mira si hay que devolver las claves que son nulas.
                         for (var k in this.__definition["FIELDS"]) {
                             nFields++;
                             var plainValue=null;
-                            if(Siviglia.isset(this["*"+k]))
-                                plainValue = this["*" + k].getPlainValue();
+                            if(Siviglia.isset(this["*"+k])) {
+                                // No queremos que vuelva a hacer save()
+                                plainValue = this["*" + k].getPlainValue(true);
+                            }
+
                             if (plainValue === null) {
                                 var d = this.__definition["FIELDS"][k];
                                 if (d["KEEP_KEY_ON_EMPTY"] == true) {
@@ -2040,7 +2066,7 @@ Siviglia.Utils.buildClass(
                                    if(typeof this[property]==="undefined")
                                    // Si el campo no existe, lanzamos excepcion, pero no ponemos el objeto a "Errored".Técnicamente,  el objeto no está mal,
                                    // ya que no ha sido modificado.
-                                   throw new Siviglia.types.BaseTypeException(m.getFullPath(), Siviglia.types.BaseTypeException.ERR_NOT_A_FIELD, {});
+                                   throw new Siviglia.model.BaseTypedException(m.getFullPath(), Siviglia.model.BaseTypedException.ERR_NOT_A_FIELD, {field:property});
                                }
                                return v[property];
 
@@ -2051,7 +2077,7 @@ Siviglia.Utils.buildClass(
                                     if(typeof this[property]==="undefined")
                                     // Si el campo no existe, lanzamos excepcion, pero no ponemos el objeto a "Errored".Técnicamente,  el objeto no está mal,
                                     // ya que no ha sido modificado.
-                                    throw new Siviglia.types.BaseTypeException(m.getFullPath(), Siviglia.types.BaseTypeException.ERR_NOT_A_FIELD, {});
+                                    throw new Siviglia.model.BaseTypedException(m.getFullPath(), Siviglia.model.BaseTypedException.ERR_NOT_A_FIELD, {field:property});
                                 }
                                 v[property]=value;
                                 return value;
@@ -2399,7 +2425,7 @@ Siviglia.Utils.buildClass(
                                 if (val.hasOwnProperty("__isProxy__")) {
                                     // Es un array que YA es un proxy. Simplemente, incrementamos el contador de referencias, nos enganchamos a su onChange.
                                     val.__refcount__++;
-                                    val.__ev__.addListener("CHANGE", this, "onChange");
+                                    val.__ev__.addListener("CHANGE", this, "onChange","Proxifier-existingProxy");
                                     this.__currentProxy = val;
                                     this.__value = val;
                                     this.updateChildren(val,validationMode);
@@ -2522,7 +2548,7 @@ Siviglia.Utils.buildClass(
                                 this.__currentProxy = this.buildProxy(val);
                                 this.__value = this.__currentProxy;
                                 this.disableEvents(true);
-                                ev.addListener("CHANGE", this, "onChange");
+                                ev.addListener("CHANGE", this, "onChange","Proxifier-Keys");
                                 this.updateChildren(val,validationMode);
                                 this.disableEvents(false);
                                 return this.__currentProxy;
@@ -2814,10 +2840,10 @@ Siviglia.Utils.buildClass(
                         {
                             return "KEY";
                         },
-                        getPlainValue: function () {
+                        getPlainValue: function (dontSave) {
                             if (!this.__valueSet)
                                 return null;
-                            if(!this.__saving)
+                            if(!this.__saving && typeof dontSave==="undefined")
                                 this.save();
                             var res = {};
                             var nSet = 0;
@@ -2826,7 +2852,7 @@ Siviglia.Utils.buildClass(
                                 nFields++;
                                 if (this.__currentProxy[k] !== null) {
                                     nSet++;
-                                    res[k] = this.__currentProxy["*" + k].getPlainValue();
+                                    res[k] = this.__currentProxy["*" + k].getPlainValue(true);
                                 }
                             }
                             if (nSet != nFields)
@@ -3178,10 +3204,10 @@ Siviglia.Utils.buildClass(
                                 return null;
                             return this.subNode.getValue();
                         },
-                        getPlainValue: function () {
+                        getPlainValue: function (dontSave) {
                             if(!this.subNode)
                                 return null;
-                            return this.subNode.getPlainValue();
+                            return this.subNode.getPlainValue(dontSave);
                         },
 
                         isValidType: function (v) {
@@ -3483,14 +3509,14 @@ Siviglia.Utils.buildClass(
                         getValue: function () {
                             return this.__value;
                         },
-                        getPlainValue: function () {
-                            if(!this.__saving)
+                        getPlainValue: function (dontSave) {
+                            if(!this.__saving && typeof dontSave==="undefined")
                                 this.save();
                             var res = [];
                             if (this.__value == null)
                                 return null;
                             for (var k = 0; k < this.__currentProxy.length; k++) {
-                                var val = this.__currentProxy["*" + k].getPlainValue();
+                                var val = this.__currentProxy["*" + k].getPlainValue(true);
                                 if (val === null)
                                     continue;
                                 res.push(val);

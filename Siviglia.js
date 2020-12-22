@@ -460,7 +460,6 @@ Siviglia.Dom = {
     }
 
 };
-
 Siviglia.Utils.buildClass({
     context: 'Siviglia.Dom',
     classes: {
@@ -468,8 +467,11 @@ Siviglia.Utils.buildClass({
 
             construct: function () {
                 this._ev_id = Siviglia.Dom.managerCounter;
-                Siviglia.Dom.existingManagers[this._ev_id] = this;
-                Siviglia.Dom.managerCounter++;
+                if(Siviglia.debug===true) {
+                    var e=new Error();
+                    Siviglia.Dom.existingManagers[this._ev_id] ={obj: this,stack:e.stack};
+                    Siviglia.Dom.managerCounter++;
+                }
                 this._ev_firing = null;
                 // Ojo, por como funciona la herencia, es posible que a un objeto que deriva de EventManager,
                 // se le haya llamado a addListener, lo cual crea el objeto _ev_listeners, posiblemente, antes
@@ -507,9 +509,15 @@ Siviglia.Utils.buildClass({
                         id: Siviglia.Dom.listenerCounter,
                         description: description
                     }
-                    Siviglia.Dom.listenerCounter++;
+                    if(Siviglia.debug===true) {
+                        var e=new Error();
+
+                        Siviglia.Dom.existingListeners[newListener.id] = {obj:newListener,stack:e.stack};
+                        Siviglia.Dom.listenerCounter++;
+                    }
+
                     this._ev_listeners[evType].push(newListener);
-                    Siviglia.Dom.existingListeners[newListener.id] = newListener;
+
                 },
 
                 removeListener: function (evType, object, method, target) {
@@ -740,7 +748,7 @@ Siviglia.Utils.buildClass(
                         this.pointer=this.objRoot;
                         this.__lastTyped=(typeof this.pointer.__getParent==="function");
                     },
-                    moveTo:function(spec)
+                    moveTo:function(spec,eventMode)
                     {
                         //this.__lastTyped=false;
                         if(spec===".." && typeof this.pointer.__getParent==="function")
@@ -769,7 +777,7 @@ Siviglia.Utils.buildClass(
                             {
                                 if(typeof v["__type__"]!=="undefined")
                                 {
-                                    if(this.prefix!="@") {
+                                    if(this.prefix!="@" && eventMode==2) {
                                         v.addListener("CHANGE", this, "onChange", "BaseCursor:" + spec);
                                         this.remListeners.push(v);
                                     }
@@ -779,8 +787,10 @@ Siviglia.Utils.buildClass(
                                     this.addPathListener(this.pointer, spec);
 
                             }
-                            else
-                                this.addPathListener(this.pointer,spec);
+                            else {
+                                if(eventMode==2)
+                                this.addPathListener(this.pointer, spec);
+                            }
                             this.pointer=this.pointer[spec];
                         }
                     },
@@ -834,7 +844,15 @@ Siviglia.Utils.buildClass(
             },
             PathResolver: {
                 inherits: "Siviglia.Dom.EventManager",
-                construct: function (contexts,path) {
+                construct: function (contexts,path,eventMode) {
+                    // EventMode 0 : Ningun evento.
+                    // EventMode 1: Eventizado solo ultimo elemento del path.
+                    // EventMode 2: Eventizado todo
+                    this.eventMode=2; // Todo eventizado.
+                    if(typeof eventMode!=="undefined")
+                    {
+                        this.eventMode=eventMode;
+                    }
                     this.contexts = contexts;
                     this.remlisteners=[];
                     // Los paths antiguos utilizan /* para marcar un contexto determinado.
@@ -843,11 +861,13 @@ Siviglia.Utils.buildClass(
                     if((path[1]==="*" || path[1]==="@") && path[0]==="/")
                         path=path.substr(1);
                     this.path=path;
+
                     this.cursors=[];
                     this.valid=false;
                     this.lastValue=null;
                     this.firing=false;
-                    this.EventManager();
+                    if(this.eventMode!==0)
+                        this.EventManager();
                 },
                 destruct:function()
                 {
@@ -974,7 +994,7 @@ Siviglia.Utils.buildClass(
                         var cursor=this.contexts.getCursor(pathParts[0].prefix);
                         this.cursors.push(cursor);
                         var m=this;
-                        if(pathParts[0].prefix!=='@') {
+                        if(pathParts[0].prefix!=='@' && this.eventMode!==0) {
                             cursor.addListener("CHANGE", this, "getPath", "PathResolver:" + this.path)
                         }
                         var lastPointer,lastLabel;
@@ -989,7 +1009,10 @@ Siviglia.Utils.buildClass(
                                     lastPointer=cursor.getValue();
                                     lastLabel=p.str;
                                     try {
-                                        cursor.moveTo(p.str);
+                                        var evMode=this.eventMode;
+                                        if(this.eventMode===1 && k==pathParts.length-1)
+                                            evMode=2;
+                                        cursor.moveTo(p.str,evMode);
                                     }catch(e)
                                     {
                                         this.valid=false;
@@ -1054,10 +1077,10 @@ Siviglia.Utils.buildClass({
                         this.str=str;
                         this.valid=true;
                         this.pathController=null;
-                        this.useListeners=true;
+                        this.listenerMode=2;
                         if(typeof opts!=="undefined")
                         {
-                            this.useListeners=Siviglia.issetOr(opts.useListeners,true);
+                            this.listenerMode=Siviglia.issetOr(opts.listenerMode,2);
                         }
                         this.EventManager();
 
@@ -1163,11 +1186,11 @@ Siviglia.Utils.buildClass({
                                     }
                                 }
 
-                                var controller=new Siviglia.Path.PathResolver(this.contextStack,path);
+                                var controller=new Siviglia.Path.PathResolver(this.contextStack,path,this.listenerMode);
                                 this.paths[path]=controller;
                                 // Si no queremos que sea dinamico, ya que lo que queremos es el valor actual del path, y punto,
                                 // no aniadimos ningun listener al path
-                                if(this.useListeners) {
+                                if(this.listenerMode!=0) {
                                     if (!((path[0] == "/" && path[1] == "@") || (path[0] == "@")))
                                         controller.addListener("CHANGE", this, "onListener", "ParametrizableString: value:" + path);
                                 }
@@ -1443,7 +1466,7 @@ Siviglia.Path.Proxify=function(obj,ev)
     // Y eso es porque se esta escuchando al padre del proxy, no al proxy en si mismo.
 
     if(typeof obj.__isProxy__ !== "undefined") {
-        obj.__ev__.addListener("CHANGE",null,function(event,params){ev.fireEvent("CHANGE",params)});
+        obj.__ev__.addListener("CHANGE",null,function(event,params){ev.fireEvent("CHANGE",params),"Siviglia-Proxify:Existing"});
         return obj;
     }
 
@@ -1502,9 +1525,9 @@ Siviglia.Path.Proxify=function(obj,ev)
             var mustFire=false;
 
             if(
-                ((typeof curVal[prop]==="undefined" || curVal[prop]===null) && (typeof val!=="undefined" && val!==null))
+                ((typeof curVal[prop]==="undefined" || curVal[prop]===null) && (typeof value!=="undefined" && value!==null))
                 ||
-                ((typeof curVal[prop]!=="undefined" && curVal[prop]!==null) && (typeof val==="undefined" || val===null))
+                ((typeof curVal[prop]!=="undefined" && curVal[prop]!==null) && (typeof value==="undefined" || value===null))
             )
                 mustFire=true;
             curVal[prop]=value;
@@ -1825,7 +1848,7 @@ Siviglia.Utils.buildClass(
                                             m.updateParams(key,null);
                                         else
                                             m.updateParams(key,param.value);
-                                    });
+                                    },"ParamsExpando");
                                     m.paths.push(pr);
                                     pr.getPath();
                                 })(k,pObj[k]);
@@ -2142,6 +2165,11 @@ Siviglia.Utils.buildClass(
                         this.oManager = null;
                         this.Expando("sivpromise");
                     },
+                    destruct:function()
+                    {
+                        if(this.resolver)
+                            this.resolver.destruct();
+                    },
                     methods: {
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
 
@@ -2369,6 +2397,8 @@ Siviglia.Utils.buildClass(
                         this.__parentView.__removeSubView(this);
                     if(this.oManager)
                         this.oManager.destruct();
+                    if(typeof this.__destroy__!=="undefined")
+                        this.__destroy__();
                 },
                 methods: {
                     __setParentView:function(view)
@@ -2577,7 +2607,7 @@ Siviglia.Utils.buildClass(
                                 // Para ello, se recoge la propiedad data-viewName, que se resuelve como una
                                 // parametrizable string, con el stack del padre, y sin eventos (tiene que resolverse inmediatamente)
                                 var curRoot = stack.getRoot("*");
-                                var str = new Siviglia.Path.ParametrizableString(dataset["viewname"], stack,{useListeners:false});
+                                var str = new Siviglia.Path.ParametrizableString(dataset["viewname"], stack,{listenerMode:0});
                                 var parsed=str.parse();
                                 if(parsed)
                                     this.__viewName=parsed;

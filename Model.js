@@ -471,7 +471,10 @@ Siviglia.Utils.buildClass({
                 this.__model=model;
                 this.__fname=name;
                 this.__keys=keys;
-                this.BaseTypedObject(definition,value,false);
+                this.BaseTypedObject(definition,null,false);
+                this.ready().then(function(){
+                    this.apply(value,Siviglia.types.BaseType.VALIDATION_MODE_NONE);
+                }.bind(this));
             },
             methods:
                 {
@@ -544,7 +547,7 @@ Siviglia.Utils.buildClass({
                     };
                     if(typeof meta.TYPES !=="undefined")
                         definition["TYPES"]=meta.TYPES;
-                    this.BaseTypedObject(definition,null,Siviglia.types.BaseType.VALIDATION_MODE_NONE);
+                    this.BaseTypedObject(definition,null);
 
                     if(params===null)
                         params={};
@@ -557,11 +560,11 @@ Siviglia.Utils.buildClass({
                     // Se aniaden listeners en todos los campos.
                     for(var k in definition.FIELDS.params.FIELDS)
                     {
-                        this.params["*"+k].addListener("CHANGE",this,"refresh");
+                        this.params["*"+k].addListener("CHANGE",this,"refresh","Datasource-params");
                     }
                     this.settings={};
                     for(var k in definition.FIELDS.settings.FIELDS)
-                        this.settings["*"+k].addListener("CHANGE",this,"refresh");
+                        this.settings["*"+k].addListener("CHANGE",this,"refresh","Datasource-Settings");
 
                 },
                 destruct:function()
@@ -612,11 +615,11 @@ Siviglia.Utils.buildClass({
                                     m.onResponse(response);
                                     currentPromise.resolve();
                                 }
-                                delete m[location];
+                                delete m.__promises[location];
                             },
                             function (error) {
                                 currentPromise.reject(error);
-                                delete m[location];
+                                delete m.promises[location];
                                 throw error;
                             });
                         })(location);

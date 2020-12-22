@@ -164,11 +164,21 @@
                           var stateType=stDef.getStateType();
                           stateType.removeListeners(this);
                       }
-                      this.type.removeListeners(this);
+                      if(this.type)
+                        this.type.removeListeners(this);
                       for(var k in this.subWidgets)
                       {
                           this.subWidgets[k].destruct();
                       }
+                      // Si alguien nos ha "proxificado", se elimina el event manager
+                        if(typeof this.__isProxy__!=="undefined"){
+                          if(typeof this.__destruct__!=="undefined")
+                            this.__destruct__();
+                          else{
+                              if(typeof this.__ev__!=="undefined")
+                                  this.__ev__.destruct();
+                          }
+                        }
                     },
                     methods: {
                         preInitialize: function (params) {
@@ -187,7 +197,7 @@
                             this.inputWrapper=Siviglia.issetOr(params.inputWrapper,null);
                             this.type = params.type;
 
-                            this.type.addListener("CHANGE",this,"onTypeChanged");
+                            this.type.addListener("CHANGE",this,"onTypeChanged","BaseInput-TypeChanged");
                             // FELIPE : EL LISTENER DE ERROR, YA NO VA A ESTAR EN EL INPUT, SINO EN EL INPUTCONTAINER
                             // LO MISMO DEBE PASAR CON EL HELPMESSAGE, YA NO HACE FALTA QUE LO GESTIONE EL INPUT, SINO EL INPUTCONTAINER
                             //this.type.addListener("ERROR",null,function(){console.dir("ON_ERROR")});
@@ -276,7 +286,7 @@
                                         else
                                             this.disable();
                                     }.bind(this);
-                                    stateType.addListener("CHANGE",this,"__checkEditable");
+                                    stateType.addListener("CHANGE",this,"__checkEditable","BaseInput-State");
                                     this.stateDriven=true;
                                 }
                             }
@@ -545,6 +555,13 @@
                             var curLabel=this.type.getLabel();
                             this.inputNode[this.getJqxWidgetName()]('val', curLabel);
                             this.changing = false;
+                        },
+                        getValue:function()
+                        {
+                            var v=$(this.inputNode).val();
+                            if(v===-1 || v==="")
+                                return null;
+                            return v;
                         }
                     }
                 },
@@ -605,10 +622,12 @@
                     }
                 },
                 AutoIncrement: {
-                    inherits: 'Siviglia.UI.Expando.View,Siviglia.Dom.EventManager',
+                    //inherits: 'Siviglia.UI.Expando.View,Siviglia.Dom.EventManager',
+                    inherits:'BaseInput',
                     methods: {
                         preInitialize: function (params) {
                             this.value = params.type.getValue();
+                            this.BaseInput$preInitialize(params);
                         },
                         initialize: function (params) {
 
@@ -666,10 +685,14 @@
                             this.type.addListener("ERROR",null,function(){
                                 if(this.type.__sourceError!==null && this.type.getValue()!==null)
                                     this.type.setValue(null);
-                            }.bind(this));
+                            }.bind(this),"ComboBox-Error");
                             var m = this;
-                            this.inputNode.on("select", function (ev) {
-                                if(!m.dataBinding && !m.changing) {
+                            //this.inputNode.on("change",function(ev){console.log("CHANGED")});
+                            this.inputNode.off("change");
+                            this.inputNode.on("change", function (ev) {
+                                if(m.dataBinding)
+                                    return;
+                                if(!m.changing) {
                                     if (ev.args) {
                                         m.changing = true;
                                         var newVal = ev.args.item.value;
@@ -679,6 +702,20 @@
                                             } else {
                                                 m.type.setValue(m.getValue());
                                             }
+                                            m.clearErrors();
+                                        } catch (e) {
+                                            m.showError(
+                                                Siviglia.i18n.es.base.getErrorFromJsException(e)
+                                            );
+                                        }
+                                        m.changing = false;
+                                    }
+                                    else
+                                    {
+                                        m.changing = true;
+                                        $("input",m.inputNode).val(null);
+                                        try {
+                                            m.type.setValue(null);
                                             m.clearErrors();
                                         } catch (e) {
                                             m.showError(
@@ -808,7 +845,7 @@
                                 var plainCtx = new Siviglia.Path.BaseObjectContext(this.controller, "*");
                                 var s = this.type.__getSource();
                                 s.addContext(plainCtx);
-                                s.addListener("CHANGE", this, "onSourceChanged");
+                                s.addListener("CHANGE", this, "onSourceChanged","Combobox-source");
 
                                 this.source=s;
                             }
@@ -892,7 +929,7 @@
                                     "LABEL":"LABEL",
                                     "VALUE":"VALUE"
                                 },this.type,stack);
-                                s.addListener("CHANGE", this, "onSourceChanged");
+                                s.addListener("CHANGE", this, "onSourceChanged","BooleanCombo-Source");
                                 this.source=s;
                             }
                             this.source.fetch();
@@ -1380,7 +1417,7 @@
                             factory.getInput(this.fieldsController,{controller:this},this.form).then(function(instance){
                                 this.fControllerInput=instance;
                                 this.fControllerNode.append(instance.rootNode);
-                                this.fieldsController.addListener("CHANGE",this,"onFieldAdded");
+                                this.fieldsController.addListener("CHANGE",this,"onFieldAdded","ByFieldContainer");
                                 // Recuperamos el array (proxy).
                                 this.unusedFields=this.fieldsController.getDefinition().SOURCE.VALUES;
                             }.bind(this));
@@ -1676,7 +1713,7 @@
                                 // En el initialize, se van a quedar vacios ambos combos, hasta que se cargue la fuente.
 
                                 var preferences=this.getDefaultInputOptions();
-                                this.type.addListener("CHANGE",this,"onTypeChanged");
+                                this.type.addListener("CHANGE",this,"onTypeChanged","SourcedArray-Type");
                                 preferences.width=Siviglia.issetOr(preferences.width,200);
                                 preferences.height=Siviglia.issetOr(preferences.height,200);
 
@@ -1737,7 +1774,7 @@
                                 this.sourceListBox.jqxListBox(preferences);
                                 this.checkState();
                                 this.source=params.type.getSource();
-                                this.source.addListener("CHANGE",this, "onSourceChanged");
+                                this.source.addListener("CHANGE",this, "onSourceChanged","SourcedArray-source");
                                 this.source.fetch();
                             },
                             onSourceChanged:function(evName,params)
@@ -1877,7 +1914,7 @@
                                         var val=m.typeSelector.getValue();
                                         m.type.setCurrentType(val);
                                         m.buildTypeUI();
-                                    })
+                                    },"TypeSwitcher-type")
 
                                     this.typeSwitchSelector.append(this.typeSelectorWidget.rootNode);
                                     this.buildTypeUI();
@@ -2093,10 +2130,12 @@
                                 }
                                 // controller se refiere al input o form que contiene este inputContainer
                                 this.controller=typeof params.controller==="undefined"?this.form:params.controller;
-                                if(typeof this.parent.getPath!=="undefined")
-                                    this.innerType=this.parent.getPath("#*"+this.field);
+                                if(typeof this.parent.getPath!=="undefined") {
+                                    this.innerType = this.parent.getPath("#*" + this.field);
+                                }
                                 else
                                     this.innerType=this.parent["*"+this.field];
+
 
 
                                 this.fieldName=params.key;
@@ -2148,10 +2187,10 @@
                                         this.innerInput=instance;
                                         //this.innerInput.setInputWrapper(this);
                                         // FELIPE:: El listener de error, que antes estaba en el tipo, ahora esta aqui
-                                        this.innerInput.type.addListener("ERROR",this,"showError");
+                                        this.innerInput.type.addListener("ERROR",this,"showError","InputContainer-Error");
                                         // FELIPE: Ademas, como ahora se muestra el error, tambien queremos saber cuándo cambia el tipo, para, si
                                         // el valor de corrige, ocultar el campo de error.Por simplificar, se va a usar el mismo callback.
-                                        this.innerInput.type.addListener("CHANGE",this,"showError");
+                                        this.innerInput.type.addListener("CHANGE",this,"showError","inputContainer-Change");
 
                                         // comprobación que el inputWrapper no sea undefined para quitar error de la consola (https://pastebin.com/dyxxCW0c)
                                         if (typeof instance.inputWrapper !== "undefined" && typeof instance.inputWrapper.errorNode !== "undefined")
@@ -2532,7 +2571,7 @@
                                         found.shift();
                                     this.__pathToShow=splicedPath;
                                     this.__pathToShowMaxMatch=found.length;
-                                    maxVal.input.showPath(splicedPath[found.length-1]);
+                                    maxVal.input.showPath(splicedPath[found.length]);
                                 }
                                 else
                                 {
