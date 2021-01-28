@@ -112,12 +112,13 @@
 
 <script>
     var urlParams = new URLSearchParams(window.location.search);
+    var DEVELOP_MODE;
     if (!urlParams.has("test")) {
-        var DEVELOP_MODE=41;    // Specific test number
+        DEVELOP_MODE=41;    // Specific test number
 	    // var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
-	var DEVELOP_MODE = urlParams.get("test");
+	    DEVELOP_MODE = urlParams.get("test");
     }
     var TEST_DESTROY=true;
     var Siviglia=Siviglia || {};
