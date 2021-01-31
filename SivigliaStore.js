@@ -519,6 +519,9 @@ Siviglia.Utils.buildClass(
                                         data: '',
                                         type: 'GET',
                                         url: baseUrl,
+                                        xhrFields: {
+                                            withCredentials: true
+                                        }
                                     }).then(function(data){
 
                                         if(this.searchString===null)

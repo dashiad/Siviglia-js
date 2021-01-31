@@ -4081,6 +4081,9 @@ Siviglia.Utils.buildClass(
                                     $.ajax(
                                         {
                                             async: false,
+                                            xhrFields: {
+                                                withCredentials: true
+                                            },
                                             type: 'GET',
                                             dataType: "json",
                                             url: Siviglia.config.metadataUrl + "js/" + Siviglia.config.mapper + "/" + type,

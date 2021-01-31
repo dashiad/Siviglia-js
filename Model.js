@@ -186,6 +186,9 @@ Siviglia.Utils.buildClass({
                     doGet: function(url) {
                         var h = $.Deferred();
                         $.ajax({
+                            xhrFields: {
+                                withCredentials: true
+                            },
                             async: true,
                             dataType: 'json',
                             data: '',
@@ -217,6 +220,9 @@ Siviglia.Utils.buildClass({
                         var h = $.Deferred();
                         var result={};
                         $.ajax({
+                            xhrFields: {
+                                withCredentials: true
+                            },
                             async: false,
                             dataType: 'json',
                             data: '',
@@ -242,6 +248,9 @@ Siviglia.Utils.buildClass({
                             data: data,
                             type: 'POST',
                             url: url,
+                            xhrFields: {
+                                withCredentials: true
+                            },
                             success: function (response) {
                                 if (response.success || !response.error)
                                     return h.resolve(response);
