@@ -611,6 +611,7 @@ Siviglia.Utils.buildClass(
                                 fetch:function()
                                 {
 
+
                                     if(this.pstring===null)
                                     {
                                         this._dofetch("{}");
@@ -637,9 +638,11 @@ Siviglia.Utils.buildClass(
                                         if(f)
                                             ds.params[f]=this.searchString;
                                     }
+                                    console.log("FETCH:"+this.source["MODEL"]);
                                     ds.unfreeze().then(
                                         function(){
-                                            this.onData(ds["*data"].getPlainValue())}.bind(this),
+                                            console.log("FETCH-FINISHED:"+this.source["MODEL"]);
+                                            this.onData(ds["*data"].getPlainValue(true))}.bind(this),
                                         function(){
                                             this.onData(null);
                                         }.bind(this)

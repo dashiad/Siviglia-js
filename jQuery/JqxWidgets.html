@@ -389,6 +389,7 @@
                             if (this.form !== null)
                                 this.form.appendError(this.type.getFullPath(),this);
                         },
+
                         clearErrors: function () {
                             // Nos guardamos si hay excepcion en el tipo
                             var exception_input_path = this.type.__errorException;
@@ -2151,7 +2152,6 @@
                                 if(this.controller)
                                     this.controller.addSubWidget(this.field,this);
 
-                                else
                                 this.rootNode.addClass(this.fieldName);
                                 var typeDef=this.innerType.getDefinition();
                                 this.rootNode.addClass(typeDef["TYPE"]);
@@ -2243,9 +2243,16 @@
                                 }
                                 else
                                 {
-                                    this.errorNode.css({"display":"block"});
-                                    this.errorNode.html(Siviglia.i18n.es.base.getErrorFromJsException(type.__getError()));
+                                    this.displayError(Siviglia.i18n.es.base.getErrorFromJsException(type.__getError()));
+
                                 }
+                            },
+                            displayError:function(txt)
+                            {
+                                this.errorNode.css({"display":"block"});
+                                this.errorNode.html(txt);
+
+
                             }
 
                         }
@@ -2407,6 +2414,10 @@
                                 if(typeof this.__erroredInputs[path]!=="undefined")
                                     delete this.__erroredInputs[path];
                             },
+                            addError:function(path,input)
+                            {
+                                this.appendError(path,input);
+                            },
                             submit: function () {
                                 var errors=[];
                                 if(this.hasGlobalErrors)
@@ -2439,6 +2450,7 @@
                                     }
                                 if (errors.length >0) {
                                     for (var k=0;k<errors.length;k++) {
+
                                         if(!errors[k].path)
                                         {
                                             console.error("ERROR DURANTE SAVE:"+errors[k].toString());
@@ -2448,6 +2460,7 @@
                                         if (typeof errors[k].path !== "undefined"){
                                             var path = errors[k].path.split("/");
                                             path.shift();
+                                            this.addError(path,errors[k]);
                                             this.showPath("/"+path.join("/"));
                                         }
                                     }
@@ -2629,12 +2642,17 @@
                                     if (e.action.fieldErrors) {
                                         for (var k in e.action.fieldErrors) {
                                                 for (var c in e.action.fieldErrors[k]) {
-                                                    for(h in e.action.fieldErrors[k][c]) {
+                                                    for(var h in e.action.fieldErrors[k][c]) {
                                                         var error = e.action.fieldErrors[k][c][h];
                                                         var parts=error.path.split("/");
                                                         if (parts[0] == "")
                                                             parts.shift();
+                                                        var regInp=this.getInputByPath(error.path);
+                                                        regInp.displayError(
+                                                            this.decodeServerError(c,e.action.fieldErrors[k][c])
+                                                        )
                                                         this.addError(parts, error);
+
                                                     }
                                                 }
                                         }
@@ -2690,29 +2708,13 @@
 
                                 }
                             },
-                            decodeServerError: function (field, exception) {
-                                this[field].clearErrors();
-                                var exName="";
-                                for(var k in exception)
-                                    exName=k;
-                                var errDef=this.type.__definition.FIELDS[field]["ERRORS"];
-                                if(!errDef)
-                                {
-                                    var h;
-                                    if((h=this.type.__definition.ERRORS) && (h= h.FIELDS) && (h=h[field]))
-                                    {
-                                        errDef=h;
+                            decodeServerError: function (exceptionKey,exception) {
+
+                                    var msg = Siviglia.i18n.es.base.getErrorFromServerException(exceptionKey, exception);
+                                    if (msg) {
+                                        return msg;
                                     }
-                                }
-                                if(errDef && errDef[k])
-                                    return errDef[k]["txt"];
-
-
-                                var msg = Siviglia.i18n.es.base.getErrorFromServerException(k, exception[k]);
-                                if (msg) {
-                                    return msg;
-                                }
-                                return "Unknown error";
+                                    return "Unknown error";
                             }
                         }
                 },

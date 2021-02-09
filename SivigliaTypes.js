@@ -234,7 +234,7 @@ Siviglia.Utils.buildClass(
                             this.__flags |= Siviglia.types.BaseType.TYPE_NOT_EDITABLE;
 
                         //this.__source = this.__getSource();
-
+                        this.__source=null;
                         this.__sourceException=false;
                         this.__sourceFactory = null;
                         this.__sourceChecked=false;
@@ -254,8 +254,10 @@ Siviglia.Utils.buildClass(
                     },
                     destruct: function () {
 
-                        if (this.__source)
+                        if (this.__source) {
+                            console.log("DESTRUYENDO SOURCE:"+this.__name);
                             this.__source.destruct();
+                        }
                         for(var k=0;k<this.__resolvers.length;k++)
                             this.__resolvers[k].destruct();
                         this.__value=null;
@@ -342,8 +344,9 @@ Siviglia.Utils.buildClass(
                             __getSource: function () {
                                 if (!this.__hasSource())
                                     return null;
-                                if (this.hasOwnProperty("__source"))
+                                if(this.__source!==null)
                                     return this.__source;
+                                console.log("CONSTRUYENDO SOURCE:"+this.__fieldName);
                                 var def = this.__getSourceDefinition();
                                 var factory = new Siviglia.Data.SourceFactory();
                                 var stack = new Siviglia.Path.ContextStack();
@@ -2304,12 +2307,17 @@ Siviglia.Utils.buildClass(
                         }
                         this.__checkComplete(true);
                         this.__saving=false;
-                        if (this.__erroredFields!==null)
-                            throw new Siviglia.model.BaseTypedException(this.__fieldNamePath,Siviglia.model.BaseTypedException.ERR_CANT_SAVE_ERRORED_OBJECT);
+                        if (this.__erroredFields!==null) {
+                            for(var k in this.__erroredFields)
+                                throw(this.__erroredFields[k].__errorException);
+                        }
                         if(this.__stateDef)
                             this.__stateDef.checkState();
                         if (this.__erroredFields!==null)
-                            throw new Siviglia.model.BaseTypedException(this.__fieldNamePath,Siviglia.model.BaseTypedException.ERR_CANT_SAVE_ERRORED_OBJECT);
+                        {
+                            for(var k in this.__erroredFields)
+                                throw(this.__erroredFields[0].__errorException);
+                        }
                     },
                     __isErrored: function () {
                         return this.__errored || this.__erroredFields!==null;
@@ -2585,7 +2593,9 @@ Siviglia.Utils.buildClass(
                                     return null;
                                 if(this.__source===null) {
                                     var s = new Siviglia.Data.SourceFactory();
-                                    this.__source = s.getFromSource(this.__definition.SOURCE, controller, params);
+                                    var stack = new Siviglia.Path.ContextStack();
+                                    var plainCtx = new Siviglia.Path.BaseObjectContext(this.__parent, "#", stack);
+                                    this.__source = s.getFromSource(this.__definition.SOURCE, this, stack);
                                 }
                                 return this.__source;
                             },
@@ -2753,6 +2763,7 @@ Siviglia.Utils.buildClass(
                     inherits: 'BaseType,Proxifier',
                     construct: function (name,def, parent,value, validationMode) {
                         this["[[KEYS]]"] = [];
+                        def.ALLOW_NULL_VALUES=Siviglia.issetOr(def.ALLOW_NULL_VALUES,false);
                         Siviglia.Path.eventize(this, "[[KEYS]]");
                         this.Proxifier();
                         this.BaseType(name, def, parent,value, validationMode)
@@ -2765,6 +2776,7 @@ Siviglia.Utils.buildClass(
                             {
                                 this["*"+k].destruct();
                             }
+                            this.__currentProxy.__ev__.destruct();
                         }
                     },
 
@@ -2808,6 +2820,7 @@ Siviglia.Utils.buildClass(
                             for (var k in val) {
                                 try {
                                     m.__currentProxy[k] = val[k];
+
                                 }catch(e)
                                 {
                                     if(thrownException===null)
@@ -2850,7 +2863,7 @@ Siviglia.Utils.buildClass(
                             var nFields = 0;
                             for (var k in this.__currentProxy) {
                                 nFields++;
-                                if (this.__currentProxy[k] !== null) {
+                                if (this.__currentProxy[k] !== null || this.__definition["ALLOW_NULL_VALUES"]===true) {
                                     nSet++;
                                     res[k] = this.__currentProxy["*" + k].getPlainValue(true);
                                 }
@@ -2884,19 +2897,31 @@ Siviglia.Utils.buildClass(
                         },
                         save: function () {
                             this.__saving=true;
+                            var err = null;
+                            var nSet=0;
                             if (!Siviglia.empty(this.__currentProxy)) {
-                                var err = null;
+
                                 for (var k in this.__currentProxy) {
-                                    var newErr = this.__currentProxy["*" + k].save();
-                                    if (err == null)
-                                        err = newErr;
-                                    else
-                                        err.concat(newErr);
+                                    this.__currentProxy["*" + k].save();
+                                    if(!this.__currentProxy["*"+k].__hasOwnValue() &&
+                                        this.__definition["ALLOW_NULL_VALUES"]===false
+                                    )
+                                    {
+                                            continue;
+                                    }
+                                    nSet++;
                                 }
                                 this.__checkSource(this.__currentProxy);
                             }
+
+
                             this.__saving=false;
-                            return err;
+
+                                if (nSet === 0 && !Siviglia.empty(this.__definition.REQUIRED) && this.__definition.REQUIRED === true &&
+                                    this.__definition["SET_ON_EMPTY"] !== true)
+                                    this.__setErrored(new Siviglia.types.BaseTypeException(this.__fieldNamePath, Siviglia.types.BaseTypeException.ERR_REQUIRED));
+
+
                         },
                        /* __checkSource: function (val) {
                             // Esto solo deberia llamarse si el modo de validacion es complete.
@@ -3558,8 +3583,10 @@ Siviglia.Utils.buildClass(
                             if (!Siviglia.empty(this.__currentProxy)) {
                                 for (var k = 0; k < this.__currentProxy.length; k++) {
                                     var newErr = this.__currentProxy["*" + k].save();
-                                    if (err == null)
+                                    if (err == null) {
+                                        if(typeof newErr!=="undefined")
                                         err = newErr;
+                                    }
                                     else
                                         err.concat(newErr);
                                 }
@@ -4159,7 +4186,9 @@ Siviglia.i18n.es.base.errors = {
     BaseType: {
         1: 'Por favor, complete este campo.',
         2: 'Campo no válido',
-        5: 'Campo Requerido'},
+        5: 'Campo Requerido',
+        9: 'Campo Requerido'
+    },
     Integer: {
         100: 'Valor demasiado pequeño',
         101: 'Valor demasiado grande',
@@ -4239,7 +4268,8 @@ Siviglia.i18n.es.base.getErrorFromServerException = function (exName, exValue) {
     var parts = exName.split('\\');
     var lastPart = parts[parts.length - 1]
     var parts = lastPart.split("::");
-    var src = parts[0].replace(/TypeException$/, '').replace(/TypedException$/, '')
+    //var src = parts[0].replace(/TypeException$/, '').replace(/TypedException$/, '')
+    var src=parts[0].replace(/Exception$/,'');
     var p = null;
     for (var j in exValue) {
         p = Siviglia.i18n.es.base.errors[src];

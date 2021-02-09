@@ -114,7 +114,7 @@
     var urlParams = new URLSearchParams(window.location.search);
     var DEVELOP_MODE;
     if (!urlParams.has("test")) {
-        DEVELOP_MODE=41;    // Specific test number
+        DEVELOP_MODE=31;    // Specific test number
 	    // var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
@@ -1769,6 +1769,54 @@
                                                     "LABEL": "NAME",
                                                     "VALUE": "FIELD"
                                                 }
+                                            }
+                                    }
+                                });
+
+                                return this.Form$preInitialize({bto:this.typedObj});
+                            },
+                            initialize: function (params) {
+                            },
+                            show: function () {
+                            },
+
+                        }
+                    }
+
+                }
+
+            })
+        }
+    )
+    runTest("Inputs Simples 4","Tipo de dato ModelField<br>"+
+        "Se crea un BTO equivalente al anterior, usando el tipo ModelField<br>"+
+        "",
+        '<div data-sivWidget="Test.Input4" data-widgetParams="" data-widgetCode="Test.Input4">'+
+        '<div class="type">'+
+        '<div class="label">Campo Modelo</div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"model"}\'></div>'+
+        '</div>'+
+        '</div>',
+        '<div data-sivView="Test.Input4"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "Input4": {
+                        inherits: "Siviglia.inputs.jqwidgets.Form",
+                        methods: {
+                            preInitialize: function (params) {
+
+                                this.factory = Siviglia.types.TypeFactory;
+                                this.self = this;
+                                this.typeCol = [];
+                                /* STRING **************************/
+                                this.typedObj = new Siviglia.model.BaseTypedObject({
+                                    "FIELDS": {
+                                        model:
+                                            {
+                                                "LABEL":"ModelSelector",
+                                                "TYPE": "/model/reflection/Types/types/BaseType"
                                             }
                                     }
                                 });
