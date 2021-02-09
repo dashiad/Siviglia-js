@@ -114,7 +114,7 @@
     var urlParams = new URLSearchParams(window.location.search);
     var DEVELOP_MODE;
     if (!urlParams.has("test")) {
-        DEVELOP_MODE=31;    // Specific test number
+        DEVELOP_MODE=0;    // Specific test number
 	    // var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {

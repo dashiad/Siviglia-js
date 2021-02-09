@@ -78,7 +78,7 @@
 
     var urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has("test")) {
-        var DEVELOP_MODE=34;  // All tests
+        var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
         var DEVELOP_MODE = urlParams.get("test");
@@ -1159,7 +1159,7 @@
             for(var k in curVal.f3)
                 n++;
             status=status && n==0;
-            
+
             t1.destruct();
             return status && countListeners()==0;
         }, true);
