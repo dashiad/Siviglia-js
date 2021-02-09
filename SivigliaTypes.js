@@ -603,6 +603,10 @@ Siviglia.Utils.buildClass(
                             },
                             __checkSource: function (value) {
                                 // Esto solo deberia llamarse si el modo de validacion es complete.
+                                if(!this.__hasOwnValue())
+                                {
+                                    return true;
+                                }
                                 if (this.__hasSource()) {
                                     if(value===null)
                                     {
@@ -2791,6 +2795,14 @@ Siviglia.Utils.buildClass(
                             this.reset();
                             this.BaseType$__clear();
                         },
+                        __checkSource:function(value)
+                        {
+                            if(!this.__hasOwnValue())
+                                return true;
+                            if(Object.keys(this.__currentProxy).length===0)
+                                return true;
+                            return this.BaseType$__checkSource(value);
+                        },
                         _setValue: function (val,validationMode) {
                             if(typeof val==="object" && Object.keys(val).length===0)
                             {
@@ -2845,7 +2857,10 @@ Siviglia.Utils.buildClass(
                         {
                             if(!this.__valueSet)
                                 return null;
-                            return Object.keys(this.getPlainValue());
+                            var pl=this.getPlainValue();
+                            if(pl===null)
+                                return null;
+                            return Object.keys(pl);
                         },
                         // Esta funcion indica que, al comprobar el source, hay que ver las *keys* del tipo.
                         // Esto es usado por proxySet.

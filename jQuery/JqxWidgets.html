@@ -1896,7 +1896,7 @@
                             this.typeSelector=Siviglia.types.TypeFactory.getType ({fieldName:"selector",fieldPath:"/"}, {
                                 "TYPE":"String",
                                 "SOURCE":source
-                            }, null,currentType);
+                            }, params.type.__parent,currentType);
 
                         },
 
@@ -2055,7 +2055,7 @@
                                     // Sea el tipo que sea el que nos llega, lo convertimos a una String.
                                     typeDefinition["TYPE"]="String";
 
-                                    this.type=Siviglia.types.TypeFactory.getType({fieldName:"selector",fieldPath:"/"}, typeDefinition,null,null);
+                                    this.type=Siviglia.types.TypeFactory.getType({fieldName:"selector",fieldPath:"/"}, typeDefinition,params.type.__parent,null);
                                     this.parentInput=params.parentInput;
                                     this.subInput=null;
                                     this.params=params;
