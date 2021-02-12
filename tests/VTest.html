@@ -462,6 +462,32 @@
             return null===plain.one;
         }
     )
+    runTest("Container usando BLANK_IS_NULL","Container: Valor nulo cuando: 1) BLANK_IS_NULL es true en el container, y no hay campos, o 2)BLANK_IS_NULL es true en el container, y los campos que se asignan, tambien tienen BLANK_IS_NULL, y estan en blanco.",
+        {
+            "TYPE":"Container",
+            "BLANK_IS_NULL":true,
+            "FIELDS":{
+                "F1":{
+                    "TYPE":"String",
+                    "BLANK_IS_NULL":true
+                }
+            }
+        },
+        function(def)
+        {
+            var cnt = Siviglia.types.TypeFactory.getType("",def,null,null);
+            cnt.setValue({});
+            var status=cnt.__hasOwnValue()===false && cnt.__isEmptyValue({})===true;
+            cnt.setValue({F1:""});
+            status=status && cnt.__hasOwnValue()===false && cnt.__isEmptyValue({F1:""})===true;
+            status=status && cnt.getValue()===null;
+            cnt.setValue({F1:"aaa"});
+            status=status && cnt.__hasOwnValue()===true && cnt.__isEmptyValue({F1:"aaa"})===false;
+
+            cnt.destruct();
+            return status;
+        }
+    )
     runTest("Container: Obtencion de path","Prueba de obtencion de campo a traves de un path",
         def6,
         function(def)
@@ -674,7 +700,24 @@
         var n1 = countListeners();
         return nExcp == 2 &&  flag===1 && nErrors==2 && n == 2 && n1 == 0;
     }, true);
-
+    runTest("Comprobacion de BLANK_IS_NULL en String","Se comprueba el funcionamiento de BLANK_IS_NULL en Strings",
+        {
+            "FIELDS":{
+                "s1":{
+                    "TYPE":"String",
+                    "BLANK_IS_NULL":true
+                }
+            }
+        },
+    function(def){
+        var t1 = new Siviglia.model.BaseTypedObject(def);
+        t1.s1="";
+        var status=t1["*s1"].__hasOwnValue()===false && t1["*s1"].__isEmptyValue("")===true;
+        t1.s1="hola";
+        status=t1["*s1"].__hasOwnValue()===true && t1["*s1"].__isEmptyValue("hola")===false;
+        t1.destruct();
+        return status
+    })
     runTest("Comprobacion de nulos (1)","Se prueba que un valor no asignado devuelve nulo", def,function (def) {
         var t1 = new Siviglia.model.BaseTypedObject(def);
         var status=t1.f2===null;
@@ -1269,6 +1312,33 @@
         Siviglia.Dom.existingListeners=[];
         return status;
     }, true);
+    runTest("Comprobacion de BLANK_IS_NULL en Dictionary","Se comprueba la funcionalidad de BLANK_IS_NULL en Dictionary",
+        {
+            "FIELDS":{
+                "d1":{
+                    "TYPE":"Dictionary",
+                    "BLANK_IS_NULL":true,
+                    "VALUETYPE":{
+                        "TYPE":"String",
+                        "BLANK_IS_NULL":true
+                    }
+                }
+            }
+        },
+        function(def)
+        {
+            var t1 = new Siviglia.model.BaseTypedObject(def);
+            t1.d1={};
+            var status=t1["*d1"].__hasOwnValue()===false && t1["*d1"].__isEmptyValue({})===true;
+            t1.d1={a:""};
+            status=status && t1["*d1"].__hasOwnValue()===false && t1["*d1"].__isEmptyValue({a:""})===true;
+            t1.d1={a:"hola"};
+            status=status && t1["*d1"].__hasOwnValue()===true && t1["*d1"].__isEmptyValue({a:"hola"})===false;
+            t1.destruct();
+            return status;
+
+        }
+    )
 
 
     runTest("Comprobacion de DEFAULT en  TypeSwitcher (1)",
@@ -1542,6 +1612,49 @@
             t1.destruct();
             return status && countListeners()===0;
     });
+    runTest("Comprobacion de BLANK_IS_NULL en TypeSwitcher","Se comprueba BLANK_IS_NULL en TypeSwitcher",
+        {
+            "FIELDS":{
+                "f1":{
+                    "TYPE":"TypeSwitcher",
+                    "BLANK_IS_NULL":true,
+                    // Array Object Exists Not exists
+                    "ON":[{
+                        "FIELD":"ft",
+                        "IS":"String",
+                        "THEN":"TYPE1"
+                    },
+                        {
+                            "FIELD":"ft",
+                            "IS":"Object",
+                            "THEN":"TYPE2"
+                        }],
+                    "ALLOWED_TYPES":{
+                        "TYPE1":{
+                            "TYPE":"String",
+
+                        },
+                        "TYPE2":{
+                            "TYPE":"Container",
+                            "BLANK_IS_NULL":true,
+                            "FIELDS":{
+                                "ft": {
+                                    "TYPE": "String",
+                                    "BLANK_IS_NULL":true
+                                },
+                                "f2":{
+                                    "TYPE":"String"
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        },
+    function(def){
+
+    });
 
     runTest("Comprobaciones de Array (1)",
         "Comprobaciones basicas de array, incluyendo gestores de eventos,chequeos de errores,etc",
@@ -1721,6 +1834,34 @@
 
         return status && countListeners() == 0;
     }, true);
+    runTest("Comprobaciones de Array(5)", "Se comprueba el funcionamiento de BLANK_IS_NULL",{
+        "FIELDS":{
+                    "f3":
+                    {
+                        "TYPE":"Array",
+                        "BLANK_IS_NULL":true,
+                        "ELEMENTS":{
+                            "TYPE":"String",
+                        }
+                    }
+                }
+        },
+        function(def)
+        {
+            var t1 = new Siviglia.model.BaseTypedObject(
+                def
+            );
+
+            t1.f3=[];
+            var status=t1["*f3"].__hasOwnValue()===false && t1["*f3"].__isEmptyValue([]);
+            t1["*f3"].setValue(null);
+            status=status && t1["*f3"].__hasOwnValue()===false;
+            t1.f3=["aa"];
+            status=status && t1["*f3"].__hasOwnValue()!==false;
+            t1.destruct();
+            return status;
+        }
+    )
 
 
     runTest("Comprobaciones de Array (6)",

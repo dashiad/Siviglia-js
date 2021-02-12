@@ -1575,10 +1575,11 @@ Siviglia.Utils.buildClass(
         classes: {
             HTMLParser:
                 {
-                    construct: function (stack) {
+                    construct: function (stack,parentView) {
                         if (!stack) {
                             stack = new Siviglia.Path.ContextStack();
                         }
+                        this.parentView=parentView;
                         this.stack = stack;
                         this.expandos = [];
                     },
@@ -1688,6 +1689,7 @@ Siviglia.Utils.buildClass(
                     methods: {
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
                             this.node = node;
+                            this.parentView=nodeManager.parentView;
                             var pString = node.data(this.expandoTag);
                             var contextual=false;
                             if((pString[0]=="/" && pString[1]=="@" ) || (pString[0]=="@"))
@@ -1928,7 +1930,7 @@ Siviglia.Utils.buildClass(
                             if(params.valid===false)
                                 return;
                             this.ownStack = this.stack.getCopy();
-                            this.oManager = new Siviglia.UI.HTMLParser(this.ownStack);
+                            this.oManager = new Siviglia.UI.HTMLParser(this.ownStack,this.parentView);
 
                             var val = params.value;
                             if(typeof params.value.__type__!=="undefined")
@@ -2115,7 +2117,7 @@ Siviglia.Utils.buildClass(
                         restoreContent: function () {
                             this.removeCurrentChildren();
 
-                            this.oManager = new Siviglia.UI.HTMLParser(this.stack);
+                            this.oManager = new Siviglia.UI.HTMLParser(this.stack,this.parentView);
                             //this.node.html("");
 
                             var curNode;
@@ -2199,7 +2201,7 @@ Siviglia.Utils.buildClass(
                         restoreContent: function () {
                             this.removeCurrentChildren();
 
-                            this.oManager = new Siviglia.UI.HTMLParser(this.stack);
+                            this.oManager = new Siviglia.UI.HTMLParser(this.stack,this.parentView);
                             //this.node.html("");
 
                             var curNode;
@@ -2359,35 +2361,25 @@ Siviglia.Utils.buildClass(
             },
 
             View: {
-                construct: function (template, params, widgetParams,node,  context,parentExpando) {
-
-                    this.parentExpando=Siviglia.issetOr(parentExpando);
+                construct: function (template, params, widgetParams,node,  context,parentView) {
 
                     this.__template = template;
                     this.__params = params;
                     this.__node = node;
                     this.rootNode=node; // Solo por compatibilidad
                     this.__context = context.getCopy();
+                    var plainCtx = new Siviglia.Path.BaseObjectContext(this, "*", this.__context);
                     this.__widgetParams = widgetParams;
                     this.oManager=null;
                     this.destroyed=false;
-                    var plainCtx = new Siviglia.Path.BaseObjectContext(this, "*", this.__context);
-                    if(Siviglia.UI.viewStack.length>0)
-                        this.parentView=Siviglia.UI.viewStack[Siviglia.UI.viewStack.length-1];
-                    else
-                        this.parentView=null;
                     this.__builtPromise=SMCPromise();
                     this.__completedPromise=SMCPromise();
                     this.__built=false;
-                    this.__subViews=[];
                     this.__parentView=null;
-                    if(this.parentExpando!==null)
-                    {
-                        if(Siviglia.UI.viewStack.length>0)
-                        {
-                            this.__setParentView(Siviglia.UI.viewStack[Siviglia.UI.viewStack.length-1]);
-                        }
-                    }
+                    this.__subViews=[];
+                    if(typeof parentView!=="undefined")
+                        this.__parentView=parentView;
+
                 },
                 destruct:function()
                 {
@@ -2500,7 +2492,7 @@ Siviglia.Utils.buildClass(
                     parseNode:function()
                     {
 
-                        this.oManager = new Siviglia.UI.HTMLParser(this.__context);
+                        this.oManager = new Siviglia.UI.HTMLParser(this.__context,this);
                         try {
                             this.__node.removeAttr("data-sivview");
                             this.__node.removeData("sivview");
@@ -2552,6 +2544,10 @@ Siviglia.Utils.buildClass(
                     onAddedToDom:function()
                     {
 
+                    },
+                    rebuild:function()
+                    {
+
                     }
                 }
 
@@ -2568,28 +2564,6 @@ Siviglia.Utils.buildClass(
                     this.__altLayout=null;
                     this.__viewName=null;
                     this.__parentView=null;
-                    if(Siviglia.UI.viewStack.length>0)
-                    {
-                        this.__parentView=Siviglia.UI.viewStack[Siviglia.UI.viewStack.length-1];
-                        // Cuidado!!! Aqui estamos metiendo en el padre el ViewExpando, NO LA VIEW EN SI
-                        // Una vista hija puede haber sido creada de 2 formas:
-                        // Por código: en ese caso, el padre tiene control completo sobre la vista que acaba de crear.
-                        // El padre quiere ser avisado de cuándo esa vista está completa.
-                        // Este modelo incluye código ejecutado en sivCalls, etc.
-                        // Por plantilla: en ese caso, el padre lo que crea es un ViewExpando, el cual luego
-                        // tiene que cargar la vista real, etc,etc.
-                        // La vista no tiene acceso directo al padre, ya que ha sido creada por el Expando
-                        // Asi que lo que vamos a hacer, es meter al Expando en la lista de vistas del padre,
-                        // La vista padre, va a esperar a que la promesa del expando se cumpla, y esa promesa, a
-                        // su vez, va a esperar a que la promesa de la vista interna, se cumpla.
-                        // Pero, a la vez, lo que quiere el padre, es que en su array de vistas, haya *vistas*, no
-                        // viewExpandos, y hemos dicho que el Expando es quien se agrega al padre.
-                        // Es por eso que, cuando finalmente la vista interna se completa, lo cual provoca que el Expando
-                        // se complete, el Expando avisa al padre pasando la instancia de la vista interna, para que
-                        // el padre cambie la referencia que tenía (que apuntaba al Expando), por la referencia a la vista interna.
-                        this.__parentView.__addSubView(this,this.__builtPromise);
-
-                    }
 
                 },
                 destruct: function () {
@@ -2599,6 +2573,10 @@ Siviglia.Utils.buildClass(
                 methods:
                     {
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
+                            if(this.__parentView===null && typeof nodeManager.parentView!=="undefined") {
+                                this.__parentView=nodeManager.parentView;
+                                this.__parentView.__addSubView(this, this.__builtPromise);
+                            }
                             var dataset = node.data();
                             if(typeof dataset["viewname"]!=="undefined")
                             {
@@ -2651,6 +2629,8 @@ Siviglia.Utils.buildClass(
                         {
                             var p=$.Deferred();
                             //var p=new SMCPromise();
+                            if(this.__view)
+                                this.__view.rebuild();
 
 
                             this.node.removeData("sivview");
@@ -2671,13 +2651,14 @@ Siviglia.Utils.buildClass(
                                 var tempNode=$("<div class='inner'></div>");
                                 this.__view = new obj.context[obj.object](
                                     this.__altLayout==null?this.__name:this.__altLayout,
-                                    this.__currentParamsValues,null, tempNode,  this.__stack,this);
+                                    this.__currentParamsValues,null, tempNode,  this.__stack,this.__parentView);
                                 this.__view.waitComplete().then(function(){
                                     if(this.__parentView!==null) {
                                         this.__builtPromise.resolve(this.__view);
                                     }
                                     p.resolve()
                                 }.bind(this))
+                                Siviglia.UI.viewStack.push(this.__view);
                                 this.__view.__build().then(function(){
                                     // Importante no usar aqui .children(), ya que omite los comentarios,
                                     // que son necesarios para sivIf
@@ -2688,6 +2669,7 @@ Siviglia.Utils.buildClass(
                                     if(oldView)
                                         oldView.destruct();
                                     m.__view.onAddedToDom();
+                                    Siviglia.UI.viewStack.pop();
 
                                 });
 
@@ -2792,7 +2774,7 @@ Siviglia.Utils.load=function(assets)
                     promises.push(loadHTML(Siviglia.config.baseUrl+p.template,p.node));
                     promises.push(loadJS(Siviglia.config.baseUrl+p.js));
                     $.when.apply($,promises).then(function(){
-                        var parser= new Siviglia.UI.HTMLParser(p.context);
+                        var parser= new Siviglia.UI.HTMLParser(p.context,null);
                         parser.parse(p.node);
                         pr.resolve(p.node);
                     })

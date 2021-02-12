@@ -445,7 +445,7 @@ Siviglia.Utils.buildClass(
 
 
                                 if (validationMode===Siviglia.types.BaseType.VALIDATION_MODE_NONE || this.__isEditable()) {
-                                if ((val === null || this.__isEmptyValue(val)) && !wasErrored) {
+                                if (this.__isEmptyValue(val) && !wasErrored) {
                                     var hasChanged = false;
                                     if (this.__value != null) {
                                         if(this.__value && this.__value.hasOwnProperty("__destroy__"))
@@ -541,9 +541,7 @@ Siviglia.Utils.buildClass(
                                 this.__resolvers.push(path);
                                 return path.getPath();
                             },
-                            __getEmptyValue: function () {
-                                return null;
-                            },
+
                             // Se utiliza para convertir un valor posible de este tipo, en un valor "real"
                             // de este tipo. Por ejemplo, a un campo Enum se le puede asignar una string,
                             // el nombre del estado, pero su valor efectivo seria el id de la label
@@ -998,13 +996,12 @@ Siviglia.Utils.buildClass(
                         {
                             _validate: function () {
                                 var val=this.__value;
-                                if (this.__isEmptyValue(val) || val === "") {
+                                if (this.__isEmptyValue(val)) {
                                     if (this.__definition.REQUIRED)
                                         throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_UNSET);
                                     else {
-                                        if (this.__isEmptyValue(val))
                                             return true;
-                                    }
+                                        }
                                 }
                                 val = '' + val;
 
@@ -1044,6 +1041,19 @@ Siviglia.Utils.buildClass(
                                     val = val.trim();
                                 this.__value = val;
                                 return this.__value;
+                            },
+                            __isEmptyValue:function(val)
+                            {
+                                if(val===null)
+                                    return true;
+                                var blankIsNull=Siviglia.issetOr(this.__definition["BLANK_IS_NULL"],false);
+                                if(blankIsNull===false)
+                                    return false;
+
+                                if(Siviglia.issetOr(this.__definition["TRIM"],false))
+                                    val=val.trim();
+
+                                return val==="";
                             }
                         }
                 },
@@ -1111,7 +1121,7 @@ Siviglia.Utils.buildClass(
 
                             _validate: function () {
                                 var value=this.__value;
-                                if (this.__isEmptyValue(value) || value === "")
+                                if (this.__isEmptyValue(value))
                                     return true;
 
                                 var ex = Siviglia.types;
@@ -1237,7 +1247,7 @@ Siviglia.Utils.buildClass(
                             _validate: function () {
                                 var val=this.__value;
                                 var v = this.__definition.VALUES;
-                                if (this.__isEmptyValue(val) || val === "")
+                                if (this.__isEmptyValue(val))
                                     throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_UNSET);
 
                                 if (Siviglia.types.isString(val) && val != parseInt(val)) {
@@ -2266,6 +2276,31 @@ Siviglia.Utils.buildClass(
                     __hasValue: function () {
                         return this.__value !== null;
                     },
+                    __isEmptyValue:function(val)
+                    {
+                        if(val===null)
+                            return true;
+                        var blankIsNull=Siviglia.issetOr(this.__definition["BLANK_IS_NULL"],false);
+                        // Si blanco (objeto vacio) no es "Vacio", entonces, da igual lo que haya,
+                        // el valor no es vacio.
+                        if(!blankIsNull)
+                            return false;
+
+                        if(Object.keys(val).length===0)
+                            return true;
+
+                        for(var k in val){
+                            var f = this.__getField(k);
+                            // En cuanto haya un campo a "set", es que el valor no esta vacio.
+                            if (!f.__isEmptyValue(val[k]))
+                                return false;
+
+                            var def = f.getDefinition();
+                            if (Siviglia.issetOr(def["KEEP_KEY_ON_EMPTY"],false))
+                                return false;
+                        }
+                        return true;
+                    },
                     __hasOwnValue: function () {
                         return this.__hasValue();
                     },
@@ -2938,6 +2973,40 @@ Siviglia.Utils.buildClass(
 
 
                         },
+                        __isEmptyValue:function(val)
+                        {
+                            if(val===null)
+                                return true;
+                            // Si no es nulo, y un valor en blanco ({}) no lo consideramos nulo,
+                            // el valor ya no es nulo.
+                            var blankIsNull=Siviglia.issetOr(this.__definition["BLANK_IS_NULL"],false);
+                            if(!blankIsNull)
+                                return false;
+                            var nKeys=Object.keys(val).length;
+                            // Si no hay keys
+                            if(nKeys===0)
+                            {
+                                // Y SET_ON_EMPTY es true, el valor no esta vacio.
+                                if(Siviglia.issetOr(this.__definition["SET_ON_EMPTY"]),false)
+                                    return false;
+                                return true;
+                            }
+                            // Miramos si se permite que haya keys con valor nulo.
+                            var allowNulls=Siviglia.issetOr(this.__definition["ALLOW_NULL_VALUES"],false);
+                            if(allowNulls===true)
+                                return false;
+                            var nSet=0;
+                            // Se crea una instancia del tipo remoto.
+                            var ins=this.getValueInstance("test",null);
+                            for(var k in val)
+                            {
+                                // En cuanto se encuentra un valor que no sea empty, el tipo no es empty
+                                if(!ins.__isEmptyValue(val[k]))
+                                return false;
+                            }
+                            return true;
+                        }
+
                        /* __checkSource: function (val) {
                             // Esto solo deberia llamarse si el modo de validacion es complete.
                             if (this.__hasSource()) {
@@ -3274,6 +3343,18 @@ Siviglia.Utils.buildClass(
                             }
                             return result;
                         },
+                        __isEmptyValue:function(val)
+                        {
+                            if(val===null)
+                                return true;
+                            var typeInfo=this.getTypeFromValue(val);
+
+
+                            var typeDef=Siviglia.issetOr(typeInfo["def"],typeInfo["name"]);
+                            var curType = Siviglia.types.TypeFactory.getType({fieldName:this.fieldName,fieldPath:this.__fieldNamePath}, typeDef, this,null);
+
+                            return curType.__isEmptyValue(val);
+                        },
                         getCurrentType: function () {
                             return this.currentType;
                         },
@@ -3580,7 +3661,7 @@ Siviglia.Utils.buildClass(
                         areContentsSimple: function () {
                             var n;
 
-                                n = this.getValueInstance(0);
+                                n = this.getValueInstance(0,null);
                             var isContainer=n.isContainer();
                             n.destruct();
                             return !isContainer;
@@ -3591,7 +3672,14 @@ Siviglia.Utils.buildClass(
                         {
                             return "VALUE";
                         },
-
+                        __isEmptyValue:function(val)
+                        {
+                            if(val===null)
+                                return true;
+                            if(val.length > 0)
+                                return false;
+                            return Siviglia.issetOr(this.__definition["BLANK_IS_NULL"],false);
+                        },
                         save: function () {
                             this.__saving=true;
                             var err = null;
