@@ -346,7 +346,6 @@ Siviglia.Utils.buildClass(
                                     return null;
                                 if(this.__source!==null)
                                     return this.__source;
-                                console.log("CONSTRUYENDO SOURCE:"+this.__fieldName);
                                 var def = this.__getSourceDefinition();
                                 var factory = new Siviglia.Data.SourceFactory();
                                 var stack = new Siviglia.Path.ContextStack();
@@ -608,7 +607,7 @@ Siviglia.Utils.buildClass(
                                 if (this.__hasSource()) {
                                     if(value===null)
                                     {
-                                        var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: val});
+                                        var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: value});
                                         // No lo ponemos a errored. Esto lo hara quien capture esta excepcion.
                                         //this.__setErrored(e);
                                         // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
@@ -658,8 +657,8 @@ Siviglia.Utils.buildClass(
                                         }catch(e)
                                         {
                                             // El valor no pertenecia al source..
-                                            // Si ya lo sabiamos, no se lanza de nuevo la excepcion
-                                            if(wasChecked===false)
+                                            // Si ya lo sabiamos, no se lanza de nuevo la excepcion, a menos que estemos en un save()
+                                            if(wasChecked===false && !this.__saving)
                                                 return;
                                             // Si no lo sabiamos, creamos una excepcion, y ponemos este objeto a erroneo.
                                             var e=new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: this.getValue()});
@@ -670,7 +669,12 @@ Siviglia.Utils.buildClass(
                                             this.__sourceChecked=false;
                                             // No lanzamos la excepcion...
                                             //throw e;
-                                            this.setValue(null);
+                                            // Queremos que el valor se ponga a nulo, sólo cuando, mientras se edita el objeto
+                                            // (especialmente en un formulario).
+                                            // Pero si se está guardando, no queremos que se ponga a nulo, especialmente porque entonces, se
+                                            // pierde el error.
+                                            if(!this.__saving)
+                                                this.setValue(null);
                                         }
                                     }
                                     else
@@ -806,13 +810,19 @@ Siviglia.Utils.buildClass(
                             },
                             save: function () {
                                 this.__saving=true;
-                                if(this.__hasSource() && this.__valueSet )
+                                try {
+                                    if (this.__hasSource() && this.__valueSet) {
+                                        var s = this.__getSource();
+                                        if (!s.isAsync())
+                                            this.__checkSource(this.__value);
+                                    }
+                                }catch(e)
                                 {
-                                    var s=this.__getSource();
-                                    if (!s.isAsync() )
-                                        this.__checkSource(this.__value);
+                                    this.__saving=false;
+                                    throw e;
                                 }
                                 this.__saving=false;
+
                                 if (this.__isErrored())
                                     throw new Siviglia.model.BaseTypedException(this.__fieldNamePath,Siviglia.model.BaseTypedException.ERR_CANT_SAVE_ERRORED_FIELD);
                                 if (!Siviglia.empty(this.__definition.REQUIRED) && this.__definition.REQUIRED==true && (!this.__valueSet || this.__value === "")) {

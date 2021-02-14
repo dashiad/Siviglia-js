@@ -763,6 +763,25 @@
                         getJqxWidgetName: function () {
                             return "jqxComboBox";
                         },
+                        save:function()
+                        {
+                            try{
+                                // Por los mismos motivos que se explican en onSourceChanged, si el tipo
+                                // tiene un error, no limpiamos el error en save(), no copiamos el valor actual
+                                // del input. Si no, lo que ocurre es que si se hace submit() dos veces de un formulario
+                                // que contiene un error en un tipo con source, la primera vez saldria el error, la segunda, no.
+                                if(!this.type.__getError()) {
+                                    if (typeof this.inputNode !== "undefined" && !this.type.equals(this.getValue()))
+                                        this.type.setValue(this.getValue());
+                                    this.clearErrors();
+                                }
+                            }catch(e)
+                            {
+                                this.showError(
+                                    Siviglia.i18n.es.base.getErrorFromJsException(e)
+                                );
+                            }
+                        },
                         getDefaultInputOptions: function () {
                             var self = this;
                             this.dataSource = {
@@ -889,8 +908,22 @@
                                     self._setInputValue(toSet);
                                 }
                                 else {
-                                    self.type.unset();
-                                    this.inputNode.jqxComboBox('selectItem',-1);
+                                    // El motivo por el cual el tipo puede tener error, es porque se le haya
+                                    // hecho un save().
+                                    // Si el tipo que estamos gestionando, tiene un SOURCE que depende de un path,
+                                    // y ese path no se puede resolver (algun elemento del path esta a null),
+                                    // no se le pone un error al tipo.El tipo se pone, simplemente a null.
+                                    // O sea, el combo se pondria automaticamente a null.O, cuando se carga el combo,
+                                    // y se ve que el valor actual del tipo, no está en las opciones del combo,
+                                    // se pone, de nuevo, a null.
+                                    // Pero si se ha hecho un save() del tipo, es porque queremos enviarlo, o estamos en un formulario,
+                                    // y no queremos que se ponga el valor a null, lo que haria que se borrara el error, y el formulario no
+                                    // mostraria nada.
+                                    if(self.type.__getError()===null) {
+                                        self.type.unset();
+                                    }
+                                        this.inputNode.jqxComboBox('selectItem', -1);
+
                                   //  this.inputNode.jqxComboBox('val','');
                                 }
                             }
@@ -1238,9 +1271,12 @@
                                     // no fuera la seleccionada.
                                     if(typeof this.subWidgets[key]==="undefined")
                                     {
-                                        this.currentKey = key;
+                                        var node=$("[title='"+key+"']",this.rootNode);
+                                        this.onLabelClicked(node,{key:key});
+                                        /*this.currentKey = key;
                                         if(this.hasCurrentKey===false)
-                                        this.hasCurrentKey = true;
+                                        this.hasCurrentKey = true;*/
+
                                     }
                                 },
                                 buildNewItemWidget:function(node,params)
@@ -1268,25 +1304,27 @@
                                     this.currentType=this.type["*"+this.currentKey];
                                     this.hasCurrentKey=true;
                                     // Custom class for active element in Dictionary
+                                    /*
+                                    FELIPE::MIRA AQUI:
                                     var elements_with_selected = document.getElementsByClassName("seleccionado");
 
                                     // Eliminacion de clases con dicho valor "seleccionado"
                                     for (var i=0; i<elements_with_selected.length; i++){
                                         elements_with_selected[i].classList.remove("seleccionado");
                                     }
-
                                     // Teniendo el nodo, nos posicionamos en el elemento a insertar
                                     // la nueva clase "seleccionado"
                                     if (node !== null){
                                         var value_selected = node[0].parentElement.parentNode;
                                         value_selected.classList.add("seleccionado");
                                     }
-                                    /*TODO, cuando el nodo está null.
 
-                                    Es decir, cuando se ha insertado un dato nuevo,
-                                    ver la forma de añadirle esa clase "seleccionado"
-                                    ¿con document.getElement...?
-                                    */
+                                    LO ANTERIOR NO SIRVE.ELIMINA LA CLASE DE TODOS LOS ELEMENTOS DE LA PAGINA.
+                                    LO ANTERIOR SE HACE ASI:
+                                       */
+                                    $(".seleccionado",this.rootNode).removeClass("seleccionado");
+                                    $(node).closest("li").addClass("seleccionado");
+
                                     if(typeof event!=="undefined")
                                         event.stopPropagation();
 
@@ -2137,6 +2175,11 @@
                                 this.rootNode.addClass(typeDef["TYPE"]);
 
                                 this.inputNode.addClass(this.fieldName);
+                                var curError=this.innerType.__getError();
+                                if(curError)
+                                {
+                                    this.showError(curError);
+                                }
                             },
                             rebuild:function()
                             {
@@ -2159,7 +2202,6 @@
                             },
                             showPath:function(key)
                             {
-
                                     if(this.innerInput) {
                                         if(key===this.innerInput.type.__name.fieldName)
                                             this.rootNode[0].scrollIntoView(true);
@@ -2211,6 +2253,7 @@
 
                                             instance.showPath(this.pathToShow);
                                         }
+
                                         this.pathToShow=null;
 
                                     }.bind(this));
@@ -2229,7 +2272,7 @@
                                 //this.innerInput.showError(e);
                                 // FELIPE: Lo que queremos es que lo muestre esta misma clase. OJO, este mismo metodo se ha asociado a
                                 // ERROR y CHANGE, asi que le preguntamos el estado al tipo.
-                                var type=this.innerInput.type;
+                                var type=this.innerType;
                                 var errored=type.__isErrored();
                                 if(!errored)
                                 {
@@ -2415,6 +2458,7 @@
                             },
                             submit: function () {
                                 var errors=[];
+                                top.qq=this._type;
                                 if(this.hasGlobalErrors)
                                 {
                                     this.hasGlobalErrors=false;
@@ -2559,11 +2603,19 @@
                                 var last=pathed.pop();
                                 var rem=rPath.replace(last.path,"");
                                 var inp=this.registeredInputs[last.idx];
+                                var totalPathParts=last.path.split("/");
+                                if(rem==="")
+                                {
+                                    var field=totalPathParts.pop();
+                                    inp.input.showPath(field);
+                                    return;
+                                }
+
                                 var remParts=rem.split("/");
                                 if(remParts[0]=="")
                                     remParts.shift();
                                 var nextFieldToShow=remParts[0];
-                                var totalPathParts=last.path.split("/");
+
                                 totalPathParts.shift();
                                 var lastPathParts=last.path.split("/");
 
@@ -2969,7 +3021,6 @@
                                 <div class="Dictionary-current">
                                     <div data-sivIf="[%/*hasCurrentKey%] == true" style="flex-grow:2">
                                         <div style="display:block" data-sivId="currentI">
-                                            aaaa
                                             <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-viewName="curInput" data-sivParams='{"key":"/*currentKey","parent":"/*type","form":"/*form","controller":"/*self"}'>
                                             </div>
                                         </div>
