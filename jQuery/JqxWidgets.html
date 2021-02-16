@@ -198,16 +198,13 @@
                             this.type = params.type;
 
                             this.type.addListener("CHANGE",this,"onTypeChanged","BaseInput-TypeChanged");
-                            // FELIPE : EL LISTENER DE ERROR, YA NO VA A ESTAR EN EL INPUT, SINO EN EL INPUTCONTAINER
-                            // LO MISMO DEBE PASAR CON EL HELPMESSAGE, YA NO HACE FALTA QUE LO GESTIONE EL INPUT, SINO EL INPUTCONTAINER
-                            //this.type.addListener("ERROR",null,function(){console.dir("ON_ERROR")});
+                            // Nota: El Listener de error ya no va a estar aqui en el input, si no en el InputContainer.
+                            // (getInputFor del método SimpleInputContainer())
 
                             this.helpMessage = Siviglia.issetOr(this.type.__definition.HELP, null);
                             this.hasHelpMessage = (this.helpMessage != null ? true : false);
                             this.inputParams = Siviglia.issetOr(params.inputParams, {});
                             this.formParams=Siviglia.issetOr(params.formParams,{});
-
-
                         },
                         initialize: function (params) {
                             var opts = this.getDefaultInputOptions();
@@ -1303,31 +1300,15 @@
                                     this.currentKey=params.key;
                                     this.currentType=this.type["*"+this.currentKey];
                                     this.hasCurrentKey=true;
-                                    // Custom class for active element in Dictionary
-                                    /*
-                                    FELIPE::MIRA AQUI:
-                                    var elements_with_selected = document.getElementsByClassName("seleccionado");
 
-                                    // Eliminacion de clases con dicho valor "seleccionado"
-                                    for (var i=0; i<elements_with_selected.length; i++){
-                                        elements_with_selected[i].classList.remove("seleccionado");
-                                    }
-                                    // Teniendo el nodo, nos posicionamos en el elemento a insertar
-                                    // la nueva clase "seleccionado"
-                                    if (node !== null){
-                                        var value_selected = node[0].parentElement.parentNode;
-                                        value_selected.classList.add("seleccionado");
-                                    }
-
-                                    LO ANTERIOR NO SIRVE.ELIMINA LA CLASE DE TODOS LOS ELEMENTOS DE LA PAGINA.
-                                    LO ANTERIOR SE HACE ASI:
-                                       */
-                                    $(".seleccionado",this.rootNode).removeClass("seleccionado");
+                                    // Custom class for active element in Dictionary                                    
+                                    // Añadido data-sivId para evitar buscar en todo this.rootNode, 
+                                    // y solo buscar en el div que contiene las claves del diccionario.
+                                    $(".seleccionado",this.SelectedKeyItem).removeClass("seleccionado");                                                                        
                                     $(node).closest("li").addClass("seleccionado");
 
                                     if(typeof event!=="undefined")
                                         event.stopPropagation();
-
                                 },
                                 onRemoveClicked:function(node,params,evName,event)
                                 {
@@ -2223,10 +2204,10 @@
                                         }
                                         this.innerInput=instance;
                                         //this.innerInput.setInputWrapper(this);
-                                        // FELIPE:: El listener de error, que antes estaba en el tipo, ahora esta aqui
+                                        // Nota: El listener de error, que antes estaba en el tipo, ahora esta aqui
                                         this.innerInput.type.addListener("ERROR",this,"showError","InputContainer-Error");
-                                        // FELIPE: Ademas, como ahora se muestra el error, tambien queremos saber cuándo cambia el tipo, para, si
-                                        // el valor de corrige, ocultar el campo de error.Por simplificar, se va a usar el mismo callback.
+                                        // Nota: Ademas, como ahora se muestra el error, tambien queremos saber cuándo cambia el tipo, para, si
+                                        // el valor de corrige, ocultar el campo de error. Por simplificar, se va a usar el mismo callback.
                                         this.innerInput.type.addListener("CHANGE",this,"showError","inputContainer-Change");
 
                                         // comprobación que el inputWrapper no sea undefined para quitar error de la consola (https://pastebin.com/dyxxCW0c)
@@ -2234,12 +2215,13 @@
                                             this.errorNode = instance.inputWrapper.errorNode;
 
                                         // Comprobación si un tipo es FIXED o no, para mostrarlo como string-raw o input
-                                        if (this.innerType.__definition.FIXED === this.innerType.__value) {
-                                            // String-raw del tipo si es Fixed
-                                            this.inputNode.text(this.innerType.__value);
-                                        } else {
-                                            // mostramos el input creado
-                                            this.inputNode.append(instance.rootNode);
+                                        if (this.innerType.__definition.FIXED === this.innerType.__value) 
+                                        {
+                                            this.inputNode.text(this.innerType.__value); // String-raw del tipo si es Fixed
+                                        } 
+                                        else 
+                                        {                                            
+                                            this.inputNode.append(instance.rootNode);// si no es string-raw->mostramos el input creado
                                         }
 
                                         /*var ce=this.currentErrors[key]
@@ -2268,12 +2250,11 @@
                             },
                             showError:function(e)
                             {
-                                // FELIPE : El showError de inputContainer, lo redirigia al input...No queremos eso.
-                                //this.innerInput.showError(e);
-                                // FELIPE: Lo que queremos es que lo muestre esta misma clase. OJO, este mismo metodo se ha asociado a
+                                // Nota: Lo que queremos es que lo muestre esta misma clase. OJO, este mismo metodo se ha asociado a
                                 // ERROR y CHANGE, asi que le preguntamos el estado al tipo.
                                 var type=this.innerType;
                                 var errored=type.__isErrored();
+
                                 if(!errored)
                                 {
                                     // AQUI ACCEDEMOS AL NODO A TRAVES DE SIVID
@@ -2282,15 +2263,12 @@
                                 else
                                 {
                                     this.displayError(Siviglia.i18n.es.base.getErrorFromJsException(type.__getError()));
-
                                 }
                             },
                             displayError:function(txt)
                             {
                                 this.errorNode.css({"display":"block"});
                                 this.errorNode.html(txt);
-
-
                             }
 
                         }
@@ -2304,7 +2282,6 @@
                                 this.SimpleInputContainer$preInitialize(params);
                                 this.help=Siviglia.issetOr(this.fieldDef["HELP"],"");
                                 this.label=Siviglia.issetOr(this.fieldDef["LABEL"],"");
-                                //this.errorNode="";
                             },
                             initialize:function(params)
                             {
@@ -2994,7 +2971,7 @@
 
                         <div class="row-form Dictionary-row-complex">
                                 <div class="Dictionary-keys">
-                                    <div class="Dictionary-mainKeyList">
+                                    <div class="Dictionary-mainKeyList" data-sivId="SelectedKeyItem">
                                         <!-- añade el boton + -->
 
                                         <!-- añade las claves introducidas -->
