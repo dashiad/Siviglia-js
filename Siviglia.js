@@ -2687,7 +2687,29 @@ Siviglia.Utils.buildClass(
             }
         }
     });
-
+Siviglia.Utils.buildClass({
+    "context":"Siviglia.services",
+    "classes":{
+        "ServiceManager":{
+            construct:function()
+            {
+                if(typeof Siviglia.services.__serviceList==="undefined")
+                    Siviglia.services.__serviceList=[];
+            },
+            methods:{
+                add:function(serviceName,instance)
+                {
+                    Siviglia.services.__serviceList[serviceName]=instance;
+                },
+                get:function(serviceName)
+                {
+                    return Siviglia.issetOr(Siviglia.services.__serviceList[serviceName],null);
+                }
+            }
+        }
+    }
+});
+Siviglia.Service=new Siviglia.services.ServiceManager();
 Siviglia.UI.Expando.WidgetExpando.prototype.widgets={};
 Siviglia.UI.Expando.WidgetExpando.prototype.widgetPromises={};
 Siviglia.Utils.load=function(assets)

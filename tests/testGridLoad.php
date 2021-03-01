@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
+    <script src="/node_modules/autobahn-browser/autobahn.min.js"></script>
+    <script src="/reflection/js/WampServer.js"></script>
 
     <style type="text/css">
         #svgChart {
@@ -41,6 +43,7 @@
 
 <!-- nueva llamada del FullList_Grid -->
 <div data-sivView="Siviglia.model.web.WebUser.lists.FullList_Grid" data-sivParams='{}'></div>
+<div data-sivView="Siviglia.model.web.WebUser.lists.FullList_Grid" data-sivParams='{}'></div>
 
 <script>
 
@@ -55,9 +58,33 @@ var Siviglia=Siviglia || {};
         // 1) Un gestor en /lib/output/html/renderers/js/XXX.php
         // 2) Un Mapper en Siviglia.Model.XXXMapper
         // 3) Las urls de carga de modelos seria /js/XXX/model/zzz/yyyy....
-        mapper:'Siviglia'
+        mapper:'Siviglia',
+        user:{
+            USER_ID:"1",
+            TOKEN:"1"
+        },
+        wampServer:{
+            "URL":"ws://127.0.0.1",
+            "PORT":8999,
+            "REALM":"adtopy"
+        }
     };
     Siviglia.Model.initialize(Siviglia.config);
+if(top.Siviglia.config.user!==null) {
+
+    if (typeof top.Siviglia.config.wampServer !== "undefined") {
+
+        var wConfig = Siviglia.config.wampServer;
+        var wampServer = new Siviglia.comm.WampServer(
+            wConfig.URL,
+            wConfig.PORT,
+            wConfig.REALM,
+            top.Siviglia.config.user.TOKEN
+        );
+        Siviglia.Service.add("wampServer", wampServer);
+
+    }
+}
 
 </script>
 <script>

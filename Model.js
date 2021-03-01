@@ -501,8 +501,11 @@ Siviglia.Utils.buildClass({
                     this.__dsname=name;
                     this.__params=params;
                     this.__promises={};
+                    this.__busListenerSet=false;
                     this.currentPromise=null;
                     this.nextPromise=null;
+                    this.wampService=null;
+                    this.__identifier=Siviglia.Model.getAppId();
                     if(typeof response=="undefined" || response==null)
                     {
                         meta=Siviglia.Model.loader.getDatasourceMeta(model,name);
@@ -512,6 +515,7 @@ Siviglia.Utils.buildClass({
 
                     var paramsDef = meta.PARAMS;
                     var fieldsDef = meta.FIELDS;
+
                     // Se construye la definicion de este objeto.
                     // La definicion consiste en:
                     // Los parametros, como un container
@@ -566,19 +570,61 @@ Siviglia.Utils.buildClass({
                         this.onResponse(response);
 
                     }
+
                     // Se aniaden listeners en todos los campos.
                     for(var k in definition.FIELDS.params.FIELDS)
                     {
                         this.params["*"+k].addListener("CHANGE",this,"refresh","Datasource-params");
+
                     }
                     this.settings={};
                     for(var k in definition.FIELDS.settings.FIELDS)
                         this.settings["*"+k].addListener("CHANGE",this,"refresh","Datasource-Settings");
+                    // Organizamos los campos que hay en el datasource,
+                    var modelFields={};
+                    for(var k in meta.FIELDS)
+                    {
+                        var cField=meta.FIELDS[k];
+                        if(typeof cField.TYPE==="undefined" &&
+                            typeof cField.MODEL !=="undefined")
+                        {
+                            if(typeof modelFields[cField.MODEL]==="undefined")
+                                modelFields[cField.MODEL]=[];
+                            modelFields[cField.MODEL].push(cField.FIELD);
+                        }
+                    }
+                    this.containedIndexes={};
+                    // Obtenemos las definiciones de los modelos, y vemos si tenemos los indices.
+                    for(var k in modelFields)
+                    {
+                        var def=Siviglia.Model.loader.getModelDefinition(k);
+                        var indexes=def.INDEXFIELDS;
+                        if(modelFields[k].indexOf(indexes[0])>=0)
+                        {
+                            this.containedIndexes[k]=indexes[0];
+                        }
+                    }
+                    this.wampService=Siviglia.Service.get("wampServer");
+                    if(this.wampService)
+                    {
+                        this.wampService.subscribe('busevent',function(args){
+                            if(args[2].appId===this.__identifier)
+                            {
+                                this.refresh();
+                            }
+
+                        }.bind(this))
+                    }
+
 
                 },
                 destruct:function()
                 {
 
+                    if(this.wampService && this.__busListenerSet)
+                    {
+                        this.wampService.call("com.adtopy.removeBusListener",[this.__identifier]);
+                    }
                 },
                 methods:{
                     freeze:function()
@@ -599,6 +645,25 @@ Siviglia.Utils.buildClass({
                         //this.settings.start=response.start;
                         this["*start"]._setValue(response.start);
                         this["*end"]._setValue(response.end);
+
+                        this.__hasBusListener=false;
+                        this.__busListenerSet=false;
+                        if(this.wampService)
+                        {
+                            var currentIds={};
+                            for(var k in this.containedIndexes)
+                            {
+                                currentIds[k]=[];
+                                var indexField=this.containedIndexes[k];
+                                for(var j=0;j<response.data.length;j++)
+                                {
+                                    currentIds[k].push(response.data[j][indexField]);
+                                }
+                                this.wampService.call("com.adtopy.replaceBusListener",[
+                                    {channel:'General',path:k,roles:0xFFF,appId:this.__identifier,ids:currentIds,userId:top.Siviglia.config.user.USER_ID}]);
+                                this.__busListenerSet=true;
+                            }
+                        }
                         this.fireEvent("CHANGE",{});
                     },
                     refresh:function(evName)
@@ -733,5 +798,12 @@ Siviglia.Utils.buildClass({
 
     }
 });
+
+Siviglia.Model.__instanceCounter=0;
+Siviglia.Model.getAppId=function()
+{
+    Siviglia.Model.__instanceCounter++;
+    return Siviglia.Model.__instanceCounter;
+}
 
 
