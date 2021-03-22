@@ -2350,10 +2350,16 @@ Siviglia.Utils.buildClass(
                             // Cuando se ha parseado el nodo al cargar el widget, se ha autoañadido a la cache.
                             if(typeof lib[widgetName]==="undefined")
                             {
-                                console.error("El widget "+widgetName+" no esta bien definido.Se ha cargado el fichero, pero la clase sigue sin existir");
+                                // Probamos el metodo alternativo, cuando el nombre es del tipo /model/....
+                                // Primero, quitamos la parte comun, que es /js/Siviglia
+                                var w2="Siviglia"+widgetName.replace("/js/Siviglia","").replace(/\//g,".");
+                                if(typeof lib[w2]==="undefined")
+                                    console.error("El widget "+widgetName+" | "+w2+" no esta bien definido.Se ha cargado el fichero, pero la clase sigue sin existir");
+                                else
+                                    widgetName=w2;
                             }
                             p.resolve(lib[widgetName]);
-                        });
+                        });4
 
                         return p;
                     }
