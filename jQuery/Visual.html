@@ -2,6 +2,13 @@
     .node {
     }
 
+    .node circle {
+        pointer-events: all;
+        fill: black;
+        stroke-width: 0px;
+        r: 20px
+    }
+
     .link {
         fill: none;
         stroke: #000;
@@ -265,6 +272,182 @@
                         }
                         if (doUpdate)
                             this.update(node);
+                    },
+                    getIdField:function()
+                    {
+                        return this.rowIdField==null?"__id":this.rowIdField;
+                    },
+                    select:function(node,datum)
+                    {
+
+                        var idField=this.getIdField();
+                        var id=datum[idField];
+                        for(var k=0;k<this.selection.length;k++) {
+                            if (this.selection[k].d[idField] == id)
+                                return;
+                        }
+                        if(!this.allowMultipleSelection && this.selection.length > 0)
+                        {
+                            this.selection[0].node.toggleSelection();
+                            this.selection=[];
+                        }
+                        this.selection.push({d:datum,node:node});
+                        this.fireEvent("SELECTION_CHANGE",{selection:this.selection});
+                    },
+                    unselect:function(datum)
+                    {
+                        var idField=this.getIdField();
+                        var id=datum[idField];
+                        for(var k=0;k<this.selection.length;k++) {
+                            if (this.selection[k].d[idField] == id)
+                            {
+                                this.selection[k].node.deselect();
+                                this.selection.splice(k,1);
+
+                                if(this.selection.length > 0)
+                                    this.fireEvent("SELECTION_CHANGE",{selection:this.selection});
+                                else
+                                    this.fireEvent("SELECTION_EMPTY",{});
+                                return;
+                            }
+                        }
+                    }
+                }
+            },
+            Force: {
+                inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
+                methods: {
+                    preInitialize: function (params) {
+                        // Esta clase no va a recibir datos.
+                        // Lo que espera es que haya un metodo que devuelva nodos y links.
+                        // El metodo getNodesAndLinks debe devolver un objeto {nodes:[], links:[]}
+                        // Luego, es necesario proveer de un metodo drawNode y drawLink
+
+                        // Ancho y alto del svg : svgWidth,svgHeight.
+                        // * Nombre del widget a pintar en cada nodo : nodeWidget
+                        // * Funcion de procesado de links
+                        // * Ancho y alto del widget  : widgetWidth, widgetHeight
+                        // * Id unico en los datos, si existe (si no, se autoasigna):rowIdField
+                        // * Permitir seleccion multiple: allowMultipleSelection
+                        // * Spacing en horizontal y en vertical entre los nodos. :spacingWidth, spacingHeight
+                        // Las clases derivadas pueden sobreescribir funciones para click sobre elementos,
+                        this.svgWidth=params.svgWidth;
+                        this.svgHeight=params.svgHeight;
+                        this.nodeWidget = params.nodeWidget;
+                        this.nodeWidth = params.nodeWidth;
+                        this.nodeHeight = params.nodeHeight;
+                        this.allowMultipleSelection=Siviglia.issetOr(params.allowMultipleSelection,false);
+                        this.rowIdField = Siviglia.issetOr(params.rowIdField, null);
+                        this.index = 0; // Un contador para el id por defecto,__id
+                        this.selection=[];
+                        this.EventManager();
+                    },
+                    initialize: function (params) {
+                        var m = this;
+                        this.nodes=[];
+                        this.links=[];
+                        this.nodesById={};
+                        // Se crea el svg base, del mismo tamanio que el div principal del widget.
+                        debugger;
+                        var zoomBehaviours = d3
+                            .zoom()
+                            .scaleExtent([0.05, 3])
+                            .on("zoom", function () {
+                                m.svg.attr("transform",
+                                    "translate(" + d3.event.translate + ")" +
+                                    " scale(" + d3.event.scale + ")");
+                            });
+
+                        var ow = this.svgWidth;
+                        var oh = this.svgHeight;
+                        //zoomBehaviours.translate([ow / 2, 20]);
+                        this.svg = d3.select(this.svgNode[0])
+                            //.attr("width", ow)
+                            .attr("width", ow)  // para que el ancho del arbol svg se adapte 100% al ancho de la ventana
+                            .attr("height", oh)
+                            .call(zoomBehaviours)
+                            .append("g")
+                            .attr("transform", "translate(" + ow / 2 + "," + oh / 2 + ")");
+                        // Se da el punto de referencia a partir del cual se tiene que hacer zoom
+                        // Se prepara el zoom:
+
+                        var ticked=function() {
+                            this.graphLinks
+                                .attr("x1", function(d) {
+                                    return d.source.x;
+                                })
+                                .attr("y1", function(d) {
+                                    return d.source.y;
+                                })
+                                .attr("x2", function(d) {
+                                    return d.target.x;
+                                })
+                                .attr("y2", function(d) {
+                                    return d.target.y;
+                                });
+
+                            this.graphNodes.attr("transform", function(d) {
+                                return "translate(" + d.x + "," + d.y + ")";
+                            });
+                        }.bind(this);
+
+                        this.simulation = d3.forceSimulation()
+                                .force("link", d3.forceLink().id(function(d) { return d[this.rowIdField]; }.bind(this)))
+                                .force("charge", d3.forceManyBody().strength(-5000))
+                                .force("center", d3.forceCenter(ow / 4, oh / 4))
+                                .on("tick", ticked);
+
+                        this.linkG = this.svg.append("g");
+                        this.linkG.attr("class", "links");
+
+
+                        this.nodeG = this.svg.append("g");
+                        this.nodeG.attr("class", "nodes");
+
+
+
+                        // Cargamos aqui el widget necesario para pintar los nodos. Si lo tenemos ya,
+                        // llamamos directamente a expandTree. Si no, se llama a expandTree cuando el widget ya
+                        // se haya cargado.
+                        // ExpandTree va a llamar automaticamente a update
+
+                        var f=function(){
+                            this.update();
+                        }.bind(this);
+                        var factory=new Siviglia.UI.Expando.WidgetFactory();
+                        if(factory.hasInstance(this.nodeWidget))
+                            f();
+                        else
+                            factory.getInstance(this.nodeWidget,this.__context).then(f);
+                    },
+                    update: function () {
+                        // Redefine and restart simulation
+                        var graph=this.getNodesAndLinks();
+                        this.nodes=graph.nodes ?? [];
+                        this.links=graph.links ?? [];
+
+                        this.graphLinks=this.linkG.selectAll(".link").data(this.links);
+                        var linkEnter=this.graphLinks
+                            .enter()
+                            .append("line")
+                            .attr("class","link");
+                        this.graphLinks=linkEnter.merge(this.graphLinks)
+
+                        this.graphNodes=this.nodeG.selectAll(".node").data(this.nodes);
+                        var nodeEnter=this.graphNodes
+                            .enter()
+                            .append("g")
+                            .attr("class","node");
+                        var circlesEnter = nodeEnter.append('circle');
+                        this.graphNodes=nodeEnter.merge(this.graphNodes);
+
+                        this.simulation.nodes(this.nodes);
+
+                        this.simulation.force("link")
+                            .links(this.links);
+                        this.simulation.alpha(1);
+                        this.simulation.restart();
+
                     },
                     getIdField:function()
                     {

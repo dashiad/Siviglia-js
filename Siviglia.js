@@ -2359,7 +2359,7 @@ Siviglia.Utils.buildClass(
                                     widgetName=w2;
                             }
                             p.resolve(lib[widgetName]);
-                        });4
+                        });
 
                         return p;
                     }
