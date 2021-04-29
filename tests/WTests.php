@@ -392,6 +392,7 @@
                         inherits: "Siviglia.UI.Expando.View",
                         methods: {
                             preInitialize: function (params) {
+
                                 this.message="Hello World! (2)"
                             },
                             initialize: function (params) {

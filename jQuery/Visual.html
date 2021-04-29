@@ -69,10 +69,10 @@
                         var zoomBehaviours = d3.behavior
                             .zoom()
                             .scaleExtent([0.05, 3])
-                            .on("zoom", function () {
+                            .on("zoom", function (event,d) {
                                 m.svg.attr("transform",
-                                    "translate(" + d3.event.translate + ")" +
-                                    " scale(" + d3.event.scale + ")");
+                                    "translate(" + event.translate + ")" +
+                                    " scale(" + event.scale + ")");
                             });
 
                         // Se inicializa la posicino del nodo raiz.
@@ -316,26 +316,37 @@
             },
             Force: {
                 inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
+                destruct:function(){
+                    if(this.subWidgets!==null)
+                    {
+                        for(var k in this.subWidgets)
+                            this.subWidgets[k].destruct();
+                        this.rootNode.innerHTML="";
+                    }
+                },
                 methods: {
                     preInitialize: function (params) {
                         // Esta clase no va a recibir datos.
                         // Lo que espera es que haya un metodo que devuelva nodos y links.
                         // El metodo getNodesAndLinks debe devolver un objeto {nodes:[], links:[]}
                         // Luego, es necesario proveer de un metodo drawNode y drawLink
-
                         // Ancho y alto del svg : svgWidth,svgHeight.
                         // * Nombre del widget a pintar en cada nodo : nodeWidget
-                        // * Funcion de procesado de links
                         // * Ancho y alto del widget  : widgetWidth, widgetHeight
                         // * Id unico en los datos, si existe (si no, se autoasigna):rowIdField
                         // * Permitir seleccion multiple: allowMultipleSelection
-                        // * Spacing en horizontal y en vertical entre los nodos. :spacingWidth, spacingHeight
+
                         // Las clases derivadas pueden sobreescribir funciones para click sobre elementos,
                         this.svgWidth=params.svgWidth;
+                        this.subWidgets={};
                         this.svgHeight=params.svgHeight;
                         this.nodeWidget = params.nodeWidget;
+                        var parts=Siviglia.Utils.stringToContextAndObject(this.nodeWidget)
+                        this.nodeWidgetContext=parts.context;
+                        this.nodeWidgetObject=parts.object;
                         this.nodeWidth = params.nodeWidth;
                         this.nodeHeight = params.nodeHeight;
+
                         this.allowMultipleSelection=Siviglia.issetOr(params.allowMultipleSelection,false);
                         this.rowIdField = Siviglia.issetOr(params.rowIdField, null);
                         this.index = 0; // Un contador para el id por defecto,__id
@@ -349,14 +360,7 @@
                         this.nodesById={};
                         // Se crea el svg base, del mismo tamanio que el div principal del widget.
                         debugger;
-                        var zoomBehaviours = d3
-                            .zoom()
-                            .scaleExtent([0.05, 3])
-                            .on("zoom", function () {
-                                m.svg.attr("transform",
-                                    "translate(" + d3.event.translate + ")" +
-                                    " scale(" + d3.event.scale + ")");
-                            });
+
 
                         var ow = this.svgWidth;
                         var oh = this.svgHeight;
@@ -364,10 +368,17 @@
                         this.svg = d3.select(this.svgNode[0])
                             //.attr("width", ow)
                             .attr("width", ow)  // para que el ancho del arbol svg se adapte 100% al ancho de la ventana
-                            .attr("height", oh)
-                            .call(zoomBehaviours)
-                            .append("g")
-                            .attr("transform", "translate(" + ow / 2 + "," + oh / 2 + ")");
+                            .attr("height", oh);
+                        this.mainG=this.svg
+                            .append("g");
+
+                        var zoom_handler = d3
+                            .zoom()
+                            //.scaleExtent([0.05, 3])
+                            .on("zoom", function (event,d) {
+                                this.mainG.attr("transform", event.transform)
+                            }.bind(this));
+                        zoom_handler(this.svg);
                         // Se da el punto de referencia a partir del cual se tiene que hacer zoom
                         // Se prepara el zoom:
 
@@ -394,14 +405,14 @@
                         this.simulation = d3.forceSimulation()
                                 .force("link", d3.forceLink().id(function(d) { return d[this.rowIdField]; }.bind(this)))
                                 .force("charge", d3.forceManyBody().strength(-5000))
-                                .force("center", d3.forceCenter(ow / 4, oh / 4))
+                                .force("center", d3.forceCenter(ow / 2, oh / 2))
                                 .on("tick", ticked);
 
-                        this.linkG = this.svg.append("g");
+                        this.linkG = this.mainG.append("g");
                         this.linkG.attr("class", "links");
 
 
-                        this.nodeG = this.svg.append("g");
+                        this.nodeG = this.mainG.append("g");
                         this.nodeG.attr("class", "nodes");
 
 
@@ -430,14 +441,27 @@
                         var linkEnter=this.graphLinks
                             .enter()
                             .append("line")
-                            .attr("class","link");
+                            .attr("class","link")
+
                         this.graphLinks=linkEnter.merge(this.graphLinks)
 
                         this.graphNodes=this.nodeG.selectAll(".node").data(this.nodes);
                         var nodeEnter=this.graphNodes
                             .enter()
                             .append("g")
-                            .attr("class","node");
+                            .attr("class","node")
+                            .append("svg:foreignObject")
+                            .attr("y", -30)
+                            .attr("x", -5)
+                            .attr('width', 300)
+                            .attr('height', 100)
+                            .attr("text-anchor", function(d) {
+                                return d.children || d._children ? "end" : "start";
+                            })
+                            .append('xhtml:div')
+                            .attr('id',function(d){return "force-"+d[this.rowIdField]}.bind(this))
+                            .each(function(d){this.createSubWidget(d);}.bind(this))
+
                         var circlesEnter = nodeEnter.append('circle');
                         this.graphNodes=nodeEnter.merge(this.graphNodes);
 
@@ -447,6 +471,21 @@
                             .links(this.links);
                         this.simulation.alpha(1);
                         this.simulation.restart();
+
+                    },
+                    createSubWidget:function(d)
+                    {
+                        var id=d[this.rowIdField];
+                        var nodeId="#force-"+id;
+                        var ss=$("<div></div>");
+                        var newInstance=new this.nodeWidgetContext[this.nodeWidgetObject](
+                            this.nodeWidget,{"item":d},{},ss,this.__context
+                        );
+                            newInstance.__build().then(function(i){
+                                n=ss;
+                                $(nodeId).append(i.rootNode);
+                                this.subWidgets[id]=i;
+                            }.bind(this));
 
                     },
                     getIdField:function()
@@ -490,6 +529,8 @@
                     }
                 }
             }
+
+
         }
 
     });
