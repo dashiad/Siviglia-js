@@ -114,7 +114,7 @@
     var urlParams = new URLSearchParams(window.location.search);
     var DEVELOP_MODE;
     if (!urlParams.has("test")) {
-        DEVELOP_MODE=0;    // Specific test number
+        DEVELOP_MODE=46;    // Specific test number
 	    // var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
@@ -2895,6 +2895,275 @@
 
                 }
 
+            })
+        }
+    )
+
+    
+    runTest("Test con CursorTree","Prueba de diseño para ver como pintar un nodo de un CursorTree. <br>",
+        '<div data-sivWidget="Test.CursorNodeView" data-widgetParams="" data-widgetCode="Test.CursorNodeView">'+
+
+            '<div data-sivId="cursor-container" id="cursorContainer" data-sivValue="class|cursorState_[%*item/status%]"></div>'+
+        
+                '<div><span>Fichero: </span><span data-sivValue="/*fileName"></span></div>'+
+                '<div><span>Id: </span><span data-sivValue="/*id_cursor"></span></div>'+
+                '<div><span>Fecha: </span><span data-sivValue="/*fecha_start"></span></div>'+
+                '<div><span data-sivValue="class|cursor [%*paquete_modelo%]-cursors [%*cursorNameShort%]">Tipo: </span><span data-sivValue="/*cursorNameShort"></span></div>'+
+                '<div><span>Procesadas: </span><span data-sivValue="/*rowsProcessed"></span></div>'+
+
+                '<div data-sivIf="[%/*error_message%] !== null">'+
+                    '<span>Error: </span><span class="cursor error_message" data-sivValue="title|Error dado:[%*error_message%]"></span>'+
+                '</div>'+
+
+                '<div><span data-sivValue="class|iconStatusCursor_[%*status_cursor%]">Estado: </span><span data-sivValue="/*status_text"></span></div> '+
+
+        '</div>'+
+        
+        '<div data-sivWidget="Test.CursorGraph" data-widgetCode="Test.CursorGraph"> <svg data-sivId="svgNode" style="width: 100%; height: 100%"></svg> </div>'+
+        '<div data-sivWidget="Test.CursorTree" data-widgetCode="Test.CursorTree"> <div data-sivId="graphNode" style="width: 100%; height:100%"></div> </div>',
+
+        
+        '<div data-sivView="Test.CursorNodeView"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "CursorNodeView": {
+                        inherits:"Siviglia.UI.Expando.View",
+                        methods:
+                        {
+                            preInitialize:function(params){
+
+                                params = "{\"item\":{\"name\":null,\"type\":\"lib\\\\data\\\\Cursor\\\\Cursor\",\"rowsProcessed\":0,\"start\":\"2021-05-06 10:30:22\",\"error\":null,\"cursorDefinition\":{\"callback\":[]},\"status\":1,\"phaseStart\":\"2021-05-06 10:30:22\",\"id\":\"6093a91e73abb\",\"parent\":null,\"container\":null,\"end\":null}}"
+                                
+                                // Obtención de variables para mostrar el contenido del cursor en params.item
+                                if (params.item.cursorDefinition.fileName != undefined)
+                                    this.fileName  = params.item.cursorDefinition.fileName.split('\\').pop().split('/').pop();
+                                else
+                                    this.fileName = "---";
+                                this.id_cursor       = params.item.id;
+                                this.cursorNameShort = params.item.type.split("\\").pop();
+                                this.status_cursor   = params.item.status;
+                                this.rowsProcessed   = params.item.rowsProcessed;
+                                this.fecha_start     = params.item.start;
+                                this.error_message   = params.item.error;
+                                
+                                // Dependiendo de la ruta del path del cursor, montar un path asociado a ese cursor
+                                // para asi definir los iconos asociados a los paquetes-modelos-lib o default
+                                this.path_cursor = params.item.type.split('\\');
+                                this.path_first  = this.path_cursor.shift();
+                                switch (this.path_first) {
+                                    case "lib":
+                                        this.paquete_modelo = "default";
+                                        break;
+                                    case "model":
+                                        this.paquete_modelo = this.path_cursor[1]+"_"+this.path_cursor[2]; // paquete_modelo. Ej: ads_dfp
+                                        break;                            
+                                    default:
+                                        this.paquete_modelo = "default";
+                                        break;
+                                }
+                                
+                                // Para mostrar el estado del cursor con texto.
+                                // TODO: model\sys\objects\Cursor\Cursor.php añadir constantes con texto para evitar este switch
+                                switch (this.status_cursor) {
+                                    case 0: 
+                                        this.status_text = "Creado";
+                                        break;
+                                    case 1:
+                                        this.status_text = "Iniciado";
+                                        break;
+                                    case 2:
+                                        this.status_text = "1ª Ejecución";
+                                        break;
+                                    case 3:
+                                        this.status_text = "Corriendo";
+                                        break;
+                                    case 4:
+                                        this.status_text = "Fallido";
+                                        break;
+                                    case 5:
+                                        this.status_text = "Finalizado, éxito";
+                                        break;
+                                    case 6:
+                                        this.status_text = "Abortado";
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            },
+                            initialize:function(params){}
+                        }
+                    },
+                    // "CursorGraph":{
+                    //     inherits:"Siviglia.visual.Force",                       
+                    //     methods:{
+                    //         initialize:function(params)
+                    //         {
+                    //             this.existingCursors={};
+                    //             this.cursorNodes=[];
+                    //             this.cursorLinks=[];
+                    //             this.Force$initialize(params);
+                    //         },
+                    //         onData:function(cursorInfo)
+                    //         {
+                    //             var c=this.existingCursors[cursorInfo.id];
+                    //             var parent=cursorInfo.parent;
+                    //             var container=cursorInfo.container;
+                    //             var id=cursorInfo.id;
+
+                    //             if(typeof c!=="undefined" && c!==null)
+                    //             {
+                    //                 // Se updatean los posibles links..Se supone que nunca se va a cambiar un link,
+                    //                 // solo se añaden...Es por eso que no se busca un link antiguo y se quita..
+                    //                 if(c.parent!==parent)
+                    //                     this.cursorLinks.push({source:parent,target:id,type:"parent"});
+                    //                 if(c.container!==container)
+                    //                     this.cursorLinks.push({source:container,target:id,type:"container"});
+                    //                 for(var k in cursorInfo)
+                    //                     c[k]=cursorInfo[k];
+                    //             }
+                    //             else {
+                    //                 this.existingCursors[cursorInfo.id] = cursorInfo;
+                    //                 this.cursorNodes.push(cursorInfo);
+                    //                 if(parent!==null)
+                    //                     this.cursorLinks.push({source:parent,target:id,type:"parent"})
+                    //                 if(container!==null)
+                    //                     this.cursorLinks.push({source:container,target:id,type:"container"})
+                    //             }
+
+                    //             this.update();
+                    //         },
+                    //         getNodesAndLinks:function()
+                    //         {
+                    //             return {nodes:this.cursorNodes,links:this.cursorLinks};
+                    //         }
+                    //     }
+                    // },
+                    // "CursorTree":{
+                    //     inherits:"Siviglia.site.widgets.JS.SubApp",
+                    //     destruct:function()
+                    //     {                            
+                    //         if(this.wampService)
+                    //         {
+                    //             this.wampService.call("com.adtopy.removeBusListener",[this.__identifier]);
+                    //         }
+                    //         this.cursorGraph.destruct();
+
+                    //     },
+                    //     methods:{
+                    //         preInitialize:function(params)
+                    //         {
+                    //             this.modelView=null;
+                    //             this.currentItemView=null;
+                    //             this.editing=false;
+                    //             this.shown="hidden";
+                    //             this.selectedIcon="";
+                    //             this.selectedName="";
+                    //             this.selectedModel="";
+                    //             this.selectedSubModel="";
+                    //             this.selectedResourceType="";
+                    //             this.selectedClass="";
+                    //             this.selectedFile="";
+
+                    //             this.SubApp$preInitialize(params);
+                    //         },
+                    //         initialize:function(params) {
+                    //             this.SubApp$initialize(params);
+                    //             var stack = new Siviglia.Path.ContextStack();
+                    //             this.cursorGraph=null;
+                    //             var cursorGraph=new Siviglia.model.sys.Cursor.apps.CursorGraph(
+                    //                 "Siviglia.model.sys.Cursor.apps.CursorGraph",
+                    //                 {parent:this,
+                    //                 svgWidth:600,
+                    //                     svgHeight:400,
+                    //                     nodeWidget:'Siviglia.model.sys.Cursor.apps.CursorNodeView',
+                    //                     nodeWidth:100,
+                    //                     nodeHeight:100,
+                    //                     allowMultipleSelection:false,
+                    //                     rowIdField:'id'
+                    //                 },
+                    //                 {},
+                    //                 $("<div></div"),
+                    //                 stack
+                    //             );
+                    //             cursorGraph.__build().then(function(instance){
+                    //                 this.cursorGraph=instance;
+                    //                 this.graphNode.append(instance.rootNode);
+                    //             }.bind(this))
+
+                    //             // Se pone un listener sobre cualquier cambio en reflection
+                    //             this.wampService=Siviglia.Service.get("wampServer");
+                    //             if(this.wampService)
+                    //             {
+                    //                 this.__identifier=Siviglia.Model.getAppId();
+                    //                 this.wampService.call("com.adtopy.replaceBusListener",[
+                    //                     {channel:'General',path:'/model/sys/Cursor/*',roles:0xFFF,appId:this.__identifier,userId:top.Siviglia.config.user.TOKEN}]);
+
+                    //                 this.wampService.subscribe('busevent',function(data){
+                    //                     var channel=data[0];
+                    //                     var params=data[1];
+                    //                     var appData=data[2];
+                    //                     if(appData.appId===this.__identifier)
+                    //                     {
+                    //                         this.onCursor(params.data);
+                    //                     }
+
+                    //                 }.bind(this))
+                    //             }
+                    //         },
+                    //         onCursor:function(cursorInfo)
+                    //         {
+
+                    //             if(this.cursorGraph)
+                    //                 this.cursorGraph.onData(cursorInfo)
+                    //         },
+                    //         onItemSelected:function(evName,params)
+                    //         {
+                    //             this.showItemData(params.selection[0].d);
+
+                    //             // Se prepara el nombre del widget de edicion.
+                    //             // Si el nombre del recurso era "model", se carga Siviglia.Reflection.Model.
+                    //         },
+                    //         onSelectionEmpty:function()
+                    //         {
+                    //             if(this.currentItemView)
+                    //             {
+                    //                 this.componentViewContainer.html("");
+                    //             }
+                    //             this.editing=false;
+                    //             this.shown="hidden";
+                    //             //this.modelView.unselect(this.lastItemSelected.d);
+
+                    //         },
+                    //         closeComponentView:function()
+                    //         {
+                    //             this.onSelectionEmpty();
+                    //         },
+                    //         onBackgroundClicked:function()
+                    //         {
+                    //             this.onSelectionEmpty();
+                    //         },
+                    //         showItemData:function(d)
+                    //         {
+                    //             this.shown="shown";
+
+                    //             var f=new Adtopy.reflection.ResourceMeta();
+                    //             var meta=f.getResourceMeta(d);
+                    //             this.selectedIcon=meta.icon;
+                    //             this.selectedName=typeof d.name==="undefined"?d.class:d.name;
+                    //             this.selectedModel=typeof d.model==="undefined"?"":d.model;
+                    //             this.selectedSubModel=typeof d.submodel==="undefined" || d.submodel===null?"":d.submodel;
+                    //             this.selectedResourceType=d.resource;
+                    //             this.selectedClass=typeof d.class==="undefined"?"":d.class;
+                    //             this.selectedFile=typeof d.file==="undefined"?"":d.file;
+
+
+                    //         }
+                    //     }
+                    // }
+
+                }                
             })
         }
     )
