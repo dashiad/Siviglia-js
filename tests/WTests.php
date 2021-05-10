@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
+    <link rel="stylesheet" href="/backend/css/style.css">
 
     <!-- <link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css"> -->
     <link rel="stylesheet"
@@ -2909,23 +2910,28 @@
 
     runTest("Test con CursorTree","Prueba de diseño para ver como pintar un nodo de un CursorTree. <br>",
         '<div data-sivWidget="Test.CursorNodeView" data-widgetParams="" data-widgetCode="Test.CursorNodeView">'+
-            '<div style="background-color:yellow;border:1px solid black">'+
-            '<div data-sivId="cursor-container" id="cursorContainer" data-sivValue="class|cursorState_[%*item/status%]"></div>'+
+            //'<div style="background-color:yellow;border:1px solid black">'+
+            '<div data-sivId="cursor-container" id="cursorContainer" data-sivValue="class|cursorState_[%*item/status%]">'+
 
                 //'<div><span>Fichero: </span><span data-sivValue="/*item/fileName"></span></div>'+
-                '<div><span>Id: </span><span data-sivValue="/*item/id"></span></div>'+
-                '<div><span>Fecha: </span><span data-sivValue="/*item/start"></span></div>'+
+                // '<div><span>Id: </span><span data-sivValue="/*item/id"></span></div>'+
+                // '<div><span>Fecha: </span><span data-sivValue="/*item/start"></span></div>'+
                 '<div><span data-sivValue="class|cursor [%*paquete_modelo%]-cursors [%*cursorNameShort%]">Tipo: </span><span data-sivValue="/*cursorNameShort"></span></div>'+
-                '<div><span>Procesadas: </span><span data-sivValue="/*item/rowsProcessed"></span></div>'+
+                '<div><span>Procesadas: </span><span data-sivValue="/*item/rowsProcessed"></span></div>'+            
+                '<div><span data-sivValue="class|iconStatusCursor_[%*status_cursor%]">Estado: </span><span data-sivValue="/*status_text"></span></div>'+
 
-                '<div data-sivIf="[%/*errored%] == true">'+
-                    '<span>Error: </span><span class="cursor error_message" data-sivValue="title|Error dado:[%*error_message%]"></span>'+
+                '<div class="extra_info">'+
+                    '<div><span>Id: </span><span data-sivValue="/*item/id"></span></div>'+
+                    '<div><span>Fecha: </span><span data-sivValue="/*item/start"></span></div>'+
+                    '<div><span>Fichero: </span><span data-sivValue="/*fileName"></span></div>'+                    
+                    '<div><div data-sivIf="[%/*errored%] == true">'+
+                        '<div>span>Error: </span><span class="cursor error_message" data-sivValue="/*error_message"></span></div>'+
+                    '</div></div>'+
                 '</div>'+
-
-                '<div><span data-sivValue="class|iconStatusCursor_[%*status_cursor%]">Estado: </span><span data-sivValue="/*status_text"></span></div> '+
-                '</div>'+
+            '</div>'+
 
         '</div>'+
+        
 
         '<div data-sivWidget="Test.CursorGraph" data-widgetCode="Test.CursorGraph"> <svg data-sivId="svgNode" style="width: 100%; height: 100%"></svg> </div>'+
         '<div data-sivWidget="Test.CursorTree" data-widgetCode="Test.CursorTree"> <div data-sivId="graphNode" style="width: 100%; height:100%"></div> </div>',
@@ -2964,7 +2970,6 @@
 
                                     this.errored = (this.error_message !== '');
 
-
                                     // Dependiendo de la ruta del path del cursor, montar un path asociado a ese cursor
                                     // para asi definir los iconos asociados a los paquetes-modelos-lib o default
                                     this.path_cursor = params.item.type.split('\\');
@@ -2980,43 +2985,20 @@
                                             this.paquete_modelo = "default";
                                             break;
                                     }
+
+                                    // Cargamos los valores enum de la definition model\sys\objects\Cursor\Definition.php
+                                    var cursorModelDefinition = Siviglia.Model.loader.getModelDefinition("/model/sys/Cursor");
+                                    this.statusFieldLabel = cursorModelDefinition.FIELDS.status.VALUES;
+
                                 },
                                 onChangeStatus:function()
                                 {
+                                    // Si el listener ha recibido un evento de cambio, entonces se modifica el texto del estado,
+                                    // según el valor del item.status y actualizamos el nombre 'status_text'
+                                    this.status_text = this.statusFieldLabel[this.item.status];
 
-                                    // Para mostrar el estado del cursor con texto.
-                                    // TODO: model\sys\objects\Cursor\Cursor.php añadir constantes con texto para evitar este switch
-                                    var bgColor="yellow"
-                                    switch (this.item.status) {
-                                        case 0:
-                                            this.status_text = "Creado";
-
-                                            break;
-                                        case 1:
-                                            this.status_text = "Iniciado";
-                                            break;
-                                        case 2:
-                                            this.status_text = "1ª Ejecución";
-                                            break;
-                                        case 3:
-                                            this.status_text = "Corriendo";
-                                            break;
-                                        case 4:
-                                            this.status_text = "Fallido";
-                                            bgColor="red";
-                                            break;
-                                        case 5:
-                                            this.status_text = "Finalizado, éxito";
-                                            bgColor="green";
-                                            break;
-                                        case 6:
-                                            this.status_text = "Abortado";
-                                            bgColor="red";
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    this.rootNode.css({"background-color":bgColor});
+                                    // actualizamos el estado del cursor para mostrar el icono asociado al estado
+                                    this.status_cursor = this.item.status;
                                 },
                                 initialize:function(params){
                                     this.onChangeStatus();
@@ -3138,7 +3120,7 @@
                                         svgHeight:400,
                                         nodeWidget:'Test.CursorNodeView',
                                         nodeWidth:100,
-                                        nodeHeight:100,
+                                        nodeHeight:300,
                                         allowMultipleSelection:false,
                                         rowIdField:'id'
                                     },
@@ -3180,7 +3162,8 @@
                                     }
                                     this.onCursor(events[curEvent]);
                                     curEvent=curEvent+1;
-                                }.bind(this),100);
+                                }.bind(this),1000);
+                                // delay aumentado para ver el cambio de los cursores
 
                                 // Se pone un listener sobre cualquier cambio en reflection
 
@@ -3248,7 +3231,6 @@
                                 this.selectedResourceType=d.resource;
                                 this.selectedClass=typeof d.class==="undefined"?"":d.class;
                                 this.selectedFile=typeof d.file==="undefined"?"":d.file;
-
 
                             }
                         }
