@@ -577,6 +577,10 @@
                                 this.filterNode.append(this.filterWidget.rootNode);
                             }.bind(this))
 
+                        },
+                        downloadAsXLSX:function()
+                        {
+                            this.ds.downloadAsXLSX();
                         }
                     }
                 }
@@ -589,6 +593,9 @@
 <div style="display:none">
     <div data-sivWidget="Siviglia.lists.jqwidgets.BaseGrid" data-widgetCode="Siviglia.lists.jqwidgets.BaseGrid">
         <div data-sivId="filterNode"></div>
+        <div data-sivId="ButtonsNode">
+            <input type="button" value="XLSX" data-sivEvent="click" data-sivCallback="downloadAsXLSX">
+        </div>
         <div data-sivId="grid"></div>
     </div>
 

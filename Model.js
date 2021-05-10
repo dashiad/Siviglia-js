@@ -158,6 +158,7 @@ Siviglia.Utils.buildClass({
                                 n[k]=params[k];
                         }
                     }
+                    var output="json";
                     if(typeof(settings)!=="undefined" && settings!==null)
                     {
 
@@ -165,11 +166,13 @@ Siviglia.Utils.buildClass({
                         {
                             if(settings[k]!=null)
                                 n[k]=settings[k];
+                            if(k==="output")
+                                output=settings[k];
                         }
                     }
 
                     query =$.param(n);
-                    return this.config.baseUrl + "datasource/" + model.getCanonical() + '/' + (id ? id + '/' : '') + datasource + '?output=json' + "&" + query;
+                    return this.config.baseUrl + "datasource/" + model.getCanonical() + '/' + (id ? id + '/' : '') + datasource + '?output=' +output + "&" + query;
                 },
                 getJSModelUrl: function (model) {
                     var m = new Siviglia.Model.ModelDescriptor(model);
@@ -708,6 +711,34 @@ Siviglia.Utils.buildClass({
                                 return k;
                         }
                         return null;
+                    },
+                    downloadAs:function(mode)
+                    {
+                        var mName = new Siviglia.Model.ModelDescriptor(this.__model);
+                        var location = mName.getDataSourceUrl(this.__dsname, null, this.params,{output:mode});
+                        var transport = new Siviglia.Model.Transport();
+                        var m=this;
+                        var currentPromise=$.Deferred();
+                        (function(location){
+                            transport.doGet(location).then(
+                                function (response) {
+                                    if (response.error) {
+                                        currentPromise.reject(error);
+                                    }else {
+                                        m.onResponse(response);
+                                        currentPromise.resolve();
+                                    }
+                                },
+                                function (error) {
+                                    currentPromise.reject(error);
+                                    throw error;
+                                });
+                        })(location);
+                        return currentPromise;
+                    },
+                    downloadAsXLSX:function()
+                    {
+                        this.downloadAs('xlsx');
                     }
                 }
             },

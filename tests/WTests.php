@@ -6,7 +6,7 @@
     <!-- para quitar error consola GET http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css net::ERR_ABORTED 404 (Not Found) -->
     <!-- <link rel='stylesheet prefetch' href='http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css'> -->
     <!-- <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto'> -->
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
+    <script src='/packages/d3/d3.min.js'></script>
     <script src="/node_modules/jquery/dist/jquery.js"></script>
     <script src="../Siviglia.js"></script>
     <script src="../SivigliaStore.js"></script>
@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
+
     <!-- <link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css"> -->
     <link rel="stylesheet"
           href="highlight/styles/ir-black.css">
@@ -92,6 +93,11 @@
             margin: 10px;
             background-color:white;
         }
+        path.link {
+            fill: #ccc;
+            stroke: #333;
+            stroke-width: 1.5px;
+        }
 
     </style>
     <style type="text/css">
@@ -106,6 +112,7 @@
 <body style="background-color:#EEE; background-image:none;">
 <?php include_once("../jQuery/JqxWidgets.html"); ?>
 <?php include_once("../jQuery/JqxLists.html"); ?>
+<?php include_once("../jQuery/Visual.html");?>
 
 
 
@@ -114,7 +121,7 @@
     var urlParams = new URLSearchParams(window.location.search);
     var DEVELOP_MODE;
     if (!urlParams.has("test")) {
-        DEVELOP_MODE=43;    // Specific test number
+        DEVELOP_MODE=46;    // Specific test number
 	    // var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
@@ -2894,6 +2901,360 @@
                     }
 
                 }
+
+            })
+        }
+    )
+
+
+    runTest("Test con CursorTree","Prueba de diseño para ver como pintar un nodo de un CursorTree. <br>",
+        '<div data-sivWidget="Test.CursorNodeView" data-widgetParams="" data-widgetCode="Test.CursorNodeView">'+
+            '<div style="background-color:yellow;border:1px solid black">'+
+            '<div data-sivId="cursor-container" id="cursorContainer" data-sivValue="class|cursorState_[%*item/status%]"></div>'+
+
+                //'<div><span>Fichero: </span><span data-sivValue="/*item/fileName"></span></div>'+
+                '<div><span>Id: </span><span data-sivValue="/*item/id"></span></div>'+
+                '<div><span>Fecha: </span><span data-sivValue="/*item/start"></span></div>'+
+                '<div><span data-sivValue="class|cursor [%*paquete_modelo%]-cursors [%*cursorNameShort%]">Tipo: </span><span data-sivValue="/*cursorNameShort"></span></div>'+
+                '<div><span>Procesadas: </span><span data-sivValue="/*item/rowsProcessed"></span></div>'+
+
+                '<div data-sivIf="[%/*errored%] == true">'+
+                    '<span>Error: </span><span class="cursor error_message" data-sivValue="title|Error dado:[%*error_message%]"></span>'+
+                '</div>'+
+
+                '<div><span data-sivValue="class|iconStatusCursor_[%*status_cursor%]">Estado: </span><span data-sivValue="/*status_text"></span></div> '+
+                '</div>'+
+
+        '</div>'+
+
+        '<div data-sivWidget="Test.CursorGraph" data-widgetCode="Test.CursorGraph"> <svg data-sivId="svgNode" style="width: 100%; height: 100%"></svg> </div>'+
+        '<div data-sivWidget="Test.CursorTree" data-widgetCode="Test.CursorTree"> <div data-sivId="graphNode" style="width: 100%; height:100%"></div> </div>',
+
+
+        '<div data-sivView="Test.CursorTree"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    "CursorNodeView":{
+                        inherits:"Siviglia.UI.Expando.View",
+                        destruct:function()
+                        {
+                            this.item["*status"].removeListeners(this);
+                        },
+                        methods:
+                            {
+                                preInitialize:function(params) {
+
+                                    // Obtención de variables para mostrar el contenido del cursor en params.item
+                                    if (params.item.cursorDefinition.fileName != undefined)
+                                        this.fileName = params.item.cursorDefinition.fileName.split('\\').pop().split('/').pop();
+                                    else
+                                        this.fileName = "---";
+                                    this.item = params.item;
+                                    this.id_cursor = params.item.id;
+                                    this.cursorNameShort = params.item.type.split("\\").pop();
+                                    this.status_cursor = params.item.status;
+                                    this.rowsProcessed = params.item.rowsProcessed;
+                                    this.fecha_start = params.item.start;
+                                    this.error_message = params.item.error === null ? '' : params.item.error;
+                                    this.status_text="";
+                                    Siviglia.Path.eventize(params.item, "status");
+                                    params.item["*status"].addListener("CHANGE", this, "onChangeStatus");
+
+                                    this.errored = (this.error_message !== '');
+
+
+                                    // Dependiendo de la ruta del path del cursor, montar un path asociado a ese cursor
+                                    // para asi definir los iconos asociados a los paquetes-modelos-lib o default
+                                    this.path_cursor = params.item.type.split('\\');
+                                    this.path_first = this.path_cursor.shift();
+                                    switch (this.path_first) {
+                                        case "lib":
+                                            this.paquete_modelo = "default";
+                                            break;
+                                        case "model":
+                                            this.paquete_modelo = this.path_cursor[1] + "_" + this.path_cursor[2]; // paquete_modelo. Ej: ads_dfp
+                                            break;
+                                        default:
+                                            this.paquete_modelo = "default";
+                                            break;
+                                    }
+                                },
+                                onChangeStatus:function()
+                                {
+
+                                    // Para mostrar el estado del cursor con texto.
+                                    // TODO: model\sys\objects\Cursor\Cursor.php añadir constantes con texto para evitar este switch
+                                    var bgColor="yellow"
+                                    switch (this.item.status) {
+                                        case 0:
+                                            this.status_text = "Creado";
+
+                                            break;
+                                        case 1:
+                                            this.status_text = "Iniciado";
+                                            break;
+                                        case 2:
+                                            this.status_text = "1ª Ejecución";
+                                            break;
+                                        case 3:
+                                            this.status_text = "Corriendo";
+                                            break;
+                                        case 4:
+                                            this.status_text = "Fallido";
+                                            bgColor="red";
+                                            break;
+                                        case 5:
+                                            this.status_text = "Finalizado, éxito";
+                                            bgColor="green";
+                                            break;
+                                        case 6:
+                                            this.status_text = "Abortado";
+                                            bgColor="red";
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    this.rootNode.css({"background-color":bgColor});
+                                },
+                                initialize:function(params){
+                                    this.onChangeStatus();
+                                }
+                            }
+                    },
+                    "CursorGraph":{
+                        inherits:"Siviglia.visual.Force",
+                        destruct:function()
+                        {
+
+                        },
+                        methods:{
+                            initialize:function(params)
+                            {
+                                this.existingCursors={};
+                                this.cursorNodes=[];
+                                this.cursorLinks=[];
+                                this.Force$initialize(params);
+                                this.svg.append("svg:defs").selectAll("marker")
+                                    .data(["end"])      // Different link/path types can be defined here
+                                    .enter().append("svg:marker")
+                                    .attr("id","end")// This section adds in the arrows
+                                    .attr("viewBox", "0 -5 10 10")
+                                    .attr("refX", 15)
+                                    .attr("refY", 0.5)
+                                    .attr("markerWidth", 13)
+                                    .attr("markerHeight", 13)
+                                    .attr("orient", "auto")
+                                    .append("svg:path")
+                                    .attr('fill', '#999')
+                                    .attr("d", "M0,-5L10,0L0,5");
+                            },
+                            onData:function(cursorInfo)
+                            {
+                                var c=this.existingCursors[cursorInfo.id];
+                                var parent=cursorInfo.parent;
+                                var container=cursorInfo.container;
+                                var id=cursorInfo.id;
+
+                                if(typeof c!=="undefined" && c!==null)
+                                {
+                                    // Se updatean los posibles links..Se supone que nunca se va a cambiar un link,
+                                    // solo se añaden...Es por eso que no se busca un link antiguo y se quita..
+                                    if(c.parent!==parent)
+                                        this.cursorLinks.push({source:parent,target:id,type:"parent"});
+                                    if(c.container!==container)
+                                        this.cursorLinks.push({source:container,target:id,type:"container"});
+
+                                    for(var k in cursorInfo)
+                                        c[k]=cursorInfo[k];
+                                }
+                                else {
+                                    this.existingCursors[cursorInfo.id] = cursorInfo;
+                                    this.cursorNodes.push(cursorInfo);
+                                    if(parent!==null)
+                                        this.cursorLinks.push({source:parent,target:id,type:"parent"})
+                                    if(container!==null)
+                                        this.cursorLinks.push({source:container,target:id,type:"container"})
+                                }
+
+                                this.update();
+
+                            },
+                            getNodesAndLinks:function()
+                            {
+                                return {nodes:this.cursorNodes,links:this.cursorLinks};
+                            },
+                            updateLinks:function(links)
+                            {
+                                this.Force$updateLinks(links);
+
+                                this.graphLinks.attr("marker-end", "url(#end)");
+
+                                //this.graphLinks.attr('marker-end', function(d,i){ return 'url(#end)' })
+                            }
+                        }
+                    },
+                    "CursorTree":{
+                        inherits:"Siviglia.UI.Expando.View",
+                        destruct:function()
+                        {
+                            /*if(this.modelView)
+                                this.modelView.destruct();
+                            if(this.currentItemView)
+                                this.currentItemView.destruct();*/
+                            if(this.wampService)
+                            {
+                                this.wampService.call("com.adtopy.removeBusListener",[this.__identifier]);
+                            }
+                            this.cursorGraph.destruct();
+
+                        },
+                        methods:{
+                            preInitialize:function(params)
+                            {
+                                this.modelView=null;
+                                this.currentItemView=null;
+                                this.editing=false;
+                                this.shown="hidden";
+                                this.selectedIcon="";
+                                this.selectedName="";
+                                this.selectedModel="";
+                                this.selectedSubModel="";
+                                this.selectedResourceType="";
+                                this.selectedClass="";
+                                this.selectedFile="";
+
+                                //this.SubApp$preInitialize(params);
+                            },
+                            initialize:function(params) {
+                                //this.SubApp$initialize(params);
+                                var stack = new Siviglia.Path.ContextStack();
+                                this.cursorGraph=null;
+                                var cursorGraph=new Test.CursorGraph(
+                                    "Test.CursorGraph",
+                                    {parent:this,
+                                        svgWidth:600,
+                                        svgHeight:400,
+                                        nodeWidget:'Test.CursorNodeView',
+                                        nodeWidth:100,
+                                        nodeHeight:100,
+                                        allowMultipleSelection:false,
+                                        rowIdField:'id'
+                                    },
+                                    {},
+                                    $("<div></div"),
+                                    stack
+                                );
+                                cursorGraph.__build().then(function(instance){
+                                    this.cursorGraph=instance;
+                                    this.graphNode.append(instance.rootNode);
+                                }.bind(this))
+                                // Simulacion de datos recibidos por el bus
+                                var events=[{"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1a3449","parent":null,"container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":null,"container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":null,"container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":null,"container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":"609850c1a3449","container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},"status":2,"phaseStart":"2021-05-09 23:14:41","id":"609850c1a3449","parent":null,"container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},"status":3,"phaseStart":"2021-05-09 23:14:41","id":"609850c1a3449","parent":null,"container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":2,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":"609850c1a3449","container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":3,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":"609850c1a3449","container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1a3449","parent":null,"container":null,"end":"2021-05-09 23:14:41"},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":"609850c1a3449","container":null,"end":"2021-05-09 23:14:41"},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":2,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":3,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":2,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":3,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":null},
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":"2021-05-09 23:14:41"},
+                                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":"2021-05-09 23:14:41"}];
+                                var curEvent=0;
+                                var cInt;
+                                cInt=setInterval(function(){
+                                    if(curEvent == events.length) {
+                                        clearInterval(cInt);
+                                        return;
+                                    }
+                                    this.onCursor(events[curEvent]);
+                                    curEvent=curEvent+1;
+                                }.bind(this),100);
+
+                                // Se pone un listener sobre cualquier cambio en reflection
+
+                                /*this.wampService=Siviglia.Service.get("wampServer");
+                                if(this.wampService)
+                                {
+                                    this.__identifier=Siviglia.Model.getAppId();
+                                    this.wampService.call("com.adtopy.replaceBusListener",[
+                                        {channel:'General',path:'/model/sys/Cursor/*',roles:0xFFF,appId:this.__identifier,userId:top.Siviglia.config.user.TOKEN}]);
+
+                                    this.wampService.subscribe('busevent',function(data){
+                                        var channel=data[0];
+                                        var params=data[1];
+                                        var appData=data[2];
+                                        if(appData.appId===this.__identifier)
+                                        {
+                                            this.onCursor(params.data);
+                                        }
+
+                                    }.bind(this))
+                                }*/
+                            },
+                            onCursor:function(cursorInfo)
+                            {
+                                console.dir(JSON.stringify(cursorInfo));
+                                if(this.cursorGraph)
+                                    this.cursorGraph.onData(cursorInfo)
+                            },
+                            onItemSelected:function(evName,params)
+                            {
+                                this.showItemData(params.selection[0].d);
+
+                                // Se prepara el nombre del widget de edicion.
+                                // Si el nombre del recurso era "model", se carga Siviglia.Reflection.Model.
+                            },
+                            onSelectionEmpty:function()
+                            {
+                                if(this.currentItemView)
+                                {
+                                    this.componentViewContainer.html("");
+                                }
+                                this.editing=false;
+                                this.shown="hidden";
+                                //this.modelView.unselect(this.lastItemSelected.d);
+
+                            },
+                            closeComponentView:function()
+                            {
+                                this.onSelectionEmpty();
+                            },
+                            onBackgroundClicked:function()
+                            {
+                                this.onSelectionEmpty();
+                            },
+                            showItemData:function(d)
+                            {
+                                this.shown="shown";
+
+                                var f=new Adtopy.reflection.ResourceMeta();
+                                var meta=f.getResourceMeta(d);
+                                this.selectedIcon=meta.icon;
+                                this.selectedName=typeof d.name==="undefined"?d.class:d.name;
+                                this.selectedModel=typeof d.model==="undefined"?"":d.model;
+                                this.selectedSubModel=typeof d.submodel==="undefined" || d.submodel===null?"":d.submodel;
+                                this.selectedResourceType=d.resource;
+                                this.selectedClass=typeof d.class==="undefined"?"":d.class;
+                                this.selectedFile=typeof d.file==="undefined"?"":d.file;
+
+
+                            }
+                        }
+                    },
+
+                },
 
             })
         }

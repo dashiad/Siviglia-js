@@ -359,7 +359,7 @@
                         this.links=[];
                         this.nodesById={};
                         // Se crea el svg base, del mismo tamanio que el div principal del widget.
-                        debugger;
+
 
 
                         var ow = this.svgWidth;
@@ -382,31 +382,13 @@
                         // Se da el punto de referencia a partir del cual se tiene que hacer zoom
                         // Se prepara el zoom:
 
-                        var ticked=function() {
-                            this.graphLinks
-                                .attr("x1", function(d) {
-                                    return d.source.x;
-                                })
-                                .attr("y1", function(d) {
-                                    return d.source.y;
-                                })
-                                .attr("x2", function(d) {
-                                    return d.target.x;
-                                })
-                                .attr("y2", function(d) {
-                                    return d.target.y;
-                                });
 
-                            this.graphNodes.attr("transform", function(d) {
-                                return "translate(" + d.x + "," + d.y + ")";
-                            });
-                        }.bind(this);
-
+                        var m=this;
                         this.simulation = d3.forceSimulation()
                                 .force("link", d3.forceLink().id(function(d) { return d[this.rowIdField]; }.bind(this)))
                                 .force("charge", d3.forceManyBody().strength(-5000))
                                 .force("center", d3.forceCenter(ow / 2, oh / 2))
-                                .on("tick", ticked);
+                                .on("tick", function(){m.tick()}.bind(m));
 
                         this.linkG = this.mainG.append("g");
                         this.linkG.attr("class", "links");
@@ -434,9 +416,42 @@
                     update: function () {
                         // Redefine and restart simulation
                         var graph=this.getNodesAndLinks();
-                        this.nodes=graph.nodes ?? [];
-                        this.links=graph.links ?? [];
 
+                       this.updateLinks(graph.links ?? []);
+                       this.updateNodes(graph.nodes ?? [])
+
+                        this.simulation.nodes(this.nodes);
+                        this.simulation.force("link")
+                            .links(this.links);
+                        this.simulation.alpha(1);
+                        this.simulation.restart();
+
+                    },
+                    tick:function()
+                    {
+
+                            this.graphLinks
+                                .attr("x1", function(d) {
+                                    return d.source.x;
+                                })
+                                .attr("y1", function(d) {
+                                    return d.source.y;
+                                })
+                                .attr("x2", function(d) {
+                                    return d.target.x;
+                                })
+                                .attr("y2", function(d) {
+                                    return d.target.y;
+                                });
+
+                            this.graphNodes.attr("transform", function(d) {
+                                return "translate(" + d.x + "," + d.y + ")";
+                            });
+
+                    },
+                    updateLinks:function(links)
+                    {
+                        this.links=links;
                         this.graphLinks=this.linkG.selectAll(".link").data(this.links);
                         var linkEnter=this.graphLinks
                             .enter()
@@ -444,12 +459,17 @@
                             .attr("class","link")
 
                         this.graphLinks=linkEnter.merge(this.graphLinks)
-
+                    },
+                    updateNodes:function(nodes)
+                    {
+                        this.nodes=nodes;
                         this.graphNodes=this.nodeG.selectAll(".node").data(this.nodes);
+                        var m=this;
                         var nodeEnter=this.graphNodes
                             .enter()
                             .append("g")
                             .attr("class","node")
+                            .attr('id',function(d){return "g-force-"+d[this.rowIdField]}.bind(this))
                             .append("svg:foreignObject")
                             .attr("y", -30)
                             .attr("x", -5)
@@ -461,17 +481,15 @@
                             .append('xhtml:div')
                             .attr('id',function(d){return "force-"+d[this.rowIdField]}.bind(this))
                             .each(function(d){this.createSubWidget(d);}.bind(this))
+                            .call(
+                                d3.drag()
+                                    .on("start", function(ev,d){m.dragstarted(ev,d)}.bind(m))
+                                    .on("drag", m.dragged)
+                                    .on("end", m.dragended)
+                            )
 
-                        var circlesEnter = nodeEnter.append('circle');
+
                         this.graphNodes=nodeEnter.merge(this.graphNodes);
-
-                        this.simulation.nodes(this.nodes);
-
-                        this.simulation.force("link")
-                            .links(this.links);
-                        this.simulation.alpha(1);
-                        this.simulation.restart();
-
                     },
                     createSubWidget:function(d)
                     {
@@ -526,6 +544,24 @@
                                 return;
                             }
                         }
+                    },
+                    dragstarted:function(ev,d) {
+                    ev.sourceEvent.stopPropagation();
+                        if (!ev.active) this.simulation.alphaTarget(0.3).restart();
+                    //if (!d3.event.active) graphLayout.alphaTarget(0.3).restart();
+                    d.fx = d.x;
+                    d.fy = d.y;
+                    },
+                    dragged:function(ev,d) {
+                        d.fx = ev.x;
+                        d.fy = ev.y;
+                        console.log(ev.x+","+ev.y);
+                    },
+
+                    dragended:function(ev,d) {
+                        //if (!ev.active) graphLayout.alphaTarget(0);
+                            d.fx = null;
+                            d.fy = null;
                     }
                 }
             }
