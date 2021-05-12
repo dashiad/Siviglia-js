@@ -2905,37 +2905,32 @@
 
             })
         }
-    )
-
+    )    
 
     runTest("Test con CursorTree","Prueba de diseño para ver como pintar un nodo de un CursorTree. <br>",
         '<div data-sivWidget="Test.CursorNodeView" data-widgetParams="" data-widgetCode="Test.CursorNodeView">'+
-            //'<div style="background-color:yellow;border:1px solid black">'+
-            '<div data-sivId="cursor-container" id="cursorContainer" data-sivValue="class|cursorState_[%*item/status%]">'+
+            '<div data-sivId="cursor-container" id="cursorContainer" data-sivValue="class|cursorState_[%*status_cursor%]">'+
 
-                //'<div><span>Fichero: </span><span data-sivValue="/*item/fileName"></span></div>'+
-                // '<div><span>Id: </span><span data-sivValue="/*item/id"></span></div>'+
-                // '<div><span>Fecha: </span><span data-sivValue="/*item/start"></span></div>'+
-                '<div><span data-sivValue="class|cursor [%*paquete_modelo%]-cursors [%*cursorNameShort%]">Tipo: </span><span data-sivValue="/*cursorNameShort"></span></div>'+
-                '<div><span>Procesadas: </span><span data-sivValue="/*item/rowsProcessed"></span></div>'+            
-                '<div><span data-sivValue="class|iconStatusCursor_[%*status_cursor%]">Estado: </span><span data-sivValue="/*status_text"></span></div>'+
-
+                '<div>'+
+                    '<span data-sivValue="class|cursor [%*paquete_modelo%]-cursors [%*cursorNameShort%]"></span><span data-sivValue="/*cursorNameShort"></span>'+
+                    '<span data-sivValue=" [[%*rowsProcessed%]]"></span>'+
+                    '<span data-sivValue="class|iconStatusCursor_[%*status_cursor%]::title|[%*status_text%]"></span>'+
+                '</div>'+
+                
                 '<div class="extra_info">'+
-                    '<div><span>Id: </span><span data-sivValue="/*item/id"></span></div>'+
-                    '<div><span>Fecha: </span><span data-sivValue="/*item/start"></span></div>'+
-                    '<div><span>Fichero: </span><span data-sivValue="/*fileName"></span></div>'+                    
+                    '<div><span data-sivValue="/*id_cursor"></span></div>'+
+                    '<div><span data-sivValue="/*fecha_start"></span></div>'+
+                    '<div><span data-sivValue="/*fileName"></span></div>'+                    
                     '<div><div data-sivIf="[%/*errored%] == true">'+
-                        '<div>span>Error: </span><span class="cursor error_message" data-sivValue="/*error_message"></span></div>'+
+                        '<div><span class="cursor error_message" data-sivValue="/*error_message"></span></div>'+
                     '</div></div>'+
                 '</div>'+
             '</div>'+
 
         '</div>'+
         
-
         '<div data-sivWidget="Test.CursorGraph" data-widgetCode="Test.CursorGraph"> <svg data-sivId="svgNode" style="width: 100%; height: 100%"></svg> </div>'+
         '<div data-sivWidget="Test.CursorTree" data-widgetCode="Test.CursorTree"> <div data-sivId="graphNode" style="width: 100%; height:100%"></div> </div>',
-
 
         '<div data-sivView="Test.CursorTree"></div>',
         function(){
@@ -2959,7 +2954,10 @@
                                         this.fileName = "---";
                                     this.item = params.item;
                                     this.id_cursor = params.item.id;
-                                    this.cursorNameShort = params.item.type.split("\\").pop();
+
+                                    // Se especifica el tipo solo si el nombre es vacío.
+                                    this.cursorNameShort = (params.item.name == null) ? params.item.type.split("\\").pop() : params.item.name;                                    
+
                                     this.status_cursor = params.item.status;
                                     this.rowsProcessed = params.item.rowsProcessed;
                                     this.fecha_start = params.item.start;
@@ -2967,6 +2965,9 @@
                                     this.status_text="";
                                     Siviglia.Path.eventize(params.item, "status");
                                     params.item["*status"].addListener("CHANGE", this, "onChangeStatus");
+                                    
+                                    // Siviglia.Path.eventize(params.item, "error");
+                                    // params.item["*error"].addListener("CHANGE", this, "onErrorCursor");
 
                                     this.errored = (this.error_message !== '');
 
@@ -2998,7 +2999,15 @@
                                     this.status_text = this.statusFieldLabel[this.item.status];
 
                                     // actualizamos el estado del cursor para mostrar el icono asociado al estado
-                                    this.status_cursor = this.item.status;
+                                    this.status_cursor = this.item.status;                                   
+
+                                    // actualizamos las rows procesadas
+                                    this.rowsProcessed = this.item.rowsProcessed;
+                                },
+                                onErrorCursor:function()
+                                {
+                                    // mensaje de error capturado
+                                    this.error_message = this.item.error;
                                 },
                                 initialize:function(params){
                                     this.onChangeStatus();
@@ -3119,10 +3128,11 @@
                                         svgWidth:600,
                                         svgHeight:400,
                                         nodeWidget:'Test.CursorNodeView',
-                                        nodeWidth:100,
+                                        nodeWidth:300,
                                         nodeHeight:300,
                                         allowMultipleSelection:false,
-                                        rowIdField:'id'
+                                        rowIdField:'id',
+                                        distanceLinks: 3
                                     },
                                     {},
                                     $("<div></div"),

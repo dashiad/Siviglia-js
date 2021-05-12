@@ -51,7 +51,9 @@
                         this.nodeHeight = params.nodeHeight;
                         this.data = params.data;
                         this.spacingWidth = params.spacingWidth;
+                        //this.spacingWidth = 500;
                         this.spacingHeight = params.spacingHeight
+                        //this.spacingHeight = 800;
                         this.allowMultipleSelection=Siviglia.issetOr(params.allowMultipleSelection,false);
                         this.rowIdField = Siviglia.issetOr(params.rowIdField, null);
                         this.initialExpandedLevels = Siviglia.issetOr(params.initialExpandedLevels, 1);
@@ -346,6 +348,7 @@
                         this.nodeWidgetObject=parts.object;
                         this.nodeWidth = params.nodeWidth;
                         this.nodeHeight = params.nodeHeight;
+                        this.distanceLink = params.distanceLinks;
 
                         this.allowMultipleSelection=Siviglia.issetOr(params.allowMultipleSelection,false);
                         this.rowIdField = Siviglia.issetOr(params.rowIdField, null);
@@ -386,8 +389,11 @@
                         var m=this;
                         this.simulation = d3.forceSimulation()
                                 .force("link", d3.forceLink().id(function(d) { return d[this.rowIdField]; }.bind(this)))
-                                .force("charge", d3.forceManyBody().strength(-5000))
+                                //.force("link", d3.forceLink().distance(function(d) { return d[this.distanceLink]; }.bind(this)))
+                                //.force("link", d3.forceLink().distance(10))
+                                .force("charge", d3.forceManyBody().strength(-7000))
                                 .force("center", d3.forceCenter(ow / 2, oh / 2))
+                                .force("collision",d3.forceCollide().strength(500) )
                                 .on("tick", function(){m.tick()}.bind(m));
 
                         this.linkG = this.mainG.append("g");
@@ -457,6 +463,9 @@
                             .enter()
                             .append("line")
                             .attr("class","link")
+                            //.distance(30)
+                            //.attr("y", 500)
+                            //.attr("x", 200)
 
                         this.graphLinks=linkEnter.merge(this.graphLinks)
                     },
@@ -468,13 +477,13 @@
                         var nodeEnter=this.graphNodes
                             .enter()
                             .append("g")
-                            .attr("class","node")
+                            .attr("class","node")                            
                             .attr('id',function(d){return "g-force-"+d[this.rowIdField]}.bind(this))
-                            .append("svg:foreignObject")
-                            .attr("y", -30)
-                            .attr("x", -130)
-                            .attr('width', 300)
-                            .attr('height', 170)
+                            .append("svg:foreignObject")                            
+                            .attr("y", -50)
+                            .attr("x", -80)                            
+                            .attr('width', 200)
+                            .attr('height', 200)
                             .attr("text-anchor", function(d) {
                                 return d.children || d._children ? "end" : "start";
                             })
