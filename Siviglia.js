@@ -1900,6 +1900,7 @@ Siviglia.Utils.buildClass(
                             this.stack = stack;
                             this.origNode=node;
                             this.node = node;
+                            this.parentView=nodeManager.parentView;
                             for (var k = 0; k < node[0].childNodes.length; k++) {
                                 var cNode = node[0].childNodes[k];
                                 if (cNode.nodeType != 3 && cNode.nodeType != 8)
