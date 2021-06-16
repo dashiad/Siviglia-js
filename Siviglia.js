@@ -1835,8 +1835,14 @@ Siviglia.Utils.buildClass(
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
                             this.node = node;
                             var pObj = node.data(this.expandoTag);
-                            if (typeof pObj == "string")
-                                pObj = JSON.parse(pObj);
+                            if (typeof pObj == "string") {
+                                try {
+                                    pObj = JSON.parse(pObj);
+                                }catch(e)
+                                {
+                                    debugger;
+                                }
+                            }
                             this.disableEvents=true;
                             var m=this;
                             for(var k in pObj)

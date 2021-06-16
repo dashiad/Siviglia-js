@@ -247,6 +247,11 @@
                                                 }
                                             };
                                         }break;
+                                        case "Custom":
+                                        {
+                                            colSpec=curIt;
+
+                                        }break;
 
                                         case "PString":{
                                             colSpec=(function(curIt){
@@ -446,9 +451,11 @@
                             {
                                 this.onRendered();
                             }.bind(this));
+
                             this.grid.on("initialized",function(){console.log("initialized");});
                             this.grid.on("rowClick",function(){console.log("rowClick");});
                             this.grid.on("rowSelect",function(){console.log("rowSelect");});this.grid.on("rowUnselect",function(){console.log("rowUnselect");});this.grid.on("sort",function(){console.log("sort");});this.grid.on("columnClick",function(){console.log("columnClick");});this.grid.on("cellClick",function(){console.log("cellClick");});this.grid.on("pageChanged",function(){console.log("pageChanged");});this.grid.on("pageSizeChanged",function(){console.log("pageSizeChanged");});this.grid.on("bindingComplete",function(){console.log("bindingComplete");});this.grid.on("groupsChanged",function(){console.log("groupsChanged");});this.grid.on("filter",function(){console.log("filter");});this.grid.on("columnResized",function(){console.log("columnResized");});this.grid.on("cellSelect",function(){console.log("cellSelect");});this.grid.on("cellUnselect",function(){console.log("cellUnselect");});this.grid.on("cellBeginEdit",function(){console.log("cellBeginEdit");});this.grid.on("cellEndEdit",function(){console.log("cellEndEdit");});this.grid.on("cellValueChanged",function(){console.log("cellValueChanged");});this.grid.on("rowExpand",function(){console.log("rowExpand");});this.grid.on("rowCollapse",function(){console.log("rowCollapse");});this.grid.on("rowDoubleClick",function(){console.log("rowDoubleClick");});this.grid.on("cellDoubleClick",function(){console.log("cellDoubleClick");});this.grid.on("columnReordered",function(){console.log("columnReordered");});this.grid.on("pageChanging",function(){console.log("pageChanging");});
+
 
                             // COMIENZO DE MENU CONTEXTUAL
                             if(this.contextualActions.length > 1) {
@@ -581,6 +588,10 @@
                         downloadAsXLSX:function()
                         {
                             this.ds.downloadAsXLSX();
+                        },
+                        getGrid:function()
+                        {
+                            return this.grid;
                         }
                     }
                 }
