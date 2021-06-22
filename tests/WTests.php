@@ -2918,25 +2918,25 @@
                 '<div class="widListForm Siviglia_sys_Cursor_lists_Test_CursorTree_GridForm">'+
                     '<div class="widListFormFieldSet">'+
                         '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"key":"id","parent":"/*self","form":"/*self"}"></div>'+
+                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"id"}"></div>'+
                         '</div>'+
                         '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"key":"parent","parent":"/*self","form":"/*self"}"></div>'+
+                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"parent"}"></div>'+
                         '</div>'+
                         '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"key":"type","parent":"/*self","form":"/*self"}"></div>'+
+                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"type"}"></div>'+
                         '</div>'+
                         '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"key":"status","parent":"/*self","form":"/*self"}"></div>'+
+                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"status"}"></div>'+
                         '</div>'+
                         '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"key":"start","parent":"/*self","form":"/*self"}"></div>'+
+                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"start"}"></div>'+
                         '</div>'+
                         '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"key":"end","parent":"/*self","form":"/*self"}"></div>'+
+                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"end"}"></div>'+
                         '</div>'+
                         '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"key":"rowsProcessed","parent":"/*self","form":"/*self"}"></div>'+
+                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"rowsProcessed"}"></div>'+
                         '</div>'+
                     '</div>'+
                 '</div>'+
@@ -3336,36 +3336,37 @@
 
             '<div data-sivWidget="Test.CursorTree_GridForm" data-widgetCode="Test.CursorTree_GridForm">'+
                 '<div class="widListForm Siviglia_sys_Cursor_lists_Test_CursorTree_GridForm">'+
-                    '<div class="widListFormFieldSet">'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"id","parent":"/*self","form":"/*self"}\'></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"parent","parent":"/*self","form":"/*self"}\'></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"type","parent":"/*self","form":"/*self"}\'></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"status","parent":"/*self","form":"/*self"}\'></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"start","parent":"/*self","form":"/*self"}\'></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"end","parent":"/*self","form":"/*self"}\'></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"rowsProcessed","parent":"/*self","form":"/*self"}\'></div>'+
-                        '</div>'+
-                    '</div>'+
+        '<div class="widListFormFieldSet">'+
+        '<div class="widField">'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"id"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"parent"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"type"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"status"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"start"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"end"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"rowsProcessed"}\'></div>'+
+        '</div>'+
+        '</div>'+
                 '</div>'+
             '</div>'+
 
-        '<div data-sivWidget="Test.CursorTree_Grid" data-widgetCode="Test.CursorTree_Grid">'+
+        '<div data-sivWidget="Test.CursorTree_Grid" data-widgetCode="Test.CursorTree_Grid"><div>'+
+
             '<div data-sivId="filterNode"></div>'+
             '<div data-sivId="grid"></div>'+
-        '</div>'+
+        '</div></div>'+
         '<div data-sivWidget="Test.CursorTree_Controller" data-widgetCode="Test.CursorTree_Controller">'+
         '<div data-sivView="Test.CursorTree_Grid" data-viewName="grid"></div>'+
         '<div data-sivId="cursorGraphNode"></div>'+

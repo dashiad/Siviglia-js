@@ -534,7 +534,7 @@
                             }
                             var opts = {
                                 source: finalOpts, //finalOpts,
-                                placeHolder: 'Seleccionar',
+                                placeHolder: '--Seleccionar...',
                                 autoComplete: false,
                                 height: 25,
                                 displayMember: "label",
@@ -953,7 +953,7 @@
                                     "TYPE": "Array",
                                     "DATA":
                                         [
-                                            {"LABEL":"Seleccionar","VALUE":null},
+                                            {"LABEL":"--Seleccionar...","VALUE":null},
                                             {"LABEL":"True","VALUE":true},
                                             {"LABEL":"False","VALUE":false}
                                         ],
@@ -1122,7 +1122,7 @@
                             }
                             var opts = {
                                 source: finalOpts, //finalOpts,
-                                placeHolder: 'Seleccionar',
+                                placeHolder: '--Seleccionar...',
                                 autoComplete: false,
                                 height: 25,
                                 displayMember: "label",
@@ -1301,10 +1301,10 @@
                                     this.currentType=this.type["*"+this.currentKey];
                                     this.hasCurrentKey=true;
 
-                                    // Custom class for active element in Dictionary                                    
-                                    // Añadido data-sivId para evitar buscar en todo this.rootNode, 
+                                    // Custom class for active element in Dictionary
+                                    // Añadido data-sivId para evitar buscar en todo this.rootNode,
                                     // y solo buscar en el div que contiene las claves del diccionario.
-                                    $(".seleccionado",this.SelectedKeyItem).removeClass("seleccionado");                                                                        
+                                    $(".seleccionado",this.SelectedKeyItem).removeClass("seleccionado");
                                     $(node).closest("li").addClass("seleccionado");
 
                                     if(typeof event!=="undefined")
@@ -2215,12 +2215,12 @@
                                             this.errorNode = instance.inputWrapper.errorNode;
 
                                         // Comprobación si un tipo es FIXED o no, para mostrarlo como string-raw o input
-                                        if (this.innerType.__definition.FIXED === this.innerType.__value) 
+                                        if (this.innerType.__definition.FIXED === this.innerType.__value)
                                         {
                                             this.inputNode.text(this.innerType.__value); // String-raw del tipo si es Fixed
-                                        } 
-                                        else 
-                                        {                                            
+                                        }
+                                        else
+                                        {
                                             this.inputNode.append(instance.rootNode);// si no es string-raw->mostramos el input creado
                                         }
 
@@ -2889,7 +2889,7 @@
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.UUID" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.UUID">
-        <div data-sivId="inputNode" class="form-control UUIDInput"></div>
+        <input type="text" placeholder="" class="form-control UUIDInput" data-sivId="inputNode">
     </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.Model" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.Model">

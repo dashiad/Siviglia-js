@@ -1705,8 +1705,8 @@ Siviglia.Utils.buildClass(
                                 v = this.str.parse();
                             }catch(e)
                             {
-                                console.warn("Valor nulo para path en expando:"+this.expandoTag+"::"+pString+".Se envia un valor nulo al expando.");
-                                v=null;
+                                throw e;
+
                             }
                             if(contextual)
                                 this.update(v);

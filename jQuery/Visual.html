@@ -61,30 +61,42 @@
                         this.index = 0; // Un contador para el id por defecto,__id
                         this.selection=[];
                         this.EventManager();
+
                     },
                     initialize: function (params) {
                         var m = this;
                         // Se crean objetos iniciales, como el zoom, y el layout tree
-                        this.tree = d3.layout.tree().nodeSize([this.nodeWidth + this.spacingWidth, this.nodeHeight + this.spacingHeight]);
+                        this.tree = d3.tree().nodeSize([this.nodeWidth + this.spacingWidth, this.nodeHeight + this.spacingHeight]);
 
                         // Se prepara el zoom:
-                        var zoomBehaviours = d3.behavior
+
+                        var zoomBehaviours = d3
                             .zoom()
                             .scaleExtent([0.05, 3])
+
+                            //.translateExtent([[0, 0], [this.svgWidth , this.svgHeight]])
                             .on("zoom", function (event,d) {
                                 m.svg.attr("transform",
-                                    "translate(" + event.translate + ")" +
-                                    " scale(" + event.scale + ")");
+                                    event.transform.toString());
                             });
 
                         // Se inicializa la posicino del nodo raiz.
-                        this.data.x0=this.svgWidth/2;
-                        this.data.y0=20;
-                        this.tree.nodes(this.data).forEach(function(d){
+
+                        this.root = d3.hierarchy(this.data, function(d) { return d.children; });
+                        this.root.data.x0=this.svgWidth/2;
+                        this.root.data.y0=20;
+                        var collapse=function(d)
+                        {
                             if(typeof(d.children)!=="undefined")
                             {
                                 d._children=d.children;
                                 d.children=null;
+                            }
+                        }
+                        this.root.children.forEach(function(d){
+                            if(typeof(d.children)!=="undefined")
+                            {
+                                d.descendants().forEach(collapse);
                             }
                         })
 
@@ -98,8 +110,7 @@
                             .call(zoomBehaviours)
                             .append("g")
                             .attr("transform", "translate(" + ow / 2 + "," + oh / 5 + ")");
-                        // Se da el punto de referencia a partir del cual se tiene que hacer zoom
-                        zoomBehaviours.translate([ow / 2, 20]);
+
 
                         // Cargamos aqui el widget necesario para pintar los nodos. Si lo tenemos ya,
                         // llamamos directamente a expandTree. Si no, se llama a expandTree cuando el widget ya
@@ -116,9 +127,27 @@
                             factory.getInstance(this.nodeWidget,this.__context).then(f);
                     },
                     update: function (source) {
-                        var nodes = this.tree.nodes(this.data).reverse();
-                        var links = this.tree.links(nodes);
+                        var treeData=this.tree(this.root);
+                        var nodes =  treeData.descendants().reverse();
+                        var links = treeData.links();
                         var m = this;
+                        /*
+                        var levelWidth = [1];
+                        var childCount = function (level, n) {
+
+                            if (n.children && n.children.length > 0) {
+                                if (levelWidth.length <= level + 1) levelWidth.push(0);
+
+                                levelWidth[level + 1] += n.children.length;
+                                n.children.forEach(function (d) {
+                                    childCount(level + 1, d);
+                                });
+                            }
+                        };
+
+                        childCount(0, root);
+                        var newHeight = d3.max(levelWidth) * 25; // 25 pixels per line*/
+
 
                         // Se establece la altura en funcion de la profundidad en el arbol.
                         nodes.forEach(function (d) {
@@ -152,7 +181,8 @@
                             var gEl2 = document.createElementNS('http://www.w3.org/2000/svg', "g");
                             var instance = new wclass.context[wclass.object](m.nodeWidget, {
                                 tree: m,
-                                data: d,
+                                data: d.data,
+                                treeData:d,
                                 svg: m.svg
                             }, {}, $(gEl2), m.__context);
                             instance.__build().then(function () {
@@ -160,9 +190,9 @@
                             });
                             return gEl;
                         });
-
+                        var nodeUpdate=nodeEnter.merge(node);
                         // Los nodos que entran, se mueven a su posicion
-                        var nodeUpdate = node.transition()
+                        nodeUpdate.transition()
                             .duration(250)
                             .attr("transform", function(d) {
                                 return "translate(" + d.x + "," + d.y + ")";
@@ -195,7 +225,7 @@
                         };
 
                         // Enter any new links at the parent's previous position.
-                        link.enter().insert("path", "g")
+                        var linkEnter=link.enter().insert("path", "g")
                             .attr("class", "link")
                             .attr("x", m.nodeWidth / 2)
                             .attr("y", m.nodeHeight / 2)
@@ -208,9 +238,10 @@
                                     "V" + (d.source.y+m.nodeHeight)
 
                             });
+                        var linkUpdate=linkEnter.merge(link);
 
 
-                        link.transition()
+                        linkUpdate.transition()
                             .duration(250)
                             .attr("d",pathFunc)
 
@@ -477,11 +508,11 @@
                         var nodeEnter=this.graphNodes
                             .enter()
                             .append("g")
-                            .attr("class","node")                            
+                            .attr("class","node")
                             .attr('id',function(d){return "g-force-"+d[this.rowIdField]}.bind(this))
-                            .append("svg:foreignObject")                            
+                            .append("svg:foreignObject")
                             .attr("y", -50)
-                            .attr("x", -80)                            
+                            .attr("x", -80)
                             .attr('width', 200)
                             .attr('height', 200)
                             .attr("text-anchor", function(d) {

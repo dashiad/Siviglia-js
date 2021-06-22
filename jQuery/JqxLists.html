@@ -383,6 +383,26 @@
                             };
                             this.dataAdapter = new $.jqx.dataAdapter(this.jqxDataSource);
                             this.jqxDataSource.localdata =  this.ds.getValue()["*data"].getPlainValue();
+                            if(!this.noRowsNode)
+                            {
+                                this.noRowsNode=$("<div class=\"noRowsNode\">No rows</div>");
+                                this.grid.after(this.noRowsNode);
+
+                            }
+                            if(this.jqxDataSource.localdata===null || this.jqxDataSource.localdata.length===0)
+                            {
+                                // No hay rows
+
+                                this.noRowsNode.css({display:"block"});
+                                this.grid.css({display:"none"});
+                                return;
+                            }
+                            else
+                            {
+                                this.noRowsNode.css({display:"none"});
+                                this.grid.css({display:"block"});
+
+                            }
 
                             this.dataAdapter.dataBind();
                             //var definition=this.ds.__getDefinition();
@@ -608,6 +628,7 @@
             <input type="button" value="XLSX" data-sivEvent="click" data-sivCallback="downloadAsXLSX">
         </div>
         <div data-sivId="grid"></div>
+        <div data-sivId="noRowsNode" class="noRowsNode">Sin resultados</div>
     </div>
 
 </div>

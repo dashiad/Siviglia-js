@@ -29,10 +29,11 @@
     font-size: var(--StdInputContainer-font-size);
     margin-top: var(--StdInputContainer-margin-top);
     padding: var(--StdInputContainer-padding);
-    display: flex;    
-    color: var(--light-color);    
+    display: flex;
+    color: var(--light-color);
     flex-direction: row;
-    border-bottom: var(--StdInputContainer-border-bottom);    
+    align-items:center;
+
 }
 
 .required { padding: 10px 10px 0 0; }
@@ -85,7 +86,7 @@
     /* width:100% */
 }
 .StdInputContainer > .help {
-    font-size: smaller;    
+    font-size: smaller;
     color: var(--color-help);
     margin-left: 10px;
     padding: inherit;
@@ -115,7 +116,7 @@
 
 
 
-.StdFormButtons {    
+.StdFormButtons {
     padding: var(--StdFormButtons-padding);
     text-align: var(--StdFormButtons-text-align);
 }
@@ -332,7 +333,7 @@ a.arrayValueComplex.array_selected, span.arraySimpleValue.array_selected {
     margin-bottom: var(--ArrayComplexValue-container-margin-bottom);
 }
 
-.contentRelatedArrayComplex { 
+.contentRelatedArrayComplex {
     width: var(--ArrayComplex-contentRelated-width);
     border-radius: var(--ArrayComplex-contentRelated-border-radius);
     border: var(--ArrayComplex-contentRelated-border-size) solid var(--contrast-0);
@@ -347,8 +348,8 @@ a.arrayValueComplex.array_selected, span.arraySimpleValue.array_selected {
 }
 
 /* Custom class (seleccionado) for active element in Dictionary */
-li.Dictionary-keylist-item.seleccionado {    
-    background-color: var(--contrast-0);    
+li.Dictionary-keylist-item.seleccionado {
+    background-color: var(--contrast-0);
     border-left: 10px solid #b05a1c;
 }
 
@@ -364,7 +365,7 @@ li.Dictionary-keylist-item.seleccionado a:hover { font-style: none; color: var(-
 .StdInputContainer.Array, .StdInputContainer.TypeSwitcher, .ContainerInput.TypeSwitcher, .StdInputContainer.Dictionary {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: unset;    
+    flex-direction: unset;
 }
 
 .StdInputContainer.Container, .StdInputContainer.SOURCE.Container, .StdInputContainer.STORAGE.Container, .StdInputContainer.MYSQL.Container {
@@ -382,7 +383,7 @@ li.Dictionary-keylist-item.seleccionado a:hover { font-style: none; color: var(-
 
 
 /* helpNode estilos para stdInputContainer de los nodos */
-.help.tooltip { 
+.help.tooltip {
     position: relative;
     display: inline-block;
     cursor: help;
@@ -395,10 +396,10 @@ span.tooltiptext{
     color: var(--help-tooltip-font-color);
     text-align: center;
     padding: var(--help-tooltip-padding);
-    border-radius: var(--help-tooltip-border-radius);    
+    border-radius: var(--help-tooltip-border-radius);
     border: solid var(--help-tooltip-border-size) var(--help-tooltip-border-color);
     position: absolute;
-    z-index: 1; 
+    z-index: 1;
     margin-left: -84px;
     opacity: 0;
     transition: opacity 1s;
@@ -419,7 +420,7 @@ span.tooltiptext{
 
 
 /* Estilo para el scrollbar dentro ventanas widgets */
-::-webkit-scrollbar { 
+::-webkit-scrollbar {
     /* display: none;  */
     width: 20px;
     cursor: pointer;
