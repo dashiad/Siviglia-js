@@ -118,7 +118,7 @@
                                 Inicializacion de parametros pasados a jqxGrid
                              */
                             this.gridOpts=Siviglia.issetOr(params.gridOpts,{});
-                            /*
+
                             var modelFields={};
                             // Iteramos para ver sobre que modelos tenemos todos los indices en la especificacion de columnas.
                             for(var k in this.columnSpec)
@@ -183,28 +183,30 @@
                                     }
                                 }
                             }
-                            if(this.contextualActions.length == 0)
-                                return; // No habia acciones contextuales.
-                            // Si las habia, ahora hay que obtener la lista de acciones de los modelos
-                            var promiseArray=[];
                             var completePromise=SMCPromise();
-
-                            var m=this;
-                            for(var k=0;k<this.contextualActions.length;k++)
-                            {
-                                promiseArray.push((function(index,curModel){
-                                    var localPromise=SMCPromise();
-                                    var actionDs=new Siviglia.Model.DataSource("/model/reflection/Model", "ModelIndexedActions", {model:curModel});
-                                    actionDs.refresh().then(function(result){
-                                        m.contextualActions[index].actions=result.data;
-                                        actionDs.destruct();
-                                        localPromise.resolve();
-                                    })
-                                    return localPromise;
-                                })(k,this.contextualActions[k].model));
+                            if(this.contextualActions.length == 0) {
+                                completePromise.resolve(null);
+                                return completePromise; // No habia acciones contextuales.
                             }
-                            Siviglia.all(promiseArray).then(function(){completePromise.resolve()});
-                            return completePromise;*/
+
+
+                            var targets=[];
+                            // Se recogen todos los modelos que queremos enviar al datasource
+                            for(var k=0;k<this.contextualActions.length;k++)
+                                targets.push(this.contextualActions[k].model);
+
+
+                            var actionDs=new Siviglia.Model.DataSource("/model/reflection/Action", "FullList", {model:targets,allowsBatch:true});
+                            actionDs.refresh().then(function(result){
+                                for(var k=0;k<result.length;k++)
+                                {
+
+                                }
+                                m.contextualActions[index].actions=result.data;
+                                actionDs.destruct();
+                                completePromise.resolve(result);
+                            }.bind(this))
+                            return completePromise;
                         },
                         initialize:function(params)
                         {
