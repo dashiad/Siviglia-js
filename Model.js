@@ -508,6 +508,7 @@ Siviglia.Utils.buildClass({
                     this.currentPromise=null;
                     this.nextPromise=null;
                     this.wampService=null;
+
                     this.__identifier=Siviglia.Model.getAppId();
                     if(typeof response=="undefined" || response==null)
                     {
@@ -515,7 +516,7 @@ Siviglia.Utils.buildClass({
                     }
                     else
                         meta = response.definition;
-
+                    this.meta=meta;
                     var paramsDef = meta.PARAMS;
                     var fieldsDef = meta.FIELDS;
 
@@ -739,6 +740,14 @@ Siviglia.Utils.buildClass({
                     downloadAsXLSX:function()
                     {
                         this.downloadAs('xlsx');
+                    },
+                    getParamsDefinition:function()
+                    {
+                        return this.meta.PARAMS;
+                    },
+                    getFieldsDefinition:function()
+                    {
+                        return this.meta.FIELDS;
                     }
                 }
             },

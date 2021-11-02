@@ -122,9 +122,9 @@
     var urlParams = new URLSearchParams(window.location.search);
     var DEVELOP_MODE;
     if (!urlParams.has("test")) {
-        DEVELOP_MODE=47;    // Specific test number
+        //DEVELOP_MODE=47;    // Specific test number
 	     //var DEVELOP_MODE=0;  // All tests
-        //var DEVELOP_MODE=-1; // Latest test
+        var DEVELOP_MODE=0; // Latest test
     } else {
 	    DEVELOP_MODE = urlParams.get("test");
     }
@@ -3453,6 +3453,36 @@
                     }
 
                 },
+
+            })
+        }
+    )
+
+    runTest("SivLoop","SivLoop atraviesa una variable iterable. En cada iteracion, establece una variable contextual (prefijo @), que apunta al elemento actual.",
+        '<div data-sivWidget="Test.SivLoop" data-widgetCode="Test.SivLoop">' +
+        '   <div data-sivLoop="/*simpleArray" data-contextIndex="current">' +
+        '<div data-sivLoop="@current" data-contextIndex="current2">'+
+        '       <div data-sivValue="[%/@current2%]"></div></div></div></div>',
+        '<div data-sivView="Test.SivLoop"></div>',
+        function(){
+            Siviglia.Utils.buildClass({
+                context:'Test',
+                classes:{
+                    'SivLoop':{
+                        inherits: "Siviglia.UI.Expando.View",
+                        methods: {
+                            preInitialize: function (params) {
+                                this.simpleArray=[["cad1"],["cad2"],["cad3"]];
+                            },
+                            initialize: function (params) {
+                                setTimeout(function(){
+                                    this.simpleArray[0][0]="hola";
+                                    this.simpleArray[2][0]="adios";
+                                }.bind(this),1000);
+                            }
+                        }
+                    }
+                }
 
             })
         }

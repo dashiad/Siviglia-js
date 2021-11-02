@@ -688,7 +688,7 @@ Siviglia.Utils.buildClass(
                     },
                     getCursor:function(prefix)
                     {
-                        var cursor=new Siviglia.Path.BaseCursor(this.contextRoots[prefix].getRoot());
+                        var cursor=new Siviglia.Path.BaseCursor(this.contextRoots[prefix]);
                         cursor.setPrefix(prefix);
                         return cursor;
                     },
@@ -719,9 +719,10 @@ Siviglia.Utils.buildClass(
             },
             BaseCursor:{
                 inherits:"Siviglia.Dom.EventManager",
-                construct:function(objRoot)
+                construct:function(ctx)
                 {
-                    this.objRoot=objRoot;
+                    this.ctx=ctx;
+                    this.objRoot=ctx.getRoot();
                     this.pathStack=[];
                     this.remListeners=[];
                     this.__lastTyped=false;
@@ -754,44 +755,53 @@ Siviglia.Utils.buildClass(
                         if(spec===".." && typeof this.pointer.__getParent==="function")
                         {
                             cVal=this.pointer.__getParent();
-                            if(this.prefix!=='@') {
+                            /*if(this.prefix!=='@') {*/
                                 cVal.addListener("CHANGE", this, "onChange", "BaseCursor:" + spec);
                                 this.remListeners.push(cVal);
-                            }
+                            /*}*/
                             this.pointer=cVal;
                             this.__lastTyped=true;
                             return cVal.getValue()
                         }
                         else {
-
-
                             if(this.__lastTyped)
                             {
                                 this.pointer=this.pointer.getValue();
                                 this.__lastTyped=false;
                             }
-                            var v=this.pointer[spec];
+                            var childName=spec;
+                            var currentParent=this.pointer;
+                            if(this.pointer==this.ctx.objRoot && this.prefix=='@')
+                            {
+                                var ctxParent=this.ctx.getParentObject(spec);
+                                if(ctxParent!==null)
+                                    currentParent=ctxParent;
+                                if(typeof this.pointer[spec+"-index"]!=="undefined")
+                                    childName=this.pointer[spec+"-index"];
+                            }
+                            var v=currentParent[childName];
                             if(typeof v==="undefined")
                                 throw "Unknown path "+spec;
                             if(typeof v=="object" && v!==null)
                             {
                                 if(typeof v["__type__"]!=="undefined")
                                 {
-                                    if(this.prefix!="@" && eventMode==2) {
+                                    //if(this.prefix!="@" && eventMode==2) {
+                                    if(eventMode==2) {
                                         v.addListener("CHANGE", this, "onChange", "BaseCursor:" + spec);
                                         this.remListeners.push(v);
                                     }
 
                                 }
                                 else
-                                    this.addPathListener(this.pointer, spec);
+                                    this.addPathListener(currentParent, childName);
 
                             }
                             else {
                                 if(eventMode==2)
-                                this.addPathListener(this.pointer, spec);
+                                this.addPathListener(currentParent, childName);
                             }
-                            this.pointer=this.pointer[spec];
+                            this.pointer=currentParent[childName];
                         }
                     },
                     getValue:function()
@@ -803,8 +813,8 @@ Siviglia.Utils.buildClass(
                     },
                     addPathListener:function(parent,propName)
                     {
-                        if(this.prefix=='@')
-                            return;
+/*                        if(this.prefix=='@')
+                            return;*/
                         Siviglia.Path.eventize(parent,propName);
                         var m=this;
                         parent["*"+propName].addListener("CHANGE",this,"onChange","Basecursor:"+propName);
@@ -831,6 +841,7 @@ Siviglia.Utils.buildClass(
                 construct:function(objRoot,prefix,stack)
                 {
                     this.objRoot=objRoot;
+                    this.parentObjs={};
                     this.Context(prefix,stack);
                 },
                 methods:{
@@ -839,6 +850,19 @@ Siviglia.Utils.buildClass(
                     },
                     getCursor:function(){
                         return new Siviglia.Path.BaseObjectContainerCursor(this.objRoot);
+                    },
+                    // Necesario en los contextos @.
+                    // El tener un "padre" dentro del stack, hace que se use
+                    // ese padre, en vez del stack, cuando hay que eventizar el objeto
+                    // padre.Si no, lo que se eventiza, es el stack
+                    addParentObject:function(idx,parent)
+                    {
+                        this.parentObjs[idx]=parent;
+                    },
+                    getParentObject:function(idx)
+                    {
+
+                        return Siviglia.issetOr(this.parentObjs[idx],null);
                     }
                 }
             },
@@ -994,9 +1018,9 @@ Siviglia.Utils.buildClass(
                         var cursor=this.contexts.getCursor(pathParts[0].prefix);
                         this.cursors.push(cursor);
                         var m=this;
-                        if(pathParts[0].prefix!=='@' && this.eventMode!==0) {
+                        /*if(pathParts[0].prefix!=='@' && this.eventMode!==0) {*/
                             cursor.addListener("CHANGE", this, "getPath", "PathResolver:" + this.path)
-                        }
+                        /*}*/
                         var lastPointer,lastLabel;
 
                         for(var k=0;k<pathParts.length && this.valid ;k++)
@@ -1068,7 +1092,22 @@ Siviglia.Utils.buildClass({
                     {
                         this._ps_id=Siviglia.Utils.parametrizableStringCounter;
                         Siviglia.Utils.parametrizableStringCounter++;
-                        this.contextStack=contextStack;
+                        // Creamos un contextStack propio, para que en caso de que haya un contexto
+                        // "relativo" (sivLoop), ésta parametrizableString se quede con una "foto" de las variables de contexto.
+
+                        var newContext=new Siviglia.Path.ContextStack();
+                        for(var k in contextStack.contextRoots) {
+                            if(k!='@')
+                                newContext.addContext(contextStack.contextRoots[k]);
+                            else
+                            {
+                                var contextContextRoot=Object.assign({},contextStack.contextRoots[k].objRoot);
+                                var contextContext = new Siviglia.Path.BaseObjectContext(contextContextRoot, "@", newContext);
+                                contextContext.parentObjs=Object.assign({},contextStack.contextRoots[k].parentObjs);
+                            }
+                        }
+
+                        this.contextStack=newContext;
                         this.BASEREGEXP=/\[%(?:(?:([^: ,]*?)%\])|(?:([^: ,]*?)|([^:]*?)):(.*?(?=%\]))%\])/g;
                         this.BODYREGEXP=/\{%(?:([^%:]*?)|(?:([^:]*?):(.*?(?=%\}))))%\}/g;
                         this.PARAMREGEXP=/([^|$ ]+)(?:\||$|(?: ([^|$]+)))/g;
@@ -1088,6 +1127,8 @@ Siviglia.Utils.buildClass({
                     destruct:function()
                     {
                         this.removeAllPaths();
+                        this.contextStack.destruct();
+                        this.contextStack=null;
 
                     },
                     methods:
@@ -1191,7 +1232,7 @@ Siviglia.Utils.buildClass({
                                 // Si no queremos que sea dinamico, ya que lo que queremos es el valor actual del path, y punto,
                                 // no aniadimos ningun listener al path
                                 if(this.listenerMode!=0) {
-                                    if (!((path[0] == "/" && path[1] == "@") || (path[0] == "@")))
+                                    //if (!((path[0] == "/" && path[1] == "@") || (path[0] == "@")))
                                         controller.addListener("CHANGE", this, "onListener", "ParametrizableString: value:" + path);
                                 }
                                 var val=controller.getPath();
@@ -1527,9 +1568,10 @@ Siviglia.Path.Proxify=function(obj,ev)
             if(
                 ((typeof curVal[prop]==="undefined" || curVal[prop]===null) && (typeof value!=="undefined" && value!==null))
                 ||
-                ((typeof curVal[prop]!=="undefined" && curVal[prop]!==null) && (typeof value==="undefined" || value===null))
+                ((typeof curVal[prop]!=="undefined" && curVal[prop]!==null) && (curVal[prop]!=value || typeof value==="undefined" || value===null))
             )
                 mustFire=true;
+            var mustFire=true;
             curVal[prop]=value;
 
             if(mustFire && !__disableEvents__) {
@@ -1948,13 +1990,19 @@ Siviglia.Utils.buildClass(
                             var contextRoot;
                             var newNode=$("<div></div>");
                             var newNodes=[];
-                            var cb = (function (key, value) {
+                            var cb = (function (key, value,parent) {
                                 contextRoot = {};
-                                if(!this.ownStack.hasPrefix("@"))
+                                if(!this.ownStack.hasPrefix("@")) {
                                     var contextContext = new Siviglia.Path.BaseObjectContext(contextRoot, "@", this.ownStack);
+
+                                }
                                 else {
                                     contextRoot = this.ownStack.getRoot("@");
                                 }
+                                // Ponemos al elemento sobre el que iteramos, como el padre de la variable de contexto .
+                                // Asi, si iteramos sobre un array [1,2,3], con contextIndex="param",
+                                // @param apuntará a 1,a 2, y a 3 al iterar, pero el padre del contexto, asociado a "param", siempre será el array
+                                this.ownStack.getContext("@").addParentObject(this.contextParam,parent);
                                 contextRoot[this.contextParam] = value;
                                 contextRoot[this.contextParam + "-index"] = key;
 
@@ -1984,6 +2032,7 @@ Siviglia.Utils.buildClass(
                                         }
                                         //reference = curNode;
                                 }
+                                return contextRoot[this.contextParam];
 
                             }).bind(this);
 
@@ -1991,12 +2040,14 @@ Siviglia.Utils.buildClass(
 
                             if (valType.substr(0,16) =="function Array()")
                                 val.map(function (value, index) {
-                                    cb(index, value);
+                                    var ret=cb(index, value,val);
+                                    val[index]=ret;
                                 });
                             else {
                                 if (valType.indexOf("bject") > 0) {
                                     for (var k in val) {
-                                        cb(k, val[k]);
+                                        var ret=cb(k, val[k],val);
+                                        val[k]=ret;
                                     }
                                 } else {
                                     //alert("Indicado LoopExpando sobre path que no es un array");
@@ -2387,6 +2438,7 @@ Siviglia.Utils.buildClass(
                     this.destroyed=false;
                     this.__builtPromise=SMCPromise();
                     this.__completedPromise=SMCPromise();
+                    this.__externalPromises=[];
                     this.__built=false;
                     this.__parentView=null;
                     this.__subViews=[];
@@ -2410,6 +2462,10 @@ Siviglia.Utils.buildClass(
                     {
                         this.__parentView=view;
 
+                    },
+                    __addDependency:function(promise)
+                    {
+                        this.__externalPromises.push(promise);
                     },
                     __build: function () {
                         var widgetFactory = new Siviglia.UI.Expando.WidgetFactory();
@@ -2475,7 +2531,9 @@ Siviglia.Utils.buildClass(
                         {
                             this.__builtPromise.then(function(){
                                 this.__built=true;
-                                this.__completedPromise.resolve();
+                                $.when.apply($, this.__externalPromises).then( function(){
+                                    this.__completedPromise.resolve();
+                                }.bind(this) );
                             }.bind(this));
                         }
                     },
@@ -2515,8 +2573,13 @@ Siviglia.Utils.buildClass(
                             this.rootNode=this.__node;
                             this.oManager.parse(this.__node);
                             $.each(oldNode,function(idx,value){
-                                if(idx==0)
-                                    value.replaceWith(this.widgetNode);
+                                if(idx==0) {
+                                    if (this.widgetNode instanceof jQuery){
+                                        value.replaceWith(this.widgetNode[0]);
+                                    }
+                                    else
+                                        value.replaceWith(this.widgetNode);
+                                }
                                 else
                                     value.remove();
                             }.bind(this));

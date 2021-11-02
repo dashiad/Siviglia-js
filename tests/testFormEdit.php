@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TestGridLoad (FullList_Grid)</title>
+    <title>Title</title>
     <link rel='stylesheet prefetch'
           href='http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css'>
     <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto'>
@@ -14,14 +14,13 @@
     <script src="../SivigliaTypes.js"></script>
     <script src="../Model.js"></script>
 
+
     <script src="../../jqwidgets/jqx-all.js"></script>
     <script src="../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="/reflection/css/style.css">
     <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
-    <script src="/node_modules/autobahn-browser/autobahn.min.js"></script>
-    <script src="/reflection/js/WampServer.js"></script>
 
     <style type="text/css">
         #svgChart {
@@ -38,17 +37,17 @@
 <?php include_once("../jQuery/JqxWidgets.html"); ?>
 <?php include_once("../jQuery/JqxLists.html"); ?>
 
+
+
+<!--Siviglia.model.smartclip.Sage.Supervisor.AUTILIS.lists.FullList_Grid-->
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->
-<!-- antigua llamada <div data-sivView="Siviglia.model.web.WebUser.lists.FullList" data-sivParams='{}'></div> -->
-
-<!-- nueva llamada del FullList_Grid -->
-<div data-sivView="Siviglia.model.smartclip.Sage.Supervisor.AUTILIS.lists.FullList_Grid" data-sivParams='{}'></div>
-<!--<div data-sivView="Siviglia.model.web.WebUser.lists.FullList_Grid" data-sivParams='{}'></div>-->
-
-
+<div data-sivView="Siviglia.model.reflection.ReflectorFactory.forms.EditTemplate" data-sivParams='{"type":"Grid","model":"model.web.WebUser","widget":"FullList_Grid"}'></div>
 <script>
 
-var Siviglia=Siviglia || {};
+
+
+
+    var Siviglia=Siviglia || {};
     Siviglia.config={
         baseUrl:'http://reflection.adtopy.com/',
         staticsUrl:'http://statics.adtopy.com/',
@@ -59,39 +58,17 @@ var Siviglia=Siviglia || {};
         // 1) Un gestor en /lib/output/html/renderers/js/XXX.php
         // 2) Un Mapper en Siviglia.Model.XXXMapper
         // 3) Las urls de carga de modelos seria /js/XXX/model/zzz/yyyy....
-        mapper:'Siviglia',
-        user:{
-            USER_ID:"1",
-            TOKEN:"1"
-        },
-        wampServer:{
-            "URL":"ws://127.0.0.1",
-            "PORT":8999,
-            "REALM":"adtopy"
-        }
+        mapper:'Siviglia'
     };
     Siviglia.Model.initialize(Siviglia.config);
-if(top.Siviglia.config.user!==null) {
 
-    if (typeof top.Siviglia.config.wampServer !== "undefined") {
-
-        var wConfig = Siviglia.config.wampServer;
-        var wampServer = new Siviglia.comm.WampServer(
-            wConfig.URL,
-            wConfig.PORT,
-            wConfig.REALM,
-            top.Siviglia.config.user.TOKEN
-        );
-        Siviglia.Service.add("wampServer", wampServer);
-
-    }
-}
 
 </script>
 <script>
     var parser = new Siviglia.UI.HTMLParser();
     parser.parse($(document.body));
 </script>
+
 
 </body>
 </html>

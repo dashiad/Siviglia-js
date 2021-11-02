@@ -1932,6 +1932,7 @@
             f.setValue([a1,a2,a3]);
 
             f.splice(1,1);
+
             var status=f[0].CAMPO==="abcde" && f[1].CAMPO3==="jklm" && f.length===2;
 
             // El splice ha movido el elemento que antes estaba en 2, a la posicion 1. Para que esto funcione, ha
@@ -1946,6 +1947,7 @@
             // UN VALOR COMPARTIDO
             // 2) NO RE-EVENTIZAR : a3 SEGUIRIA APUNTANDO A TYPESWITCHER 2, QUE VA A SER DESTRUIDO.
             // ASI QUE NO QUEDA MAS REMEDIO QUE HACER UNA COPIA!
+
 
             // a3.CAMPO3="JORGITO";
             a3=f[1];
@@ -2224,7 +2226,7 @@
         }
         var secondStatus = (errored==1 && nChanges == 0 && nExcp == 1);
         t1.f3 = "Value1";
-        var thirdStatus = (t1["*f3"].getLabel() == "Value1" && nChanges == 1 && nExcp == 1);
+        var thirdStatus = (t1.f3==0 && t1["*f3"].getLabel() == "Value1" && nChanges == 1 && nExcp == 1);
         t1.f3 = 2;
         var fourthStatus = (t1["*f3"].getLabel() == "Value3" && nChanges == 2 && nExcp == 1);
 

@@ -76,6 +76,10 @@
                             // botones. En ambos casos, se va a crear un div con un id unico, y, en el evento loadComplete, se
                             // insertará el código necesario.
                             // Para ello, se genera un prefijo para los ids de los divs, a los que se les aniade un contador
+                            this.filterPromise=$.Deferred();
+                            this.gridPromise=$.Deferred();
+                            this.__addDependency(this.filterPromise);
+                            this.__addDependency(this.gridPromise);
                             this.divPrefix=['a','b','c','d','e','f','g','h','e','f'][parseInt(Math.random()*10)]+(new Date()).getTime();
                             this.divCounter=0;
                             this.futureWidgetData=[];
@@ -198,12 +202,12 @@
 
                             var actionDs=new Siviglia.Model.DataSource("/model/reflection/Action", "FullList", {model:targets,allowsBatch:true});
                             actionDs.refresh().then(function(result){
-                                for(var k=0;k<result.length;k++)
+                               /* for(var k=0;k<result.length;k++)
                                 {
 
                                 }
                                 m.contextualActions[index].actions=result.data;
-                                actionDs.destruct();
+                                actionDs.destruct();*/
                                 completePromise.resolve(result);
                             }.bind(this))
                             return completePromise;
@@ -357,7 +361,14 @@
                             this.jqxDataSource.totalrecords=this.ds.count;
                             this.dataAdapter.dataBind();
                         },
-
+                        getDataSource:function()
+                        {
+                            return this.ds;
+                        },
+                        getForm:function()
+                        {
+                            return this.filterWidget;
+                        },
                         buildGrid:function(evName,params){
                             this.jqxDataSource = {
                                 localdata: [],
@@ -403,7 +414,6 @@
                             {
                                 this.noRowsNode.css({display:"none"});
                                 this.grid.css({display:"block"});
-
                             }
 
                             this.dataAdapter.dataBind();
@@ -477,16 +487,17 @@
                             this.grid.on("initialized",function(){console.log("initialized");});
                             this.grid.on("rowClick",function(){console.log("rowClick");});
                             this.grid.on("rowSelect",function(){console.log("rowSelect");});this.grid.on("rowUnselect",function(){console.log("rowUnselect");});this.grid.on("sort",function(){console.log("sort");});this.grid.on("columnClick",function(){console.log("columnClick");});this.grid.on("cellClick",function(){console.log("cellClick");});this.grid.on("pageChanged",function(){console.log("pageChanged");});this.grid.on("pageSizeChanged",function(){console.log("pageSizeChanged");});this.grid.on("bindingComplete",function(){console.log("bindingComplete");});this.grid.on("groupsChanged",function(){console.log("groupsChanged");});this.grid.on("filter",function(){console.log("filter");});this.grid.on("columnResized",function(){console.log("columnResized");});this.grid.on("cellSelect",function(){console.log("cellSelect");});this.grid.on("cellUnselect",function(){console.log("cellUnselect");});this.grid.on("cellBeginEdit",function(){console.log("cellBeginEdit");});this.grid.on("cellEndEdit",function(){console.log("cellEndEdit");});this.grid.on("cellValueChanged",function(){console.log("cellValueChanged");});this.grid.on("rowExpand",function(){console.log("rowExpand");});this.grid.on("rowCollapse",function(){console.log("rowCollapse");});this.grid.on("rowDoubleClick",function(){console.log("rowDoubleClick");});this.grid.on("cellDoubleClick",function(){console.log("cellDoubleClick");});this.grid.on("columnReordered",function(){console.log("columnReordered");});this.grid.on("pageChanging",function(){console.log("pageChanging");});
-
+                            this.gridPromise.resolve();
 
                             // COMIENZO DE MENU CONTEXTUAL
+                            /*
                             if(this.contextualActions.length > 1) {
                                 $("#jqxMenu").jqxMenu({
                                     width: '120px',
-                                    height: '90px',
                                     autoOpenPopup: false,
+                                    height: '90px',
                                     mode: 'popup',
-                                    theme: theme
+                                    theme: 'light'
                                 });
                                 $("#jqxgrid").mousedown(function (event) {
                                     // get the clicked cell.
@@ -516,6 +527,8 @@
                                     return rightclick;
                                 }
                             }
+
+                             */
 
 
                         },
@@ -604,6 +617,9 @@
                                 {bto:this.parameters},{},$("<div></div>"),this.__context);
                             this.filterWidget.__build().then(function(){
                                 this.filterNode.append(this.filterWidget.rootNode);
+                                this.filterWidget.waitComplete().then(function(){
+                                    this.filterPromise.resolve();
+                                }.bind(this));
                             }.bind(this))
 
                         },
