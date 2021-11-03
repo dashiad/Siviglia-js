@@ -2071,7 +2071,7 @@ Siviglia.Utils.buildClass(
                             var events = attr.split(",");
                             events.map(function (item) {
                                 $(node).off(item);
-                                $(node).on(attr, callbackBuilder(attr));
+                                $(node).on(item, callbackBuilder(item));
                             });
                             return true;
                         },
