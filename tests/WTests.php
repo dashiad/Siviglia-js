@@ -62,23 +62,23 @@
             margin-top:30px;
         }
         .testCont {
-            height:300px;
+            height:500px;
             overflow-y:scroll;
         }
         .testDef {
-            width:400px;
+            width:700px;
             float:left;
-            height:250px;
+            height:500px;
             overflow:auto
         }
         .testView {
-            width:400px;
+            width:100px;
             float:left;
-            height:250px;
+            height:500px;
             overflow:auto
         }
         .testCode {
-            height:250px;
+            height:500px;
             overflow:auto
         }
         .resultTitle {
@@ -122,7 +122,7 @@
     var urlParams = new URLSearchParams(window.location.search);
     var DEVELOP_MODE;
     if (!urlParams.has("test")) {
-        DEVELOP_MODE=47;    // Specific test number
+        DEVELOP_MODE=0;    // Specific test number
 	     //var DEVELOP_MODE=0;  // All tests
         //var DEVELOP_MODE=-1; // Latest test
     } else {
@@ -251,7 +251,7 @@
                 nDiv.appendChild(divDoc);
                 var divCont=document.createElement("div");
                 divCont.className="testCont";
-                divCont.style.height="250px";
+                // divCont.style.height="250px";
                 nDiv.appendChild(divCont);
 
                 var divDef=document.createElement("div");
@@ -367,30 +367,37 @@
 
 
     }
-    runTest("Widget Minimo","Widget minimo, con una plantilla que contiene solo un texto, y una clase vacia",
-    '<div data-sivWidget="Test.Minimal" data-widgetCode="Test.Minimal"><span>Hello world</span></div>',
-        '<div data-sivView="Test.Minimal"></div>',
-        function(){
-            Siviglia.Utils.buildClass({
-                context:'Test',
-                classes:{
-                    'Minimal':{
-                        inherits: "Siviglia.UI.Expando.View",
-                        methods: {
-                            preInitialize: function (params) {
 
-                            },
-                            initialize: function (params) {
-                            }
-                        }
-                    }
+    runTest("Widget Minimo",
+      "Widget minimo, con una plantilla que contiene solo un texto, y una clase vacia",
+      '<div data-sivWidget="Test.Minimal" data-widgetCode="Test.Minimal">' +
+        '<span>Hello world</span>' +
+      '</div>',
+      '<div data-sivView="Test.Minimal"></div>',
+      function () {
+        Siviglia.Utils.buildClass({
+          context: 'Test',
+          classes: {
+            'Minimal': {
+              inherits: "Siviglia.UI.Expando.View",
+              methods: {
+                preInitialize: function (params) {
+
+                },
+                initialize: function (params) {
                 }
+              }
+            }
+          }
 
-            })
-        }
+        })
+      }
     )
-    runTest("SivValue","Uso simple de SivValue: Una variable asignada en preInitialize, es renderizada en el widget",
-        '<div data-sivWidget="Test.Widget" data-widgetCode="Test.Widget"><span data-sivValue="[%*message%]"></span></div>',
+    runTest("SivValue",
+        "Uso simple de SivValue: Una variable asignada en preInitialize, es renderizada en el widget",
+        '<div data-sivWidget="Test.Widget" data-widgetCode="Test.Widget">' +
+            '<span data-sivValue="[%*message%]"></span>' +
+        '</div>',
         '<div data-sivView="Test.Widget"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -400,7 +407,6 @@
                         inherits: "Siviglia.UI.Expando.View",
                         methods: {
                             preInitialize: function (params) {
-
                                 this.message="Hello World! (2)"
                             },
                             initialize: function (params) {
@@ -412,9 +418,12 @@
             })
         }
     )
-    runTest("SivValue2","El valor de sivValue es una ParametrizableString, por lo que no sólo es posible usarlo para referenciar a 1 variable. Puede referenciar más de una, texto, y expresiones complejas.<br>"+
+    runTest("SivValue2",
+        "El valor de sivValue es una ParametrizableString, por lo que no sólo es posible usarlo para referenciar a 1 variable. Puede referenciar más de una, texto, y expresiones complejas.<br>"+
         "Las variables utilizadas en las expresiones, comienzan por el prefijo '*' cuando hacen referencia a una variable miembro de la clase asociada al widget",
-        '<div data-sivWidget="Test.SivValue2" data-widgetCode="Test.SivValue2"><span data-sivValue="Esto <h2>[%*message1%]</h2> una <b><i>[%*message2%]</i></b>"></span></div>',
+        '<div data-sivWidget="Test.SivValue2" data-widgetCode="Test.SivValue2">' +
+            '<span data-sivValue="Esto <h2>[%*message1%]</h2> una <b><i>[%*message2%]</i></b>"></span>' +
+        '</div>',
         '<div data-sivView="Test.SivValue2"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -436,8 +445,14 @@
             })
         }
     )
-    runTest("SivValue3","El ciclo de vida de un widget es: llamada a preInitialize, renderizado, llamada a initialize. Esto significa que en preInitialize aun no se ha renderizado la plantilla, y todas las variables usadas en la plantilla, deben inicializarse. Cuando se llama a initialize, ya está creado el widget. Las variables usadas en el widget, están bindeadas a las variables de la clase.En este ejemplo, en initialize, se cambia una variable en un setInterval, actualizandose automáticamente la plantilla. En preInitialize, se inicializa la variable (es requerido para que exista al hacer el primer renderizado de la plantilla), y en initialize se crea el intervalo.",
-        '<div data-sivWidget="Test.SivValue3" data-widgetCode="Test.SivValue3"><span data-sivValue="[%*counter%]"></span></div>',
+    runTest("SivValue3",
+        "El ciclo de vida de un widget es: llamada a preInitialize, renderizado, llamada a initialize.<br>" +
+        "Esto significa que en preInitialize aun no se ha renderizado la plantilla, y todas las variables usadas en la plantilla, deben inicializarse.<br>" +
+        "Cuando se llama a initialize, ya está creado el widget. Las variables usadas en el widget, están bindeadas a las variables de la clase.<br>" +
+        "En este ejemplo, en initialize, se cambia una variable en un setInterval, actualizandose automáticamente la plantilla. En preInitialize, se inicializa la variable (es requerido para que exista al hacer el primer renderizado de la plantilla), y en initialize se crea el intervalo.",
+        '<div data-sivWidget="Test.SivValue3" data-widgetCode="Test.SivValue3">' +
+            '<span data-sivValue="[%*counter%]"></span>' +
+        '</div>',
         '<div data-sivView="Test.SivValue3"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -459,8 +474,12 @@
             })
         }
     )
-    runTest("SivValue4","Por defecto, sivValue establece el innerHTML de un campo.Es posible establecer otras parejas atributo-valor, separando cada pareja por ::, y el nombre y el valor por | ",
-        '<style type="text/css">.simpleClass {font-weight:bold;color:green}</style><div data-sivWidget="Test.SivValue4" data-widgetCode="Test.SivValue4"><span data-sivValue="class|[%*assignedClass%]::title|El titulo es:[%*title%]">Contenido simple</span></div>',
+    runTest("SivValue4",
+        "Por defecto, sivValue establece el innerHTML de un campo.Es posible establecer otras parejas atributo-valor, separando cada pareja por ::, y el nombre y el valor por | ",
+        '<style type="text/css">.simpleClass {font-weight:bold;color:green}</style>' +
+        '<div data-sivWidget="Test.SivValue4" data-widgetCode="Test.SivValue4">' +
+            '<span data-sivValue="class|[%*assignedClass%]::title|El titulo es:[%*title%]">Contenido simple</span>' +
+        '</div>',
         '<div data-sivView="Test.SivValue4"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -482,8 +501,11 @@
             })
         }
     )
-    runTest("SivValue5","las variables miembro de la clase, se pueden navegar como si fueran paths:",
-        '<div data-sivWidget="Test.SivValue5" data-widgetCode="Test.SivValue5"><span data-sivValue="[%*test/0/key%]"></span></div>',
+    runTest("SivValue5",
+        "Las variables miembro de la clase, se pueden navegar como si fueran paths",
+        '<div data-sivWidget="Test.SivValue5" data-widgetCode="Test.SivValue5">' +
+            '<span data-sivValue="[%*test/0/key%]"></span>' +
+        '</div>',
         '<div data-sivView="Test.SivValue5"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -508,9 +530,13 @@
             })
         }
     )
-    runTest("SivValue6","Los paths, a su vez, pueden depender de otros paths.En este test, la variable usada en sivValue, es, a su vez, dependiente de otra variable, que va cambiando segun un intervalo.<br>"+
+    runTest("SivValue6",
+        "Los paths, a su vez, pueden depender de otros paths.<br>" +
+        "En este test, la variable usada en sivValue, es, a su vez, dependiente de otra variable, que va cambiando segun un intervalo.<br>"+
         "Los paths pueden comenzar opcionalmente por el carácter / , pero los paths anidados (que usan {%...%}, en vez de [%...%]) no permiten ese caracter / extra.",
-        '<div data-sivWidget="Test.SivValue6" data-widgetCode="Test.SivValue6"><span data-sivValue="[%/*test/{%*index%}/key%]"></span></div>',
+        '<div data-sivWidget="Test.SivValue6" data-widgetCode="Test.SivValue6">' +
+            '<span data-sivValue="[%/*test/{%*index%}/key%]"></span>' +
+        '</div>',
         '<div data-sivView="Test.SivValue6"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -540,8 +566,14 @@
             })
         }
     )
-    runTest("SivLoop","SivLoop atraviesa una variable iterable. En cada iteracion, establece una variable contextual (prefijo @), que apunta al elemento actual.",
-        '<div data-sivWidget="Test.SivLoop" data-widgetCode="Test.SivLoop"><div data-sivLoop="/*simpleArray" data-contextIndex="current"><div data-sivValue="[%/@current%]"></div></div></div>',
+    runTest("SivLoop",
+        "SivLoop atraviesa una variable iterable.<br>" +
+        "En cada iteracion, establece una variable contextual (prefijo @), que apunta al elemento actual.",
+        '<div data-sivWidget="Test.SivLoop" data-widgetCode="Test.SivLoop">' +
+            '<div data-sivLoop="*simpleArray" data-contextIndex="current">' +
+                '<div data-sivValue="[%@current%]"></div>' +
+            '</div>' +
+        '</div>',
         '<div data-sivView="Test.SivLoop"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -563,11 +595,17 @@
             })
         }
     )
-    runTest("SivLoop2","Es posible anidar varios sivloops, utilizando el indice del externo como fuente.<br>En este ejemplo, el array interno itera sobre un dictionary.<br>Un loop, ademas de la variable de contexto (que apunta a los valores), tambien define la variable con el sufijo -index, que apunta a la key. ",
+    runTest("SivLoop2",
+        "Es posible anidar varios sivloops, utilizando el indice del externo como fuente.<br>En este ejemplo, el array interno itera sobre un dictionary.<br>Un loop, ademas de la variable de contexto (que apunta a los valores), tambien define la variable con el sufijo -index, que apunta a la key. ",
         '<div data-sivWidget="Test.SivLoop2" data-widgetCode="Test.SivLoop2">'+
-        '<div data-sivLoop="*simpleArray" data-contextIndex="current"><div style="border:1px solid black">'+
-        '<div data-sivLoop="/@current" data-contextIndex="inner"><div data-sivValue="[%/@inner-index%] : [%/@inner%]"></div>'+
-        '</div></div></div></div></div>',
+            '<div data-sivLoop="*simpleArray" data-contextIndex="current">' +
+                '<div style="border:1px solid black">'+
+                    '<div data-sivLoop="/@current" data-contextIndex="inner">' +
+                        '<div data-sivValue="[%/@inner-index%] : [%/@inner%]"></div>'+
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>',
         '<div data-sivView="Test.SivLoop2"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -599,9 +637,9 @@
         "Este ejemplo es el mismo anterior, estableciendo el contenido de los nodos usando SivCall, en vez de SivValue.<br>"+
         "(Nota: para especificar el json dentro de un atributo html, utilizo comillas simples para el atributo, de forma que no hay que escapear las comillas dobles del json)",
         '<div data-sivWidget="Test.SivCall" data-widgetCode="Test.SivCall">'+
-        '<div data-sivLoop="*simpleArray" data-contextIndex="current"><div style="border:1px solid black">'+
-        '<div data-sivLoop="/@current" data-contextIndex="inner"><div data-sivCall="setContent" data-sivparams=\'{"indice":"/@inner-index","valor":"/@inner"}\'></div>'+
-        '</div></div></div></div></div>',
+        '<div data-sivLoop="*dictionariesArray" data-contextIndex="dictionary"><div style="border:1px solid black">'+
+        '<div data-sivLoop="@dictionary" data-contextIndex="value"><div data-sivCall="setContent" data-sivparams=\'{"indice":"@value-index","valor":"/@value"}\'></div>'+
+        '</div></div></div></div>',
         '<div data-sivView="Test.SivCall"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -611,7 +649,7 @@
                         inherits: "Siviglia.UI.Expando.View",
                         methods: {
                             preInitialize: function (params) {
-                                this.simpleArray=[
+                                this.dictionariesArray=[
                                     {a:"cad1",b:"cad2",c:"cad3"},
                                     {a:"cad4",b:"cad5",c:"cad6"},
                                     {a:"cad7",b:"cad8",c:"cad9"},
@@ -632,7 +670,7 @@
             })
         }
     )
-    runTest("SivEvent","SivEvent, junto a sivcallback y sivParams, se utiliza para asignar un gestor de eventos."+
+    runTest("SivEvent","SivEvent, junto a sivcallback y sivParams, se utiliza para asignar un gestor de eventos.<br>"+
         "Aunque es posible asignar más de 1 evento, el callback y los parámetros son compartidos.<br>"+
         "El nombre de los eventos es el usado por jQuery, y, en caso de especificar más de uno, debe ir separado por comas.<br>",
         '<div data-sivWidget="Test.SivEvent" data-widgetCode="Test.SivEvent">'+
@@ -666,8 +704,8 @@
         "En este ejemplo, se alterna el valor de una variable, lo que alterna el contenido mostrado.<br>"+
             "la expresion del SivIf se evalua con eval de javascript, por lo que admite los condicionales de javascript",
         '<div data-sivWidget="Test.SivIf" data-widgetCode="Test.SivIf">'+
-        '<div data-sivIf="[%/*flipper%] == 1"><div style="background-color:blue;color:white">Valor Uno</div></div>'+
-        '<div data-sivIf="[%/*flipper%] == 0"><div style="background-color:green;color:white">Valor Cero</div></div>'+
+        '<div data-sivIf="[%*flipper%] == 1"><div style="background-color:blue;color:white">Valor Uno</div></div>'+
+        '<div data-sivIf="[%*flipper%] == 0"><div style="background-color:green;color:white">Valor Cero</div></div>'+
         '</div>',
         '<div data-sivView="Test.SivIf"></div>',
         function(){
@@ -695,7 +733,7 @@
         ,
         '<div data-sivWidget="Test.SivIf" data-widgetCode="Test.SivIf">'+
         '<div data-sivIf="[%/*flipper%] == 1"><div data-sivId="target"></div><div style="background-color:blue;color:white">Valor Uno</div></div>'+
-        '<div data-sivIf="[%/*flipper%] == 0"><div style="background-color:green;color:white">Valor Cero</div></div>'+
+        '<div data-sivIf="[%/*flipper%] == 0"><div data-sivId="target"></div><div style="background-color:green;color:white">Valor Cero</div></div>'+
         '</div>',
         '<div data-sivView="Test.SivIf"></div>',
         function(){
@@ -838,42 +876,37 @@
                     'Sample':{
                         inherits: "Siviglia.UI.Expando.View",
                         methods:{
-                            preInitialize:function(params)
-                            {
-                                this.receivedParam=params.sentParam;
+                            preInitialize:function(params) {
+                                this.receivedParam = params.sentParam;
                                 console.dir(params);
                             },
-                            initialize:function(params){
-                            }
+                            initialize:function(params){}
                         }
                     },
                     'ByCode':{
                         inherits: "Siviglia.UI.Expando.View",
-                        destruct:function()
-                        {
-                            if(this.innerWidget)
-                                this.innerWidget.destruct();
+                        destruct:function() {
+                            if (this.innerWidget) this.innerWidget.destruct();
                         },
                         methods:{
-                            preInitialize:function(params)
-                            {
+                            preInitialize:function(params) {
                                 this.innerWidget=null;
                             },
-                            initialize:function(params){
-
-                                this.innerWidget=new Test.Sample("Test.Sample",{sentParam:"Texto Enviado"},{},
-                                    $("<div></div>"),
-                                    new Siviglia.Path.ContextStack()
+                            initialize:function(params) {
+                                this.innerWidget = new Test.Sample(
+                                  "Test.Sample",
+                                  {sentParam:"Texto Enviado"},{},
+                                  $("<div></div>"),
+                                  new Siviglia.Path.ContextStack()
                                 );
 
-                                this.innerWidget.__build().then(function(instance){
+                                this.innerWidget.__build().then(function(instance) {
                                     this.here.append(this.innerWidget.rootNode);
                                 }.bind(this));
                             }
                         }
                     }
                 }
-
             })
         }
     )
@@ -917,7 +950,7 @@
         "En el initialize, se modifica el valor del BTO, y, en el destructor del widget, se llama al destructor del BTO.",
         '<div data-sivWidget="Test.BTO" data-widgetCode="Test.BTO">'+
         '<div data-sivLoop="*bto/arrField" data-contextIndex="current">' +
-            '<div data-sivValue="[%/@current/fieldA%]"></div>'+
+            '<div data-sivValue="[%@current/fieldA%]"></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.BTO" style="background-color:green"></div>',
@@ -963,23 +996,28 @@
             })
         }
     )
-    runTest("Layouts alternativos","Cuando se instancia una vista de un widget, es posible especificar un layout alternativo, con el atributo data-sivLayout. <br>"+
-            "Se especifican varios layouts, todos apuntando al mismo data-widgetCode.<br>"+
-        "Esta característica es uno de los pilares del sistema de widgets.Significa una separación entre la gestión, en código, de un widget, y el html que lo renderiza.<br>"+
+    runTest("Layouts alternativos",
+        "En este ejemplo se especifican varios layouts, todos apuntando al mismo data-widgetCode.<br>"+
+        "Cuando se instancia una vista de un widget es posible especificar un layout alternativo con el atributo data-sivLayout.<br>"+
+        "Esta característica es uno de los pilares del sistema de widgets. Significa una separación entre la gestión del código de un widget, y el html que lo renderiza.<br>"+
         "El separar las clases de los layouts, permite que haya varias formas de mostrar un mismo elemento conceptual.<br>"+
         "En este ejemplo, se utiliza un mismo widget, simulando un menu, que se muestra usando varios layouts diferentes.",
         '<div data-sivWidget="Test.AltLayout" data-widgetCode="Test.AltLayout">'+
             '<ul>'+
-            '<div data-sivLoop="/*options" data-contextIndex="current">'+
-            '<li><a data-sivValue="href|[%@current/link%]"><span data-sivValue="[%@current/text%]"></span></a></li>'+
-            '</div>'+
+                '<div data-sivLoop="*options" data-contextIndex="current">'+
+                    '<li><a data-sivValue="href|[%@current/link%]"><span data-sivValue="[%@current/text%]"></span></a></li>'+
+                '</div>'+
             '</ul>'+
         '</div>'+
         '<div data-sivWidget="Test.AltLayout2" data-widgetCode="Test.AltLayout">'+
             '<div>'+
-        '<div data-sivLoop="/*options" data-contextIndex="current">'+
-        '<div style="float:left;border-radius:8px;background-color:green;color:white;padding:4px;margin-right:3px"><a data-sivValue="href|/[%@current/link%]"><span data-sivValue="[%@current/text%]"></span></a></div>'+
-        '</div></div><div style="clear:both"></div></div>',
+                '<div data-sivLoop="*options" data-contextIndex="current">'+
+                    '<div style="float:left;border-radius:8px;background-color:green;color:white;padding:4px;margin-right:3px"><a data-sivValue="href|[%@current/link%]"><span data-sivValue="[%@current/text%]"></span></a>' +
+                    '</div>'+
+                '</div>' +
+            '</div>' +
+            '<div style="clear:both"></div>' +
+        '</div>',
         '<div data-sivView="Test.AltLayout"></div><div style="height:10px"></div><div data-sivView="Test.AltLayout" data-sivLayout="Test.AltLayout2"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -1010,9 +1048,9 @@
         "Un BTO remoto puede ser un formulario, o la salida de un datasource.En este caso se utiliza un datasource, y se itera sobre el resultado.<br>"+
             "La llamada a unfreeze() del datasource, dispara la request y retorna una promesa, que es la que es devuelva en preInitialize",
         '<div data-sivWidget="Test.BTO2" data-widgetCode="Test.BTO2">'+
-            '<div data-sivLoop="/*ds/data" data-contextIndex="current">'+
+            '<div data-sivLoop="*ds/data" data-contextIndex="current">'+
             '<div style="border:1px solid black;margin:2px">'+
-            '<div data-sivValue="[%/@current/id_site%] : [%/@current/host%]"></div>'+
+            '<div data-sivValue="[%@current/id_site%] : [%@current/host%]"></div>'+
             '</div>'+
             '</div>'+
         '</div>',
@@ -1051,26 +1089,26 @@
         "Se itera sobre los campos, y,usando sivCall, se crean las instancias de los widgets asociados al tipo.<br>"+
         "Como nota adicional, los widgets creados por el widget Factoria, se almacenan en una variable, y se destruyen en el destruct(), junto con el bto.<br>",
         '<div data-sivWidget="Test.Factory" data-widgetCode="Test.Factory">'+
-        '<div data-sivLoop="/*mybto/__definition/FIELDS" data-contextIndex="current">'+
+        '<div data-sivLoop="*mybto/__definition/FIELDS" data-contextIndex="current">'+
         '<div data-sivCall="getTypeWidget" data-sivParams=\'{"field":"@current-index","type":"@current/TYPE"}\'></div>'+
            // '<div data-sivValue="[%@current/TYPE%]"></div>'+
         '</div>'+
         '</div>'+
-        '<div data-sivWidget="Test.Integer" data-widgetCode="Test.Integer"><div style="background-color:green" data-sivValue="Entero: [%/*currentValue%]"></div></div>'+
-        '<div data-sivWidget="Test.String" data-widgetCode="Test.String"><div style="background-color:yellow" data-sivValue="Cadena: [%/*currentValue%]"></div></div>'
+        '<div data-sivWidget="Test.Integer" data-widgetCode="Test.Integer"><div style="background-color:green" data-sivValue="Entero: [%*currentValue%]"></div></div>'+
+        '<div data-sivWidget="Test.String" data-widgetCode="Test.String"><div style="background-color:yellow" data-sivValue="Cadena: [%*currentValue%]"></div></div>'
         ,
         '<div data-sivView="Test.Factory"></div>' ,
-        function(){
+        function() {
             Siviglia.Utils.buildClass({
                 context:'Test',
                 classes:{
                     'TypeRenderer':{
                         inherits: "Siviglia.UI.Expando.View",
                         methods: {
-                            preInitialize: function (params){
+                            preInitialize: function (params) {
                                 this.currentValue=params.field.getValue();
                             },
-                            initialize:function(params){}
+                            initialize: function(params){}
                         }
                     },
                     'Integer': {
@@ -1079,19 +1117,16 @@
                     'String': {
                         inherits:"Test.TypeRenderer"
                     },
-                    'Factory':{
+                    'Factory': {
                         inherits: "Siviglia.UI.Expando.View",
-                        destruct:function()
-                        {
+                        destruct: function() {
                             this.mybto.destruct();
                             for(var k in this.createdWidgets)
                                 this.createdWidgets[k].destruct();
                         },
                         methods:{
-
-                            preInitialize:function(params)
-                            {
-                                this.mybto=new Siviglia.model.BaseTypedObject({
+                            preInitialize: function(params) {
+                                this.mybto = new Siviglia.model.BaseTypedObject({
                                     "FIELDS":{
                                         "textField":{
                                             "TYPE":"String"
@@ -1104,21 +1139,23 @@
                                 this.mybto.setValue({"textField":"Campo de texto","integerField":11223344})
                                 this.createdWidgets=[];
                             },
-                            initialize:function(params){
-
-                            },
-                            getTypeWidget:function(node,params)
-                            {
-                                var field=this.mybto["*"+params.field];
-                                var type=params.type;
-                                var widgetName="Test."+type;
-                                var ctx=Siviglia.Utils.stringToContextAndObject(widgetName);
-                                var targetWidget=new ctx.context[ctx.object](widgetName,{field:field},{},$("<div></div>"),new Siviglia.Path.ContextStack());
+                            initialize: function(params){},
+                            getTypeWidget: function(node,params) {
+                                var field = this.mybto["*"+params.field];
+                                var type = params.type;
+                                var widgetName = "Test."+type;
+                                var ctx = Siviglia.Utils.stringToContextAndObject(widgetName);
+                                var targetWidget = new ctx.context[ctx.object](
+                                  widgetName,
+                                  {field:field},
+                                  {},
+                                  $("<div></div>"),
+                                  new Siviglia.Path.ContextStack()
+                                );
                                 targetWidget.__build().then(function(instance){
                                     node.append(instance.rootNode);
                                 })
-                                 this.createdWidgets[params.field]=targetWidget;
-
+                                 this.createdWidgets[params.field] = targetWidget;
                             }
                         }
                     }
@@ -1128,31 +1165,33 @@
         }
     )
     runTest("Inputs Simples","Primera prueba de inputs de JqxWidgets.<br>"+
-        "Se prueban los inputs sobre campos simples.Se usa una clase derivada de Form.Form, a su vez, deriva de Container.La funcion getInput que es llamada desde la plantilla, esta definida en Container.<br>",
-        '<div data-sivWidget="Test.Input1" data-widgetParams="" data-widgetCode="Test.Input1">'+
+        "Se prueban los inputs sobre campos simples.<br>" +
+        "Se usa una clase derivada de Form, que a su vez deriva de Container.<br>" +
+        "La funcion getInput llamada desde la plantilla esta definida en Container.<br>",
+        '<div data-sivWidget = "Test.Input1" data-widgetParams="" data-widgetCode="Test.Input1">'+
         '<div class="type">'+
         '<div class="label">Cadena</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"stringType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"stringType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Enum</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"enumType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"enumType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Entero</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"integerType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"integerType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Decimal</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"decimalType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"decimalType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Texto</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"textType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"textType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Boolean</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"booleanType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"booleanType"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input1"></div>',
@@ -1164,44 +1203,41 @@
                         inherits: "Siviglia.inputs.jqwidgets.Form",
                         methods: {
                             preInitialize: function (params) {
-
                                 this.factory = Siviglia.types.TypeFactory;
                                 this.self = this;
                                 this.typeCol = [];
                                 /* STRING **************************/
                                 this.typedObj = new Siviglia.model.BaseTypedObject({
                                     "FIELDS": {
-                                        "stringType":
-                                            {
-                                                TYPE: "String",
-                                                MINLENGTH: 3,
-                                                LABEL: "Hola",
-                                                HELP: "La ayuda"
-                                            },
+                                        "stringType": {
+                                            TYPE: "String",
+                                            LABEL: "Hola",
+                                            MINLENGTH: 3,
+                                            HELP: "La ayuda"
+                                        },
                                         enumType: {
-                                            "LABEL":"EnumType",
                                             TYPE: "Enum",
+                                            LABEL: "EnumType",
                                             VALUES: ["One", "Two", "Three"],
-                                            LABEL: "MiEnum"
                                         },
                                         integerType: {
-                                            LABEL:"IntegerType",
                                             TYPE: "Integer",
+                                            LABEL:"IntegerType",
                                             MAX: 1000
                                         },
                                         decimalType: {
-                                            LABEL:"DecimalType",
                                             TYPE: "Decimal",
+                                            LABEL:"DecimalType",
                                             NINTEGERS: 5,
                                             NDECIMALS: 2
                                         },
                                         textType: {
+                                            TYPE: "Text",
                                             LABEL:"textType",
-                                            TYPE: "Text"
                                         },
                                         booleanType: {
+                                            TYPE: "Boolean",
                                             LABEL:"BooleanType",
-                                            TYPE: "Boolean"
                                         }
                                     }
                                 });
@@ -1213,16 +1249,11 @@
                                 this.typedObj.booleanType = true;
                                 return this.Form$preInitialize({bto:this.typedObj});
                             },
-                            initialize: function (params) {
-                            },
-                            show: function () {
-                            },
-
+                            initialize: function (params) {},
+                            show: function () {},
                         }
                     }
-
                 }
-
             })
         }
     )
@@ -1231,7 +1262,7 @@
         '<div data-sivWidget="Test.Input1" data-widgetParams="" data-widgetCode="Test.Input1">'+
         '<div class="type">'+
         '<div class="label">Cadena</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"stringType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"stringType"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input1"></div>',
@@ -1243,38 +1274,30 @@
                         inherits: "Siviglia.inputs.jqwidgets.Form",
                         methods: {
                             preInitialize: function (params) {
-
                                 this.factory = Siviglia.types.TypeFactory;
                                 this.self = this;
                                 this.typeCol = [];
                                 /* STRING **************************/
                                 this.typedObj = new Siviglia.model.BaseTypedObject({
                                     "FIELDS": {
-                                        "stringType":
-                                            {
-                                                TYPE: "String",
-                                                MINLENGTH: 3,
-                                                LABEL: "Hola",
-                                                HELP: "La ayuda"
-                                            }
+                                        "stringType": {
+                                            TYPE: "String",
+                                            MINLENGTH: 3,
+                                            LABEL: "Hola",
+                                            HELP: "La ayuda"
+                                        }
                                     }
                                 });
                                 try {
                                     this.typedObj.stringType = "ab";
-                                }catch(e)
-                                {} // Aqui ignoramos la excepcion, queremos que se pinte el input con el error.
+                                } catch(e) {} // Aqui ignoramos la excepcion, queremos que se pinte el input con el error.
                                 return this.Form$preInitialize({bto:this.typedObj});
                             },
-                            initialize: function (params) {
-                            },
-                            show: function () {
-                            },
-
+                            initialize: function (params) {},
+                            show: function () {},
                         }
                     }
-
                 }
-
             })
         }
     )
@@ -1284,19 +1307,19 @@
         '<div data-sivWidget="Test.Input2" data-widgetParams="" data-widgetCode="Test.Input2">'+
         '<div class="type">'+
         '<div class="label">Combo con source Array</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"comboType"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"comboType"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Combo enlazado 1, con source Array</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"comboType2a"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"comboType2a"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Combo enlazado 2 (dependiente) con source Array</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"comboType2b"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"comboType2b"}\'></div>'+
         '</div>'+
         '<div class="type">'+
         '<div class="label">Combo enlazado 3 (dependiente de 2) con source Array</div>'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"comboType2c"}\'></div>'+
+        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"comboType2c"}\'></div>'+
         '</div>'+
         '</div>',
         '<div data-sivView="Test.Input2"></div>',
@@ -1308,7 +1331,6 @@
                         inherits: "Siviglia.inputs.jqwidgets.Form",
                         methods: {
                             preInitialize: function (params) {
-
                                 this.factory = Siviglia.types.TypeFactory;
                                 this.self = this;
                                 this.typeCol = [];
@@ -1320,6 +1342,8 @@
                                             "TYPE": "Integer",
                                             "SOURCE": {
                                                 "TYPE": "Array",
+                                                "LABEL": "message",
+                                                "VALUE": "a",
                                                 "DATA": [
                                                     {"a": 1, "message": "Opcion 1"},
                                                     {"a": 2, "message": "Opcion 2"},
@@ -1329,99 +1353,78 @@
                                                     {"a": 6, "message": "Opcion 6"},
                                                     {"a": 7, "message": "Opcion 7"}
                                                 ],
-                                                "LABEL": "message",
-                                                "VALUE": "a"
                                             }
                                         },
                                         comboType2a: {
-                                            "LABEL":"Combo2",
+                                            "LABEL":"ComboType-2A",
                                             "TYPE": "String",
                                             "SOURCE": {
                                                 "TYPE": "Array",
+                                                "LABEL": "label",
+                                                "VALUE": "val",
                                                 "DATA": [
                                                     {"val": "one", "label": "Sel one"},
                                                     {"val": "two", "label": "Sel two"}
                                                 ],
-                                                "LABEL": "label",
-                                                "VALUE": "val"
                                             }
                                         },
-
                                         comboType2b: {
-                                            "LABEL":"ComboType2B",
+                                            "LABEL":"ComboType-2B",
                                             "TYPE": "Integer",
                                             "SOURCE": {
                                                 "TYPE": "Array",
-                                                "DATA":
-                                                    {
-                                                        "one": [
-                                                            {"a": 1, "message": "Opcion 1"},
-                                                            {"a": 2, "message": "Opcion 2"},
-                                                        ],
-                                                        "two": [
-                                                            {"a": 10, "message": "xxOpcion 1"},
-                                                            {"a": 11, "message": "xxOpcion 2"},
-                                                        ]
-                                                    }
-                                                ,
                                                 "LABEL": "message",
                                                 "VALUE": "a",
-                                                "PATH": "/{%#../comboType2a%}"
-
+                                                "PATH": "/{%#../comboType2a%}",
+                                                "DATA": {
+                                                    "one": [
+                                                        {"a": 1, "message": "Opcion 1"},
+                                                        {"a": 2, "message": "Opcion 2"},
+                                                    ],
+                                                    "two": [
+                                                        {"a": 10, "message": "xxOpcion 1"},
+                                                        {"a": 11, "message": "xxOpcion 2"},
+                                                    ]
+                                                },
                                             }
                                         },
-
-                                        comboType2c:
-                                            {
-                                                "LABEL":"ComboType2c",
-                                                "TYPE": "Integer",
-                                                "SOURCE": {
-                                                    "TYPE": "Array",
-                                                    "DATA":
-                                                        {
-                                                            1: [{"a": 20, "message": "Third - 1 - 1"}, {
-                                                                "a": 21,
-                                                                "message": "Third - 1 - 2"
-                                                            }],
-                                                            2: [{"a": 22, "message": "Third - 2 - 1"}, {
-                                                                "a": 23,
-                                                                "message": "Third - 2 - 2"
-                                                            }],
-                                                            10: [{"a": 24, "message": "Third - 3 - 1"}, {
-                                                                "a": 25,
-                                                                "message": "Third - 3 - 2"
-                                                            }],
-                                                            11: [{"a": 26, "message": "Third - 4 - 1"}, {
-                                                                "a": 27,
-                                                                "message": "Third - 4 - 2"
-                                                            }]
-                                                        }
-                                                    ,
-                                                    "LABEL": "message",
-                                                    "VALUE": "a",
-                                                    "PATH": "/{%#../comboType2b%}"
-                                                }
-                                            },
+                                        comboType2c: {
+                                            "LABEL":"ComboType-2C",
+                                            "TYPE": "Integer",
+                                            "SOURCE": {
+                                                "TYPE": "Array",
+                                                "LABEL": "message",
+                                                "VALUE": "a",
+                                                "PATH": "/{%#../comboType2b%}",
+                                                "DATA": {
+                                                    1: [
+                                                        {"a": 20, "message": "Third - 1 - 1"},
+                                                        {"a": 21, "message": "Third - 1 - 2"}
+                                                    ],
+                                                    2: [
+                                                        {"a": 22, "message": "Third - 2 - 1"},
+                                                        {"a": 23, "message": "Third - 2 - 2"}
+                                                    ],
+                                                    10: [
+                                                        {"a": 24, "message": "Third - 3 - 1"},
+                                                        {"a": 25, "message": "Third - 3 - 2"}
+                                                    ],
+                                                    11: [
+                                                        {"a": 26, "message": "Third - 4 - 1"},
+                                                        {"a": 27, "message": "Third - 4 - 2"}
+                                                    ]
+                                                },
+                                            }
+                                        },
                                     }
                                 });
-                                this.typedObj.stringType = "abcde";
-                                this.typedObj.enumType = "Two";
-                                this.typedObj.integerType = 10;
-                                this.typedObj.decimalType = 8.3;
-                                this.typedObj.textType = "Esta es una prueba";
-                                this.typedObj.booleanType = true;
                                 return this.Form$preInitialize({bto:this.typedObj});
                             },
-                            initialize: function (params) {
-                            },
-                            show: function () {
-                            },
-
+                            initialize: function (params) {},
+                            show: function () {},
                         }
                     }
-
                 }
-
             })
         }
     )
@@ -1429,14 +1432,14 @@
         "La vista raiz debe esperar a que todas las subVistas esten listas, antes de mostrar un mensaje.<br>"+
         "",
             '<div data-sivWidget="Test.Waiter1" data-widgetCode="Test.Waiter1"></div>'+
-            '<div data-sivWidget="Test.Waiter3" data-widgetCode="Test.Waiter3"></div>'+
             '<div data-sivWidget="Test.Waiter2" data-widgetCode="Test.Waiter2">'+
-            '   <div data-sivView="Test.Waiter1" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
+            '   <div data-sivView="Test.Waiter1" data-sivParams=\'{"wait":"*randSecs"}\'></div>'+
             '</div>'+
-            '<div data-sivWidget="Test.WaiterTest" data-widgetParams="" data-widgetCode="Test.WaiterTest">'+
-            '   <div data-sivView="Test.Waiter1" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
-            '   <div data-sivView="Test.Waiter2" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
-            '   <div data-sivView="Test.Waiter3" data-sivParams=\'{"wait":"/*randSecs"}\'></div>'+
+            '<div data-sivWidget="Test.Waiter3" data-widgetCode="Test.Waiter3"></div>'+
+            '<div data-sivWidget="Test.WaiterTest"  data-widgetCode="Test.WaiterTest">'+
+            '   <div data-sivView="Test.Waiter1" data-sivParams=\'{"wait":"*randSecs"}\'></div>'+
+            '   <div data-sivView="Test.Waiter2" data-sivParams=\'{"wait":"*randSecs"}\'></div>'+
+            '   <div data-sivView="Test.Waiter3" data-sivParams=\'{"wait":"*randSecs"}\'></div>'+
             '</div>',
             '<div data-sivView="Test.WaiterTest"></div>',
         function(){
@@ -1447,71 +1450,72 @@
                         inherits: "Siviglia.UI.Expando.View",
                         methods: {
                             preInitialize: function (params) {
-                                this.waitComplete().then(function(){
+                                this.waitComplete().then(function() {
                                     this.showMessage();
                                 }.bind(this))
                                 this.randSecs=this.getRandSeconds();
 
-                                if(typeof params!=="undefined" &&
-                                    typeof params.wait!=="undefined")
-                                {
+                                if (
+                                    typeof params !== "undefined" &&
+                                    typeof params.wait !== "undefined"
+                                ) {
                                     var p=SMCPromise();
                                     setTimeout(function(){
-                                        p.resolve()}.bind(this),params.wait);
+                                        p.resolve()}.bind(this),params.wait
+                                    );
                                     return p;
                                 }
                             },
-                            initialize: function (params) {
-                            },
-                            showMessage:function(){console.log("WAITERTEST: LISTO")},
-                            getRandSeconds:function(){
+                            initialize: function (params) {},
+                            showMessage: function() {console.log("WAITERTEST: LISTO")},
+                            getRandSeconds: function() {
                                 return 2000;
                             }
                         }
                     },
-                    "Waiter1":{
+                    "Waiter1": {
                         inherits:"Test.WaiterTest",
-                        methods:{
-                            showMessage:function(){console.log("WAITERTEST 1: LISTO")},
-                            getRandSeconds:function(){
+                        methods: {
+                            showMessage: function() {console.log("WAITERTEST 1: LISTO")},
+                            getRandSeconds: function() {
                                 return 1000;
                             }
                         }
                     },
-                    "Waiter2":{
-                        inherits:"Test.WaiterTest",
-                        methods:{
-                            showMessage:function(){console.log("WAITERTEST 2: LISTO")},
-                            getRandSeconds:function(){
+                    "Waiter2": {
+                        inherits: "Test.WaiterTest",
+                        methods: {
+                            showMessage: function() {console.log("WAITERTEST 2: LISTO")},
+                            getRandSeconds: function() {
                                 return 3000;
                             }
                         }
                     },
-                    "Waiter3":{
-                        inherits:"Test.WaiterTest",
-                        methods:{
-                            showMessage:function(){console.log("WAITERTEST 3: LISTO")},
-                            getRandSeconds:function(){
+                    "Waiter3": {
+                        inherits: "Test.WaiterTest",
+                        methods: {
+                            showMessage: function() {console.log("WAITERTEST 3: LISTO")},
+                            getRandSeconds: function() {
                                 return 5000;
                             }
                         }
                     }
-
                 }
-
             })
         }
     )
 
     runTest("Vistas Nombradas","Usando data-viewName, es posible mapear widgets en el widget padre.<br>"+
         "El valor de esta propiedad es una parametrizable string.<br>"+
-        "",
+        "data-sivName es la forma de invocar el código de un widget hijo en el código del widget padre.<br>" +
+        "No debe ser empleado en preInitialize porque el ese punto aún no existe la relación.",
         '<div data-sivWidget="Test.Map1" data-widgetCode="Test.Map1">a<div data-sivId="target"></div>b</div>'+
         '<div data-sivWidget="Test.Map2" data-widgetCode="Test.Map2">z<div data-sivId="target"></div>q</div>'+
-        '<div data-sivWidget="Test.MapTest" data-widgetParams="" data-widgetCode="Test.MapTest">'+
-        //'   <div data-sivView="Test.Map1" data-viewName=\'map1\'></div>'+
-        '   <div data-sivLoop="/*instances" data-contextIndex="current">'+
-        '       <div data-sivView="Test.Map2" data-viewName=\'map2-[%@current-index%]\'></div>'+
+        // '<div data-sivWidget="Test.MapTest" data-widgetParams="" data-widgetCode="Test.MapTest">'+
+        '<div data-sivWidget="Test.MapTest" data-widgetCode="Test.MapTest">'+
+        '   <div data-sivView="Test.Map1" data-viewName="map1"></div>'+
+        '   <div data-sivLoop="*instances" data-contextIndex="current">'+
+        '       <div data-sivView="Test.Map2" data-viewName="map2-[%@current-index%]"></div>'+
         '   </div>'+
         '</div>',
         '<div data-sivView="Test.MapTest"></div>',
@@ -1524,17 +1528,15 @@
                         methods: {
                             preInitialize: function (params) {
                                 this.instances={};
-                                for(var k=0;k<2;k++)
-                                {
+                                for (var k=0;k<2;k++) {
                                     this.instances["prueba-"+k]="hola";
                                 }
 
                             },
                             initialize: function (params) {
                                 this.waitComplete().then(function(){
-                                    //this.map1.showLabel(" SOY MAP 1");
-                                    for(var k=0;k<2;k++)
-                                    {
+                                    this.map1.showLabel(" SOY MAP 1");
+                                    for (var k=0;k<2;k++) {
                                         this["map2-prueba-"+k].showLabel("SOY MAP2, INSTANCIA "+k);
                                     }
                                 }.bind(this));
@@ -1544,9 +1546,9 @@
                     "Map1":{
                         inherits:"Siviglia.UI.Expando.View",
                         methods:{
-                            preInitialize:function(){},
-                            initialize:function(){},
-                            showLabel:function(label){
+                            preInitialize: function() {},
+                            initialize: function() {},
+                            showLabel: function(label) {
                                 this.target.html(label)
                             },
                         }
@@ -1554,16 +1556,15 @@
                     "Map2":{
                         inherits:"Test.Map1"
                     }
-
                 }
-
             })
         }
     )
-    runTest("Promise Expando","El expando Promise, ejecuta sus contenidos cuando una promesa se resuelve"
-        ,
-        '<div data-sivWidget="Test.PromiseTest" data-widgetParams="" data-widgetCode="Test.PromiseTest">'+
-        '   <div data-sivPromise="/*myPromise" data-contextIndex="current">'+
+    runTest("Promise Expando","El expando Promise, ejecuta sus contenidos cuando una promesa se resuelve",
+        // '<div data-sivWidget="Test.PromiseTest" data-widgetParams="" data-widgetCode="Test.PromiseTest">'+
+        '<div data-sivWidget="Test.PromiseTest" data-widgetCode="Test.PromiseTest">'+
+        // '   <div data-sivPromise="*myPromise" data-contextIndex="current">'+
+        '   <div data-sivPromise="*myPromise">'+
         '       Hola!'+
         '   </div>'+
         '</div>',
@@ -1593,12 +1594,11 @@
 
 
     runTest("Seleccion de paths","Forzado de mostrado de campos ocultos con JqxWidgets<br>"+
-        "Se muestra un formulario con los diferentes tipos de container, y se busca forzar el mostrado de unos campos u otros, aunque estén ocultos.<br>"+
-        "",
-        '<div data-sivWidget="Test.ShowFields" data-widgetParams="" data-widgetCode="Test.ShowFields">'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
-        '                         data-sivParams=\'{"key":"ROOT","parent":"/*typedObj","form":"/*self"}\'>\n' +
-        '                    </div>'+
+        "Se muestra un formulario con los diferentes tipos de container, y se busca forzar el mostrado de unos campos u otros, aunque estén ocultos.<br>",
+        '<div data-sivWidget="Test.ShowFields" data-widgetCode="Test.ShowFields">'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
+        '         data-sivParams=\'{"key":"ROOT","parent":"*typedObj","form":"*self"}\'>' +
+            '</div>'+
         '</div>',
         '<div data-sivView="Test.ShowFields"></div>',
         function(){
@@ -1609,68 +1609,67 @@
                         inherits: "Siviglia.inputs.jqwidgets.Form",
                         methods: {
                             preInitialize: function (params) {
-
                                 this.factory = Siviglia.types.TypeFactory;
                                 this.self = this;
                                 this.typeCol = [];
                                 /* STRING **************************/
                                 this.typedObj = new Siviglia.model.BaseTypedObject({
                                     "FIELDS": {
-                                    "ROOT":{
-                                        "LABEL":"ROOT",
-                                            "TYPE":"Dictionary",
-                                            "VALUETYPE":{
-                                            "LABEL":"INNERCONT",
+                                        "ROOT": {
+                                            "LABEL": "ROOT",
+                                            "TYPE": "Dictionary",
+                                            "VALUETYPE": {
+                                                "LABEL":"INNERCONT",
                                                 "TYPE": "Container",
-                                                "FIELDS":
-                                            {
-                                                "f3":{
-                                                "LABEL":"F3",
-                                                    "TYPE":"String"
-                                            },
-                                                "f4": {
-                                                "LABEL":"F4",
-                                                    "TYPE": "Array",
-                                                    "ELEMENTS": {
-                                                    "LABEL": "TypeSwitcher",
-                                                        "TYPE": "TypeSwitcher",
-                                                        "TYPE_FIELD": "TYPE",
-                                                        "ALLOWED_TYPES": {
-                                                        "TYPE_ONE": {
-                                                            "LABEL":"TYPEONE",
-                                                            "TYPE": "Container",
-                                                            "FIELDS": {
-                                                                "f1": {
-                                                                    "LABEL": "Field 1-1",
-                                                                    "TYPE": "String"
+                                                "FIELDS": {
+                                                    "f3": {
+                                                        "LABEL":"F3",
+                                                        "TYPE":"String",
+                                                    },
+                                                    "f4": {
+                                                        "LABEL": "F4",
+                                                        "TYPE": "Array",
+                                                        "ELEMENTS": {
+                                                            "LABEL": "TypeSwitcher",
+                                                            "TYPE": "TypeSwitcher",
+                                                            "TYPE_FIELD": "TYPE",
+                                                            "ALLOWED_TYPES": {
+                                                                "TYPE_ONE": {
+                                                                    "LABEL": "TYPEONE",
+                                                                    "TYPE": "Container",
+                                                                    "FIELDS": {
+                                                                        "f1": {
+                                                                            "LABEL": "Field 1-1",
+                                                                            "TYPE": "String"
+                                                                        },
+                                                                        "f2": {
+                                                                            "LABEL": "Field 2-1",
+                                                                            "TYPE": "Integer"
+                                                                        },
+                                                                        "TYPE":{
+                                                                            "LABEL":"Tipo",
+                                                                            "TYPE":"String",
+                                                                            "FIXED":"TYPE_ONE"
+                                                                        }
+                                                                    }
                                                                 },
-                                                                "f2": {
-                                                                    "LABEL": "Field 2-1",
-                                                                    "TYPE": "Integer"
-                                                                },
-                                                                "TYPE":{
-                                                                    "LABEL":"Tipo",
-                                                                    "TYPE":"String",
-                                                                    "FIXED":"TYPE_ONE"
-                                                                }
-                                                            }
-                                                        },
-                                                        "TYPE_TWO": {
-                                                            "LABEL":"TYPETWO",
-                                                                "TYPE": "Container",
-                                                                "FIELDS": {
-                                                                "f1": {
-                                                                    "LABEL": "Field 2-1",
-                                                                        "TYPE": "String"
-                                                                },
-                                                                "f2": {
-                                                                    "LABEL": "Field 2-2",
-                                                                        "TYPE": "Integer"
-                                                                },
-                                                                    "TYPE":{
-                                                                        "LABEL":"Tipo",
-                                                                        "TYPE":"String",
-                                                                        "FIXED":"TYPE_TWO"
+                                                                "TYPE_TWO": {
+                                                                    "LABEL": "TYPETWO",
+                                                                    "TYPE": "Container",
+                                                                    "FIELDS": {
+                                                                        "f1": {
+                                                                            "LABEL": "Field 2-1",
+                                                                            "TYPE": "String"
+                                                                        },
+                                                                        "f2": {
+                                                                            "LABEL": "Field 2-2",
+                                                                            "TYPE": "Integer"
+                                                                        },
+                                                                        "TYPE": {
+                                                                            "LABEL":"Tipo",
+                                                                            "TYPE":"String",
+                                                                            "FIXED":"TYPE_TWO"
+                                                                        }
                                                                     }
                                                                 }
                                                             }
@@ -1678,25 +1677,35 @@
                                                     }
                                                 }
                                             }
-                                            }
                                         }
                                     }
                                 }
                                 );
-                                this.typedObj.setValue({"ROOT":{
-                                    "dict1":{f3:"f3d1",f4:[
-                                            {"TYPE":"TYPE_ONE",f1:"f1-1","f2":1},
-                                            {"TYPE":"TYPE_TWO",f1:"f1-1-a","f2":2},
-                                        ]},
-                                        "dict2":{f3:"f3d2",f4:[
-                                                {"TYPE":"TYPE_ONE",f1:"f1-2","f2":3},
-                                                {"TYPE":"TYPE_TWO",f1:"f1-2-a","f2":4},
-                                            ]},
-                                        "dict3":{f3:"f3d3",f4:[
-                                                {"TYPE":"TYPE_ONE",f1:"f1-3","f2":5},
-                                                {"TYPE":"TYPE_TWO",f1:"f1-3-a","f2":6},
-                                            ]}
-                                }});
+                                this.typedObj.setValue({
+                                    "ROOT": {
+                                        "dict1": {
+                                            f3: "f3d1",
+                                            f4: [
+                                                {"TYPE": "TYPE_ONE", f1: "f1-1", "f2": 1},
+                                                {"TYPE": "TYPE_TWO", f1: "f1-1-a", "f2": 2},
+                                            ]
+                                        },
+                                        "dict2": {
+                                            f3: "f3d2",
+                                            f4:[
+                                                {"TYPE": "TYPE_ONE", f1: "f1-2", "f2": 3},
+                                                {"TYPE": "TYPE_TWO", f1: "f1-2-a", "f2": 4},
+                                            ]
+                                        },
+                                        "dict3": {
+                                            f3: "f3d3",
+                                            f4:[
+                                                {"TYPE": "TYPE_ONE", f1: "f1-3", "f2": 5},
+                                                {"TYPE": "TYPE_TWO", f1: "f1-3-a", "f2": 6},
+                                            ]
+                                        },
+                                    }
+                                });
                                 return this.Form$preInitialize({bto:this.typedObj});
                             },
                             initialize: function (params) {
@@ -1705,34 +1714,28 @@
                                     "/ROOT/dict3/f4/0/f1",
                                     "/ROOT/dict1/f4/1/f2"
                                 ]
-                                var idx=0;
-                                var m=this;
-                                m.showPath(paths[1]);
+                                var idx = 0;
+                                var m = this;
+                                /*m.showPath(paths[1]);
                                 setTimeout(function(){
                                     m.showPath(paths[2]);
-
-                                },3000)
+                                },3000)*/
                                 /*
                                 setInterval(function(){
                                    m.showPath(paths[idx]);
                                    idx=(idx+1)%paths.length;
                                 },3000);*/
                             },
-                            show: function () {
-                            },
-
+                            show: function () {},
                         }
                     }
-
                 }
-
             })
         }
     )
     runTest("Inputs Simples","Tercera prueba de JqxWidgets<br>"+
-        "Se prueban 2 cadenas dependientes, con source remoto<br>"+
-        "",
-        '<div data-sivWidget="Test.Input3" data-widgetParams="" data-widgetCode="Test.Input3">'+
+        "Se prueban 2 cadenas dependientes, con source remoto<br>",
+        '<div data-sivWidget="Test.Input3" data-widgetCode="Test.Input3">'+
         '<div class="type">'+
         '<div class="label">String con source DATASOURCE (MODEL LIST)</div>'+
         '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"modelSelector"}\'></div>'+
@@ -1751,34 +1754,31 @@
                         inherits: "Siviglia.inputs.jqwidgets.Form",
                         methods: {
                             preInitialize: function (params) {
-
                                 this.factory = Siviglia.types.TypeFactory;
                                 this.self = this;
                                 this.typeCol = [];
                                 /* STRING **************************/
                                 this.typedObj = new Siviglia.model.BaseTypedObject({
                                     "FIELDS": {
-                                        modelSelector:
-                                            {
-                                                "LABEL":"ModelSelector",
-                                                "TYPE": "Model"
-                                            },
+                                        modelSelector: {
+                                            "LABEL":"ModelSelector",
+                                            "TYPE": "Model"
+                                        },
 
-                                        fieldSelector:
-                                            {
-                                                "LABEL":"FieldSelector",
-                                                "TYPE": "String",
-                                                "SOURCE": {
-                                                    "TYPE": "DataSource",
-                                                    "MODEL": "/model/reflection/Model",
-                                                    "DATASOURCE": "FieldList",
-                                                    "PARAMS": {
-                                                        "model": "[%#modelSelector%]"
-                                                    },
-                                                    "LABEL": "NAME",
-                                                    "VALUE": "FIELD"
-                                                }
+                                        fieldSelector: {
+                                            "LABEL":"FieldSelector",
+                                            "TYPE": "String",
+                                            "SOURCE": {
+                                                "TYPE": "DataSource",
+                                                "LABEL": "NAME",
+                                                "VALUE": "FIELD",
+                                                "MODEL": "/model/reflection/Model",
+                                                "DATASOURCE": "FieldList",
+                                                "PARAMS": {
+                                                    "model": "[%#modelSelector%]"
+                                                },
                                             }
+                                        }
                                     }
                                 });
 
@@ -3456,6 +3456,51 @@
 
             })
         }
+    )
+    runTest("Pruebas con BTO remoto","Tratamos de sacar la informaci'on de un BTO",
+      '<div data-sivWidget="Test.BTOtest" data-widgetCode="Test.BTOtest">'+
+      '<div data-sivLoop="*ds/data" data-contextIndex="server">'+
+      '<div style="border:1px solid black;margin:2px">'+
+      '<div data-sivValue="[%@server%]"></div>'+
+      /*'<div d ata-sivLoop="[%@server%]" data-contextIndex="serverParam">'+
+      '<div data-sivValue="[%@serverParam-index%] : [%@serverParam%]">'+*/
+      '</div>'+
+      '</div>'+
+      '</div>'+
+      '</div>'+
+      '</div>'+
+      '</div>',
+      '<div data-sivView="Test.BTOtest" style="background-color:green"></div>' ,
+      function(){
+        Siviglia.Utils.buildClass({
+          context:'Test',
+          classes:{
+            'BTOtest':{
+              inherits: "Siviglia.UI.Expando.View",
+              destruct:function() {
+                this.ds.destruct();
+                },
+              methods:{
+                preInitialize:function(params) {
+                  /*this.ds={}
+                    this.ds.data=[
+                    {key1: 'value1'},
+                    {key2: 'value2'},
+                    {key3: 'value3'},
+                  ]*/
+                  this.ds=new Siviglia.Model.DataSource("/model/web/Site","FullList",{});
+                  this.ds.freeze();
+                  this.ds.settings.__start=0;
+                  this.ds.settings.__count=5;
+                  return this.ds.unfreeze();
+                },
+                initialize:function(params){}
+              }
+            }
+          }
+
+        })
+      }
     )
 
 
