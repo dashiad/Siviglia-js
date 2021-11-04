@@ -2041,13 +2041,12 @@ Siviglia.Utils.buildClass(
                             if (valType.substr(0,16) =="function Array()")
                                 val.map(function (value, index) {
                                     var ret=cb(index, value,val);
-                                    val[index]=ret;
+
                                 });
                             else {
                                 if (valType.indexOf("bject") > 0) {
                                     for (var k in val) {
                                         var ret=cb(k, val[k],val);
-                                        val[k]=ret;
                                     }
                                 } else {
                                     //alert("Indicado LoopExpando sobre path que no es un array");

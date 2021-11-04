@@ -124,7 +124,7 @@
     if (!urlParams.has("test")) {
         //DEVELOP_MODE=47;    // Specific test number
 	     //var DEVELOP_MODE=0;  // All tests
-        var DEVELOP_MODE=0; // Latest test
+        var DEVELOP_MODE=25; // Latest test
     } else {
 	    DEVELOP_MODE = urlParams.get("test");
     }

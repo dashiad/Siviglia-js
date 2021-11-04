@@ -763,6 +763,7 @@
                             this.preprocessParams(params);
                             this.source=null;
                             this.dataBinding=false;
+                            this.preloaded=false;
                             this.BaseInput$preInitialize(params);
                         },
                         initialize: function (params) {
@@ -822,14 +823,19 @@
                                     m._setInputValue(null);
                                 }
                             });
-                            this.inputNode.on("focus",function(){
+                            $("input",this.inputNode).on("focus",function(){
                             if (this.disabled) {
                                 this.disable();
                                 return;
                             }
-                            else
-                                this.refresh();
-                            });
+                            else {
+                                if(this.preloaded==false) {
+                                    this.preloaded=true;
+                                    this.refresh();
+                                }
+                            }
+                            }.bind(this));
+
                         },
                         detach:function()
                         {
@@ -988,7 +994,9 @@
                             // autoselecciona el primer valor del nuevo set de datos asignado a S2.
                             // Por eso, se marca que estamos haciendo el databind, para controlarlo en el gestor de eventos.
                             this.dataBinding=true;
+
                             self.dataAdapter.dataBind();
+
                             this.dataBinding=false;
                             if (self.type.is_set()) {
                                 var toSet = self.type.getValue();
