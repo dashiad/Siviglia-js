@@ -125,7 +125,7 @@
         //DEVELOP_MODE=47;    // Specific test number
         //DEVELOP_MODE=0;     // All tests
         //DEVELOP_MODE=(-1);  // Latest test
-        DEVELOP_MODE=0;
+        DEVELOP_MODE=43;
     } else {
 	    DEVELOP_MODE = urlParams.get("test");
     }
@@ -2570,7 +2570,7 @@
                                             "Id-name":{"Label":"Pstring","Type":"PString","str":'<a href="#" onclick="javascript:alert([%*id_page%]);">[%*name%]</a>',gridOpts:{width:'10%'}},
                                             "Wid":{"Label":"Wid","Type":"Widget","Widget":"Test.ButtonList",gridOpts:{width:'10%'}},
                                             "name":{"Type":"Field","Field":"name","Label":"name",gridOpts:{width:'10%'}},
-                                            "namespace":{"Type":"Field","Field":"namespace","Label":"Namespace",gridOpts:{width:'10%'}},
+                                            //"namespace":{"Type":"Field","Field":"namespace","Label":"Namespace",gridOpts:{width:'10%'}},
                                             "tag":{"Type":"Field","Field":"tag","Label":"Tag",gridOpts:{width:'10%'}},
                                             "id_site":{"Type":"Field","Field":"id_site","Label":"id_site",gridOpts:{width:'10%'}},
                                             "date_add":{"Type":"Field","Field":"date_add","Label":"Add date",gridOpts:{width:"30px",height:"100px"}},
@@ -3506,9 +3506,9 @@
 
     runTest("SivLoop","SivLoop atraviesa una variable iterable. En cada iteracion, establece una variable contextual (prefijo @), que apunta al elemento actual.",
         '<div data-sivWidget="Test.SivLoop" data-widgetCode="Test.SivLoop">' +
-        '   <div data-sivLoop="/*simpleArray" data-contextIndex="current">' +
+        '   <div data-sivLoop="/*simpleArray" data-contextIndex="current"><div>' +
         '<div data-sivLoop="@current" data-contextIndex="current2">'+
-        '       <div data-sivValue="[%/@current2%]"></div></div></div></div>',
+        '       <span data-sivValue="[%/@current2%]"></span></div></div></div></div>',
         '<div data-sivView="Test.SivLoop"></div>',
         function(){
             Siviglia.Utils.buildClass({
@@ -3519,12 +3519,22 @@
                         methods: {
                             preInitialize: function (params) {
                                 this.simpleArray=[["cad1"],["cad2"],["cad3"]];
+                                top.sss=this.simpleArray;
                             },
                             initialize: function (params) {
                                 setTimeout(function(){
-                                    this.simpleArray[0][0]="hola";
-                                    this.simpleArray[2][0]="adios";
+                                    this.simpleArray[0].push("adios");
                                 }.bind(this),1000);
+                                setTimeout(function(){
+                                    this.simpleArray.push(["nuevo"]);
+                                }.bind(this),1500);
+                                setTimeout(function(){
+                                    this.simpleArray[2].push("uno mas");
+                                }.bind(this),2000);
+                                setTimeout(function(){
+                                    this.simpleArray.splice(1,2);
+                                }.bind(this),3000);
+
                             }
                         }
                     }

@@ -1018,9 +1018,9 @@ Siviglia.Utils.buildClass(
                         var cursor=this.contexts.getCursor(pathParts[0].prefix);
                         this.cursors.push(cursor);
                         var m=this;
-                        /*if(pathParts[0].prefix!=='@' && this.eventMode!==0) {*/
+                        if((pathParts[0].prefix!=='@' || pathParts[0].str.indexOf("-index")==-1) && this.eventMode!==0) {
                             cursor.addListener("CHANGE", this, "getPath", "PathResolver:" + this.path)
-                        /*}*/
+                        }
                         var lastPointer,lastLabel;
 
                         for(var k=0;k<pathParts.length && this.valid ;k++)
@@ -1568,15 +1568,15 @@ Siviglia.Path.Proxify=function(obj,ev)
             if(
                 ((typeof curVal[prop]==="undefined" || curVal[prop]===null) && (typeof value!=="undefined" && value!==null))
                 ||
-                ((typeof curVal[prop]!=="undefined" && curVal[prop]!==null) && (curVal[prop]!=value || typeof value==="undefined" || value===null))
+                ((typeof curVal[prop]!=="undefined" && curVal[prop]!==null) && (typeof value==="undefined" || value===null))
             )
                 mustFire=true;
-            var mustFire=true;
+
             curVal[prop]=value;
 
             if(mustFire && !__disableEvents__) {
                 if ((!isArray && prop[0]!='_' ) || (isArray && prop !== "length") )
-                    ev.fireEvent("CHANGE", {object: obj, value: value});
+                    ev.fireEvent("CHANGE", {object: obj, property:prop,value: value});
             }
             return true;
         },
@@ -1927,7 +1927,6 @@ Siviglia.Utils.buildClass(
                 LoopExpando: {
                     inherits: "Expando",
                     construct: function () {
-                        this.oManager = null;
                         this.resolver = null;
                         this.Expando("sivloop");
                         this.oldNodes=null;
@@ -1946,6 +1945,8 @@ Siviglia.Utils.buildClass(
                         _initialize: function (node, nodeManager, stack, nodeExpandos) {
                             this.origHTML = [];
                             this.stack = stack;
+                            this.oManagers=[];
+                            this.ownStacks=[];
                             this.origNode=node;
                             this.node = node;
                             this.parentView=nodeManager.parentView;
@@ -1964,45 +1965,42 @@ Siviglia.Utils.buildClass(
                             return false;
                         },
                         reset: function () {
-                            if (this.oManager) {
-                                this.oManager.destruct();
+                            for(var k in this.oManagers)
+                            {
+                                this.oManagers[k].destruct();
                             }
-                            if (this.ownStack) {
-                                this.ownStack.destruct()
-                            }
+                            for(var k in this.ownStacks)
+                                this.ownStacks[k].destruct()
+                            this.oManagers=[];
+                            this.ownStacks=[];
 
                         },
                         update: function (event, params) {
-
-                            var oldNodes=this.childNodes;
-                            var oldManager=this.oManager;
                             if(params.valid===false)
                                 return;
-                            this.ownStack = this.stack.getCopy();
-                            this.oManager = new Siviglia.UI.HTMLParser(this.ownStack,this.parentView);
-
+                            var oldNodes=this.childNodes;
+                            if(this.oManagers.length > 0) {
+                                this.node=$('<div></div>').insertBefore(this.node[0]);
+                                this.reset();
+                            }
                             var val = params.value;
                             if(typeof params.value.__type__!=="undefined")
                                 val=params.value.getValue();
                             if (!val)
                                 val = [];
-
                             var contextRoot;
                             var newNode=$("<div></div>");
                             var newNodes=[];
                             var cb = (function (key, value,parent) {
                                 contextRoot = {};
-                                if(!this.ownStack.hasPrefix("@")) {
-                                    var contextContext = new Siviglia.Path.BaseObjectContext(contextRoot, "@", this.ownStack);
+                                var stack=this.stack.getCopy();
+                                var manager = new Siviglia.UI.HTMLParser(stack,this.parentView);
+                                var contextContext = new Siviglia.Path.BaseObjectContext(contextRoot, "@", stack);
 
-                                }
-                                else {
-                                    contextRoot = this.ownStack.getRoot("@");
-                                }
                                 // Ponemos al elemento sobre el que iteramos, como el padre de la variable de contexto .
                                 // Asi, si iteramos sobre un array [1,2,3], con contextIndex="param",
                                 // @param apuntará a 1,a 2, y a 3 al iterar, pero el padre del contexto, asociado a "param", siempre será el array
-                                this.ownStack.getContext("@").addParentObject(this.contextParam,parent);
+                                stack.getContext("@").addParentObject(this.contextParam,parent);
                                 contextRoot[this.contextParam] = value;
                                 contextRoot[this.contextParam + "-index"] = key;
 
@@ -2022,7 +2020,7 @@ Siviglia.Utils.buildClass(
                                     var fakeParent=$("<div></div>");
                                     fakeParent.append(curNode);
                                     if (curNode.nodeType == 1)
-                                        this.oManager.parse(fakeParent);
+                                        manager.parse(fakeParent);
                                         //reference.parentNode.insertBefore(curNode, reference.nextSibling);
                                         newNodes.push({node: fakeParent.contents(), value: value});
                                         var l=fakeParent[0].childNodes.length;
@@ -2032,6 +2030,8 @@ Siviglia.Utils.buildClass(
                                         }
                                         //reference = curNode;
                                 }
+                                this.oManagers.push(manager);
+                                this.ownStacks.push(stack);
                                 return contextRoot[this.contextParam];
 
                             }).bind(this);
@@ -2063,8 +2063,6 @@ Siviglia.Utils.buildClass(
                             this.node=newChildren;
                             this.childNodes=newNodes;
 
-                            if(oldManager)
-                                oldManager.destruct();
                             for(var k in oldNodes.length)
                                 oldNodes[k].node.remove();
                         }
