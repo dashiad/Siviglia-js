@@ -389,9 +389,18 @@ Siviglia.Utils.buildClass = function (definition) {
 
         contextObj[k].prototype.__construct = contextObj[k];
         contextObj[k].prototype.constructor = contextObj[k];
+        contextObj[k].__destroyed__=false;
         contextObj[k].prototype.destruct = function (ignoreInherit) {
-            this.__destruct();
-            this.__commonDestruct(ignoreInherit);
+            if(this.__destroyed__==false)
+            {
+                this.__destruct();
+                this.__commonDestruct(ignoreInherit);
+                this.__destroyed__=true;
+            }
+            else
+            {
+                console.log("Warn: Double destruction!");
+            }
         }
 
         if (definition.classes[k].destruct)
@@ -1719,6 +1728,7 @@ Siviglia.Utils.buildClass(
                         this.observer = null;
                     },
                     destruct: function () {
+
                         if (this.str)
                             this.str.destruct();
                         if (this.node) {
@@ -2063,7 +2073,7 @@ Siviglia.Utils.buildClass(
                             this.node=newChildren;
                             this.childNodes=newNodes;
 
-                            for(var k in oldNodes.length)
+                            for(var k=0;k<oldNodes.length;k++)
                                 oldNodes[k].node.remove();
                         }
                     }
