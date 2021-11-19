@@ -125,7 +125,7 @@
         //DEVELOP_MODE=47;    // Specific test number
         //DEVELOP_MODE=0;     // All tests
         //DEVELOP_MODE=(-1);  // Latest test
-        DEVELOP_MODE=34;
+        DEVELOP_MODE=(-1);
     } else {
 	    DEVELOP_MODE = urlParams.get("test");
     }
@@ -3542,6 +3542,52 @@
 
             })
         }
+    )
+    runTest("ParametrizableString",
+      "Verificacion de las distintas funcionalidades de las ParametrizableString",
+      '<div data-sivWidget="Test.ParametrizedStrings" data-widgetCode="Test.ParametrizedStrings">' +
+      '<div data-sivValue="Sustitución simple: [%*okMessage%]"></div>' +
+      '<div data-sivValue="Comprobación de existencia de una variable: [%*stringVar:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Negacion existencia de variable: [%!*noVar:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion <: [%/*intVar < 3:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion >: [%/*intVar > 1:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion == en integer: [%*intVar == 2:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion == en string: [%*stringVar == testString:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion == en array: [%*arrayVar == [1]:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion == en object (solo funciona por referencia): [%*objVar == *objVar:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion != en integer: [%*intVar != 1:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion != en string: [%*stringVar != noString:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion del tipo String: [%*stringVar is string:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion del tipo Integer: [%*intVar is int:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion del tipo Array: [%*arrayVar is array:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion del tipo Object: [%*intVar is plainObject:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Verificacion del tipo Function: [%*funcVar is function:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Concatenación de verificaciones: [%*stringVar is string,*intVar is int:{%*okMessage%}%]"></div>' +
+      '</div>',
+      '<div data-sivView="Test.ParametrizedStrings"></div>',
+      function(){
+        Siviglia.Utils.buildClass({
+          context:'Test',
+          classes:{
+            'ParametrizedStrings':{
+              inherits: "Siviglia.UI.Expando.View",
+              methods: {
+                preInitialize: function (params) {
+                  this.okMessage="OK!"
+                  this.stringVar='testString'
+                  this.intVar=2
+                  this.arrayVar=[1]
+                  this.objVar={a:'a'}
+                  this.funcVar=function(){}
+                  this.testArray=[]
+                },
+                initialize: function (params) {
+                }
+              }
+            }
+          }
+        })
+      }
     )
 
 
