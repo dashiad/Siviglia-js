@@ -192,7 +192,7 @@ Siviglia.isPlainObject = function (obj) {
     // Must be an Object.
     // Because of IE, we also have to check the presence of the constructor property.
     // Make sure that DOM nodes and window objects don't pass through, as well
-    if (!obj || type(obj) !== "object" || obj.nodeType || isWindow(obj)) {
+    if (!obj || this.type(obj) !== "object" || obj.nodeType || this.isWindow(obj)) {
         return false;
     }
 
@@ -216,6 +216,9 @@ Siviglia.isPlainObject = function (obj) {
 Siviglia.isArray = function (obj) {
     return Siviglia.type(obj) === "array";
 }
+Siviglia.isWindow = function ( obj ) {
+    return obj != null && obj === obj.window;
+};
 
 Siviglia.Utils = Siviglia.Utils || {};
 
@@ -1263,6 +1266,56 @@ Siviglia.Utils.buildClass({
 
                                 return val;
                             },
+                            getRawValue:function(path) {
+                                if(typeof this.paths[path]!=="undefined") {
+                                    if(!this.paths[path].isValid())
+                                        this.valid=false;
+                                    else {
+                                        var v=this.paths[path].getValue();
+
+                                        if (v === null) {
+                                            this.parsing = false;
+                                            throw new Siviglia.Path.ParametrizableStringException("Null value::" + path);
+                                        }
+                                        else {
+                                            if(typeof v=="object") {
+                                                if(typeof v.__type__ !== "undefined")
+                                                    return v.getValue()
+                                                return v
+                                            }
+                                            else
+                                                return v;
+                                        }
+                                    }
+                                }
+
+                                var controller=new Siviglia.Path.PathResolver(this.contextStack,path,this.listenerMode);
+                                this.paths[path]=controller;
+                                // Si no queremos que sea dinamico, ya que lo que queremos es el valor actual del path, y punto,
+                                // no aniadimos ningun listener al path
+                                if(this.listenerMode!=0) {
+                                    //if (!((path[0] == "/" && path[1] == "@") || (path[0] == "@")))
+                                    controller.addListener("CHANGE", this, "onListener", "ParametrizableString: value:" + path);
+                                }
+                                var val=controller.getPath();
+                                if(!controller.isValid()) {
+                                    this.parsing=false;
+                                    throw new Siviglia.Path.ParametrizableStringException("Unknown path:" + path);
+                                }
+                                else {
+                                    if (val === null) {
+                                        this.parsing = false;
+                                        throw new Siviglia.Path.ParametrizableStringException("Null value::" + path);
+                                    }
+                                    else
+                                    {
+                                        if(typeof val=="object")
+                                            return val
+                                    }
+                                }
+
+                                return val;
+                            },
                             removeAllPaths:function()
                             {
                                 for(var k in this.paths)
@@ -1366,7 +1419,7 @@ Siviglia.Utils.buildClass({
                                     var result=false;
                                     switch(sparts[1]) {
                                         case "is":{
-                                            result=Siviglia["is"+sparts[2].ucfirst()](curValue);
+                                            result=Siviglia["is"+sparts[2].ucfirst()](this.getRawValue(tag));
                                         }break;
                                         case "!=":{
                                             result=(curValue!=this.getValue(sparts[2]));
