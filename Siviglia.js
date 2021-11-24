@@ -677,7 +677,7 @@ Siviglia.Utils.buildClass(
                         if(prefix==="")
                             prefix="/";
                         if(!this.hasPrefix(prefix))
-                            throw "INVALID CONTEXT REQUESTED:"+prefix;
+                            throw "INVALID CONTEXT REQUESTED: "+prefix;
                         var ctx=this.contextRoots[prefix];
                         ctx.destruct();
                         this.contextRoots[prefix]=null;
@@ -686,7 +686,7 @@ Siviglia.Utils.buildClass(
                     getContext: function (prefix) {
                         if (typeof this.contextRoots[prefix] != "undefined")
                             return this.contextRoots[prefix];
-                        throw "INVALID CONTEXT REQUESTED:"+prefix;
+                        throw "INVALID CONTEXT REQUESTED: "+prefix;
                     },
                     getRoot:function(str)
                     {
@@ -923,7 +923,7 @@ Siviglia.Utils.buildClass(
                             {
                                 if(!this.contexts.hasPrefix(char))
                                 {
-                                    throw "INVALID PATH:"+this.path;
+                                    throw "INVALID PATH: "+this.path;
                                 }
                                 curExpr={"type":"pathElement",str:"",prefix:char}
                                 startingPath=false;
@@ -1129,6 +1129,7 @@ Siviglia.Utils.buildClass({
                         this.valid=true;
                         this.pathController=null;
                         this.listenerMode=2;
+                        this.opts=opts||{};
                         if(typeof opts!=="undefined")
                         {
                             this.listenerMode=Siviglia.issetOr(opts.listenerMode,2);
@@ -1167,17 +1168,18 @@ Siviglia.Utils.buildClass({
                             {
                                 // Match simple
 
-                                if(typeof match[1]!=="undefined")
-                                {
+                                if (typeof match[1]!=="undefined") {
+                                    if (this.isNestedContext(match[1])) return match[0];
+
                                     try {
                                         return this.getValue(match[1]);
-                                    }catch (e)
-                                    {
+                                    } catch (e) {
                                         this.parsing=false;
                                         console.error("PATH NOT FOUND::"+match[1])
                                         throw new Siviglia.Path.ParametrizableStringException("Parameter not found:"+match[1]);
                                     }
                                 }
+
                                 var t=Siviglia.issetOr(match[2],null);
                                 var t1=Siviglia.issetOr(match[3],null)
                                 var mustInclude=false,exists=false,body='';
@@ -1185,13 +1187,12 @@ Siviglia.Utils.buildClass({
                                 {
                                     var paramName=t;
                                     var negated=(t.substr(0,1)=="!");
-                                    if(negated)
+                                    if (negated)
                                         paramName=t.substr(1);
-                                    try
-                                    {
+                                    try {
                                         this.getValue(paramName);
                                         exists=true;
-                                    }catch (e) {}
+                                    } catch (e) {}
 
                                     mustInclude=(t.substr(0,1)=="!"?!exists:exists);
                                 }
@@ -1250,7 +1251,7 @@ Siviglia.Utils.buildClass({
                                 var val=controller.getPath();
                                 if(!controller.isValid()) {
                                     this.parsing=false;
-                                    throw new Siviglia.Path.ParametrizableStringException("Unknown path:" + path);
+                                    throw new Siviglia.Path.ParametrizableStringException("Unknown path: " + path);
                                 }
                                 else {
                                     if (val === null) {
@@ -1300,7 +1301,7 @@ Siviglia.Utils.buildClass({
                                 var val=controller.getPath();
                                 if(!controller.isValid()) {
                                     this.parsing=false;
-                                    throw new Siviglia.Path.ParametrizableStringException("Unknown path:" + path);
+                                    throw new Siviglia.Path.ParametrizableStringException("Unknown path: " + path);
                                 }
                                 else {
                                     if (val === null) {
@@ -1331,6 +1332,7 @@ Siviglia.Utils.buildClass({
                             parseBody:function(match)
                             {
                                 //this.BODYREGEXP=/{\%(?:(?<simple>[^%:]*)|(?:(?<complex>[^:]*):(?<predicates>.*?(?=\%}))))\%}/;
+                                if (this.isNestedContext(match[1])) return match[0];
                                 var v=Siviglia.issetOr(match[1],null);
                                 if(v)
                                 {
@@ -1339,7 +1341,7 @@ Siviglia.Utils.buildClass({
                                     }catch(e)
                                     {
                                         this.parsing=false;
-                                        throw new Siviglia.Path.ParametrizableStringException("Parameter not found:"+v);
+                                        throw new Siviglia.Path.ParametrizableStringException("Parameter not found: "+v);
                                     }
                                 }
                                 var complex=Siviglia.issetOr(match[2],null);
@@ -1363,9 +1365,13 @@ Siviglia.Utils.buildClass({
                                         if(cVal==null)
                                         {
                                             this.parsing=false;
-                                            throw new Siviglia.Path.ParametrizableStringException("Parameter not found:"+v);
+                                            throw new Siviglia.Path.ParametrizableStringException("Parameter not found: "+v);
                                         }
-                                        cVal=this.controller[func](cVal);
+
+                                        if(this.controller && typeof this.controller[func]!=="undefined")
+                                            cVal=this.controller[func](cVal);
+                                        else
+                                            cVal=cVal[func]();
                                         continue;
 
                                     }
@@ -1378,7 +1384,11 @@ Siviglia.Utils.buildClass({
                                         cur=Siviglia.isset(cRes[0])?cRes[0].cTrim("'"):cRes[1];
                                         pars.push(cur=="@@"?cVal:this.getValue(cur));
                                     }
-                                    cVal=this.controller[func].apply(this.controller,pars);
+
+                                    if(this.controller)
+                                        cVal=this.controller[func].apply(this.controller,pars);
+                                    else
+                                        cVal=cVal[func].apply(cVal,pars);
                                 }
                                 return cVal;
                             },
@@ -1414,7 +1424,7 @@ Siviglia.Utils.buildClass({
                                         curValue=this.getValue(tag);
                                     }catch (e){
                                         this.parsing=false;
-                                        throw new Siviglia.Path.ParametrizableStringException("Parameter not found:"+tag);
+                                        throw new Siviglia.Path.ParametrizableStringException("Parameter not found: "+tag);
                                     }
                                     var result=false;
                                     switch(sparts[1]) {
@@ -1440,6 +1450,18 @@ Siviglia.Utils.buildClass({
                                         return false;
                                 }
                                 return true;
+                            },
+                            isNestedContext: function (contextID) {
+                                if (contextID.match('[^a-zA-Z0-9]')) {
+                                    try {
+                                        this.contextStack.getContext(contextID)
+                                    } catch (error) {
+                                        if (this.opts.hasNestedContext) return true;
+                                        throw error + ' on ' + this.str;
+                                    }
+                                    return false
+                                }
+                                return false
                             }
                         }
                 }
@@ -3021,9 +3043,11 @@ String.prototype.cTrim=function( characters) {
     // Remove the characters from the string
     return this.replace(target, '');
 };
-String.prototype.ucfirst=function()
-{
+String.prototype.ucfirst=function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
+}
+String.prototype.str_repeat = function(times){
+    return this.repeat(times)
 }
 
 if (!String.prototype.trim) {
