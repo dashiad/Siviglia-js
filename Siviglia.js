@@ -1169,7 +1169,7 @@ Siviglia.Utils.buildClass({
                                 // Match simple
 
                                 if (typeof match[1]!=="undefined") {
-                                    if (this.isNestedContext(match[1])) return match[0];
+                                    if (this.isNestedContext(match[1][0]=='/'?match[1][1]:match[1][0])) return match[0];
 
                                     try {
                                         return this.getValue(match[1]);
@@ -1332,7 +1332,7 @@ Siviglia.Utils.buildClass({
                             parseBody:function(match)
                             {
                                 //this.BODYREGEXP=/{\%(?:(?<simple>[^%:]*)|(?:(?<complex>[^:]*):(?<predicates>.*?(?=\%}))))\%}/;
-                                if (this.isNestedContext(match[1])) return match[0];
+                                if (this.isNestedContext(match[1][0]=='/'?match[1][1]:match[1][0])) return match[0];
                                 var v=Siviglia.issetOr(match[1],null);
                                 if(v)
                                 {
@@ -1456,7 +1456,7 @@ Siviglia.Utils.buildClass({
                                     try {
                                         this.contextStack.getContext(contextID)
                                     } catch (error) {
-                                        if (this.opts.hasNestedContext) return true;
+                                        if (this.opts.isNestedContext) return true;
                                         throw error + ' on ' + this.str;
                                     }
                                     return false
