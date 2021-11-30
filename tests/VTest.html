@@ -639,6 +639,7 @@
     },
         function(def)
         {
+
             var cnt = Siviglia.types.TypeFactory.getType("",def,null,null);
             var thrown=false;
             try {
@@ -666,10 +667,12 @@
 
             }
             cnt.destruct();
-            return res && thrown;
+            var t=countListeners();
+            return res && thrown && t==0;
         }
     )
     runTest("Varios test de String", "Se prueba la validacion de Strings, y como añadir un listener de CHANGE a un campo.Este listener se dispara tambien cuando hay un error. Un contador cuenta el numero de CHANGES, y el numero de errores.",def,function (def) {
+
         var t1 = new Siviglia.model.BaseTypedObject(def);
         var flag = 0;
         var nExcp = 0;

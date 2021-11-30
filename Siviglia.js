@@ -392,10 +392,11 @@ Siviglia.Utils.buildClass = function (definition) {
 
         contextObj[k].prototype.__construct = contextObj[k];
         contextObj[k].prototype.constructor = contextObj[k];
-        contextObj[k].__destroyed__=false;
+
         contextObj[k].prototype.destruct = function (ignoreInherit) {
-            if(this.__destroyed__==false)
+            if(typeof this.__destroyed__=="undefined")
             {
+
                 this.__destruct();
                 this.__commonDestruct(ignoreInherit);
                 this.__destroyed__=true;
@@ -643,6 +644,8 @@ Siviglia.Utils.buildClass({
                     this._ev_notifying = false;
                     this._ev_firing = null;
                     if (this._ev_mustDestruct) {
+                        if(typeof this.__destroyed__!=="undefined")
+                            delete this.__destroyed__;
                         this.destruct();
                     }
                     if(thrownException)
@@ -1130,6 +1133,7 @@ Siviglia.Utils.buildClass({
                         this.pathController=null;
                         this.listenerMode=2;
                         this.opts=opts||{};
+
                         if(typeof opts!=="undefined")
                         {
                             this.listenerMode=Siviglia.issetOr(opts.listenerMode,2);
