@@ -3570,6 +3570,10 @@
       '<div data-sivValue="Verificacion del tipo Object: [%*intVar is plainObject:{%*okMessage%}%]"></div>' +
       '<div data-sivValue="Verificacion del tipo Function: [%*funcVar is function:{%*okMessage%}%]"></div>' +
       '<div data-sivValue="Concatenación de verificaciones: [%*stringVar is string,*intVar is int:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Transformacion-capitalize: [%*stringVar:{%*okMessage:ucfirst%}%]"></div>' +
+      '<div data-sivValue="Transformacion-default: [%*stringVar:{%*noVar:default \'OK!\'%}%]"></div>' +
+      '<div data-sivValue="Transformacion-repeat: [%*stringVar:{%*okMessage:str_repeat 2%}%]"></div>' +
+      '<div data-sivValue="Concatenacion de transformaciones: [%*stringVar:{%*noVar:default \'ok\'|ucfirst|str_repeat 2%}%]"></div>' +
       '</div>',
       '<div data-sivView="Test.ParametrizedStrings"></div>',
       function(){

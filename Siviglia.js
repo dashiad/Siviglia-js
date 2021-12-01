@@ -1332,10 +1332,10 @@ Siviglia.Utils.buildClass({
                             parseBody:function(match)
                             {
                                 //this.BODYREGEXP=/{\%(?:(?<simple>[^%:]*)|(?:(?<complex>[^:]*):(?<predicates>.*?(?=\%}))))\%}/;
-                                if (this.isNestedContext(match[1][0]=='/'?match[1][1]:match[1][0])) return match[0];
                                 var v=Siviglia.issetOr(match[1],null);
                                 if(v)
                                 {
+                                if (this.isNestedContext(v[0]=='/'?v[1]:v[0])) return match[0];
                                     try {
                                         return this.getValue(v);
                                     }catch(e)
