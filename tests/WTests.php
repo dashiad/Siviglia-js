@@ -2277,14 +2277,14 @@
 
     runTest("Formulario de edicion de modelo remoto (I)","En este ejemplo, la plantilla y clase del formulario se declara localmente, pero se inicializa el formulario indicando qué formulario, y qué campos indice hay que cargar del servidor.<br>",
 
-       '<div data-sivWidget="Test.Edit1" data-widgetCode="Test.Edit1">\n' +
+        '<div data-sivWidget="Test.Edit1" data-widgetCode="Test.Edit1">\n' +
             '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"name","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"tag","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"id_site","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"isPrivate","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
-        '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"path","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
-        '        <div><input type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar"></div>\n' +
-        '    \n' +
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"tag","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"id_site","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"isPrivate","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"key":"path","parent":"/*type","form":"/*form","controller":"/*self"}\'></div>\n'+
+            '<div><input type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar"></div>\n' +
+            '\n' +
         '</div>\n',
         '<div data-sivView="Test.Edit1" data-sivParams=\'{"id_page":2}\'></div>',
         function(){
@@ -2498,50 +2498,50 @@
         '<div data-sivWidget="Test.ListViewerForm" data-widgetCode="Test.ListViewerForm">\n' +
         '        <div class="input">\n' +
         '            <div class="label">Id</div>\n' +
-        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"id_page"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"id_page"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">id_site</div>\n' +
-        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"id_site"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"id_site"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">namespace</div>\n' +
-        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"namespace"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"namespace"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">Tag</div>\n' +
-        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"tag"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"tag"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">name</div>\n' +
-        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"name"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"name"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">date_add</div>\n' +
-        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"date_add"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"date_add"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">date_modified</div>\n' +
-        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"date_modified"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"date_modified"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">id_type</div>\n' +
-        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"id_type"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"id_type"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">isPrivate</div>\n' +
-        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"isPrivate"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"isPrivate"}\'></div>\n' +
         '        </div>\n' +
         '        <div class="input">\n' +
         '            <div class="label">Path</div>\n' +
-        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"path"}\'></div>\n' +
+        '            <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"path"}\'></div>\n' +
         '        </div>\n' +
         '    </div>\n' +
         '\n' +
         '    <div data-sivWidget="Test.ListViewer" data-widgetCode="Test.ListViewer">\n' +
         '    </div>\n' +
         '\n' +
-        '    <div data-sivWidget="Test.ButtonList" data-widgetCode="Test.ButtonList">\n' +
+        '    <div data-sivWidget="Test.ListButton" data-widgetCode="Test.ListButton">\n' +
         '        <div>\n' +
         '            <input style="width:120px;margin:0px" type="button" value="Show Id" data-sivEvent="click" data-sivCallback="onClicked">\n' +
         '        </div>\n' +
@@ -2568,7 +2568,7 @@
                                         "columns":{
                                             "id":{"Type":"Field","Field":"id_page","Label":"id",gridOpts:{width:"80px"}},
                                             "Id-name":{"Label":"Pstring","Type":"PString","str":'<a href="#" onclick="javascript:alert([%*id_page%]);">[%*name%]</a>',gridOpts:{width:'10%'}},
-                                            "Wid":{"Label":"Wid","Type":"Widget","Widget":"Test.ButtonList",gridOpts:{width:'10%'}},
+                                            "Wid":{"Label":"Wid","Type":"Widget","Widget":"Test.ListButton",gridOpts:{width:'10%'}},
                                             "name":{"Type":"Field","Field":"name","Label":"name",gridOpts:{width:'10%'}},
                                             //"namespace":{"Type":"Field","Field":"namespace","Label":"Namespace",gridOpts:{width:'10%'}},
                                             "tag":{"Type":"Field","Field":"tag","Label":"Tag",gridOpts:{width:'10%'}},
@@ -2590,7 +2590,7 @@
 
                         }
                     },
-                    ButtonList:{
+                  ListButton:{
                         "inherits":"Siviglia.UI.Expando.View",
                         "methods":{
                             preInitialize:function(params)
@@ -2912,37 +2912,31 @@
         }
     )
 
-    runTest("Test con CursorTree","Prueba de diseño para ver como pintar un nodo de un CursorTree. <br>",
-        '<div class="contenedor">'+
-
-            '<div data-sivWidget="Test.CursorTree_GridForm" data-widgetCode="Test.CursorTree_GridForm">'+
-                '<div class="widListForm Siviglia_sys_Cursor_lists_Test_CursorTree_GridForm">'+
-                    '<div class="widListFormFieldSet">'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"id"}"></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"parent"}"></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"type"}"></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"status"}"></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"start"}"></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"end"}"></div>'+
-                        '</div>'+
-                        '<div class="widField">'+
-                            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams="{"controller":"/*self","parent":"/*type","form":"/*form","key":"rowsProcessed"}"></div>'+
-                        '</div>'+
-                    '</div>'+
+    runTest("Pintado de cursores","Prueba de diseño para ver como pintar cursores mediante diagramas de fuerza. <br>",
+        '<div class="container">'+
+            '<div data-sivWidget="Test.DataGridForm" data-widgetCode="Test.DataGridForm">'+
+                '<div class="widField">'+
+                    '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"id"}\'></div>'+
+                '</div>'+
+                '<div class="widField">'+
+                    '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"parent"}\'></div>'+
+                '</div>'+
+                '<div class="widField">'+
+                    '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"type"}\'></div>'+
+                '</div>'+
+                '<div class="widField">'+
+                    '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"status"}\'></div>'+
+                '</div>'+
+                '<div class="widField">'+
+                    '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"start"}\'></div>'+
+                '</div>'+
+                '<div class="widField">'+
+                    '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"end"}\'></div>'+
+                '</div>'+
+                '<div class="widField">'+
+                    '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"rowsProcessed"}\'></div>'+
                 '</div>'+
             '</div>'+
-
 
             '<div data-sivWidget="Test.CursorNodeView" data-widgetParams="" data-widgetCode="Test.CursorNodeView">'+
                 '<div data-sivId="cursor-container" id="cursorContainer" data-sivValue="class|cursorState_[%*status_cursor%]">'+
@@ -2966,105 +2960,101 @@
             '</div>'+
         '</div>'+
 
-        '<div data-sivWidget="Test.CursorGraph" data-widgetCode="Test.CursorGraph"> <svg data-sivId="svgNode" style="width: 100%; height: 100%"></svg> </div>'+
-        '<div data-sivWidget="Test.CursorTree" data-widgetCode="Test.CursorTree"> <div data-sivId="graphNode" style="width: 100%; height:100%"></div> </div>'+
+        // '<div data-sivWidget="Test.CursorGraph" data-widgetCode="Test.CursorGraph"> <svg data-sivId="svgNode" style="width: 100%; height: 100%"></svg> </div>'+
+        '<div data-sivWidget="Test.CursorGraph" data-widgetCode="Test.CursorGraph"> <svg data-sivId="svgNode"></svg> </div>'+
+        '<div data-sivWidget="Test.ViewController" data-widgetCode="Test.ViewController">' +
+            '<div data-sivView="Test.DataGrid" data-sivParams="{}"></div>' +
+            '<div data-sivId="graphNode" style="width: 100%; height:100%"></div>' +
+        '</div>'+
 
 
-        '<div data-sivWidget="Test.CursorTree_Grid" data-widgetCode="Test.CursorTree_Grid">'+
+        '<div data-sivWidget="Test.DataGrid" data-widgetCode="Test.DataGrid">'+
             '<div data-sivId="filterNode"></div>'+
             '<div data-sivId="grid"></div>'+
         '</div>',
 
 
-        '<div data-sivView="Test.CursorTree" data-sivParams="{}"></div>'+
-        '<div data-sivView="Test.CursorTree_Grid" data-sivParams="{}"></div>',
+        '<div data-sivView="Test.ViewController" data-sivParams="{}"></div>',
         function(){
             Siviglia.Utils.buildClass({
                 context:'Test',
                 classes:{
                     "CursorNodeView":{
                         inherits:"Siviglia.UI.Expando.View",
-                        destruct:function()
-                        {
+                        destruct:function() {
                             this.item["*status"].removeListeners(this);
                         },
-                        methods:
-                            {
-                                preInitialize:function(params) {
+                        methods: {
+                            preInitialize:function(params) {
+                                // Obtención de variables para mostrar el contenido del cursor en params.item
+                                if (params.item.cursorDefinition && params.item.cursorDefinition.fileName != undefined)
+                                    this.fileName = params.item.cursorDefinition.fileName.split('\\').pop().split('/').pop();
+                                else
+                                    this.fileName = "---";
+                                this.item = params.item;
+                                this.id_cursor = params.item.id;
 
-                                    // Obtención de variables para mostrar el contenido del cursor en params.item
-                                    if (params.item.cursorDefinition.fileName != undefined)
-                                        this.fileName = params.item.cursorDefinition.fileName.split('\\').pop().split('/').pop();
-                                    else
-                                        this.fileName = "---";
-                                    this.item = params.item;
-                                    this.id_cursor = params.item.id;
+                                // Se especifica el tipo solo si el nombre es vacío.
+                                this.cursorNameShort = (params.item.name == null) ? params.item.type.split("\\").pop() : params.item.name;
+                                this.status_cursor = params.item.status;
+                                this.rowsProcessed = params.item.rowsProcessed;
+                                this.fecha_start = params.item.start;
+                                this.error_message = params.item.error == null ? '' : params.item.error;
+                                this.status_text="";
+                                Siviglia.Path.eventize(params.item, "status");
+                                params.item["*status"].addListener("CHANGE", this, "onChangeStatus");
 
-                                    // Se especifica el tipo solo si el nombre es vacío.
-                                    this.cursorNameShort = (params.item.name == null) ? params.item.type.split("\\").pop() : params.item.name;
+                                // Siviglia.Path.eventize(params.item, "error");
+                                // params.item["*error"].addListener("CHANGE", this, "onErrorCursor");
 
-                                    this.status_cursor = params.item.status;
-                                    this.rowsProcessed = params.item.rowsProcessed;
-                                    this.fecha_start = params.item.start;
-                                    this.error_message = params.item.error === null ? '' : params.item.error;
-                                    this.status_text="";
-                                    Siviglia.Path.eventize(params.item, "status");
-                                    params.item["*status"].addListener("CHANGE", this, "onChangeStatus");
+                                this.errored = (this.error_message !== '');
 
-                                    // Siviglia.Path.eventize(params.item, "error");
-                                    // params.item["*error"].addListener("CHANGE", this, "onErrorCursor");
-
-                                    this.errored = (this.error_message !== '');
-
-                                    // Dependiendo de la ruta del path del cursor, montar un path asociado a ese cursor
-                                    // para asi definir los iconos asociados a los paquetes-modelos-lib o default
-                                    this.path_cursor = params.item.type.split('\\');
-                                    this.path_first = this.path_cursor.shift();
-                                    switch (this.path_first) {
-                                        case "lib":
-                                            this.paquete_modelo = "default";
-                                            break;
-                                        case "model":
-                                            this.paquete_modelo = this.path_cursor[1] + "_" + this.path_cursor[2]; // paquete_modelo. Ej: ads_dfp
-                                            break;
-                                        default:
-                                            this.paquete_modelo = "default";
-                                            break;
-                                    }
-
-                                    // Cargamos los valores enum de la definition model\sys\objects\Cursor\Definition.php
-                                    var cursorModelDefinition = Siviglia.Model.loader.getModelDefinition("/model/sys/Cursor");
-                                    this.statusFieldLabel = cursorModelDefinition.FIELDS.status.VALUES;
-
-                                },
-                                onChangeStatus:function()
-                                {
-                                    // Si el listener ha recibido un evento de cambio, entonces se modifica el texto del estado,
-                                    // según el valor del item.status y actualizamos el nombre 'status_text'
-                                    this.status_text = this.statusFieldLabel[this.item.status];
-
-                                    // actualizamos el estado del cursor para mostrar el icono asociado al estado
-                                    this.status_cursor = this.item.status;
-
-                                    // actualizamos las rows procesadas
-                                    this.rowsProcessed = this.item.rowsProcessed;
-                                },
-                                onErrorCursor:function()
-                                {
-                                    // mensaje de error capturado
-                                    this.error_message = this.item.error;
-                                },
-                                initialize:function(params){
-                                    this.onChangeStatus();
+                                // Dependiendo de la ruta del path del cursor, montar un path asociado a ese cursor
+                                // para asi definir los iconos asociados a los paquetes-modelos-lib o default
+                                this.path_cursor = params.item.type.split('\\');
+                                this.path_first = this.path_cursor.shift();
+                                switch (this.path_first) {
+                                    case "lib":
+                                        this.paquete_modelo = "default";
+                                        break;
+                                    case "model":
+                                        this.paquete_modelo = this.path_cursor[1] + "_" + this.path_cursor[2]; // paquete_modelo. Ej: ads_dfp
+                                        break;
+                                    default:
+                                        this.paquete_modelo = "default";
+                                        break;
                                 }
+
+                                // Cargamos los valores enum de la definition model\sys\objects\Cursor\Definition.php
+                                var cursorModelDefinition = Siviglia.Model.loader.getModelDefinition("/model/sys/Cursor");
+                                this.statusFieldLabel = cursorModelDefinition.FIELDS.status.VALUES;
+
+                            },
+                            onChangeStatus:function()
+                            {
+                                // Si el listener ha recibido un evento de cambio, entonces se modifica el texto del estado,
+                                // según el valor del item.status y actualizamos el nombre 'status_text'
+                                this.status_text = this.statusFieldLabel[this.item.status];
+
+                                // actualizamos el estado del cursor para mostrar el icono asociado al estado
+                                this.status_cursor = this.item.status;
+
+                                // actualizamos las rows procesadas
+                                this.rowsProcessed = this.item.rowsProcessed;
+                            },
+                            onErrorCursor:function()
+                            {
+                                // mensaje de error capturado
+                                this.error_message = this.item.error;
+                            },
+                            initialize:function(params){
+                                this.onChangeStatus();
                             }
+                        }
                     },
                     "CursorGraph":{
                         inherits:"Siviglia.visual.Force",
-                        destruct:function()
-                        {
-
-                        },
+                        destruct:function() {},
                         methods:{
                             initialize:function(params)
                             {
@@ -3131,8 +3121,8 @@
                             }
                         }
                     },
-                    "CursorTree":{
-                        inherits:"Siviglia.UI.Expando.View",
+                    "ViewController":{
+                        inherits:"Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
                         destruct:function()
                         {
                             /*if(this.modelView)
@@ -3169,7 +3159,8 @@
                                 this.cursorGraph=null;
                                 var cursorGraph=new Test.CursorGraph(
                                     "Test.CursorGraph",
-                                    {parent:this,
+                                    {
+                                        parent:this,
                                         svgWidth:600,
                                         svgHeight:400,
                                         nodeWidget:'Test.CursorNodeView',
@@ -3177,18 +3168,23 @@
                                         nodeHeight:300,
                                         allowMultipleSelection:false,
                                         rowIdField:'id',
-                                        distanceLinks: 3
+                                        distanceLinks: 1 //parece no tener efecto visual
                                     },
                                     {},
                                     $("<div></div"),
-                                    stack
+                                    stack,
                                 );
                                 cursorGraph.__build().then(function(instance){
                                     this.cursorGraph=instance;
                                     this.graphNode.append(instance.rootNode);
                                 }.bind(this))
-                                // Simulacion de datos recibidos por el bus
-                                var events=[{"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1a3449","parent":null,"container":null,"end":null},
+
+
+                              this.addListener("ON_CURSOR_SELECTED",this,"onCursorChanged");
+
+                                // Simulacion de recepcion de datos en un periodo de tiempo
+                                /*var events=[
+                                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1a3449","parent":null,"container":null,"end":null},
                                     {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":null,"container":null,"end":null},
                                     {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":null,"container":null,"end":null},
                                     {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":null,"container":null,"end":null},
@@ -3207,7 +3203,8 @@
                                     {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":2,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":null},
                                     {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":3,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":null},
                                     {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":"2021-05-09 23:14:41"},
-                                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":"2021-05-09 23:14:41"}];
+                                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":"2021-05-09 23:14:41"}
+                                ];
                                 var curEvent=0;
                                 var cInt;
                                 cInt=setInterval(function(){
@@ -3217,11 +3214,9 @@
                                     }
                                     this.onCursor(events[curEvent]);
                                     curEvent=curEvent+1;
-                                }.bind(this),1000);
-                                // delay aumentado para ver el cambio de los cursores
+                                }.bind(this),1000);*/
 
                                 // Se pone un listener sobre cualquier cambio en reflection
-
                                 /*this.wampService=Siviglia.Service.get("wampServer");
                                 if(this.wampService)
                                 {
@@ -3241,9 +3236,13 @@
                                     }.bind(this))
                                 }*/
                             },
+                            onCursorChanged:function(eventName, cursorData) {
+                              console.log('Click event listened by controller')
+                                this.onCursor(cursorData)
+                          },
                             onCursor:function(cursorInfo)
                             {
-                                console.dir(JSON.stringify(cursorInfo));
+                                // console.dir(JSON.stringify(cursorInfo));
                                 if(this.cursorGraph)
                                     this.cursorGraph.onData(cursorInfo)
                             },
@@ -3287,18 +3286,16 @@
                                 this.selectedClass=typeof d.class==="undefined"?"":d.class;
                                 this.selectedFile=typeof d.file==="undefined"?"":d.file;
 
-                            }
+                            },
                         }
                     },
                     // datasource para el Grid de los cursores: model\sys\objects\Cursor\js\Siviglia\lists\FullList.js
-                    "CursorTree_Grid":{
+                    "DataGrid":{
                         "inherits":"Siviglia.lists.jqwidgets.BaseGrid",
-                        "methods":
-                        {
-                            preInitialize:function(params)
-                            {
+                        "methods": {
+                            preInitialize:function(params) {
                                 this.BaseGrid$preInitialize({
-                                "filters":"Siviglia.model.sys.Cursor.lists.CursorTree_GridForm",
+                                "filters":"Test.DataGridForm",
                                 "ds":{
                                     "model":"/model/sys/Cursor",
                                     "name":"FullList",
@@ -3307,27 +3304,37 @@
                                     }
                                 },
                                 "columns": {
-                                    "id":               {"Type": "Field", "Field":"id", "Label":"Id Cursor", "gridOpts":{"width":"10%"}},
-                                    "parent":           {"Type": "Field", "Field":"parent", "Label":"Parent", "gridOpts":{"width":"10%"}},
-                                    "Type":             {"Type": "Field", "Field":"type", "Label":"Type Cursor", "gridOpts":{"width":"20%"}},
-                                    "status":           {"Type": "Field", "Field":"status", "Label":"Status Cursor", "gridOpts":{"width":"10%"}},
-                                    "start":            {"Type": "Field", "Field":"start", "Label":"Start Cursor", "gridOpts":{"width":"15%"}},
-                                    "end":              {"Type": "Field", "Field":"end", "Label":"End Cursor", "gridOpts":{"width":"15%"}},
-                                    "rowsProcessed":    {"Type": "Field", "Field":"rowsProcessed", "Label":"Filas Procesadas", "gridOpts":{"width":"20%"}},
+                                    "id":            {"Type": "Field", "Field":"id", "Label":"Id Cursor", "gridOpts":{"width":"10%"}},
+                                    "parent":        {"Type": "Field", "Field":"parent", "Label":"Parent", "gridOpts":{"width":"10%"}},
+                                    "Type":          {"Type": "Field", "Field":"type", "Label":"Type Cursor", "gridOpts":{"width":"20%"}},
+                                    "status":        {"Type": "Field", "Field":"status", "Label":"Status Cursor", "gridOpts":{"width":"10%"}},
+                                    "start":         {"Type": "Field", "Field":"start", "Label":"Start Cursor", "gridOpts":{"width":"15%"}},
+                                    "end":           {"Type": "Field", "Field":"end", "Label":"End Cursor", "gridOpts":{"width":"15%"}},
+                                    "rowsProcessed": {"Type": "Field", "Field":"rowsProcessed", "Label":"Filas Procesadas", "gridOpts":{"width":"20%"}},
                                 },
                                 "gridOpts": { width:"100%" }
                                 });
                             },
+                          initialize: function (params) {
+                            this.addListener("ON_CURSOR_SELECTED",this,"onCellClicked");
+                            this.BaseGrid$initialize(params);
+                            this.grid.on("cellclick",function(eventData){
+                              console.log('Cell clicked')
+                              var cursor=eventData.args.row.bounddata;
+                              this.__parentView.fireEvent("ON_CURSOR_SELECTED", cursor);
+                              this.fireEvent("ON_CURSOR_SELECTED",cursor);
+                            }.bind(this));
+                          },
+                          onCellClicked: function(eventName, params) {
+                              console.log('Click event listened by grid')
+                          }
                         }
                     },
-                    "CursorTree_GridForm":
-                    {
+                    "DataGridForm": {
                         "inherits":"Siviglia.lists.jqwidgets.BaseFilterForm",
                         "methods": { }
-                    }
-
+                    },
                 },
-
             })
         }
     )
@@ -3563,6 +3570,10 @@
       '<div data-sivValue="Verificacion del tipo Object: [%*intVar is plainObject:{%*okMessage%}%]"></div>' +
       '<div data-sivValue="Verificacion del tipo Function: [%*funcVar is function:{%*okMessage%}%]"></div>' +
       '<div data-sivValue="Concatenación de verificaciones: [%*stringVar is string,*intVar is int:{%*okMessage%}%]"></div>' +
+      '<div data-sivValue="Transformacion-capitalize: [%*stringVar:{%*okMessage:ucfirst%}%]"></div>' +
+      '<div data-sivValue="Transformacion-default: [%*stringVar:{%*noVar:default \'OK!\'%}%]"></div>' +
+      '<div data-sivValue="Transformacion-repeat: [%*stringVar:{%*okMessage:str_repeat 2%}%]"></div>' +
+      '<div data-sivValue="Concatenacion de transformaciones: [%*stringVar:{%*noVar:default \'ok\'|ucfirst|str_repeat 2%}%]"></div>' +
       '</div>',
       '<div data-sivView="Test.ParametrizedStrings"></div>',
       function(){
@@ -3570,6 +3581,36 @@
           context:'Test',
           classes:{
             'ParametrizedStrings':{
+              inherits: "Siviglia.UI.Expando.View",
+              methods: {
+                preInitialize: function (params) {
+                  this.okMessage="OK!"
+                  this.stringVar='testString'
+                  this.intVar=2
+                  this.arrayVar=[1]
+                  this.objVar={a:'a'}
+                  this.funcVar=function(){}
+                  this.testArray=[]
+                },
+                initialize: function (params) {
+                }
+              }
+            }
+          }
+        })
+      }
+    )
+    runTest("ParametrizableString testing",
+      "testeo rapido de PS",
+      '<div data-sivWidget="Test.ParametrizedStrings2" data-widgetCode="Test.ParametrizedStrings2">' +
+      '<div data-sivValue="Capitalize: [%/*stringVar%]"></div>' +
+      '</div>',
+      '<div data-sivView="Test.ParametrizedStrings2"></div>',
+      function(){
+        Siviglia.Utils.buildClass({
+          context:'Test',
+          classes:{
+            'ParametrizedStrings2':{
               inherits: "Siviglia.UI.Expando.View",
               methods: {
                 preInitialize: function (params) {
