@@ -352,7 +352,7 @@
                                 this.jqgrid=1;
                                 return this.buildGrid();
                             }
-                            var newData =  this.ds["*data"].getPlainValue();
+                            var newData = this.ds.getRawData();
                             if(newData===null)
                                 newData=[];
                             this.jqxDataSource.localdata=newData;
@@ -395,7 +395,7 @@
                                 //totalrecords: 1000000
                             };
                             this.dataAdapter = new $.jqx.dataAdapter(this.jqxDataSource);
-                            this.jqxDataSource.localdata =  this.ds.getValue()["*data"].getPlainValue();
+                            this.jqxDataSource.localdata = this.ds.getRawData();
                             if(!this.noRowsNode)
                             {
                                 this.noRowsNode=$("<div class=\"noRowsNode\">No rows</div>");
