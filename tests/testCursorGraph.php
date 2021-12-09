@@ -366,55 +366,51 @@
   }
 
   runTest("Pintado de cursores","Prueba de diseño para ver como pintar cursores mediante diagramas de fuerza. <br>",
-    '<div class="container">'+
-        '<div data-sivWidget="Test.DataGridForm" data-widgetCode="Test.DataGridForm">'+
-            '<div class="widField">'+
-                '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"id"}\'></div>'+
-            '</div>'+
-            '<div class="widField">'+
-                '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"parent"}\'></div>'+
-            '</div>'+
-            '<div class="widField">'+
-                '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"type"}\'></div>'+
-            '</div>'+
-            '<div class="widField">'+
-                '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"status"}\'></div>'+
-            '</div>'+
-            '<div class="widField">'+
-                '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"start"}\'></div>'+
-            '</div>'+
-            '<div class="widField">'+
-                '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"end"}\'></div>'+
-            '</div>'+
-            '<div class="widField">'+
-                '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"rowsProcessed"}\'></div>'+
-            '</div>'+
+    '<div data-sivWidget="Test.DataGridForm" data-widgetCode="Test.DataGridForm">'+
+        '<div class="widField">'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"id"}\'></div>'+
         '</div>'+
+        '<div class="widField">'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"parent"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"type"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"status"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"start"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"end"}\'></div>'+
+        '</div>'+
+        '<div class="widField">'+
+            '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"rowsProcessed"}\'></div>'+
+        '</div>'+
+    '</div>'+
 
-        '<div data-sivWidget="Test.CursorNodeView" data-widgetParams="" data-widgetCode="Test.CursorNodeView">'+
-            '<div data-sivId="cursor-container" id="cursorContainer" data-sivValue="class|cursorState_[%*status_cursor%]">'+
-                '<div>'+
-                    '<span data-sivValue="class|cursor [%*paquete_modelo%]-cursors [%*cursorNameShort%]"></span><span data-sivValue="*cursorNameShort"></span>'+
-                    '<span data-sivValue=" [[%*rowsProcessed%]]"></span>'+
-                    '<span data-sivValue="class|iconStatusCursor_[%*status_cursor%]::title|[%*status_text%]"></span>'+
-                '</div>'+
+    '<div data-sivWidget="Test.CursorNodeView" data-widgetParams="" data-widgetCode="Test.CursorNodeView">'+
+        '<div id="cursorContainer" data-sivValue="class|cursorState_[%*status_cursor%]">'+
+            '<div>'+
+                '<span data-sivValue="class|cursor [%*paquete_modelo%]-cursors [%*cursorNameShort%]"></span>' +
+                '<span data-sivValue="/*cursorNameShort"></span>'+
+                '<div data-sivValue="[[%*rowsProcessed%]]"></div>'+
+                '<div data-sivValue="class|iconStatusCursor_[%*status_cursor%]::title|[%*status_text%]"></div>'+
+            '</div>'+
 
-                '<div class="extra_info">'+
-                    '<div><span data-sivValue="*id_cursor"></span></div>'+
-                    '<div><span data-sivValue="*fecha_start"></span></div>'+
-                    '<div><span data-sivValue="*fileName"></span></div>'+
-                    '<div>' +
-                        '<div data-sivIf="[%*errored%] == true">'+
-                            '<div><span class="cursor error_message" data-sivValue="*error_message"></span></div>'+
-                        '</div>' +
-                    '</div>'+
-                '</div>'+
+            '<div class="extra_info">'+
+                '<div data-sivValue="/*id_cursor"></div>'+
+                '<div data-sivValue="/*fecha_start"></div>'+
+                '<div data-sivValue="/*fileName"></div>'+
+                '<div data-sivIf="[%*errored%] == true">'+
+                    '<div class="cursor error_message" data-sivValue="/*error_message"></div>'+
+                '</div>' +
             '</div>'+
         '</div>'+
     '</div>'+
 
-    // Este widget no se muestra (no está asociado a ninguna view)
-    '<div data-sivWidget="Test.CursorGraph" data-widgetCode="Test.CursorGraph">' +
+    '<div data-sivWidget="Test.CursorsGraph" data-widgetCode="Test.CursorsGraph">' +
         '<svg data-sivId="svgNode" style="width: 100%; height: 100%"></svg>' +
     '</div>'+
 
@@ -425,7 +421,7 @@
 
     '<div data-sivWidget="Test.ViewController" data-widgetCode="Test.ViewController">' +
         '<div data-sivView="Test.DataGrid" data-sivParams="{}"></div>' +
-        '<div data-sivId="graphNode" style="width: 100%; height:100%"></div>' +
+        '<div data-sivId="graphicArea" style="width: 100%; height:100%"></div>' +
     '</div>',
 
 
@@ -507,7 +503,7 @@
               }
             }
           },
-          "CursorGraph":{
+          "CursorsGraph":{
             inherits:"Siviglia.visual.Force",
             destruct:function() {},
             methods:{
@@ -578,8 +574,7 @@
               if (this.wampService) {
                 this.wampService.call("com.adtopy.removeBusListener",[this.__identifier]);
               }
-              this.cursorGraph.destruct();
-
+              this.cursorsGraph.destruct();
             },
             methods:{
               preInitialize: function(params) {
@@ -597,9 +592,9 @@
               },
               initialize: function(params) {
                 var stack = new Siviglia.Path.ContextStack();
-                this.cursorGraph=null;
-                var cursorGraph=new Test.CursorGraph(
-                  "Test.CursorGraph",
+                this.cursorsGraph=null;
+                var cursorsGraphWidget=new Test.CursorsGraph(
+                  "Test.CursorsGraph",
                   {
                     parent:this,
                     svgWidth:600,
@@ -615,9 +610,9 @@
                   $("<div></div>"),
                   stack,
                 );
-                cursorGraph.__build().then(function(instance){
-                  this.cursorGraph=instance;
-                  this.graphNode.append(instance.rootNode);
+                cursorsGraphWidget.__build().then(function(instance){
+                  this.cursorsGraph=instance;
+                  this.graphicArea.append(instance.rootNode);
                 }.bind(this))
 
 
@@ -681,8 +676,8 @@
               },
               onCursor:function(cursorInfo)
               {
-                if(this.cursorGraph)
-                  this.cursorGraph.onData(cursorInfo)
+                if(this.cursorsGraph)
+                  this.cursorsGraph.onData(cursorInfo)
               },
               onItemSelected:function(evName,params)
               {
@@ -727,7 +722,6 @@
               },
             }
           },
-          // datasource para el Grid de los cursores: model\sys\objects\Cursor\js\Siviglia\lists\FullList.js
           "DataGrid": {
             "inherits": "Siviglia.lists.jqwidgets.BaseGrid",
             "methods": {
