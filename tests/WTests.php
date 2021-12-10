@@ -2962,17 +2962,16 @@
 
         // '<div data-sivWidget="Test.CursorGraph" data-widgetCode="Test.CursorGraph"> <svg data-sivId="svgNode" style="width: 100%; height: 100%"></svg> </div>'+
         '<div data-sivWidget="Test.CursorGraph" data-widgetCode="Test.CursorGraph"> <svg data-sivId="svgNode"></svg> </div>'+
-        '<div data-sivWidget="Test.ViewController" data-widgetCode="Test.ViewController">' +
-            '<div data-sivView="Test.DataGrid" data-sivParams="{}"></div>' +
-            '<div data-sivId="graphNode" style="width: 100%; height:100%"></div>' +
-        '</div>'+
-
 
         '<div data-sivWidget="Test.DataGrid" data-widgetCode="Test.DataGrid">'+
             '<div data-sivId="filterNode"></div>'+
             '<div data-sivId="grid"></div>'+
         '</div>',
 
+        '<div data-sivWidget="Test.ViewController" data-widgetCode="Test.ViewController">' +
+            '<div data-sivView="Test.DataGrid" data-sivParams="{}"></div>' +
+            '<div data-sivId="graphNode" style="width: 100%; height:100%"></div>' +
+        '</div>'+
 
         '<div data-sivView="Test.ViewController" data-sivParams="{}"></div>',
         function(){
@@ -3217,7 +3216,7 @@
                                 }.bind(this),1000);*/
 
                                 // Se pone un listener sobre cualquier cambio en reflection
-                                /*this.wampService=Siviglia.Service.get("wampServer");
+                                this.wampService=Siviglia.Service.get("wampServer");
                                 if(this.wampService)
                                 {
                                     this.__identifier=Siviglia.Model.getAppId();
@@ -3234,7 +3233,7 @@
                                         }
 
                                     }.bind(this))
-                                }*/
+                                }
                             },
                             onCursorChanged:function(eventName, cursorData) {
                               console.log('Click event listened by controller')
@@ -3322,12 +3321,8 @@
                               console.log('Cell clicked')
                               var cursor=eventData.args.row.bounddata;
                               this.__parentView.fireEvent("ON_CURSOR_SELECTED", cursor);
-                              this.fireEvent("ON_CURSOR_SELECTED",cursor);
                             }.bind(this));
                           },
-                          onCellClicked: function(eventName, params) {
-                              console.log('Click event listened by grid')
-                          }
                         }
                     },
                     "DataGridForm": {

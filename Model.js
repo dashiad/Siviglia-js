@@ -642,13 +642,13 @@ Siviglia.Utils.buildClass({
                     },
                     onResponse:function(response)
                     {
-
                         this["*data"].apply(response.data,Siviglia.types.BaseType.VALIDATION_MODE_NONE);
                         this["*count"]._setValue(response.count);
                         this.count=response.count;
                         //this.settings.start=response.start;
                         this["*start"]._setValue(response.start);
                         this["*end"]._setValue(response.end);
+                        this.rawData = response.data;
 
                         this.__hasBusListener=false;
                         this.__busListenerSet=false;
@@ -741,14 +741,18 @@ Siviglia.Utils.buildClass({
                     {
                         this.downloadAs('xlsx');
                     },
+                    getFieldsDefinition:function()
+                    {
+                        return this.meta.FIELDS;
+                    },
                     getParamsDefinition:function()
                     {
                         return this.meta.PARAMS;
                     },
-                    getFieldsDefinition:function()
+                    getRawData: function()
                     {
-                        return this.meta.FIELDS;
-                    }
+                        return this.rawData;
+                    },
                 }
             },
 
