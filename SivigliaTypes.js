@@ -1695,10 +1695,12 @@ Siviglia.Utils.buildClass(
                             get: function () {
                                 if (!this.__valueSet)
                                     throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_UNSET);
-                                return parseInt(this.__value);
+                                // return parseInt(this.__value);
+                                return (this.__value);
                             },
                             getValue: function () {
-                                if (this.__valueSet) return parseInt(this.__value);
+                                // if (this.__valueSet) return parseInt(this.__value);
+                                if (this.__valueSet) return (this.__value);
                                 if (this.__hasDefaultValue())
                                     return this.__getDefaultValue();
                                 return null;
