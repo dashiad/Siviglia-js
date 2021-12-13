@@ -219,6 +219,9 @@ Siviglia.isArray = function (obj) {
 Siviglia.isWindow = function ( obj ) {
     return obj != null && obj === obj.window;
 };
+Siviglia.__store__= {
+    classes: {}
+}
 
 Siviglia.Utils = Siviglia.Utils || {};
 
@@ -324,12 +327,11 @@ Siviglia.Utils.buildClass = function (definition) {
 
 
         if (!inherits)
-            contextObj[k] = Siviglia.issetOr(definition.classes[k].construct, function () {
-            });
+            contextObj[k] = Siviglia.issetOr(definition.classes[k].construct, function () {});
 
         var baseClass;
-
         var inheritClasses = [];
+        var baseClasses = [];
 
 
         if (inherits && inherits.length > 0) {
@@ -348,14 +350,15 @@ Siviglia.Utils.buildClass = function (definition) {
                     alert("Error de herencia:No se encuentra:" + c.object);
                 }
 
-                if (i == 0) {
-                    var parts = inherits[i].split(".");
-                    var baseClassName;
-                    if (parts.length == 1)
-                        baseClassName = context + "." + inherits[i];
-                    else
-                        baseClassName = inherits[i];
+                var parts = inherits[i].split(".");
+                var baseClassName;
+                if (parts.length == 1)
+                    baseClassName = context + "." + inherits[i];
+                else
+                    baseClassName = inherits[i];
+                baseClasses.push(baseClassName);
 
+                if (i == 0) {
                     baseClass = c.object;
                     var curBaseClass = c.context[c.object];
                     if (Siviglia.isset(definition.classes[k].construct))
@@ -373,8 +376,11 @@ Siviglia.Utils.buildClass = function (definition) {
                 }
 
                 contextObj[k].prototype[c.object] = curClass.prototype.__construct;
-                contextObj[k].prototype[c.object].__className = c.object;
                 contextObj[k].prototype[c.object + "$destruct"] = curClass.prototype.__destruct;
+                Siviglia.__store__.classes[context+'.'+k] = baseClasses;
+                contextObj[k].prototype.__getBaseClasses = function(){
+                    return baseClasses;
+                }
 
                 if (i == 0) continue;
 
@@ -390,6 +396,7 @@ Siviglia.Utils.buildClass = function (definition) {
             }
         }
 
+        contextObj[k].prototype.__className = context+'.'+k;
         contextObj[k].prototype.__construct = contextObj[k];
         contextObj[k].prototype.constructor = contextObj[k];
 
@@ -448,6 +455,19 @@ Siviglia.Utils.buildClass = function (definition) {
     }
 }
 
+Siviglia.Utils.isSubclass = function (obj, className) {
+    function checkSubclassesRecursively(current, target) {
+        var baseClasses = Siviglia.__store__.classes[current];
+        if (typeof baseClasses !== 'undefined') {
+            for (var baseClass of baseClasses) {
+                if (baseClass === target) return true;
+                if (checkSubclassesRecursively(baseClass, target)) return true;
+            }
+        }
+        return false
+    }
+    return checkSubclassesRecursively(obj.__className, className);
+}
 
 /* Add prepend capabilities function */
 Element.prototype.prependChild = function (child) {
