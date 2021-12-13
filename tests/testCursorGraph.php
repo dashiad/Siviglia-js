@@ -365,7 +365,7 @@
 
   }
 
-  runTest("Pintado de cursores","Prueba de diseño para ver como pintar cursores mediante diagramas de fuerza. <br>",
+  runTest("Grafico de cursores","Prueba de diseño para ver como pintar cursores mediante diagramas de fuerza. <br>",
     '<div data-sivWidget="Test.DataGridForm" data-widgetCode="Test.DataGridForm">'+
         '<div class="widField">'+
             '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"id"}\'></div>'+
@@ -390,21 +390,21 @@
         '</div>'+
     '</div>'+
 
-    '<div data-sivWidget="Test.CursorNodeView" data-widgetParams="" data-widgetCode="Test.CursorNodeView">'+
-        '<div id="cursorContainer" data-sivValue="class|cursorState_[%*status_cursor%]">'+
+    '<div data-sivWidget="Test.CursorNode" data-widgetParams="" data-widgetCode="Test.CursorNode">'+
+        '<div id="cursorContainer" data-sivValue="class|cursorState_[%*status%]">'+
             '<div>'+
-                '<span data-sivValue="class|cursor [%*paquete_modelo%]-cursors [%*cursorNameShort%]"></span>' +
-                '<span data-sivValue="/*cursorNameShort"></span>'+
+                '<span data-sivValue="class|cursor [%*packageAndModel%]-cursors [%*name%]"></span>' +
+                '<span data-sivValue="/*name"></span>'+
                 '<div data-sivValue="[[%*rowsProcessed%]]"></div>'+
-                '<div data-sivValue="class|iconStatusCursor_[%*status_cursor%]::title|[%*status_text%]"></div>'+
+                '<div data-sivValue="class|iconStatusCursor_[%*status%]::title|[%*statusLabel%]"></div>'+
             '</div>'+
 
             '<div class="extra_info">'+
-                '<div data-sivValue="/*id_cursor"></div>'+
-                '<div data-sivValue="/*fecha_start"></div>'+
+                '<div data-sivValue="/*id"></div>'+
+                '<div data-sivValue="/*startDate"></div>'+
                 '<div data-sivValue="/*fileName"></div>'+
                 '<div data-sivIf="[%*errored%] == true">'+
-                    '<div class="cursor error_message" data-sivValue="/*error_message"></div>'+
+                    '<div class="cursor errorLabel" data-sivValue="/*errorLabel"></div>'+
                 '</div>' +
             '</div>'+
         '</div>'+
@@ -430,77 +430,69 @@
       Siviglia.Utils.buildClass({
         context:'Test',
         classes:{
-          "CursorNodeView":{
+          "CursorNode":{
             inherits:"Siviglia.UI.Expando.View",
             destruct:function() {
               this.item["*status"].removeListeners(this);
             },
             methods: {
               preInitialize:function(params) {
-                // Obtención de variables para mostrar el contenido del cursor en params.item
-                if (params.item.cursorDefinition && params.item.cursorDefinition.fileName != undefined)
+                this.item = params.item;
+                if (params.item.cursorDefinition !== null && typeof params.item.cursorDefinition.fileName !== 'undefined')
                   this.fileName = params.item.cursorDefinition.fileName.split('\\').pop().split('/').pop();
                 else
-                  this.fileName = "---";
-                this.item = params.item;
-                this.id_cursor = params.item.id;
-
-                // Se especifica el tipo solo si el nombre es vacío.
-                this.cursorNameShort = (params.item.name == null) ? params.item.type.split("\\").pop() : params.item.name;
-                this.status_cursor = params.item.status;
+                  this.fileName = '---';
+                this.id = params.item.id;
+                this.name = (params.item.name == null) ? params.item.type.split("\\").pop() : params.item.name;
+                this.status = params.item.status;
                 this.rowsProcessed = params.item.rowsProcessed;
-                this.fecha_start = params.item.start;
-                this.error_message = params.item.error == null ? '' : params.item.error;
-                this.status_text="";
-                Siviglia.Path.eventize(params.item, "status");
-                params.item["*status"].addListener("CHANGE", this, "onChangeStatus");
+                this.startDate = params.item.start;
+                this.errored = params.item.error == null;
+                this.errorLabel = params.item.error == null ? '' : params.item.error;
+                this.statusLabel='';
 
-                // Siviglia.Path.eventize(params.item, "error");
-                // params.item["*error"].addListener("CHANGE", this, "onErrorCursor");
+                Siviglia.Path.eventize(params.item, 'status');
+                params.item['*status'].addListener('CHANGE', this, 'onStatusChange');
 
-                this.errored = (this.error_message !== '');
+                // Siviglia.Path.eventize(params.item, 'error');
+                // params.item['*error'].addListener('CHANGE', this, 'onErrorChange');
 
                 // Dependiendo de la ruta del path del cursor, montar un path asociado a ese cursor
                 // para asi definir los iconos asociados a los paquetes-modelos-lib o default
-                this.path_cursor = params.item.type.split('\\');
-                this.path_first = this.path_cursor.shift();
-                switch (this.path_first) {
+                this.path = params.item.type.split('\\');
+                var firstPathElement = this.path[0];
+                switch (firstPathElement) {
                   case "lib":
-                    this.paquete_modelo = "default";
+                    this.packageAndModel = "default";
                     break;
                   case "model":
-                    this.paquete_modelo = this.path_cursor[1] + "_" + this.path_cursor[2]; // paquete_modelo. Ej: ads_dfp
+                    this.packageAndModel = this.path[2] + "_" + this.path[3]; // packageAndModel. Ej: ads_dfp
                     break;
                   default:
-                    this.paquete_modelo = "default";
+                    this.packageAndModel = "default";
                     break;
                 }
 
-                // Cargamos los valores enum de la definition model\sys\objects\Cursor\Definition.php
                 var cursorModelDefinition = Siviglia.Model.loader.getModelDefinition("/model/sys/Cursor");
-                this.statusFieldLabel = cursorModelDefinition.FIELDS.status.VALUES;
-
+                this.statusTypes = cursorModelDefinition.FIELDS.status.VALUES;
               },
-              onChangeStatus:function()
-              {
-                // Si el listener ha recibido un evento de cambio, entonces se modifica el texto del estado,
-                // según el valor del item.status y actualizamos el nombre 'status_text'
-                this.status_text = this.statusFieldLabel[this.item.status];
-
-                // actualizamos el estado del cursor para mostrar el icono asociado al estado
-                this.status_cursor = this.item.status;
-
-                // actualizamos las rows procesadas
+              initialize:function(params) {
+                this.updateStatus();
+              },
+              updateStatus:function() {
+                this.statusLabel = this.statusTypes[this.item.status];
+                this.status = this.item.status;
                 this.rowsProcessed = this.item.rowsProcessed;
               },
-              onErrorCursor:function()
-              {
-                // mensaje de error capturado
-                this.error_message = this.item.error;
+              onStatusChange: function() {
+                this.updateStatus();
               },
-              initialize:function(params){
-                this.onChangeStatus();
-              }
+              updateError: function() {
+                this.errorLabel = this.item.error;
+              },
+              onErrorChange: function() {
+                this.updateError();
+              },
             }
           },
           "CursorsGraph":{
@@ -599,7 +591,7 @@
                     parent:this,
                     svgWidth:600,
                     svgHeight:400,
-                    nodeWidget:'Test.CursorNodeView',
+                    nodeWidget:'Test.CursorNode',
                     nodeWidth:300,
                     nodeHeight:300,
                     allowMultipleSelection:false,
