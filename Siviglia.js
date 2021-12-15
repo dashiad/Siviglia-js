@@ -1179,8 +1179,9 @@ Siviglia.Utils.buildClass({
                                 try {
                                     while (res = r.exec(str))
                                         f = f.replace(res[0], this.parseTopMatch(res));
-                                    this.parsing = false;
+
                                     this.fireEvent("CHANGE", {value: f});
+                                    this.parsing = false;
                                     return f;
                                 }catch(e)
                                 {
@@ -1372,7 +1373,9 @@ Siviglia.Utils.buildClass({
                                 var cVal=null;
                                 try {
                                     cVal=this.getValue(complex);
-                                }catch(e) {}
+                                }catch(e) {
+                                    this.parsing = true;
+                                }
 
                                 var r=this.PARAMREGEXP,res;
                                 while(res= r.exec(match[3]))
