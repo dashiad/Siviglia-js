@@ -1695,14 +1695,25 @@ Siviglia.Utils.buildClass(
                             get: function () {
                                 if (!this.__valueSet)
                                     throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_UNSET);
-                                // return parseInt(this.__value);
-                                return (this.__value);
+
+                                if (Siviglia.Utils.isSubclass(valueType, 'Siviglia.types.Integer'))
+                                    return parseInt(this.__value);
+                                else
+                                    return (this.__value);
                             },
                             getValue: function () {
-                                // if (this.__valueSet) return parseInt(this.__value);
-                                if (this.__valueSet) return (this.__value);
+                                var valueType = this.getRelationshipType();
+                                
+                                if (this.__valueSet) {
+                                    if (Siviglia.Utils.isSubclass(valueType, 'Siviglia.types.Integer'))
+                                        return parseInt(this.__value);
+                                    else
+                                        return (this.__value);
+                                }
+
                                 if (this.__hasDefaultValue())
                                     return this.__getDefaultValue();
+
                                 return null;
                             },
                             _validate: function () {
@@ -1713,8 +1724,10 @@ Siviglia.Utils.buildClass(
                                 var target;
                                 if ('FIELD' in this.__definition)
                                     target = this.__definition['FIELD'];
-                                else
-                                    target = this.__definition['FIELDS'][0];
+                                else {
+                                    var keys = Object.keys(this.__definition['FIELDS']);
+                                    target = this.__definition['FIELDS'][keys[0]];
+                                }
                                 return Siviglia.types.TypeFactory.getRelationFieldTypeInstance(obj, target);
                             },
                             __hasSource: function () {
@@ -1752,8 +1765,10 @@ Siviglia.Utils.buildClass(
                             getValueField: function () {
                                 if ('FIELD' in this.__definition)
                                     target = this.__definition['FIELD'];
-                                else
-                                    target = this.__definition['FIELDS'][0];
+                                else {
+                                  var keys = Object.keys(this.__definition['FIELDS']);
+                                    target = this.__definition['FIELDS'][keys[0]];
+                                }
                                 return target;
                             },
                             // Devuelve parametros fijos que son necesarios para
@@ -4183,7 +4198,7 @@ Siviglia.Utils.buildClass(
                                 validationMode=Siviglia.types.BaseType.VALIDATION_MODE_STRICT;
 
                             if (typeof def === "object") {
-                                if (typeof def["TYPE"] === "undefined" && typeof def["MODEL"] !== "undefined" && typeof def["MODEL"] !== "undefined") {
+                                if (typeof def["TYPE"] === "undefined" && typeof def["MODEL"] !== "undefined" && typeof def["FIELD"] !== "undefined") {
                                     var remDefinition = Siviglia.Model.loader.getModelDefinition(def["MODEL"]);
 
                                     if (remDefinition) {
@@ -4273,11 +4288,13 @@ Siviglia.Utils.buildClass(
                             return newType;
                         },
                         getRelationFieldTypeInstance: function (model, field) {
-                            var p = $.Deferred();
-                            this.getTypeFromDef(this.getModelField(model, field)).then(function (t) {
-                                p.resolve(t.getRelationshipType())
-                            });
-                            return p;
+                            return Siviglia.types.TypeFactory.getType(
+                              null,
+                              {"MODEL": model, "FIELD": field},
+                              null,
+                              null,
+                              null
+                            );
                         }
                     }
             }
