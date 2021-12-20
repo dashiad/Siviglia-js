@@ -124,10 +124,9 @@
     if (!urlParams.has("test")) {
         //DEVELOP_MODE=47;    // Specific test number
         //DEVELOP_MODE=0;     // All tests
-        //DEVELOP_MODE=(-1);  // Latest test
-        DEVELOP_MODE=(-1);
+        DEVELOP_MODE=(-1);  // Latest test
     } else {
-	    DEVELOP_MODE = urlParams.get("test");
+	    DEVELOP_MODE = parseInt(urlParams.get("test"));
     }
     var TEST_DESTROY=true;
     var Siviglia=Siviglia || {};
@@ -3598,7 +3597,7 @@
     runTest("ParametrizableString testing",
       "testeo rapido de PS",
       '<div data-sivWidget="Test.ParametrizedStrings2" data-widgetCode="Test.ParametrizedStrings2">' +
-      '<div data-sivValue="Capitalize: [%/*stringVar%]"></div>' +
+      '<div data-sivValue="Concatenacion de transformaciones: [%*stringVar:{%*noVar:default \'ok\'|ucfirst|str_repeat 2%}%]"></div>' +
       '</div>',
       '<div data-sivView="Test.ParametrizedStrings2"></div>',
       function(){

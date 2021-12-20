@@ -365,6 +365,65 @@
 
   }
 
+  var eventsMock=[
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:null,error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\Cursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:"609850c1a3449",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\Cursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:null,error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:2,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:null,error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:3,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:"609850c1a3449",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:2,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:"609850c1a3449",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:3,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:"2021-05-09 23:14:41",error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:"2021-05-09 23:14:41",error:null,id:"609850c1b3425",name:null,parent:"609850c1a3449",phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:2,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:3,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:2,type:"lib\\data\\Cursor\\Cursor"},
+    {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:3,type:"lib\\data\\Cursor\\Cursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:"2021-05-09 23:14:41",error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{callback:[]},end:"2021-05-09 23:14:41",error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\Cursor"}];
+  var eventsRelationsMock=[
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:null,error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:2,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:"609850c1a3449",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
+    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\Cursor"}
+  ];
+
+  var eventsFromDB=[
+    {container:null,cursorDefinition:{TYPE:"Sequence",PARAMS:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\CSVFileWriter",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}}],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},end:"2021-09-27 08:43:01",error:null,id:"615183f8ad85a",name:null,parent:null,phaseStart:"2021-09-27 08:43:01",rowsProcessed:0,start:"2021-09-27 08:42:32",status:5,type:"model\\sys\\lib\\cache\\CacheElement"},
+    {container:null,cursorDefinition:{TYPE:"Sequence",PARAMS:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Mysql\\MysqlWriter",PARAMS:{SERIALIZER:"default",table:"smartx",hash:["id_cache"],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}}],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},end:"2021-09-27 08:44:07",error:null,id:"615183f8ad87b",name:null,parent:null,phaseStart:"2021-09-27 08:44:07",rowsProcessed:0,start:"2021-09-27 08:43:01",status:5,type:"model\\sys\\lib\\cache\\CacheElement"},
+    {container:null,cursorDefinition:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\CSVFileWriter",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}}],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:01",error:null,id:"615183f8b2296",name:null,parent:null,phaseStart:"2021-09-27 08:43:01",rowsProcessed:0,start:"2021-09-27 08:42:32",status:5,type:"lib\\data\\Cursor\\SequenceCursor"},
+    {container:null,cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:01",error:null,id:"615183f8b93e5",name:null,parent:null,phaseStart:"2021-09-27 08:43:01",rowsProcessed:98029,start:"2021-09-27 08:42:32",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:01",error:null,id:"615183f8bd458",name:null,parent:"615183f8b93e5",phaseStart:"2021-09-27 08:43:01",rowsProcessed:98029,start:"2021-09-27 08:42:32",status:5,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
+    {container:null,cursorDefinition:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Mysql\\MysqlWriter",PARAMS:{SERIALIZER:"default",table:"smartx",hash:["id_cache"],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}}],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:44:07",error:null,id:"6151841590d95",name:null,parent:null,phaseStart:"2021-09-27 08:44:07",rowsProcessed:0,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\SequenceCursor"},
+    {container:null,cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415975fb",name:null,parent:null,phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"615184159c1c6",name:null,parent:"61518415975fb",phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
+    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415a58b8",name:null,parent:"615184159c1c6",phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
+    {container:null,cursorDefinition:{SERIALIZER:"default",table:"smartx",hash:["id_cache"],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415afa3a",name:null,parent:"61518415a58b8",phaseStart:"2021-09-27 08:43:47",rowsProcessed:0,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Mysql\\MysqlWriterCursor"}
+  ];
+  var eventsFromDBRelations = [
+    {container:null,cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415975fb",name:null,parent:null,phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"615184159c1c6",name:null,parent:"61518415975fb",phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
+    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415a58b8",name:null,parent:"615184159c1c6",phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
+    {container:null,cursorDefinition:{SERIALIZER:"default",table:"smartx",hash:["id_cache"],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415afa3a",name:null,parent:"61518415a58b8",phaseStart:"2021-09-27 08:43:47",rowsProcessed:0,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Mysql\\MysqlWriterCursor"},
+  ]
+  var eventsContainer=[
+    {container:null,cursorDefinition:{TYPE:"Sequence",PARAMS:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\CSVFileWriter",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"Cursor",PARAMS:{callback:[]}}],INHERITPARAMS:{HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}}},end:"2021-10-05 11:15:23",error:null,id:"615c33ca9018c",name:null,parent:null,phaseStart:"2021-10-05 11:15:23",rowsProcessed:0,start:"2021-10-05 11:15:22",status:5,type:"model\\sys\\lib\\cache\\CacheElement"},
+    {container:'615c33ca9018c',cursorDefinition:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\CSVFileWriter",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"Cursor",PARAMS:{callback:[]}}],INHERITPARAMS:{HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},end:"2021-10-05 11:15:23",error:null,id:"615c33ca9a4f6",name:null,parent:null,phaseStart:"2021-10-05 11:15:23",rowsProcessed:0,start:"2021-10-05 11:15:22",status:5,type:"lib\\data\\Cursor\\SequenceCursor"},
+    {container:'615c33ca9a4f6',cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-10-05 11:15:23",error:null,id:"615c33cab119f",name:null,parent:null,phaseStart:"2021-10-05 11:15:23",rowsProcessed:9,start:"2021-10-05 11:15:22",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:'615c33ca9a4f6',cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-10-05 11:15:23",error:null,id:"615c33cab96e5",name:null,parent:"615c33cab119f",phaseStart:"2021-10-05 11:15:23",rowsProcessed:9,start:"2021-10-05 11:15:22",status:5,type:"lib\\data\\Cursor\\Cursor"},
+    {container:'615c33ca9a4f6',cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-10-05 11:15:23",error:null,id:"615c33cacee23",name:null,parent:"615c33cab96e5",phaseStart:"2021-10-05 11:15:23",rowsProcessed:9,start:"2021-10-05 11:15:22",status:5,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
+    {container:'615c33ca9a4f6',cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-10-05 11:15:23",error:null,id:"615c33cadbbc8",name:null,parent:"615c33cacee23",phaseStart:"2021-10-05 11:15:23",rowsProcessed:1,start:"2021-10-05 11:15:22",status:5,type:"lib\\data\\Cursor\\Cursor"}];
+  var eventsSimpleRelations = [
+    {container:null,cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415975fb",name:null,parent:null,phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
+    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"615184159c1c6",name:null,parent:null,phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
+    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"615184159c1c6",name:null,parent:"61518415975fb",phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
+  ]
+
   runTest("Grafico de cursores","Prueba de diseño para ver como pintar cursores mediante diagramas de fuerza. <br>",
     '<div data-sivWidget="Test.DataGridForm" data-widgetCode="Test.DataGridForm">'+
         '<div class="widField">'+
@@ -473,8 +532,6 @@
                     break;
                 }
 
-                // this.addListener('CURSOR_SELECTED', this, '')
-
                 var cursorModelDefinition = Siviglia.Model.loader.getModelDefinition("/model/sys/Cursor");
                 this.statusTypes = cursorModelDefinition.FIELDS.status.VALUES;
               },
@@ -526,21 +583,21 @@
                 this.addCursorToGraph(cursor)
               },
               addCursorToGraph: function(cursorData) {
-                var currentCursor=this.cursorBuffer[cursorData.id];
+                var cursorFromBuffer=this.cursorBuffer[cursorData.id];
                 var parent=cursorData.parent;
                 var container=cursorData.container;
                 var id=cursorData.id;
 
-                if (typeof currentCursor!=="undefined" && currentCursor!==null) {
+                if (typeof cursorFromBuffer!=="undefined" && cursorFromBuffer!==null) {
                   // Se updatean los posibles links..Se supone que nunca se va a cambiar un link,
                   // solo se añaden...Es por eso que no se busca un link antiguo y se quita..
-                  if (currentCursor.parent!==parent)
+                  if (cursorFromBuffer.parent!==parent)
                     this.cursorLinks.push({source:parent,target:id,type:"parent"});
-                  if (currentCursor.container!==container)
+                  if (cursorFromBuffer.container!==container)
                     this.cursorLinks.push({source:container,target:id,type:"container"});
 
                   for(var k in cursorData)
-                    currentCursor[k]=cursorData[k];
+                    cursorFromBuffer[k]=cursorData[k];
                 }
                 else {
                   this.cursorBuffer[cursorData.id] = cursorData;
@@ -616,65 +673,67 @@
 
                 this.addListener("ROW_CLICKED",this,"onRowSelected");
 
+                this.connectToBus();
+              },
+              onRowSelected:function(eventName, cursorData) {
+                this.sendCursorToGraph(cursorData);
+              },
+              sendCursorToGraph: function (cursor) {
+                if (this.cursorsGraph)
+                  // Se envian 2 veces los datos para crear en la primera el cursor y
+                  // en la segunda sus relaciones, ya que estas solo se pueden definir
+                  // sobre elementos existentes.
+                  // ToDo: explorar la creacion de cursores y ver si se pueden crear a la vez los cursores y sus relaciones
+                  var preCursor = cursor;
+                  this.cursorsGraph.fireEvent('CURSOR_SENT', preCursor);
+                  this.cursorsGraph.fireEvent('CURSOR_SENT', cursor);
+              },
+              connectToBus: function () {
                 // Simulacion de recepcion de datos en un periodo de tiempo
-                /*var events=[
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1a3449","parent":null,"container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":null,"container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":null,"container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":null,"container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":"609850c1a3449","container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},"status":2,"phaseStart":"2021-05-09 23:14:41","id":"609850c1a3449","parent":null,"container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},"status":3,"phaseStart":"2021-05-09 23:14:41","id":"609850c1a3449","parent":null,"container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":2,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":"609850c1a3449","container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":3,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":"609850c1a3449","container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1a3449","parent":null,"container":null,"end":"2021-05-09 23:14:41"},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileWriterCursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b3425","parent":"609850c1a3449","container":null,"end":"2021-05-09 23:14:41"},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":1,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":2,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":3,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":2,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":0,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":3,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":null},
-                    {"name":null,"type":"lib\\data\\Cursor\\CSVFileReaderCursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"fileName":"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1b6b3d","parent":"609850c1b3425","container":null,"end":"2021-05-09 23:14:41"},
-                    {"name":null,"type":"lib\\data\\Cursor\\Cursor","rowsProcessed":13,"start":"2021-05-09 23:14:41","error":null,"cursorDefinition":{"callback":[]},"status":5,"phaseStart":"2021-05-09 23:14:41","id":"609850c1ba803","parent":"609850c1b6b3d","container":null,"end":"2021-05-09 23:14:41"}
-                ];
                 var curEvent=0;
                 var cInt;
+                // var events = eventsMock
+                // var events = eventsRelationsMock
+                // var events = eventsFromDB
+                // var events = eventsFromDBRelations
+                // var events = eventsSimpleRelations
+                // var events = eventsContainer
+                var events = []
                 cInt=setInterval(function(){
-                    if(curEvent == events.length) {
-                        clearInterval(cInt);
-                        return;
-                    }
-                    this.sendCursorToGraph(events[curEvent]);
-                    curEvent=curEvent+1;
-                }.bind(this),100);*/
+                  if(curEvent == events.length) {
+                    clearInterval(cInt);
+                    return;
+                  }
+                  this.sendCursorToGraph(events[curEvent]);
+                  curEvent=curEvent+1;
+                }.bind(this),1000);
 
                 // Se pone un listener sobre cualquier cambio en reflection
                 this.wampService=Siviglia.Service.get("wampServer");
                 if (this.wampService) {
                   this.__identifier=Siviglia.Model.getAppId();
-                  this.wampService.call("com.adtopy.replaceBusListener",[
-                    {channel:'General',path:'/model/sys/Cursor/*',roles:0xFFF,appId:this.__identifier,userId:top.Siviglia.config.user.TOKEN}]);
+                  this.wampService.call(
+                    "com.adtopy.replaceBusListener",
+                    [{
+                      channel:'General',
+                      path:'/model/sys/Cursor/*',
+                      roles:0xFFF,
+                      appId:this.__identifier,
+                      userId:top.Siviglia.config.user.TOKEN
+                    }]
+                  );
 
-                  this.wampService.subscribe('busevent',function(data){
-                    var channel=data[0];
-                    var params=data[1];
-                    var appData=data[2];
-                    if(appData.appId===this.__identifier)
-                    {
-                      this.sendCursorToGraph(params.data);
-                    }
-
-                  }.bind(this))
+                  this.wampService.subscribe(
+                    'busevent',
+                    function(data){
+                      var channel=data[0];
+                      var params=data[1];
+                      var appData=data[2];
+                      if(appData.appId===this.__identifier)
+                        this.sendCursorToGraph(params.data);
+                    }.bind(this)
+                  )
                 }
-              },
-              onRowSelected:function(eventName, cursorData) {
-                this.sendCursorToGraph(cursorData)
-              },
-              sendCursorToGraph: function (cursor) {
-                if (this.cursorsGraph)
-                  this.cursorsGraph.fireEvent('CURSOR_SENT', cursor)
               },
               onItemSelected:function(evName,params)
               {
