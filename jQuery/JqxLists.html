@@ -200,17 +200,17 @@
                                 targets.push(this.contextualActions[k].model);
 
 
-                            var actionDs=new Siviglia.Model.DataSource("/model/reflection/Action", "FullList", {model:targets,allowsBatch:true});
+                            /*var actionDs=new Siviglia.Model.DataSource("/model/reflection/Action", "FullList", {model:targets,allowsBatch:true});
                             actionDs.refresh().then(function(result){
-                               /* for(var k=0;k<result.length;k++)
+                               /!* for(var k=0;k<result.length;k++)
                                 {
 
                                 }
                                 m.contextualActions[index].actions=result.data;
-                                actionDs.destruct();*/
+                                actionDs.destruct();*!/
                                 completePromise.resolve(result);
                             }.bind(this))
-                            return completePromise;
+                            return completePromise;*/
                         },
                         initialize:function(params)
                         {

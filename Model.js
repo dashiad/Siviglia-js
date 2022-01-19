@@ -697,7 +697,7 @@ Siviglia.Utils.buildClass({
                             },
                             function (error) {
                                 currentPromise.reject(error);
-                                delete m.promises[location];
+                                delete m.__promises[location];
                                 throw error;
                             });
                         })(location);
