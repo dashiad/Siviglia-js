@@ -190,13 +190,14 @@ Siviglia.Utils.buildClass(
                 {
                     inherits: 'Siviglia.Dom.EventManager,Siviglia.types.PathAble',
                     constants: {
-                        TYPE_SET_ON_SAVE: 0x1,
+                        TYPE_SET_ON_STORE: 0x1,
                         TYPE_SET_ON_ACCESS: 0x2,
                         TYPE_IS_FILE: 0x4,
                         TYPE_REQUIRES_SAVE: 0x8,
                         TYPE_NOT_EDITABLE: 0x10,
                         TYPE_NOT_MODIFIED_ON_NULL: 0x20,
                         TYPE_REQUIRES_UPDATE_ON_NEW: 0x40,
+                        TYPE_GENERATE_BEFORE_STORE: 0x80,
                         VALIDATION_MODE_NONE: 0,  // Sin validacion alguna.
                         VALIDATION_MODE_SIMPLE: 1, // Validaciones simples de tipo (__validate())
                         VALIDATION_MODE_COMPLETE: 2, // Validacion de tipo y source.
@@ -759,7 +760,7 @@ Siviglia.Utils.buildClass(
                             is_set: function () {
                                 if (this.__valueSet)
                                     return true;
-                                return this.__flags & this.TYPE_SET_ON_SAVE ||
+                                return this.__flags & this.TYPE_SET_ON_STORE ||
                                     this.__flags & this.TYPE_SET_ON_ACCESS;
                             },
                             __clear: function () {
@@ -1074,7 +1075,7 @@ Siviglia.Utils.buildClass(
                         var stdDef = {'TYPE': 'AutoIncrement', 'MIN': 0, 'MAX': 9999999999};
                         var fullDef = this.__overrideDefinition(def, stdDef);
                         this.BaseType(name, fullDef, parentType, val, validationType);
-                        this.setFlags(Siviglia.types.BaseType.TYPE_SET_ON_SAVE);
+                        this.setFlags(Siviglia.types.BaseType.TYPE_SET_ON_STORE);
                     },
                     methods:
                         {
@@ -1703,7 +1704,7 @@ Siviglia.Utils.buildClass(
                             },
                             getValue: function () {
                                 var valueType = this.getRelationshipType();
-                                
+
                                 if (this.__valueSet) {
                                     if (Siviglia.Utils.isSubclass(valueType, 'Siviglia.types.Integer'))
                                         return parseInt(this.__value);
