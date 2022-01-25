@@ -565,11 +565,11 @@
               cursorReceiver: function (eventName, cursor) {
                 this.addCursorToGraph(cursor)
               },
-              addCursorToGraph: function(cursorData) {
-                var cursorFromBuffer=this.cursorBuffer[cursorData.id];
-                var parent=cursorData.parent;
-                var container=cursorData.container;
-                var id=cursorData.id;
+              addCursorToGraph: function(cursor) {
+                var cursorFromBuffer=this.cursorBuffer[cursor.id];
+                var parent=cursor.parent;
+                var container=cursor.container;
+                var id=cursor.id;
 
                 if (typeof cursorFromBuffer!=="undefined" && cursorFromBuffer!==null) {
                   // Se updatean los posibles links..Se supone que nunca se va a cambiar un link,
@@ -579,12 +579,12 @@
                   if (cursorFromBuffer.container!==container)
                     this.cursorLinks.push({source:container,target:id,type:"container"});
 
-                  for(var k in cursorData)
-                    cursorFromBuffer[k]=cursorData[k];
+                  for(var k in cursor)
+                    cursorFromBuffer[k]=cursor[k];
                 }
                 else {
-                  this.cursorBuffer[cursorData.id] = cursorData;
-                  this.cursorNodes.push(cursorData);
+                  this.cursorBuffer[id] = cursor;
+                  this.cursorNodes.push(cursor);
                   if(parent!==null)
                     this.cursorLinks.push({source:parent,target:id,type:"parent"})
                   if(container!==null)
@@ -658,8 +658,354 @@
 
                 this.connectToBus();
               },
-              onRowSelected:function(eventName, cursorData) {
-                this.sendCursorToGraph(cursorData);
+              onRowSelected:function(eventName, cursor) {
+                // this.sendCursorToGraph(cursor);
+                cursor = {
+                  "id": "61eec822bc57b",
+                  "parent": null,
+                  "container": null,
+                  "name": null,
+                  "type": "model\\sys\\Cache\\cursors\\CacheSequenceCursor",
+                  "status": 0,
+                  "start": "2022-01-24 15:39:15",
+                  "phaseStart": "2022-01-24 15:39:15",
+                  "end": "2022-01-24 15:39:15",
+                  "rowsProcessed": 0,
+                  "error": null,
+                  "cursorDefinition": null,
+                  "isDataProcess": true,
+                  "children": [{
+                    "id": "61eec822d0620",
+                    "parent": null,
+                    "container": "61eec822bc57b",
+                    "name": null,
+                    "type": "model\\sys\\lib\\Cache\\CacheElement",
+                    "status": 5,
+                    "start": "2022-01-24 15:39:15",
+                    "phaseStart": "2022-01-24 15:39:15",
+                    "end": "2022-01-24 15:39:15",
+                    "rowsProcessed": 0,
+                    "error": null,
+                    "cursorDefinition": {
+                      "TYPE": "Sequence",
+                      "PARAMS": {
+                        "CURSORS": [{
+                          "TYPE": "lib\\data\\Cursor\\CSVFileReader",
+                          "PARAMS": {
+                            "fileName": "\/vagrant\/adtopy\/model\/ads\/tests\/SmartX\/cache\/res\/input.csv",
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "lib\\data\\Cursor\\Cursor",
+                          "PARAMS": {
+                            "callback": [],
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "lib\\data\\Cursor\\CSVFileWriter",
+                          "PARAMS": {
+                            "fileName": "\/vagrant\/adtopy\/model\/ads\/tests\/SmartX\/cache\/res\/output.csv",
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "Cursor",
+                          "PARAMS": {
+                            "callback": []
+                          }
+                        }],
+                        "INHERITPARAMS": {
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        }
+                      }
+                    },
+                    "children": [{
+                      "id": "61eec82304459",
+                      "parent": null,
+                      "container": "61eec822d0620",
+                      "name": null,
+                      "type": "lib\\data\\Cursor\\SequenceCursor",
+                      "status": 5,
+                      "start": "2022-01-24 15:39:15",
+                      "phaseStart": "2022-01-24 15:39:15",
+                      "end": "2022-01-24 15:39:15",
+                      "rowsProcessed": 0,
+                      "error": null,
+                      "cursorDefinition": {
+                        "CURSORS": [{
+                          "TYPE": "lib\\data\\Cursor\\CSVFileReader",
+                          "PARAMS": {
+                            "fileName": "\/vagrant\/adtopy\/model\/ads\/tests\/SmartX\/cache\/res\/input.csv",
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "lib\\data\\Cursor\\Cursor",
+                          "PARAMS": {
+                            "callback": [],
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "lib\\data\\Cursor\\CSVFileWriter",
+                          "PARAMS": {
+                            "fileName": "\/vagrant\/adtopy\/model\/ads\/tests\/SmartX\/cache\/res\/output.csv",
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "Cursor",
+                          "PARAMS": {
+                            "callback": []
+                          }
+                        }],
+                        "INHERITPARAMS": {
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        }
+                      },
+                      "children": [{
+                        "id": "61eec82308a92",
+                        "parent": null,
+                        "container": "61eec82304459",
+                        "name": null,
+                        "type": "lib\\data\\Cursor\\CSVFileReaderCursor",
+                        "status": 5,
+                        "start": "2022-01-24 15:39:15",
+                        "phaseStart": "2022-01-24 15:39:15",
+                        "end": "2022-01-24 15:39:15",
+                        "rowsProcessed": 9,
+                        "error": null,
+                        "cursorDefinition": {
+                          "fileName": "\/vagrant\/adtopy\/model\/ads\/tests\/SmartX\/cache\/res\/input.csv",
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        },
+                        "children": null
+                      }, {
+                        "id": "61eec8230c8ff",
+                        "parent": "61eec82308a92",
+                        "container": "61eec82304459",
+                        "name": null,
+                        "type": "lib\\data\\Cursor\\Cursor",
+                        "status": 5,
+                        "start": "2022-01-24 15:39:15",
+                        "phaseStart": "2022-01-24 15:39:15",
+                        "end": "2022-01-24 15:39:15",
+                        "rowsProcessed": 9,
+                        "error": null,
+                        "cursorDefinition": {
+                          "callback": [],
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        },
+                        "children": null
+                      }, {
+                        "id": "61eec823130d3",
+                        "parent": "61eec8230c8ff",
+                        "container": "61eec82304459",
+                        "name": null,
+                        "type": "lib\\data\\Cursor\\CSVFileWriterCursor",
+                        "status": 5,
+                        "start": "2022-01-24 15:39:15",
+                        "phaseStart": "2022-01-24 15:39:15",
+                        "end": "2022-01-24 15:39:15",
+                        "rowsProcessed": 9,
+                        "error": null,
+                        "cursorDefinition": {
+                          "fileName": "\/vagrant\/adtopy\/model\/ads\/tests\/SmartX\/cache\/res\/output.csv",
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        },
+                        "children": null
+                      }, {
+                        "id": "61eec82318847",
+                        "parent": "61eec823130d3",
+                        "container": "61eec82304459",
+                        "name": null,
+                        "type": "lib\\data\\Cursor\\Cursor",
+                        "status": 5,
+                        "start": "2022-01-24 15:39:15",
+                        "phaseStart": "2022-01-24 15:39:15",
+                        "end": "2022-01-24 15:39:15",
+                        "rowsProcessed": 1,
+                        "error": null,
+                        "cursorDefinition": {
+                          "callback": [],
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        },
+                        "children": null
+                      }]
+                    }]
+                  }, {
+                    "id": "61eec822d2cac",
+                    "parent": null,
+                    "container": "61eec822bc57b",
+                    "name": null,
+                    "type": "model\\sys\\lib\\Cache\\CacheElement",
+                    "status": 5,
+                    "start": "2022-01-24 15:39:15",
+                    "phaseStart": "2022-01-24 15:39:15",
+                    "end": "2022-01-24 15:39:15",
+                    "rowsProcessed": 0,
+                    "error": null,
+                    "cursorDefinition": {
+                      "TYPE": "Sequence",
+                      "PARAMS": {
+                        "CURSORS": [{
+                          "TYPE": "lib\\data\\Cursor\\CSVFileReader",
+                          "PARAMS": {
+                            "fileName": "\/vagrant\/adtopy\/model\/ads\/tests\/SmartX\/cache\/res\/output.csv",
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "lib\\data\\Cursor\\Cursor",
+                          "PARAMS": {
+                            "callback": [],
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "lib\\data\\Cursor\\Mysql\\MysqlWriter",
+                          "PARAMS": {
+                            "SERIALIZER": "default",
+                            "table": "smartx",
+                            "hash": [],
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "Cursor",
+                          "PARAMS": {
+                            "callback": []
+                          }
+                        }],
+                        "INHERITPARAMS": {
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        }
+                      }
+                    },
+                    "children": [{
+                      "id": "61eec82358e6e",
+                      "parent": null,
+                      "container": "61eec822d2cac",
+                      "name": null,
+                      "type": "lib\\data\\Cursor\\SequenceCursor",
+                      "status": 5,
+                      "start": "2022-01-24 15:39:15",
+                      "phaseStart": "2022-01-24 15:39:15",
+                      "end": "2022-01-24 15:39:15",
+                      "rowsProcessed": 0,
+                      "error": null,
+                      "cursorDefinition": {
+                        "CURSORS": [{
+                          "TYPE": "lib\\data\\Cursor\\CSVFileReader",
+                          "PARAMS": {
+                            "fileName": "\/vagrant\/adtopy\/model\/ads\/tests\/SmartX\/cache\/res\/output.csv",
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "lib\\data\\Cursor\\Cursor",
+                          "PARAMS": {
+                            "callback": [],
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "lib\\data\\Cursor\\Mysql\\MysqlWriter",
+                          "PARAMS": {
+                            "SERIALIZER": "default",
+                            "table": "smartx",
+                            "hash": [],
+                            "HASH": "9b813da59b7bca8bc386ee82896e39d7"
+                          }
+                        }, {
+                          "TYPE": "Cursor",
+                          "PARAMS": {
+                            "callback": []
+                          }
+                        }],
+                        "INHERITPARAMS": {
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        }
+                      },
+                      "children": [{
+                        "id": "61eec8235e002",
+                        "parent": null,
+                        "container": "61eec82358e6e",
+                        "name": null,
+                        "type": "lib\\data\\Cursor\\CSVFileReaderCursor",
+                        "status": 5,
+                        "start": "2022-01-24 15:39:15",
+                        "phaseStart": "2022-01-24 15:39:15",
+                        "end": "2022-01-24 15:39:15",
+                        "rowsProcessed": 9,
+                        "error": null,
+                        "cursorDefinition": {
+                          "fileName": "\/vagrant\/adtopy\/model\/ads\/tests\/SmartX\/cache\/res\/output.csv",
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        },
+                        "children": null
+                      }, {
+                        "id": "61eec82363292",
+                        "parent": "61eec8235e002",
+                        "container": "61eec82358e6e",
+                        "name": null,
+                        "type": "lib\\data\\Cursor\\Cursor",
+                        "status": 5,
+                        "start": "2022-01-24 15:39:15",
+                        "phaseStart": "2022-01-24 15:39:15",
+                        "end": "2022-01-24 15:39:15",
+                        "rowsProcessed": 9,
+                        "error": null,
+                        "cursorDefinition": {
+                          "callback": [],
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        },
+                        "children": null
+                      }, {
+                        "id": "61eec8236d0ed",
+                        "parent": "61eec82363292",
+                        "container": "61eec82358e6e",
+                        "name": null,
+                        "type": "lib\\data\\Cursor\\Mysql\\MysqlWriterCursor",
+                        "status": 5,
+                        "start": "2022-01-24 15:39:15",
+                        "phaseStart": "2022-01-24 15:39:15",
+                        "end": "2022-01-24 15:39:15",
+                        "rowsProcessed": 0,
+                        "error": null,
+                        "cursorDefinition": {
+                          "SERIALIZER": "default",
+                          "table": "smartx",
+                          "hash": [],
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        },
+                        "children": null
+                      }, {
+                        "id": "61eec82373554",
+                        "parent": "61eec8236d0ed",
+                        "container": "61eec82358e6e",
+                        "name": null,
+                        "type": "lib\\data\\Cursor\\Cursor",
+                        "status": 5,
+                        "start": "2022-01-24 15:39:15",
+                        "phaseStart": "2022-01-24 15:39:15",
+                        "end": "2022-01-24 15:39:15",
+                        "rowsProcessed": 1,
+                        "error": null,
+                        "cursorDefinition": {
+                          "callback": [],
+                          "HASH": "9b813da59b7bca8bc386ee82896e39d7",
+                          "ID": 227
+                        },
+                        "children": null
+                      }]
+                    }]
+                  }],
+                }
+                this.sendCursorToGraph(cursor);
+                if (cursor.children!==null) this.sendChildrenCursorToGraph(cursor.children)
               },
               sendCursorToGraph: function (cursor) {
                 if (this.cursorsGraph)
@@ -670,6 +1016,13 @@
                   var preCursor = cursor;
                   this.cursorsGraph.fireEvent('CURSOR_SENT', preCursor);
                   this.cursorsGraph.fireEvent('CURSOR_SENT', cursor);
+              },
+              sendChildrenCursorToGraph: function(children) {
+                for (var child of children) {
+                  this.sendCursorToGraph(child)
+                  if (child.children!==null)
+                    this.sendChildrenCursorToGraph(child.children)
+                }
               },
               connectToBus: function () {
                 // Simulacion de recepcion de datos en un periodo de tiempo
