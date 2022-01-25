@@ -17,6 +17,8 @@
 
     <script src="../../jqwidgets/jqx-all.js"></script>
     <script src="../../jqwidgets/globalization/globalize.js"></script>
+    <script src="/node_modules/autobahn-browser/autobahn.min.js"></script>
+    <script src="/reflection/js/WampServer.js"></script>
     <link rel="stylesheet" href="/reflection/css/style.css">
     <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
@@ -135,8 +137,19 @@
     baseUrl:'http://reflection.adtopy.com/',
     staticsUrl:'http://statics.adtopy.com/',
     metadataUrl:'http://metadata.adtopy.com/',
-
-    locale:'es-ES',
+    user:{
+      USER_ID:"1",
+      TOKEN:"1"
+    },
+    wampServer:{
+      "URL":"ws://statics.adtopy.com",
+      "PORT":"8999",
+      "REALM":"adtopy",
+      /*"user":{
+        "USER_ID": "1",
+        "TOKEN":'1',
+      },*/
+    },
     // Si el mapper es XXX, debe haber:
     // 1) Un gestor en /lib/output/html/renderers/js/XXX.php
     // 2) Un Mapper en Siviglia.Model.XXXMapper
@@ -147,6 +160,14 @@
 </script>
 
 <script>
+  var wConfig=Siviglia.config.wampServer;
+  var wampServer = new Siviglia.comm.WampServer(
+    wConfig.URL,
+    wConfig.PORT,
+    wConfig.REALM,
+    top.Siviglia.config.user.TOKEN
+  );
+  Siviglia.Service.add("wampServer", wampServer);
   var parser = new Siviglia.UI.HTMLParser();
   parser.parse($(document.body));
   hljs.initHighlightingOnLoad();
@@ -364,7 +385,6 @@
 
 
   }
-
   var eventsMock=[
     {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:null,error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
     {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
@@ -386,43 +406,6 @@
     {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:3,type:"lib\\data\\Cursor\\Cursor"},
     {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:"2021-05-09 23:14:41",error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
     {container:null,cursorDefinition:{callback:[]},end:"2021-05-09 23:14:41",error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\Cursor"}];
-  var eventsRelationsMock=[
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:null,error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:2,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:"609850c1a3449",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\Cursor"}
-  ];
-
-  var eventsFromDB=[
-    {container:null,cursorDefinition:{TYPE:"Sequence",PARAMS:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\CSVFileWriter",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}}],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},end:"2021-09-27 08:43:01",error:null,id:"615183f8ad85a",name:null,parent:null,phaseStart:"2021-09-27 08:43:01",rowsProcessed:0,start:"2021-09-27 08:42:32",status:5,type:"model\\sys\\lib\\cache\\CacheElement"},
-    {container:null,cursorDefinition:{TYPE:"Sequence",PARAMS:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Mysql\\MysqlWriter",PARAMS:{SERIALIZER:"default",table:"smartx",hash:["id_cache"],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}}],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},end:"2021-09-27 08:44:07",error:null,id:"615183f8ad87b",name:null,parent:null,phaseStart:"2021-09-27 08:44:07",rowsProcessed:0,start:"2021-09-27 08:43:01",status:5,type:"model\\sys\\lib\\cache\\CacheElement"},
-    {container:null,cursorDefinition:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\CSVFileWriter",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}}],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:01",error:null,id:"615183f8b2296",name:null,parent:null,phaseStart:"2021-09-27 08:43:01",rowsProcessed:0,start:"2021-09-27 08:42:32",status:5,type:"lib\\data\\Cursor\\SequenceCursor"},
-    {container:null,cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:01",error:null,id:"615183f8b93e5",name:null,parent:null,phaseStart:"2021-09-27 08:43:01",rowsProcessed:98029,start:"2021-09-27 08:42:32",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:01",error:null,id:"615183f8bd458",name:null,parent:"615183f8b93e5",phaseStart:"2021-09-27 08:43:01",rowsProcessed:98029,start:"2021-09-27 08:42:32",status:5,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
-    {container:null,cursorDefinition:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Mysql\\MysqlWriter",PARAMS:{SERIALIZER:"default",table:"smartx",hash:["id_cache"],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}}],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:44:07",error:null,id:"6151841590d95",name:null,parent:null,phaseStart:"2021-09-27 08:44:07",rowsProcessed:0,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\SequenceCursor"},
-    {container:null,cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415975fb",name:null,parent:null,phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"615184159c1c6",name:null,parent:"61518415975fb",phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
-    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415a58b8",name:null,parent:"615184159c1c6",phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
-    {container:null,cursorDefinition:{SERIALIZER:"default",table:"smartx",hash:["id_cache"],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415afa3a",name:null,parent:"61518415a58b8",phaseStart:"2021-09-27 08:43:47",rowsProcessed:0,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Mysql\\MysqlWriterCursor"}
-  ];
-  var eventsFromDBRelations = [
-    {container:null,cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415975fb",name:null,parent:null,phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"615184159c1c6",name:null,parent:"61518415975fb",phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
-    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415a58b8",name:null,parent:"615184159c1c6",phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
-    {container:null,cursorDefinition:{SERIALIZER:"default",table:"smartx",hash:["id_cache"],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415afa3a",name:null,parent:"61518415a58b8",phaseStart:"2021-09-27 08:43:47",rowsProcessed:0,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Mysql\\MysqlWriterCursor"},
-  ]
-  var eventsContainer=[
-    {container:null,cursorDefinition:{TYPE:"Sequence",PARAMS:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\CSVFileWriter",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"Cursor",PARAMS:{callback:[]}}],INHERITPARAMS:{HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}}},end:"2021-10-05 11:15:23",error:null,id:"615c33ca9018c",name:null,parent:null,phaseStart:"2021-10-05 11:15:23",rowsProcessed:0,start:"2021-10-05 11:15:22",status:5,type:"model\\sys\\lib\\cache\\CacheElement"},
-    {container:'615c33ca9018c',cursorDefinition:{CURSORS:[{TYPE:"lib\\data\\Cursor\\CSVFileReader",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\Cursor",PARAMS:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"lib\\data\\Cursor\\CSVFileWriter",PARAMS:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},{TYPE:"Cursor",PARAMS:{callback:[]}}],INHERITPARAMS:{HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"}},end:"2021-10-05 11:15:23",error:null,id:"615c33ca9a4f6",name:null,parent:null,phaseStart:"2021-10-05 11:15:23",rowsProcessed:0,start:"2021-10-05 11:15:22",status:5,type:"lib\\data\\Cursor\\SequenceCursor"},
-    {container:'615c33ca9a4f6',cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/input.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-10-05 11:15:23",error:null,id:"615c33cab119f",name:null,parent:null,phaseStart:"2021-10-05 11:15:23",rowsProcessed:9,start:"2021-10-05 11:15:22",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:'615c33ca9a4f6',cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-10-05 11:15:23",error:null,id:"615c33cab96e5",name:null,parent:"615c33cab119f",phaseStart:"2021-10-05 11:15:23",rowsProcessed:9,start:"2021-10-05 11:15:22",status:5,type:"lib\\data\\Cursor\\Cursor"},
-    {container:'615c33ca9a4f6',cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-10-05 11:15:23",error:null,id:"615c33cacee23",name:null,parent:"615c33cab96e5",phaseStart:"2021-10-05 11:15:23",rowsProcessed:9,start:"2021-10-05 11:15:22",status:5,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
-    {container:'615c33ca9a4f6',cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-10-05 11:15:23",error:null,id:"615c33cadbbc8",name:null,parent:"615c33cacee23",phaseStart:"2021-10-05 11:15:23",rowsProcessed:1,start:"2021-10-05 11:15:22",status:5,type:"lib\\data\\Cursor\\Cursor"}];
-  var eventsSimpleRelations = [
-    {container:null,cursorDefinition:{fileName:"/vagrant/adtopy/model/ads/tests/SmartX/cache/res/output.csv",HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"61518415975fb",name:null,parent:null,phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"615184159c1c6",name:null,parent:null,phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
-    {container:null,cursorDefinition:{callback:[],HASH:"0e0d91509a5c72fad03d72c1f8c9fc7d"},end:"2021-09-27 08:43:47",error:null,id:"615184159c1c6",name:null,parent:"61518415975fb",phaseStart:"2021-09-27 08:43:47",rowsProcessed:98029,start:"2021-09-27 08:43:01",status:5,type:"lib\\data\\Cursor\\Cursor"},
-  ]
 
   runTest("Grafico de cursores","Prueba de diseño para ver como pintar cursores mediante diagramas de fuerza. <br>",
     '<div data-sivWidget="Test.DataGridForm" data-widgetCode="Test.DataGridForm">'+
@@ -693,11 +676,6 @@
                 var curEvent=0;
                 var cInt;
                 // var events = eventsMock
-                // var events = eventsRelationsMock
-                // var events = eventsFromDB
-                // var events = eventsFromDBRelations
-                // var events = eventsSimpleRelations
-                // var events = eventsContainer
                 var events = []
                 cInt=setInterval(function(){
                   if(curEvent == events.length) {
@@ -719,17 +697,19 @@
                       path:'/model/sys/Cursor/*',
                       roles:0xFFF,
                       appId:this.__identifier,
-                      userId:top.Siviglia.config.user.TOKEN
+                      userId:top.Siviglia.config.user.USER_ID
                     }]
                   );
 
                   this.wampService.subscribe(
                     'busevent',
                     function(data){
+                      console.log('Received info through bus', data)
                       var channel=data[0];
                       var params=data[1];
                       var appData=data[2];
                       if(appData.appId===this.__identifier)
+                        console.log('cursor data: ', params.data)
                         this.sendCursorToGraph(params.data);
                     }.bind(this)
                   )
@@ -787,6 +767,7 @@
                   "ds":{
                     "model":"/model/sys/Cursor",
                     "name":"FullList",
+                    'params':{isDataProcess: '1'},
                     "settings":{
                       pageSize:10
                     }
@@ -797,12 +778,13 @@
                     "container":     {"Type": "Field", "Field":"container", "Label":"Container", "gridOpts":{"width":"10%"}},
                     "name":          {"Type": "Field", "Field":"name", "Label":"Name", "gridOpts":{"width":"10%"}},
                     "Type":          {"Type": "Field", "Field":"type", "Label":"Type", "gridOpts":{"width":"20%"}},
-                    "status":        {"Type": "Field", "Field":"status", "Label":"Status", "gridOpts":{"width":"5%"}},
-                    "start":         {"Type": "Field", "Field":"start", "Label":"Start", "gridOpts":{"width":"5%"}},
-                    "end":           {"Type": "Field", "Field":"end", "Label":"End", "gridOpts":{"width":"10%"}},
-                    "rowsProcessed": {"Type": "Field", "Field":"rowsProcessed", "Label":"Filas Proc.", "gridOpts":{"width":"5%"}},
-                    "error":         {"Type": "Field", "Field":"error", "Label":"Error text", "gridOpts":{"width":"10%"}},
-                    "cursorDefinition": {"Type": "Field", "Field":"cursorDefinition", "Label":"Definition", "gridOpts":{"width":"5%"}},
+                    // 'isDataProcess': {"Type": "Field", "Field":"isDataProcess", "Label":"root", "gridOpts":{"width":"20%"}},
+                    // "status":        {"Type": "Field", "Field":"status", "Label":"Status", "gridOpts":{"width":"5%"}},
+                    // "start":         {"Type": "Field", "Field":"start", "Label":"Start", "gridOpts":{"width":"5%"}},
+                    // "end":           {"Type": "Field", "Field":"end", "Label":"End", "gridOpts":{"width":"10%"}},
+                    // "rowsProcessed": {"Type": "Field", "Field":"rowsProcessed", "Label":"Filas Proc.", "gridOpts":{"width":"5%"}},
+                    // "error":         {"Type": "Field", "Field":"error", "Label":"Error text", "gridOpts":{"width":"10%"}},
+                    // "cursorDefinition": {"Type": "Field", "Field":"cursorDefinition", "Label":"Definition", "gridOpts":{"width":"5%"}},
                   },
                   "gridOpts": { width:"100%" }
                 });
