@@ -408,7 +408,7 @@
     {container:null,cursorDefinition:{callback:[]},end:"2021-05-09 23:14:41",error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\Cursor"}];
 
   runTest("Grafico de cursores","Prueba de diseño para ver como pintar cursores mediante diagramas de fuerza. <br>",
-    '<div data-sivWidget="Test.DataGridForm" data-widgetCode="Test.DataGridForm">'+
+    '<div data-sivWidget="Test.FilterForm" data-widgetCode="Test.FilterForm">'+
         '<div class="widField">'+
             '<div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"id"}\'></div>'+
         '</div>'+
@@ -456,18 +456,18 @@
         '<svg data-sivId="svgNode" style="width: 100%; height: 100%"></svg>' +
     '</div>'+
 
-    '<div data-sivWidget="Test.DataGrid" data-widgetCode="Test.DataGrid">'+
+    '<div data-sivWidget="Test.CursorGrid" data-widgetCode="Test.CursorGrid">'+
         '<div data-sivId="filterNode"></div>'+
         '<div data-sivId="grid"></div>'+
     '</div>' +
 
-    '<div data-sivWidget="Test.ViewController" data-widgetCode="Test.ViewController">' +
-        '<div data-sivView="Test.DataGrid" data-sivParams="{}"></div>' +
+    '<div data-sivWidget="Test.AppController" data-widgetCode="Test.AppController">' +
+        '<div data-sivView="Test.CursorGrid" data-sivParams="{}"></div>' +
         '<div data-sivId="graphicArea" style="width: 100%; height:100%"></div>' +
     '</div>',
 
 
-    '<div data-sivView="Test.ViewController" data-sivParams="{}"></div>',
+    '<div data-sivView="Test.AppController" data-sivParams="{}"></div>',
     function(){
       Siviglia.Utils.buildClass({
         context:'Test',
@@ -603,7 +603,7 @@
               }
             }
           },
-          "ViewController":{
+          "AppController":{
             inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
             destruct: function() {
               /*if(this.modelView)
@@ -758,12 +758,12 @@
               },
             }
           },
-          "DataGrid": {
+          "CursorGrid": {
             "inherits": "Siviglia.lists.jqwidgets.BaseGrid",
             "methods": {
               preInitialize:function(params) {
                 this.BaseGrid$preInitialize({
-                  "filters":"Test.DataGridForm",
+                  "filters":"Test.FilterForm",
                   "ds":{
                     "model":"/model/sys/Cursor",
                     "name":"FullList",
@@ -799,7 +799,7 @@
               },
             }
           },
-          "DataGridForm": {
+          "FilterForm": {
             "inherits": "Siviglia.lists.jqwidgets.BaseFilterForm",
             "methods": { }
           },
