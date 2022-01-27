@@ -1810,7 +1810,12 @@ Siviglia.Utils.buildClass(
                 },
             UUID:
                 {
-                    inherits: 'BaseType'
+                    inherits: 'BaseType',
+                    methods: {
+                      _validate: function () {
+                        return true;
+                      },
+                    }
                 },
             Model:{
                 inherits:'String',
