@@ -628,6 +628,9 @@
                 this.selectedResourceType="";
                 this.selectedClass="";
                 this.selectedFile="";
+
+                this.childrenDS=new Siviglia.Model.DataSource("/model/sys/Cursor","ChildList",{});
+                this.childrenDS.freeze()
               },
               initialize: function(params) {
                 var stack = new Siviglia.Path.ContextStack();
@@ -659,8 +662,7 @@
                 this.connectToBus();
               },
               onRowSelected:function(eventName, cursor) {
-                // this.sendCursorToGraph(cursor);
-                cursor = {
+                /*cursor = {
                   "id": "61eec822bc57b",
                   "parent": null,
                   "container": null,
@@ -1003,7 +1005,8 @@
                       }]
                     }]
                   }],
-                }
+                }*/
+                this.getCursorChildren('61eec822bc57b')
                 this.sendCursorToGraph(cursor);
                 if (cursor.children!==null) this.sendChildrenCursorToGraph(cursor.children)
               },
@@ -1023,6 +1026,10 @@
                   if (child.children!==null)
                     this.sendChildrenCursorToGraph(child.children)
                 }
+              },
+              getCursorChildren: function(cursorID) {
+                this.childrenDS.params.id=cursorID
+                this.childrenDS.unfreeze().then(function (){console.log(this.childrenDS.getRawData())}.bind(this))
               },
               connectToBus: function () {
                 // Simulacion de recepcion de datos en un periodo de tiempo
