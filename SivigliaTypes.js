@@ -3916,7 +3916,10 @@ Siviglia.Utils.buildClass(
                                     };
 
                                     return _unserialize((val + ''), 0)[2];
-                                }
+                                },
+                                _validate: function () {
+                                  return true;
+                                },
                             }
                     }
             }
