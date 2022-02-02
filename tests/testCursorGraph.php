@@ -629,8 +629,8 @@
                 this.selectedClass="";
                 this.selectedFile="";
 
-                this.childrenDS=new Siviglia.Model.DataSource("/model/sys/Cursor","ChildList",{});
-                this.childrenDS.freeze()
+                this.descendantDS=new Siviglia.Model.DataSource("/model/sys/Cursor","ChildList",{});
+                this.descendantDS.freeze()
               },
               initialize: function(params) {
                 var stack = new Siviglia.Path.ContextStack();
@@ -662,8 +662,14 @@
                 this.connectToBus();
               },
               onRowSelected:function(eventName, cursor) {
-                this.getCursorChildren(cursor)
-                // if (cursor.children!==null) this.sendChildrenCursorToGraph(cursor.children)
+                this.descendantDS.params.id=cursor.id
+                this.descendantDS.unfreeze()
+                  .then(
+                    function() {
+                      this.sendCursorToGraph(cursor);
+                      this.sendCursorDescendantsToGraph(this.descendantDS.getRawData())
+                    }.bind(this)
+                  )
               },
               sendCursorToGraph: function (cursor) {
                 if (this.cursorsGraph)
@@ -675,25 +681,14 @@
                   this.cursorsGraph.fireEvent('CURSOR_SENT', preCursor);
                   this.cursorsGraph.fireEvent('CURSOR_SENT', cursor);
               },
-              sendChildrenCursorToGraph: function(children) {
-                if (typeof children!=='undefined' && children!==null) {
-                  for (var child of children) {
-                    this.sendCursorToGraph(child)
-                    if (child.children !== null)
-                      this.sendChildrenCursorToGraph(child.children)
+              sendCursorDescendantsToGraph: function(descendants) {
+                if (typeof descendants!=='undefined' && descendants!==null) {
+                  for (var descendant of descendants) {
+                    this.sendCursorToGraph(descendant)
+                    if (descendant.children !== null)
+                      this.sendCursorDescendantsToGraph(descendant.children)
                   }
                 }
-              },
-              getCursorChildren: function(cursor) {
-                this.childrenDS.params.id=cursor.id
-                this.childrenDS.unfreeze().then(
-                  function() {
-                    // console.dir(this.childrenDS.getRawData())
-                    this.sendCursorToGraph(cursor);
-                    this.sendChildrenCursorToGraph(this.childrenDS.getRawData())
-                  }
-                  .bind(this)
-                )
               },
               connectToBus: function () {
                 // Simulacion de recepcion de datos en un periodo de tiempo
