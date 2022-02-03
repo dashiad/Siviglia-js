@@ -382,30 +382,7 @@
       template:template,
       view:view,
       cb:callback,number:testNumber});
-
-
   }
-  var eventsMock=[
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:null,error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\Cursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:"609850c1a3449",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\Cursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:null,error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:2,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:null,error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:3,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:"609850c1a3449",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:2,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:null,error:null,id:"609850c1b3425",name:null,parent:"609850c1a3449",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:3,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/simple.csv"},end:"2021-05-09 23:14:41",error:null,id:"609850c1a3449",name:null,parent:null,phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/intermediate.csv"},end:"2021-05-09 23:14:41",error:null,id:"609850c1b3425",name:null,parent:"609850c1a3449",phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\CSVFileWriterCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:1,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:2,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:null,error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:3,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:2,type:"lib\\data\\Cursor\\Cursor"},
-    {container:null,cursorDefinition:{callback:[]},end:null,error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:0,start:"2021-05-09 23:14:41",status:3,type:"lib\\data\\Cursor\\Cursor"},
-    {container:null,cursorDefinition:{fileName:"C:\\xampp7\\htdocs\\adtopy\\lib\\tests\\data/res/second.csv"},end:"2021-05-09 23:14:41",error:null,id:"609850c1b6b3d",name:null,parent:"609850c1b3425",phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\CSVFileReaderCursor"},
-    {container:null,cursorDefinition:{callback:[]},end:"2021-05-09 23:14:41",error:null,id:"609850c1ba803",name:null,parent:"609850c1b6b3d",phaseStart:"2021-05-09 23:14:41",rowsProcessed:13,start:"2021-05-09 23:14:41",status:5,type:"lib\\data\\Cursor\\Cursor"}];
 
   runTest("Grafico de cursores","Prueba de diseño para ver como pintar cursores mediante diagramas de fuerza. <br>",
     '<div data-sivWidget="Test.FilterForm" data-widgetCode="Test.FilterForm">'+
@@ -600,16 +577,19 @@
                 this.Force$updateLinks(links);
                 this.graphLinks.attr("marker-end", "url(#end)");
                 //this.graphLinks.attr('marker-end', function(d,i){ return 'url(#end)' })
-              }
+              },
+              getRenderedCursorIDs: function() {
+                var cursorIDList = []
+                for (var cursorID in this.cursorBuffer) {
+                  cursorIDList.push(cursorID)
+                }
+                return cursorIDList
+              },
             }
           },
           "AppController":{
             inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
             destruct: function() {
-              /*if(this.modelView)
-                                this.modelView.destruct();
-                            if(this.currentItemView)
-                                this.currentItemView.destruct();*/
               if (this.wampService) {
                 this.wampService.call("com.adtopy.removeBusListener",[this.__identifier]);
               }
@@ -691,22 +671,9 @@
                 }
               },
               connectToBus: function () {
-                // Simulacion de recepcion de datos en un periodo de tiempo
-                var curEvent=0;
-                var cInt;
-                // var events = eventsMock
-                var events = []
-                cInt=setInterval(function(){
-                  if(curEvent == events.length) {
-                    clearInterval(cInt);
-                    return;
-                  }
-                  this.sendCursorToGraph(events[curEvent]);
-                  curEvent=curEvent+1;
-                }.bind(this),1000);
-
                 // Se pone un listener sobre cualquier cambio en reflection
                 this.wampService=Siviglia.Service.get("wampServer");
+
                 if (this.wampService) {
                   this.__identifier=Siviglia.Model.getAppId();
                   this.wampService.call(
@@ -715,7 +682,7 @@
                       channel:'General',
                       path:'/model/sys/Cursor/*',
                       roles:0xFFF,
-                      // ids:
+                      // ids:[],
                       appId:this.__identifier,
                       userId:top.Siviglia.config.user.USER_ID
                     }]
@@ -728,18 +695,22 @@
                       var channel=data[0];
                       var params=data[1];
                       var appData=data[2];
-                      if(appData.appId===this.__identifier)
-                        console.log('cursor data: ', params.data)
-                        this.sendCursorToGraph(params.data);
+                      if (appData.appId===this.__identifier)
+                        this.onCursorReceivedFromBus(params.data)
                     }.bind(this)
                   )
                 }
+              },
+              onCursorReceivedFromBus: function(cursor) {
+                var cursorIDs = this.getCursorIDsFromGraph()
+                if (cursorIDs.includes(cursor.id) || cursorIDs.includes(cursor.parent) || cursorIDs.includes(cursor.container))
+                  this.sendCursorToGraph(cursor)
               },
               onItemSelected:function(evName,params)
               {
                 this.showItemData(params.selection[0].d);
 
-                // Se prepara el nombre del widget de edicion.
+                // Se prepara el nombdget de edicion.
                 // Si el nombre del recurso era "model", se carga Siviglia.Reflection.Model.
               },
               onSelectionEmpty:function()
@@ -776,6 +747,9 @@
                 this.selectedFile=typeof d.file==="undefined"?"":d.file;
 
               },
+              getCursorIDsFromGraph: function() {
+                return this.cursorsGraph.getRenderedCursorIDs()
+              }
             }
           },
           "CursorGrid": {
