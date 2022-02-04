@@ -638,6 +638,7 @@
                 }.bind(this))
 
                 this.addListener("ROW_CLICKED",this,"onRowSelected");
+                this.addListener('GRID_READY', this, 'onGridReady')
 
                 this.connectToBus();
               },
@@ -724,6 +725,12 @@
                 //this.modelView.unselect(this.lastItemSelected.d);
 
               },
+              onGridReady: function(event, grid) {
+                debugger
+                console.log('refreshing from controller')
+                setInterval(console.log('ping'), 1000)
+                setInterval(grid.BaseGrid$refreshGrid(), 3000)
+              },
               closeComponentView:function()
               {
                 this.onSelectionEmpty();
@@ -767,7 +774,7 @@
                     }
                   },
                   "columns": {
-                    "id":            {"Type": "Field", "Field":"id", "Label":"Id", "gridOpts":{"width":"10%"}},
+                    "id":            {"Type": "Field", "Field":"id", "Label":"Id", "gridOpts":{"width":"50%"}},
                     "parent":        {"Type": "Field", "Field":"parent", "Label":"Parent", "gridOpts":{"width":"10%"}},
                     "container":     {"Type": "Field", "Field":"container", "Label":"Container", "gridOpts":{"width":"10%"}},
                     "name":          {"Type": "Field", "Field":"name", "Label":"Name", "gridOpts":{"width":"10%"}},
@@ -790,6 +797,17 @@
                   var gridRowData=eventData.args.row.bounddata;
                   this.__parentView.fireEvent("ROW_CLICKED", gridRowData);
                 }.bind(this));
+
+                this.grid.on("initialized",function(){
+                  setInterval(function(){
+                    this.refreshGrid()
+                  }.bind(this),15000)
+                }.bind(this));
+              },
+              refreshGrid: function() {
+                this.ds.unfreeze().then(() => {
+                  this.BaseGrid$refreshGrid()
+                })
               },
             }
           },
