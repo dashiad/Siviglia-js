@@ -643,6 +643,7 @@
                 this.connectToBus();
               },
               onRowSelected:function(eventName, cursor) {
+                if (this.isCursorRendered(cursor.id)) return
                 this.descendantDS.params.id=cursor.id
                 this.descendantDS.unfreeze()
                   .then(
@@ -706,6 +707,10 @@
                 var cursorIDs = this.getCursorIDsFromGraph()
                 if (cursorIDs.includes(cursor.id) || cursorIDs.includes(cursor.parent) || cursorIDs.includes(cursor.container))
                   this.sendCursorToGraph(cursor)
+              },
+              isCursorRendered: function (cursorID) {
+                var cursorIDs = this.getCursorIDsFromGraph()
+                return cursorIDs.includes(cursorID)
               },
               onItemSelected:function(evName,params)
               {
