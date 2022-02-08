@@ -366,7 +366,7 @@
 
     }
 
-    runTest("Widget: widget mínimo",
+    runTest("sivWidget: widget mínimo",
       "Un widget se compone de una <b>plantilla HTML</b> y una <b>clase asociada</b>. Estos widgets se invocan mediante una <b>vista</b>.<br>" +
       "El widget se declara mediante el atributo <b>sivWidget</b>.<br>"+
       "La clase se declara mediante el atributo <b>widgetCode</b>.<br>"+
@@ -390,9 +390,9 @@
         })
       }
     )
-    runTest("Widget: variables de la clase en el widget",
+    runTest("sivWidget: variables de la clase en el widget",
       "Para emplear una variable de la clase en el widget debe declararse con un valor no nulo en preInitialize.<br>" +
-      "En el widget se invoca mediante el contexto '<b>*</b>' en una parametrizableString.",
+      "Para acceder en el widget al contexto de la clase asociada, y por tanto a sus variables de clase, se emplea el prefijo '<b>*</b>'",
       '<div data-sivWidget="class-var" data-widgetCode="Test.ClassVar">' +
       '<span data-sivValue="[%*message%]"></span>' +
       '</div>',
@@ -414,7 +414,7 @@
         })
       }
     )
-    runTest("Widget: ciclo de vida",
+    runTest("sivWidget: ciclo de vida",
       "El ciclo de vida de un widget es: <u>llamada a preInitialize</u> -> <u>renderizado</u> -> <u>llamada a initialize</u>.<br>" +
       "En <b>preInitialize</b> aun no se ha renderizado la plantilla, siendo el punto en el que deben declararse las variables usadas en la plantilla.<br>" +
       "Después de preInitialize y antes de initialize se <b>renderiza la plantilla</b>, bindeando las variables del widget a las variables de la clase.<br>" +
@@ -443,7 +443,7 @@
         })
       }
     )
-    runTest("Widget: acceso al valor de keys en objetos mediante path",
+    runTest("sivWidget: acceso al valor de keys en objetos mediante path",
       "Las variables miembro de la clase se pueden navegar como si fueran paths",
       '<div data-sivWidget="path-access-to-var" data-widgetCode="Test.PathAccessToVar">' +
       '<span data-sivValue="[%*varName/0/key%]"></span>' +
@@ -468,7 +468,7 @@
         })
       }
     )
-    runTest("Widget: paths dependientes",
+    runTest("sivWidget: paths dependientes",
       "Los paths pueden depender del valor al que apunten otros paths o del valor de variables.<br>" +
       "NOTA1: No puede emplearse variables obtenidas mediante composición empleando otras variables: \"[%*firstPartVar{%*secondPartVar%}%]\"<br>" +
       "NOTA2: Los paths pueden comenzar opcionalmente por el carácter \"/\" , pero los paths anidados (que usan {%...%}, en vez de [%...%]) no permiten ese caracter \"/\" extra.",
@@ -511,6 +511,7 @@
       "Transformación: Después de las posibles verificaciones y antes de la sustitución, se toma el valor final a renderizar y se modifica según lo indicado entre \"{%\" y \"%}\", separado del nombre de la variable mediante \":\"",
       '<div data-sivWidget="parametrizable-string" data-widgetCode="Test.ParametrizableString">' +
       '<div data-sivValue="Sustitución simple: [%*okMessage%]"></div>' +
+      '<div data-sivValue="Sustitución anidada: [%*objVar/{%*keyName%}%]"></div>' +
       '<div data-sivValue="Comprobación de existencia de una variable: [%*stringVar:{%*okMessage%}%]"></div>' +
       '<div data-sivValue="Negacion existencia de variable: [%!*noVar:{%*okMessage%}%]"></div>' +
       '<div data-sivValue="Verificacion <: [%/*intVar < 3:{%*okMessage%}%]"></div>' +
@@ -545,7 +546,8 @@
                   this.stringVar='testString'
                   this.intVar=2
                   this.arrayVar=[1]
-                  this.objVar={a:'a'}
+                  this.objVar={a: 'test passed'}
+                  this.keyName = 'a'
                   this.funcVar=function(){}
                   this.testArray=[]
                 },
@@ -557,59 +559,57 @@
         })
       }
     )
-    runTest("SivValue2",
-        "El valor de sivValue es una ParametrizableString, por lo que no sólo es posible usarlo para referenciar a 1 variable. Puede referenciar más de una, texto, y expresiones complejas.<br>"+
-        "Las variables utilizadas en las expresiones, comienzan por el prefijo '*' cuando hacen referencia a una variable miembro de la clase asociada al widget",
-        '<div data-sivWidget="Test.SivValue2" data-widgetCode="Test.SivValue2">' +
-            '<span data-sivValue="Esto <h2>[%*message1%]</h2> una <b><i>[%*message2%]</i></b>"></span>' +
-        '</div>',
-        '<div data-sivView="Test.SivValue2"></div>',
-        function(){
-            Siviglia.Utils.buildClass({
-                context:'Test',
-                classes:{
-                    'SivValue2':{
-                        inherits: "Siviglia.UI.Expando.View",
-                        methods: {
-                            preInitialize: function (params) {
-                                this.message1="es"
-                                this.message2="prueba"
-                            },
-                            initialize: function (params) {
-                            }
-                        }
-                    }
-                }
-
-            })
-        }
+    runTest("sivValue: definición",
+      "Por defecto, sivValue establece el atributo innerHTML del elemento HTML donde esté.<br>" +
+      "También es posible establecer otras parejas atributo-valor, separando cada pareja mediante el símbolo \"<b>::</b>\", y el nombre y el valor de cada atributo por \"<b>|</b>\".",
+      '<style>.simpleClass {font-weight:bold;color:green}</style>' +
+      '<div data-sivWidget="sivValue-definition" data-widgetCode="Test.SivValueExamples">' +
+        '<span data-sivValue="Hello world!"></span>' +
+        '<br></br>' +
+        '<span data-sivValue="class|[%*assignedClass%]::title|El titulo es:[%*title%]">Simple content</span>' +
+      '</div>',
+      '<div data-sivView="sivValue-definition"></div>',
+      function(){
+        Siviglia.Utils.buildClass({
+          context:'Test',
+          classes:{
+            'SivValueExamples':{
+              inherits: "Siviglia.UI.Expando.View",
+              methods: {
+                preInitialize: function (params) {
+                  this.assignedClass="simpleClass";
+                  this.title="Titulo asignado desde el widget";
+                },
+                initialize: function (params) {}
+              }
+            }
+          }
+        })
+      }
     )
-    runTest("SivValue4",
-        "Por defecto, sivValue establece el innerHTML de un campo.Es posible establecer otras parejas atributo-valor, separando cada pareja por ::, y el nombre y el valor por | ",
-        '<style type="text/css">.simpleClass {font-weight:bold;color:green}</style>' +
-        '<div data-sivWidget="Test.SivValue4" data-widgetCode="Test.SivValue4">' +
-            '<span data-sivValue="class|[%*assignedClass%]::title|El titulo es:[%*title%]">Contenido simple</span>' +
-        '</div>',
-        '<div data-sivView="Test.SivValue4"></div>',
-        function(){
-            Siviglia.Utils.buildClass({
-                context:'Test',
-                classes:{
-                    'SivValue4':{
-                        inherits: "Siviglia.UI.Expando.View",
-                        methods: {
-                            preInitialize: function (params) {
-                                this.assignedClass="simpleClass";
-                                this.title="Titulo asignado desde el widget";
-                            },
-                            initialize: function (params) {
-                            }
-                        }
-                    }
-                }
-
-            })
-        }
+    runTest("sivValue: valor como parametrizableString",
+      "El valor de sivValue es una parametrizableString, por lo que no sólo es posible usarlo para referenciar a 1 variable: puede referenciar más de una, texto o expresiones complejas.",
+      '<div data-sivWidget="sivValue-ps" data-widgetCode="Test.SivValuePS">' +
+        '<span data-sivValue="Esto <h2>[%*message1%]</h2> una <b><i>[%*message2%]</i></b>"></span>' +
+      '</div>',
+      '<div data-sivView="sivValue-ps"></div>',
+      function () {
+        Siviglia.Utils.buildClass({
+          context: 'Test',
+          classes: {
+            'SivValuePS': {
+              inherits: "Siviglia.UI.Expando.View",
+              methods: {
+                preInitialize: function (params) {
+                  this.message1 = "es"
+                  this.message2 = "prueba"
+                },
+                initialize: function (params) {}
+              }
+            }
+          }
+        })
+      }
     )
     runTest("SivLoop",
         "SivLoop atraviesa una variable iterable.<br>" +
