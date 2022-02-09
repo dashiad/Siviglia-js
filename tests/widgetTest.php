@@ -611,71 +611,68 @@
         })
       }
     )
-    runTest("SivLoop",
-        "SivLoop atraviesa una variable iterable.<br>" +
-        "En cada iteracion, establece una variable contextual (prefijo @), que apunta al elemento actual.",
-        '<div data-sivWidget="Test.SivLoop" data-widgetCode="Test.SivLoop">' +
-            '<div data-sivLoop="*simpleArray" data-contextIndex="current">' +
-                '<div data-sivValue="[%@current%]"></div>' +
-            '</div>' +
-        '</div>',
-        '<div data-sivView="Test.SivLoop"></div>',
-        function(){
-            Siviglia.Utils.buildClass({
-                context:'Test',
-                classes:{
-                    'SivLoop':{
-                        inherits: "Siviglia.UI.Expando.View",
-                        methods: {
-                            preInitialize: function (params) {
-                                this.simpleArray=["cad1","cad2","cad3"];
-                            },
-                            initialize: function (params) {
-
-                            }
-                        }
-                    }
-                }
-
-            })
-        }
+    runTest("sivLoop: definición",
+      "Crea una plantilla para cada elemento de un objeto iterable.<br>" +
+      "Se emplea como base para generar las plantillas de cada iteración al conjunto de elementos HTML que sean hijos del elemento HTML en el que se define el atributo sipLoop.<br>" +
+      "En cada iteracion el elemento correspondiente del objeto iterable es accesible mediante el valor de <b>contextIndex</b> con el prefijo \"<b>@</b>\".<br>" +
+      "Ademas de esta variable de contexto, que apunta a los valores, tambien define una que apunta a la key, la cual es accesible con el valor de <b>contextIndex</b>, el plefijo \"<b>@</b>\" y el sufijo \"<b>-index</b>\".",
+      '<div data-sivWidget="sivLoop-definition" data-widgetCode="Test.SivLoopDefinition">' +
+          '<div data-sivLoop="*simpleArray" data-contextIndex="currentArrayElement">' +
+              '<div data-sivValue="Para esta iteración => key del elemento: [%@currentArrayElement-index%] - valor del elemento: [%@currentArrayElement%]"></div>' +
+          '</div>' +
+      '</div>',
+      '<div data-sivView="sivLoop-definition"></div>',
+      function () {
+        Siviglia.Utils.buildClass({
+          context: 'Test',
+          classes: {
+            'SivLoopDefinition': {
+              inherits: "Siviglia.UI.Expando.View",
+              methods: {
+                preInitialize: function (params) {
+                  this.simpleArray = ["array element 1", "array element 2", "array element 3"];
+                },
+                initialize: function (params) {}
+              }
+            }
+          }
+        })
+      }
     )
-    runTest("SivLoop2",
-        "Es posible anidar varios sivloops, utilizando el indice del externo como fuente.<br>En este ejemplo, el array interno itera sobre un dictionary.<br>Un loop, ademas de la variable de contexto (que apunta a los valores), tambien define la variable con el sufijo -index, que apunta a la key. ",
-        '<div data-sivWidget="Test.SivLoop2" data-widgetCode="Test.SivLoop2">'+
-            '<div data-sivLoop="*simpleArray" data-contextIndex="current">' +
-                '<div style="border:1px solid black">'+
-                    '<div data-sivLoop="/@current" data-contextIndex="inner">' +
-                        '<div data-sivValue="[%/@inner-index%] : [%/@inner%]"></div>'+
+    runTest("sivLoop: iteraciones anidadas",
+      "Es posible anidar varios sivLoops cuando el elemento extraido del objeto iterable es a su vez otro objeto iterable.<br>" +
+      "Para ello solo hay que crear un nuevo sivLoop dentro del primero utilizando la referencia al elemento de la iteración como fuente.<br>",
+      '<div data-sivWidget="nested-sivLoops" data-widgetCode="Test.NestedSivLoops">' +
+        '<div data-sivLoop="*simpleArray" data-contextIndex="loop1-element">' +
+                '<div data-sivValue="ext=> key: [%@loop1-element-index%]-valor: [%@loop1-element%]""></div>' +
+                '<div style="border:1px solid black">' +
+                    '<div data-sivLoop="@loop1-element" data-contextIndex="loop2-element">' +
+                        '<div data-sivValue="int=> key: [%@loop2-element-index%] - valor: [%@loop2-element%]""></div>' +
                     '</div>' +
                 '</div>' +
-            '</div>' +
-        '</div>',
-        '<div data-sivView="Test.SivLoop2"></div>',
-        function(){
-            Siviglia.Utils.buildClass({
-                context:'Test',
-                classes:{
-                    'SivLoop2':{
-                        inherits: "Siviglia.UI.Expando.View",
-                        methods: {
-                            preInitialize: function (params) {
-                                this.simpleArray=[
-                                    {a:"cad1",b:"cad2",c:"cad3"},
-                                    {a:"cad4",b:"cad5",c:"cad6"},
-                                    {a:"cad7",b:"cad8",c:"cad9"},
-
-                                ];
-                            },
-                            initialize: function (params) {
-
-                            }
-                        }
-                    }
-                }
-
-            })
-        }
+        '</div>' +
+      '</div>',
+      '<div data-sivView="nested-sivLoops"></div>',
+      function () {
+        Siviglia.Utils.buildClass({
+          context: 'Test',
+          classes: {
+            'NestedSivLoops': {
+              inherits: "Siviglia.UI.Expando.View",
+              methods: {
+                preInitialize: function (params) {
+                  this.simpleArray = [
+                    {a: "item1", b: "item2", c: "item3"},
+                    {a: "item4", b: "item5", c: "item6"},
+                    {a: "item7", b: "item8", c: "item9"},
+                  ];
+                },
+                initialize: function (params) {}
+              }
+            }
+          }
+        })
+      }
     )
     runTest("SivCall","SivCall, junto con sivparams, realiza una llamada al metodo especificado, que recibe como parametros tanto el nodo que contiene sivCall, como los parametros especificados.<br>"+
         "Estos parametros se especifican como un objeto json, y puede contener referencias a variables de clase y de contexto.<br>"+
