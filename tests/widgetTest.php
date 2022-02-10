@@ -560,7 +560,7 @@
       }
     )
     runTest("sivValue: definición",
-      "Por defecto, sivValue establece el atributo innerHTML del elemento HTML donde esté.<br>" +
+      "Por defecto, sivValue establece el atributo innerHTML del nodo HTML donde esté.<br>" +
       "También es posible establecer otras parejas atributo-valor, separando cada pareja mediante el símbolo \"<b>::</b>\", y el nombre y el valor de cada atributo por \"<b>|</b>\".",
       '<style>.simpleClass {font-weight:bold;color:green}</style>' +
       '<div data-sivWidget="sivValue-definition" data-widgetCode="Test.SivValueExamples">' +
@@ -613,7 +613,7 @@
     )
     runTest("sivLoop: definición",
       "Crea una plantilla para cada elemento de un objeto iterable.<br>" +
-      "Se emplea como base para generar las plantillas de cada iteración al conjunto de elementos HTML que sean hijos del elemento HTML en el que se define el atributo sipLoop.<br>" +
+      "Se emplea como base para generar las plantillas de cada iteración al conjunto de nodo HTML que sean hijos del nodo HTML en el que se define el atributo sipLoop.<br>" +
       "En cada iteracion el elemento correspondiente del objeto iterable es accesible mediante el valor de <b>contextIndex</b> con el prefijo \"<b>@</b>\".<br>" +
       "Ademas de esta variable de contexto, que apunta a los valores, tambien define una que apunta a la key, la cual es accesible con el valor de <b>contextIndex</b>, el plefijo \"<b>@</b>\" y el sufijo \"<b>-index</b>\".",
       '<div data-sivWidget="sivLoop-definition" data-widgetCode="Test.SivLoopDefinition">' +
@@ -674,43 +674,44 @@
         })
       }
     )
-    runTest("SivCall","SivCall, junto con sivparams, realiza una llamada al metodo especificado, que recibe como parametros tanto el nodo que contiene sivCall, como los parametros especificados.<br>"+
-        "Estos parametros se especifican como un objeto json, y puede contener referencias a variables de clase y de contexto.<br>"+
-        "Este ejemplo es el mismo anterior, estableciendo el contenido de los nodos usando SivCall, en vez de SivValue.<br>"+
-        "(Nota: para especificar el json dentro de un atributo html, utilizo comillas simples para el atributo, de forma que no hay que escapear las comillas dobles del json)",
-        '<div data-sivWidget="Test.SivCall" data-widgetCode="Test.SivCall">'+
-        '<div data-sivLoop="*dictionariesArray" data-contextIndex="dictionary"><div style="border:1px solid black">'+
-        '<div data-sivLoop="@dictionary" data-contextIndex="value"><div data-sivCall="setContent" data-sivparams=\'{"indice":"@value-index","valor":"/@value"}\'></div>'+
-        '</div></div></div></div>',
-        '<div data-sivView="Test.SivCall"></div>',
-        function(){
-            Siviglia.Utils.buildClass({
-                context:'Test',
-                classes:{
-                    'SivCall':{
-                        inherits: "Siviglia.UI.Expando.View",
-                        methods: {
-                            preInitialize: function (params) {
-                                this.dictionariesArray=[
-                                    {a:"cad1",b:"cad2",c:"cad3"},
-                                    {a:"cad4",b:"cad5",c:"cad6"},
-                                    {a:"cad7",b:"cad8",c:"cad9"},
-
-                                ];
-                            },
-                            initialize: function (params) {
-
-                            },
-                            setContent:function(node,params)
-                            {
-                                node.html(params.indice+" : "+params.valor);
-                            }
-                        }
-                    }
+    runTest("sivCall: definición",
+      "El atributo sivCall realiza una llamada al metodo especificado mediante su valor, que recibe como parametro el nodo HTML donde se declara.<br>" +
+      "Es posible enviar parámetros adicionales mediante el atributo <b>sivParams</b>. Estos parametros se agrupan dentro de un objeto JSON que será el segundo argumento del método. La clave y el valor de cada parámetro se separan mediante \"<b>:</b>\" y cada pareja se separa de la siguiente mediante \"<b>,</b>\". En este objeto se pueden contener referencias a variables de clase y de contexto.<br>" +
+      "Este ejemplo es el mismo que el anterior, estableciendo el contenido de los nodos usando sivCall en vez de sivValue.<br>" +
+      "(Nota: para especificar el json dentro de un atributo html, utilizo comillas simples para el atributo, de forma que no hay que escapear las comillas dobles del json)",
+      '<div data-sivWidget="sivCall-definition" data-widgetCode="Test.SivCallDefinition">' +
+        '<div data-sivLoop="*dictionariesArray" data-contextIndex="dictionary">' +
+            '<div style="border:1px solid black">' +
+                '<div data-sivLoop="@dictionary" data-contextIndex="value">' +
+                    '<div data-sivCall="setContent" data-sivParams=\'{"indice":"@value-index","valor":"/@value"}\'></div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+      '</div>',
+      '<div data-sivView="sivCall-definition"></div>',
+      function () {
+        Siviglia.Utils.buildClass({
+          context: 'Test',
+          classes: {
+            'SivCallDefinition': {
+              inherits: "Siviglia.UI.Expando.View",
+              methods: {
+                preInitialize: function (params) {
+                  this.dictionariesArray = [
+                    {a: "cad1", b: "cad2", c: "cad3"},
+                    {a: "cad4", b: "cad5", c: "cad6"},
+                    {a: "cad7", b: "cad8", c: "cad9"},
+                  ];
+                },
+                initialize: function (params) {},
+                setContent: function (node, params) {
+                  node.html(params.indice + " : " + params.valor);
                 }
-
-            })
-        }
+              }
+            }
+          }
+        })
+      }
     )
     runTest("SivEvent","SivEvent, junto a sivcallback y sivParams, se utiliza para asignar un gestor de eventos.<br>"+
         "Aunque es posible asignar más de 1 evento, el callback y los parámetros son compartidos.<br>"+
