@@ -481,6 +481,51 @@
       })
     }
   )
+  runTest("sivLoop: refresco ante cambios en los objetos iterados",
+    "Cuando el objeto sobre el que se itera cambia, se renderiza de nuevo la plantilla<br>" +
+    "Los cambios en el objeto iterado pueden deberse a: nuevos elementos, elementos eliminados o cambios en los valores de los elementos",
+    '<div data-sivWidget="Test.SivLoop" data-widgetCode="Test.SivLoop">' +
+        '<div data-sivLoop="/*simpleArray" data-contextIndex="current">' +
+            '<div>' +
+                '<div data-sivLoop="@current" data-contextIndex="current2">' +
+                    '<span data-sivValue="[%/@current2%]"></span>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+    '</div>',
+    '<div data-sivView="Test.SivLoop"></div>',
+    function () {
+      Siviglia.Utils.buildClass({
+        context: 'Test',
+        classes: {
+          SivLoop: {
+            inherits: "Siviglia.UI.Expando.View",
+            methods: {
+              preInitialize: function (params) {
+                this.simpleArray = [["item1"], ["item2"], ["item3"]];
+                top.sss = this.simpleArray;
+              },
+              initialize: function (params) {
+                setTimeout(function () {
+                  this.simpleArray.push(["newItem4"]);
+                }.bind(this), 1000);
+                setTimeout(function () {
+                  this.simpleArray[1][0] = 'changedItem';
+                }.bind(this), 2000);
+                setTimeout(function () {
+                  this.simpleArray[0].push("newItem1b");
+                }.bind(this), 3000);
+                setTimeout(function () {
+                  this.simpleArray.splice(1, 2);
+                }.bind(this), 4000);
+
+              }
+            }
+          }
+        }
+      })
+    }
+  )
   runTest("sivCall: definición",
     "El atributo sivCall realiza una llamada al metodo especificado mediante su valor, que recibe como parametro el nodo HTML donde se declara.<br>" +
     "Es posible enviar parámetros adicionales mediante el atributo <b>sivParams</b>. El valor de este atributo es un objeto JSON que en el que se pueden emplear referencias a variables de clase y de contexto.<br>" +
@@ -836,50 +881,6 @@
           }
         }
 
-      })
-    }
-  )
-  runTest("SivLoop",
-    "Cuando el objeto sobre el que se itera cambia, se renderiza de nuevo la plantilla",
-    '<div data-sivWidget="Test.SivLoop" data-widgetCode="Test.SivLoop">' +
-        '<div data-sivLoop="/*simpleArray" data-contextIndex="current">' +
-            '<div>' +
-                '<div data-sivLoop="@current" data-contextIndex="current2">' +
-                    '<span data-sivValue="[%/@current2%]"></span>' +
-                '</div>' +
-            '</div>' +
-        '</div>' +
-    '</div>',
-    '<div data-sivView="Test.SivLoop"></div>',
-    function () {
-      Siviglia.Utils.buildClass({
-        context: 'Test',
-        classes: {
-          'SivLoop': {
-            inherits: "Siviglia.UI.Expando.View",
-            methods: {
-              preInitialize: function (params) {
-                this.simpleArray = [["cad1"], ["cad2"], ["cad3"]];
-                top.sss = this.simpleArray;
-              },
-              initialize: function (params) {
-                setTimeout(function () {
-                  this.simpleArray[0].push("adios");
-                }.bind(this), 1000);
-                setTimeout(function () {
-                  this.simpleArray.push(["nuevo"]);
-                }.bind(this), 2000);
-                setTimeout(function () {
-                  this.simpleArray[2].push("uno mas");
-                }.bind(this), 3000);
-                setTimeout(function () {
-                  this.simpleArray.splice(1, 2);
-                }.bind(this), 4000);
-
-              }
-            }
-          }
-        }
       })
     }
   )
