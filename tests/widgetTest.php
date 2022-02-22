@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WTests (Siviglia-js)</title>
+    <title>widget test (Siviglia-js)</title>
     <!-- para quitar error consola GET http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css net::ERR_ABORTED 404 (Not Found) -->
     <!-- <link rel='stylesheet prefetch' href='http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css'> -->
     <!-- <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto'> -->
@@ -739,6 +739,43 @@
 
             })
         }
+    )
+    runTest("Datasource","Tratamos de sacar la informaci'on de un BTO",
+      '<div data-sivWidget="Test.BTOtest" data-widgetCode="Test.BTOtest">'+
+      '<div data-sivLoop="*ds/data" data-contextIndex="server">' +
+      '<div style="border:1px solid black">' +
+      '<div data-sivValue="[%@server/host%]">' +
+      // De momento no he conseguido iterar sobre un BTO
+      // '<div data-sivLoop="@server" data-contextIndex="server-param">' +
+      // '<div data-sivValue="[%@server-param-index%]: [%@server-param%]""></div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>',
+      '<div data-sivView="Test.BTOtest" style="background-color:green"></div>' ,
+      function () {
+        Siviglia.Utils.buildClass({
+          context: 'Test',
+          classes: {
+            'BTOtest': {
+              inherits: "Siviglia.UI.Expando.View",
+              destruct: function () {
+                this.ds.destruct();
+              },
+              methods: {
+                preInitialize: function (params) {
+                  this.ds = new Siviglia.Model.DataSource("/model/web/Site", "FullList", {});
+                  this.ds.freeze();
+                  this.ds.settings.__start = 0;
+                  this.ds.settings.__count = 5;
+                  return this.ds.unfreeze();
+                },
+                initialize: function (params) {}
+              }
+            }
+          }
+        })
+      }
     )
     runTest("Factorias","Este ejemplo utiliza la funcion stringToContextAndObject para crear una pequeña factoria de widgets.<br>"+
         "Esta factoria simple, utiliza el nombre del tipo del BTO, para instanciar un widget que renderiza ese tipo.<br>"+

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WTests (Siviglia-js)</title>
+    <title>expando tests (Siviglia-js)</title>
     <!-- para quitar error consola GET http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css net::ERR_ABORTED 404 (Not Found) -->
     <!-- <link rel='stylesheet prefetch' href='http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css'> -->
     <!-- <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto'> -->
@@ -425,7 +425,7 @@
     "Ademas de esta variable de contexto, que apunta a los valores, tambien define una que apunta a la key, la cual es accesible con el valor de <b>contextIndex</b>, el plefijo \"<b>@</b>\" y el sufijo \"<b>-index</b>\".",
     '<div data-sivWidget="sivLoop-definition" data-widgetCode="Test.SivLoopDefinition">' +
     '<div data-sivLoop="*simpleArray" data-contextIndex="currentArrayElement">' +
-    '<div data-sivValue="Para esta iteración => key del elemento: [%@currentArrayElement-index%] - valor del elemento: [%@currentArrayElement%]"></div>' +
+    '<div data-sivValue="Para esta iteración => clave del elemento: [%@currentArrayElement-index%] - valor del elemento: [%@currentArrayElement%]"></div>' +
     '</div>' +
     '</div>',
     '<div data-sivView="sivLoop-definition"></div>',
@@ -451,10 +451,10 @@
     "Para ello solo hay que crear un nuevo sivLoop dentro del primero utilizando la referencia al elemento de la iteración como fuente.<br>",
     '<div data-sivWidget="nested-sivLoops" data-widgetCode="Test.NestedSivLoops">' +
     '<div data-sivLoop="*simpleArray" data-contextIndex="loop1-element">' +
-    '<div data-sivValue="ext=> key: [%@loop1-element-index%]-valor: [%@loop1-element%]""></div>' +
+    '<div data-sivValue="ext=> clave: [%@loop1-element-index%]-valor: [%@loop1-element%]""></div>' +
     '<div style="border:1px solid black">' +
     '<div data-sivLoop="@loop1-element" data-contextIndex="loop2-element">' +
-    '<div data-sivValue="int=> key: [%@loop2-element-index%] - valor: [%@loop2-element%]""></div>' +
+    '<div data-sivValue="int=> clave: [%@loop2-element-index%] - valor: [%@loop2-element%]""></div>' +
     '</div>' +
     '</div>' +
     '</div>' +
