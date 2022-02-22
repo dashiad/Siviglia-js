@@ -1825,7 +1825,7 @@ Siviglia.Utils.buildClass(
                     def["SOURCE"]= {
                         "TYPE":"DataSource",
                         "MODEL":'\\model\\reflection\\Model',
-                        "DATASOURCE":'ModelList',
+                        "DATASOURCE":'FullList',
                         "VALUE":"smallName",
                         "LABEL_EXPRESSION":"[%/package%] > [%/smallName%]"
                     };
