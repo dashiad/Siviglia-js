@@ -112,93 +112,70 @@ var formatHTML = function (code, stripWhiteSpaces, stripEmptyLines) {
   return result;
 }
 
-var cbStack = [];
+function createHTMLElement(tagName, className, parent, content) {
+  var htmlElement = document.createElement(tagName)
+  if (className)
+    htmlElement.className = className
+  if (content)
+    htmlElement.innerHTML = content
+  if (parent)
+    parent.appendChild(htmlElement)
+
+  return htmlElement
+}
+
+var testStack = [];
 function checkTests(restart) {
   if (restart !== false && DEVELOP_MODE !== 0) {
     if (DEVELOP_MODE === -1)
-      cbStack = [cbStack.pop()];
+      testStack = [testStack.pop()];
     else
-      cbStack = [cbStack[DEVELOP_MODE - 1]];
+      testStack = [testStack[DEVELOP_MODE - 1]];
   }
   // var parser = new Siviglia.UI.HTMLParser();
-  while (cbStack.length > 0) {
-    var cItem = cbStack.shift();
+  while (testStack.length > 0) {
+    var currentTest = testStack.shift();
     try {
-      var rs = cItem.cb.apply(null);
+      /*var rs =*/ currentTest.cb.apply(null);
 
-      var nDiv = document.createElement("div");
-      nDiv.className = "testDiv ";
-      var divTitle = document.createElement("div");
-      nDiv.appendChild(divTitle);
-      divTitle.innerHTML = "Test " + cItem.number + " (" + cItem.name + ") <i style='font-size:10px'>[listeners:" + countListeners() + "]</i>";
-      divTitle.className = "testTitle";
-      var divDoc = document.createElement("div")
-      divDoc.innerHTML = cItem.doc;
-      divDoc.className = "testDoc";
-      nDiv.appendChild(divDoc);
-      var divCont = document.createElement("div");
-      divCont.className = "testCont";
-      // divCont.style.height="250px";
-      nDiv.appendChild(divCont);
+      var testContainer = createHTMLElement('div', 'testDiv', document.body)
+      var titleDiv = createHTMLElement('div', 'testTitle', testContainer)
+      titleDiv.innerHTML = "Test " + currentTest.number + " (" + currentTest.name + ") <i style='font-size:10px'>[listeners:" + countListeners() + "]</i>";
+      var descriptionDiv = createHTMLElement('div', 'testDoc', testContainer, currentTest.doc)
 
-      var divDef = document.createElement("div");
-      divDef.style.overflowY = "scroll";
-      divDef.className = "testDef";
-      var cTitle = document.createElement("div");
-      cTitle.className = "resultTitle";
-      cTitle.innerHTML = "Templates";
-      divDef.appendChild(cTitle);
-      var cContent = document.createElement("div");
-      cContent.className = "resultCode";
-      cContent.innerHTML = "<pre>" + hljs.highlightAuto(formatHTML(cItem.template)).value + "</pre>";
-      divDef.appendChild(cContent);
-      divCont.appendChild(divDef);
+      var codeContainer = createHTMLElement('div', 'testCont', testContainer)
+      codeContainer.style.height="250px";
 
-      divDef = document.createElement("div");
-      divDef.style.overflowY = "scroll";
-      divDef.className = "testView";
-      cTitle = document.createElement("div");
-      cTitle.className = "resultTitle";
-      cTitle.innerHTML = "View";
-      divDef.appendChild(cTitle);
-      cContent = document.createElement("div");
-      cContent.className = "resultCode";
-      cContent.innerHTML = "<pre>" + hljs.highlightAuto(formatHTML(cItem.view)).value + "</pre>";
-      divDef.appendChild(cContent);
-      divCont.appendChild(divDef);
+      var templateContainer = createHTMLElement('div', 'testDef', codeContainer)
+      templateContainer.style.overflowY = "scroll";
+      var templateTitle = createHTMLElement('div', 'resultTitle', templateContainer, 'Template')
+      var templateContent = createHTMLElement('div', 'resultCode', templateContainer)
+      templateContent.innerHTML = "<pre>" + hljs.highlightAuto(formatHTML(currentTest.template)).value + "</pre>";
 
-      divDef = document.createElement("div");
-      divDef.style.overflowY = "scroll";
-      divDef.className = "testCode";
-      cTitle = document.createElement("div");
-      cTitle.className = "resultTitle";
-      cTitle.innerHTML = "Code";
-      divDef.appendChild(cTitle);
-      cContent = document.createElement("div");
-      cContent.className = "resultCode";
-      cContent.innerHTML = "<pre>" + hljs.highlightAuto(cItem.cb.toString()).value + "</pre>";
-      divDef.appendChild(cContent);
-      divCont.appendChild(divDef);
+      var viewContainer = createHTMLElement('div', 'testView', codeContainer)
+      viewContainer.style.overflowY = "scroll";
+      var viewTitle = createHTMLElement('div', 'resultTitle', viewContainer, 'View')
+      var viewContent = createHTMLElement('div', 'resultCode', viewContainer)
+      viewContent.innerHTML = "<pre>" + hljs.highlightAuto(formatHTML(currentTest.view)).value + "</pre>";
 
+      var classContainer = createHTMLElement('div', 'testCode', codeContainer)
+      classContainer.style.overflowY = "scroll";
+      var classTitle = createHTMLElement('div', 'resultTitle', classContainer, 'Code')
+      var classContent = createHTMLElement('div', 'resultCode', classContainer)
+      classContent.innerHTML = "<pre>" + hljs.highlightAuto(currentTest.cb.toString()).value + "</pre>";
 
-      divClear = document.createElement("div");
+      var divClear = createHTMLElement('div', null, testContainer)
       divClear.style.clear = "both";
-      nDiv.appendChild(divClear);
-      divResult = document.createElement("div");
-      divResult.className = "testResult";
 
-      cTitle = document.createElement("div");
-      cTitle.className = "resultTitle";
-      cTitle.innerHTML = "Result";
-      divResult.appendChild(cTitle);
-      var cRes = document.createElement("div");
-      cRes.id = "testCont" + cItem.number;
-      cRes.className = "resultContent";
-      cRes.innerHTML = '<div style="display:none">' + cItem.template + '</div>' + cItem.view;
-      divResult.appendChild(cRes);
-      nDiv.appendChild(divResult);
-      document.body.appendChild(nDiv);
-      parser.parse($("#testCont" + cItem.number));
+      var resultContainer = createHTMLElement('div', 'testResult', testContainer)
+      resultContainer.className = "testResult";
+      var resultTitle = createHTMLElement('div', 'resultTitle', resultContainer, 'Result')
+      var resultContent = createHTMLElement('div', 'resultContent', resultContainer)
+      resultContent.id = "testCont" + currentTest.number;
+      resultContent.innerHTML = '<div style="display:none">' + currentTest.template + '</div>' + currentTest.view;
+
+      parser.parse($("#testCont" + currentTest.number));
+
       if (TEST_DESTROY === true && DEVELOP_MODE !== 0) {
         var onClicked = function () {
           var nListeners = countListeners();
@@ -224,11 +201,9 @@ function checkTests(restart) {
             }
           }
         }
-        var button = document.createElement("button");
-        button.onclick = onClicked;
-        button.innerHTML = "Destroy";
-        document.body.prependChild(button);
-
+        var destructionButton = createHTMLElement('button', null, null, 'Destroy')
+        destructionButton.onclick = onClicked;
+        document.body.prependChild(destructionButton);
       }
     } catch (e) {
       console.dir(e);
@@ -237,17 +212,17 @@ function checkTests(restart) {
 }
 
 var testNumber = 0;
-
 function runTest(name, doc, template, view, callback) {
   testNumber++;
   if (typeof expectedResult == "undefined")
     expectedResult = true;
 
-  cbStack.push({
+  testStack.push({
     name: name,
     doc: doc,
     template: template,
     view: view,
-    cb: callback, number: testNumber
+    cb: callback,
+    number: testNumber
   });
 }
