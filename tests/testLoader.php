@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Test loader</title>
-    <?php include 'dependencies.php'; ?>
+    <?php include 'javascriptDependencies.php'; ?>
+    <?php include 'styleDependencies.php'; ?>
 </head>
 <body style="background-color:#EEE; background-image:none;">
 <?php include_once("../jQuery/JqxWidgets.html"); ?>
