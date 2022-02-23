@@ -1,4 +1,9 @@
 var urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('name')) {
+  var testLoader = document.createElement('script')
+  testLoader.src = 'http://statics.adtopy.com/packages/Siviglia/tests/' + urlParams.get('name') + '.js'
+  document.body.appendChild(testLoader)
+}
 var DEVELOP_MODE;
 if (!urlParams.has("test")) {
   //DEVELOP_MODE=47;    // Specific test number
@@ -9,7 +14,6 @@ if (!urlParams.has("test")) {
   DEVELOP_MODE = urlParams.get("test");
 }
 var TEST_DESTROY = true;
-
 
 var Siviglia = Siviglia || {};
 Siviglia.debug = true;
