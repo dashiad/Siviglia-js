@@ -3,121 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Test loader</title>
-    <!-- para quitar error consola GET http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css net::ERR_ABORTED 404 (Not Found) -->
-    <!-- <link rel='stylesheet prefetch' href='http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css'> -->
-    <!-- <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto'> -->
-    <script src='/packages/d3/d3.js'></script>
-    <script src="/node_modules/jquery/dist/jquery.js"></script>
-    <script src="../Siviglia.js"></script>
-    <script src="../SivigliaStore.js"></script>
-
-    <script src="../SivigliaTypes.js"></script>
-    <script src="../Model.js"></script>
-
-
-    <script src="../../jqwidgets/jqx-all.js"></script>
-    <script src="../../jqwidgets/globalization/globalize.js"></script>
-    <script src="/node_modules/autobahn-browser/autobahn.min.js"></script>
-    <script src="/reflection/js/WampServer.js"></script>
-    <link rel="stylesheet" href="/reflection/css/style.css">
-    <link rel="stylesheet" href="../jQuery/css/JqxWidgets.css">
-    <link rel="stylesheet" href="../jQuery/css/jqx.base.css">
-    <link rel="stylesheet" href="../jQuery/css/jqx.adtopy-dev.css">
-    <link rel="stylesheet" href="/backend/css/style.css">
-
- <link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css">
-    <link rel="stylesheet" href="highlight/styles/ir-black.css">
-    <script src="highlight/highlight.pack.js"></script>
-<!--    --><?php //include 'scripts.php';?>
---    <style type="text/css">
-        .resultError {
-            background-color: #cc3636;
-        }
-
-        .result {
-            margin: 2px;
-            padding: 3px;
-            color: honeydew;
-        }
-        .testTitle{
-            background-color: #5b6a8a;
-            padding: 3px;
-            font-size: 20px;
-            color: white;
-        }
-        .testDoc {
-            background-color: #9b9ed6;
-            padding: 5px;
-            border-bottom: 1px solid #AAA;
-        }
-        .testDiv {
-            border: 2px solid black;
-            padding: 5px;
-            background-color:#6a7592;
-            margin:5px 20px;
-        }
-        .resultOk {
-            background-color: green;
-
-        }
-        .testResult {
-            margin-top:30px;
-        }
-        .testCont {
-            height:500px;
-            overflow-y:scroll;
-        }
-        .testDef {
-            width:700px;
-            float:left;
-            height:500px;
-            overflow:auto
-        }
-        .testView {
-            width:100px;
-            float:left;
-            height:500px;
-            overflow:auto
-        }
-        .testCode {
-            height:500px;
-            overflow:auto
-        }
-        .resultTitle {
-            background-color: #DDD;
-            padding: 5px;
-            border: 1px solid #AAA;
-        }
-        .resultCode {
-
-        }
-        .resultContent {
-            border: 1px solid #AAA;
-            margin: 10px;
-            background-color:white;
-        }
-        path.link {
-            fill: #ccc;
-            stroke: #333;
-            stroke-width: 1.5px;
-        }
-
-    </style>-
-    <style type="text/css">
-        #svgChart {
-            width: 1000px;
-            height: 500px
-        }
-    </style>
+    <?php include 'scripts.php';?>
 </head>
-<style type="text/css">
-</style>
 <body style="background-color:#EEE; background-image:none;">
-
-
-<?php include_once("../jQuery/JqxWidgets.html"); ?>
-<?php include_once("../jQuery/JqxLists.html"); ?>
-<?php include_once("../jQuery/Visual.html");?>
+    <?php include_once("../jQuery/JqxWidgets.html"); ?>
+    <?php include_once("../jQuery/JqxLists.html"); ?>
+    <?php include_once("../jQuery/Visual.html");?>
 
 
 <script>
@@ -384,24 +275,105 @@
       cb:callback,number:testNumber});
   }
 
-  runTest("sivWidget: widget mínimo",
-    "Un widget se compone de una <b>plantilla HTML</b> y una <b>clase asociada</b>. Estos widgets se invocan mediante una <b>vista</b>.<br>" +
-    "El widget se declara mediante el atributo <b>sivWidget</b>.<br>"+
-    "La clase se declara mediante el atributo <b>widgetCode</b>.<br>"+
-    "La vista invoca un widget dándole al atributo <b>sivView</b> el valor de sivWidget del widget deseado.",
-    '<div data-sivWidget="widget-name" data-widgetCode="ContextName.ClassName">' +
-    '<span>Hello, world!</span>' +
+  runTest("ComboBox: ComboBox dependientes",
+    "Una fuente de un input puede tener varios conjuntos de opciones, seleccionándose uno u otro según una clave externa, indicada en \"SOURCE/PATH/\"<br>" +
+    "Esta clave externa tiene que tratarse de otro campo con su propia fuente. De esta forma las fuentes quedan relacionadas.",
+    '<div data-sivWidget="dependant-comboBox" data-widgetParams="" data-widgetCode="Test.DependantComboBox">'+
+    '   <div class="label">ComboBox origen</div>'+
+    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
+    '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"originComboBox"}\'>' +
+    '   </div>'+
+    '   <div class="label">ComboBox dependiente de comboBox origen</div>'+
+    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
+    '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"firstDependantComboBox"}\'>' +
+    '   </div>'+
+    '   <div class="label">ComboBox dependiente de comboBox anterior</div>'+
+    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
+    '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"secondDependantComboBox"}\'>' +
+    '   </div>'+
     '</div>',
-    '<div data-sivView="widget-name"></div>',
-    function () {
+    '<div data-sivView="dependant-comboBox"></div>',
+    function(){
       Siviglia.Utils.buildClass({
-        context: 'ContextName',
-        classes: {
-          'ClassName': {
-            inherits: "Siviglia.UI.Expando.View",
+        context:'Test',
+        classes:{
+          DependantComboBox: {
+            inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
-              preInitialize: function (params) {},
+              preInitialize: function (params) {
+                // this.factory = Siviglia.types.TypeFactory;
+                // this.self = this;
+                // this.typeCol = [];
+                this.formDefinition = new Siviglia.model.BaseTypedObject({
+                  "FIELDS": {
+                    originComboBox: {
+                      "LABEL":"Combo fuente origen",
+                      "TYPE": "String",
+                      "SOURCE": {
+                        "TYPE": "Array",
+                        "LABEL": "labelKey",
+                        "VALUE": "valueKey",
+                        "DATA": [
+                          {"valueKey": "one", "labelKey": "Opción - uno"},
+                          {"valueKey": "two", "labelKey": "Opción - dos"}
+                        ],
+                      }
+                    },
+                    firstDependantComboBox: {
+                      "LABEL":"Combo dependiente de origen",
+                      "TYPE": "Integer",
+                      "SOURCE": {
+                        "TYPE": "Array",
+                        "LABEL": "message",
+                        "VALUE": 'val',
+                        "PATH": "/{%#../originComboBox%}",
+                        "DATA": {
+                          "one": [
+                            {'val': 11, "message": "Opcion uno - 1"},
+                            {'val': 12, "message": "Opcion uno - 2"},
+                          ],
+                          "two": [
+                            {'val': 21, "message": "Opcion dos - 1"},
+                            {'val': 22, "message": "Opcion dos - 2"},
+                          ]
+                        },
+                      }
+                    },
+                    secondDependantComboBox: {
+                      "LABEL":"Combo dependiente segundo nivel",
+                      "TYPE": "Integer",
+                      "SOURCE": {
+                        "TYPE": "Array",
+                        "LABEL": "message",
+                        "VALUE": "comboValue",
+                        "PATH": "/{%#../firstDependantComboBox%}",
+                        "DATA": {
+                          11: [
+                            {"comboValue": 111, "message": "Opción uno.1 - 1"},
+                            {"comboValue": 112, "message": "Opción uno.1 - 2"}
+                          ],
+                          12: [
+                            {"comboValue": 121, "message": "Opción uno.2 - 1"},
+                            {"comboValue": 122, "message": "Opción uno.2 - 2"}
+                          ],
+                          21: [
+                            {"comboValue": 211, "message": "Opción dos.1 - 1"},
+                            {"comboValue": 212, "message": "Opción dos.1 - 2"}
+                          ],
+                          22: [
+                            {"comboValue": 221, "message": "Opción dos.2 - 1"},
+                            {"comboValue": 222, "message": "Opción dos.2 - 2"}
+                          ]
+                        },
+                      }
+                    },
+                  }
+                });
+
+                return this.Form$preInitialize({bto:this.formDefinition});
+              },
               initialize: function (params) {},
+              // show: function () {},
             }
           }
         }
