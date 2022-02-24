@@ -1,7 +1,7 @@
 var urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('name')) {
   var testLoader = document.createElement('script')
-  testLoader.src = 'http://statics.adtopy.com/packages/Siviglia/tests/' + urlParams.get('name') + '.js'
+  testLoader.src = 'http://statics.adtopy.com/packages/Siviglia/tests/Widgets/' + urlParams.get('name') + '.js'
   document.body.appendChild(testLoader)
 }
 var DEVELOP_MODE;
@@ -11,7 +11,7 @@ if (!urlParams.has("test")) {
   //DEVELOP_MODE=(-1);  // Latest test
   DEVELOP_MODE = (-1);
 } else {
-  DEVELOP_MODE = urlParams.get("test");
+  DEVELOP_MODE = parseInt(urlParams.get("test"));
 }
 var TEST_DESTROY = true;
 
@@ -128,6 +128,76 @@ function createHTMLElement(tagName, className, parent, content) {
   return htmlElement
 }
 
+function createHTMLTestStructure(test) {
+  var testContainer = createHTMLElement('div', 'testDiv', document.body)
+  var titleDiv = createHTMLElement('div', 'testTitle', testContainer)
+  titleDiv.innerHTML = "Test " + test.number + " (" + test.name + ") <i style='font-size:10px'>[listeners:" + countListeners() + "]</i>";
+  var descriptionDiv = createHTMLElement('div', 'testDoc', testContainer, test.doc)
+
+  var codeContainer = createHTMLElement('div', 'testCont', testContainer)
+  codeContainer.style.height="250px";
+
+  var templateContainer = createHTMLElement('div', 'testDef', codeContainer)
+  templateContainer.style.overflowY = "scroll";
+  var templateTitle = createHTMLElement('div', 'resultTitle', templateContainer, 'Template')
+  var templateContent = createHTMLElement('div', 'resultCode', templateContainer)
+  templateContent.innerHTML = "<pre>" + hljs.highlightAuto(formatHTML(test.template)).value + "</pre>";
+
+  var viewContainer = createHTMLElement('div', 'testView', codeContainer)
+  viewContainer.style.overflowY = "scroll";
+  var viewTitle = createHTMLElement('div', 'resultTitle', viewContainer, 'View')
+  var viewContent = createHTMLElement('div', 'resultCode', viewContainer)
+  viewContent.innerHTML = "<pre>" + hljs.highlightAuto(formatHTML(test.view)).value + "</pre>";
+
+  var classContainer = createHTMLElement('div', 'testCode', codeContainer)
+  classContainer.style.overflowY = "scroll";
+  var classTitle = createHTMLElement('div', 'resultTitle', classContainer, 'Code')
+  var classContent = createHTMLElement('div', 'resultCode', classContainer)
+  classContent.innerHTML = "<pre>" + hljs.highlightAuto(test.cb.toString()).value + "</pre>";
+
+  var divClear = createHTMLElement('div', null, testContainer)
+  divClear.style.clear = "both";
+
+  var resultContainer = createHTMLElement('div', 'testResult', testContainer)
+  resultContainer.className = "testResult";
+  var resultTitle = createHTMLElement('div', 'resultTitle', resultContainer, 'Result')
+  var resultContent = createHTMLElement('div', 'resultContent', resultContainer)
+  resultContent.id = "testCont" + test.number;
+  resultContent.innerHTML = '<div style="display:none">' + test.template + '</div>' + test.view;
+
+  parser.parse($("#testCont" + test.number));
+
+  if (TEST_DESTROY === true && DEVELOP_MODE !== 0) {
+    var onClicked = function () {
+      var nListeners = countListeners();
+      var nManagers = countManagers();
+      var nDiv = document.createElement("div");
+      nDiv.innerHTML = "Listeners:<b>" + nListeners + "</b> Managers:<b>" + nManagers + "</b>";
+      parser.destruct();
+      nListeners = countListeners();
+      nManagers = countManagers();
+
+      nDiv.innerHTML += "<br>Despues:<br>Listeners:<b>" + nListeners + "</b> Managers:<b>" + nManagers + "</b>";
+      document.body.prependChild(nDiv);
+      if (nManagers > 0) {
+        for (var k in Siviglia.Dom.existingManagers) {
+          console.log("MANAGERS:");
+          console.dir(Siviglia.Dom.existingManagers[k]);
+        }
+      }
+      if (nListeners > 0) {
+        for (var k in Siviglia.Dom.existingListeners) {
+          console.log("LISTENERS:");
+          console.dir(Siviglia.Dom.existingListeners[k]);
+        }
+      }
+    }
+    var destructionButton = createHTMLElement('button', null, null, 'Destroy')
+    destructionButton.onclick = onClicked;
+    document.body.prependChild(destructionButton);
+  }
+}
+
 var testStack = [];
 function checkTests(restart) {
   if (restart !== false && DEVELOP_MODE !== 0) {
@@ -140,77 +210,10 @@ function checkTests(restart) {
   while (testStack.length > 0) {
     var currentTest = testStack.shift();
     try {
-      /*var rs =*/ currentTest.cb.apply(null);
-
-      var testContainer = createHTMLElement('div', 'testDiv', document.body)
-      var titleDiv = createHTMLElement('div', 'testTitle', testContainer)
-      titleDiv.innerHTML = "Test " + currentTest.number + " (" + currentTest.name + ") <i style='font-size:10px'>[listeners:" + countListeners() + "]</i>";
-      var descriptionDiv = createHTMLElement('div', 'testDoc', testContainer, currentTest.doc)
-
-      var codeContainer = createHTMLElement('div', 'testCont', testContainer)
-      codeContainer.style.height="250px";
-
-      var templateContainer = createHTMLElement('div', 'testDef', codeContainer)
-      templateContainer.style.overflowY = "scroll";
-      var templateTitle = createHTMLElement('div', 'resultTitle', templateContainer, 'Template')
-      var templateContent = createHTMLElement('div', 'resultCode', templateContainer)
-      templateContent.innerHTML = "<pre>" + hljs.highlightAuto(formatHTML(currentTest.template)).value + "</pre>";
-
-      var viewContainer = createHTMLElement('div', 'testView', codeContainer)
-      viewContainer.style.overflowY = "scroll";
-      var viewTitle = createHTMLElement('div', 'resultTitle', viewContainer, 'View')
-      var viewContent = createHTMLElement('div', 'resultCode', viewContainer)
-      viewContent.innerHTML = "<pre>" + hljs.highlightAuto(formatHTML(currentTest.view)).value + "</pre>";
-
-      var classContainer = createHTMLElement('div', 'testCode', codeContainer)
-      classContainer.style.overflowY = "scroll";
-      var classTitle = createHTMLElement('div', 'resultTitle', classContainer, 'Code')
-      var classContent = createHTMLElement('div', 'resultCode', classContainer)
-      classContent.innerHTML = "<pre>" + hljs.highlightAuto(currentTest.cb.toString()).value + "</pre>";
-
-      var divClear = createHTMLElement('div', null, testContainer)
-      divClear.style.clear = "both";
-
-      var resultContainer = createHTMLElement('div', 'testResult', testContainer)
-      resultContainer.className = "testResult";
-      var resultTitle = createHTMLElement('div', 'resultTitle', resultContainer, 'Result')
-      var resultContent = createHTMLElement('div', 'resultContent', resultContainer)
-      resultContent.id = "testCont" + currentTest.number;
-      resultContent.innerHTML = '<div style="display:none">' + currentTest.template + '</div>' + currentTest.view;
-
-      parser.parse($("#testCont" + currentTest.number));
-
-      if (TEST_DESTROY === true && DEVELOP_MODE !== 0) {
-        var onClicked = function () {
-          var nListeners = countListeners();
-          var nManagers = countManagers();
-          var nDiv = document.createElement("div");
-          nDiv.innerHTML = "Listeners:<b>" + nListeners + "</b> Managers:<b>" + nManagers + "</b>";
-          parser.destruct();
-          nListeners = countListeners();
-          nManagers = countManagers();
-
-          nDiv.innerHTML += "<br>Despues:<br>Listeners:<b>" + nListeners + "</b> Managers:<b>" + nManagers + "</b>";
-          document.body.prependChild(nDiv);
-          if (nManagers > 0) {
-            for (var k in Siviglia.Dom.existingManagers) {
-              console.log("MANAGERS:");
-              console.dir(Siviglia.Dom.existingManagers[k]);
-            }
-          }
-          if (nListeners > 0) {
-            for (var k in Siviglia.Dom.existingListeners) {
-              console.log("LISTENERS:");
-              console.dir(Siviglia.Dom.existingListeners[k]);
-            }
-          }
-        }
-        var destructionButton = createHTMLElement('button', null, null, 'Destroy')
-        destructionButton.onclick = onClicked;
-        document.body.prependChild(destructionButton);
-      }
-    } catch (e) {
-      console.dir(e);
+      currentTest.cb.apply(null);
+      createHTMLTestStructure(currentTest)
+    } catch (error) {
+      console.dir(error);
     }
   }
 }

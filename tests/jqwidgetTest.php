@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>jqx tests (Siviglia-js)</title>
+    <title>expando tests (Siviglia-js)</title>
     <!-- para quitar error consola GET http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css net::ERR_ABORTED 404 (Not Found) -->
     <!-- <link rel='stylesheet prefetch' href='http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css'> -->
     <!-- <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto'> -->
@@ -145,10 +145,10 @@
 
 </script>
 <script>
-  Siviglia.debug=true;
   var parser = new Siviglia.UI.HTMLParser();
   parser.parse($(document.body));
   hljs.initHighlightingOnLoad();
+
 
   function countListeners() {
     var s = 0;
@@ -162,7 +162,9 @@
       s++;
     return s;
   }
-  function showResult(name,doc,template,view,result,callback,testNumber,exception) {
+
+  function showResult(name,doc,template,view,result,callback,testNumber,exception)
+  {
     var className = "result resultError";
     var message = "ERROR";
     if(!exception)
@@ -178,14 +180,16 @@
 
   }
   var cbStack=[];
+  Siviglia.debug=true;
   var formatHTML = function(code, stripWhiteSpaces, stripEmptyLines) {
     "use strict";
-    var whitespace    = ' '.repeat(2);             // Default indenting 2 whitespaces
-    var currentIndent = 0;
-    var char          = null;
-    var nextChar      = null;
-    var result        = '';
+    var whitespace          = ' '.repeat(4);             // Default indenting 4 whitespaces
+    var currentIndent       = 0;
+    var char                = null;
+    var nextChar            = null;
 
+
+    var result = '';
     for(var pos=0; pos <= code.length; pos++) {
       char            = code.substr(pos, 1);
       nextChar        = code.substr(pos+1, 1);
@@ -215,7 +219,9 @@
 
     return result;
   }
-  function checkTests(restart) {
+
+  function checkTests(restart)
+  {
     if(restart!==false) {
       if (DEVELOP_MODE !== 0) {
         if (DEVELOP_MODE === -1)
@@ -356,16 +362,15 @@
       template:template,
       view:view,
       cb:callback,number:testNumber});
+
+
   }
-
-
-
   runTest("Input: definición",
     "Se trata de containers que contienen todo lo relacionado con un campo de entrada de información del usuario en el UI.<br>" +
     "Para generar un input se emplea una vista del widget <b>StdInputContainer</b>, al cual se asocia un campo del formulario al que pertenece el input.<br>" +
     "La asignación se realiza dando al parámetro \"<b>key</b>\" el nombre del campo según aparece en la definición del formulario.<br>" +
     "Como clase asociada al widget, se usa una clase derivada de Form, que a su vez deriva de Container y este de BaseInput.<br>",
-    '<div data-sivWidget = "input-definition" data-widgetParams="" data-widgetCode="Test.InputDefinition">'+
+    '<div data-sivWidget = "input-definition" data-widgetParams="" data-widgetCode="Test.InputDefinition">' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{\n' +
     '                           "key":"fieldName",\n' +
@@ -374,13 +379,13 @@
     '                           "controller":"*self"\n' +
     '                       }\'\n' +
     '   >' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="input-definition"></div>',
-    function(){
+    function () {
       Siviglia.Utils.buildClass({
-        context:'Test',
-        classes:{
+        context: 'Test',
+        classes: {
           InputDefinition: {
             inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
@@ -398,7 +403,7 @@
                   }
                 });
                 this.formDefinition.fieldName = 'valor predefinido';
-                return this.Form$preInitialize({bto:this.formDefinition});
+                return this.Form$preInitialize({bto: this.formDefinition});
               },
               // No es necesario que el método de clase "initialice" esté declarado.
               // Puede hacerse y dejarse como función vacía si se desea.
@@ -411,25 +416,25 @@
   )
   runTest("Input: campos de tipos básicos",
     "Se prueban los tipos de campos básicos sobre input simples.<br>",
-    '<div data-sivWidget = "basic-field-types" data-widgetParams="" data-widgetCode="Test.BasicFieldTypes">'+
-    '   <div class="label">Input con campo String</div>'+
-    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"stringType"}\'></div>'+
-    '   <div class="label">Input con campo Enum</div>'+
-    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"enumType"}\'></div>'+
-    '   <div class="label">Input con campo Integer</div>'+
-    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"integerType"}\'></div>'+
-    '   <div class="label">Input con campo Decimal</div>'+
-    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"decimalType"}\'></div>'+
-    '   <div class="label">Input con campo Text</div>'+
-    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"textType"}\'></div>'+
-    '   <div class="label">Input con campo Boolean</div>'+
-    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"booleanType"}\'></div>'+
+    '<div data-sivWidget = "basic-field-types" data-widgetParams="" data-widgetCode="Test.BasicFieldTypes">' +
+    '   <div class="label">Input con campo String</div>' +
+    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"stringType"}\'></div>' +
+    '   <div class="label">Input con campo Enum</div>' +
+    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"enumType"}\'></div>' +
+    '   <div class="label">Input con campo Integer</div>' +
+    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"integerType"}\'></div>' +
+    '   <div class="label">Input con campo Decimal</div>' +
+    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"decimalType"}\'></div>' +
+    '   <div class="label">Input con campo Text</div>' +
+    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"textType"}\'></div>' +
+    '   <div class="label">Input con campo Boolean</div>' +
+    '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"booleanType"}\'></div>' +
     '</div>',
     '<div data-sivView="basic-field-types"></div>',
-    function(){
+    function () {
       Siviglia.Utils.buildClass({
-        context:'Test',
-        classes:{
+        context: 'Test',
+        classes: {
           BasicFieldTypes: {
             inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
@@ -452,22 +457,22 @@
                     },
                     integerType: {
                       TYPE: "Integer",
-                      LABEL:"Integer type",
+                      LABEL: "Integer type",
                       MAX: 1000
                     },
                     decimalType: {
                       TYPE: "Decimal",
-                      LABEL:"Decimal type",
+                      LABEL: "Decimal type",
                       NINTEGERS: 5,
                       NDECIMALS: 2
                     },
                     textType: {
                       TYPE: "Text",
-                      LABEL:"text type",
+                      LABEL: "text type",
                     },
                     booleanType: {
                       TYPE: "Boolean",
-                      LABEL:"Boolean type",
+                      LABEL: "Boolean type",
                     }
                   }
                 });
@@ -477,7 +482,7 @@
                 this.formDefinition.decimalType = 8.3;
                 this.formDefinition.textType = "Esta es una prueba";
                 this.formDefinition.booleanType = true;
-                return this.Form$preInitialize({bto:this.formDefinition});
+                return this.Form$preInitialize({bto: this.formDefinition});
               },
             }
           }
@@ -487,17 +492,17 @@
   )
   runTest("Input: campo de tipo Container",
     "Un campo container genera una vista con los valores de sus campos internos agrupados.",
-    '<div data-sivWidget="container-field" data-widgetParams="" data-widgetCode="Test.ContainerField">'+
-    '   <div class="label">Input con campo Container:</div>'+
+    '<div data-sivWidget="container-field" data-widgetParams="" data-widgetCode="Test.ContainerField">' +
+    '   <div class="label">Input con campo Container:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"simpleContainer"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="container-field"></div>',
-    function(){
+    function () {
       Siviglia.Utils.buildClass({
-        context:'Test',
-        classes:{
+        context: 'Test',
+        classes: {
           ContainerField: {
             inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
@@ -523,9 +528,9 @@
                     }
                   }
                 });
-                this.formDefinition.simpleContainer={"field1":"AAA","field2":555};
+                this.formDefinition.simpleContainer = {"field1": "AAA", "field2": 555};
 
-                return this.Form$preInitialize({bto:this.formDefinition});
+                return this.Form$preInitialize({bto: this.formDefinition});
               },
             }
           }
@@ -536,10 +541,10 @@
   runTest("Estados en campos de tipo Container",
     "Se pueden definir estado para campos simples que compongan un campo de tipo Container.<br>" +
     "El tipo <b>State</b> deriva de Enum, siendo el array de valores posibles los estados para los campos del container donde se encuentre.",
-    '<div data-sivWidget="field-states" data-widgetParams="" data-widgetCode="Test.FieldStates">'+
+    '<div data-sivWidget="field-states" data-widgetParams="" data-widgetCode="Test.FieldStates">' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"key":"simpleContainer", "controller":"*self","parent":"*type", "form":"*form"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="field-states"></div>',
     function () {
@@ -601,12 +606,12 @@
     "Si no se da valor a ninguno de los campos de un container, estos campos permanecen sin valor aunque tengan la propiedad <b>DEFAULT</b>.<br>" +
     "En el momento en el que se le da valor a cualquiera de los campos del container, los campos con la propiedad DEFAULT toman el valor indicado en esta propiedad, salvo que sea el campo modificado.<br>" +
     "Pulsando el botón \"Enviar\" se puede ver por consola cómo el container <i>defaultNotModified</i> no tiene valor en sus campos y como al dar valor al campo no default del container <i>defaultModified</i> tanto este como el campo default tienen valor",
-    '<div data-sivWidget="default-values" data-widgetParams="" data-widgetCode="Test.DefaultValues">'+
+    '<div data-sivWidget="default-values" data-widgetParams="" data-widgetCode="Test.DefaultValues">' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"simpleContainer"}\'' +
     '   >' +
-    '   </div>'+
-    '   <input type="button" data-sivEvent="click" data-sivCallback="doSubmit" value="Enviar">'+
+    '   </div>' +
+    '   <input type="button" data-sivEvent="click" data-sivCallback="doSubmit" value="Enviar">' +
     '</div>',
     '<div data-sivView="default-values"></div>',
     function () {
@@ -680,18 +685,18 @@
     }
   )
   runTest("Input: uso de INPUTPARAMS en campo de tipo Container",
-    "Mismo test anterior, pero utilizando INPUTPARAMS para sobreescribir el widget utilizado para el input Container<br>"+
+    "Mismo test anterior, pero utilizando INPUTPARAMS para sobreescribir el widget utilizado para el input Container<br>" +
     "Un formulario puede parametrizar los inputs por defecto, o parametrizarlos, usando el campo INPUTPARAMS, con el path a los inputs que se quieren parametrizar",
-    '<div data-sivWidget="container-inputParams" data-widgetParams="" data-widgetCode="Test.ContainerInputParams">'+
+    '<div data-sivWidget="container-inputParams" data-widgetParams="" data-widgetCode="Test.ContainerInputParams">' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"simpleContainer"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"gridContainer"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"byFieldContainer"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="container-inputParams"></div>',
     function () {
@@ -766,7 +771,8 @@
 
                 return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
             }
           }
         }
@@ -775,17 +781,17 @@
   )
   runTest("Input: campo de tipo Array",
     "Un campo de tipo array genera una vista con una lista ordenada con los valores",
-    '<div data-sivWidget="array-field" data-widgetParams="" data-widgetCode="Test.ArrayField">'+
-    '   <div class="label">Input con campo Array:</div>'+
+    '<div data-sivWidget="array-field" data-widgetParams="" data-widgetCode="Test.ArrayField">' +
+    '   <div class="label">Input con campo Array:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"simpleArray"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="array-field"></div>',
-    function(){
+    function () {
       Siviglia.Utils.buildClass({
-        context:'Test',
-        classes:{
+        context: 'Test',
+        classes: {
           ArrayField: {
             inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
@@ -818,17 +824,17 @@
   runTest("Input: campo de tipo Dictionary",
     "Un diccionario es una agrupación de containers (entradas) que poseen una estructura común, definida en el diccionario.<br>" +
     "En su visualización tiene que poder verse tanto una lista de las entradas como los valores de cada una de ellas.",
-    '<div data-sivWidget="dictionary-field" data-widgetParams="" data-widgetCode="Test.DictionaryField">'+
-    '   <div class="label">Input con campo Dictionary:</div>'+
+    '<div data-sivWidget="dictionary-field" data-widgetParams="" data-widgetCode="Test.DictionaryField">' +
+    '   <div class="label">Input con campo Dictionary:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"simpleDictionary"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="dictionary-field"></div>',
-    function(){
+    function () {
       Siviglia.Utils.buildClass({
-        context:'Test',
-        classes:{
+        context: 'Test',
+        classes: {
           DictionaryField: {
             inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
@@ -852,7 +858,7 @@
                   'segunda entrada': "valor de la segunda entrada"
                 };
 
-                return this.Form$preInitialize({bto:this.formDefinition});
+                return this.Form$preInitialize({bto: this.formDefinition});
               },
             }
           }
@@ -864,10 +870,10 @@
     "Se trata de campos que pueden cambiar su tipo a cualquier otro que tenga definido internamente.<br>" +
     "Se selecciona el campo mediante la clave definida en la clave \"<b>TYPE_FIELD</b>\"<br>" +
     "Para acceder al valor de uno de los tipos definidos se emplea la clave definida en la clave \"<b>CONTENT_FIELD\"</b>",
-    '<div data-sivWidget="typeSwitcher-field" data-widgetParams="" data-widgetCode="Test.TypeSwitcherField">'+
-    '   <div class="label">Input con campo TypeSwitcher:</div>'+
+    '<div data-sivWidget="typeSwitcher-field" data-widgetParams="" data-widgetCode="Test.TypeSwitcherField">' +
+    '   <div class="label">Input con campo TypeSwitcher:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
-    '       data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleTypeSwitcher"}\'></div>'+
+    '       data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleTypeSwitcher"}\'></div>' +
     '   </div>',
     '<div data-sivView="typeSwitcher-field"></div>',
     function () {
@@ -920,7 +926,8 @@
 
                 return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
             }
           }
         }
@@ -929,17 +936,17 @@
   )
   runTest("Input: campo de tipo Container con campos complejos",
     "Se crean los campos agrupados en el container",
-    '<div data-sivWidget="container-field-complex-fields" data-widgetParams="" data-widgetCode="Test.ContainerFieldComplexFields">'+
-    '   <div class="label">Container con campos complejos:</div>'+
+    '<div data-sivWidget="container-field-complex-fields" data-widgetParams="" data-widgetCode="Test.ContainerFieldComplexFields">' +
+    '   <div class="label">Container con campos complejos:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"simpleContainer"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="container-field-complex-fields"></div>',
-    function(){
+    function () {
       Siviglia.Utils.buildClass({
-        context:'Test',
-        classes:{
+        context: 'Test',
+        classes: {
           ContainerFieldComplexFields: {
             inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
@@ -1020,11 +1027,16 @@
                   'primera entrada': "valor de la primera entrada",
                   'segunda entrada': "valor de la segunda entrada"
                 }
-                this.formDefinition.simpleContainer.typeSwitcherField = {"typeField": "typeTwo", "field1": "AAA", "field2": 77};
+                this.formDefinition.simpleContainer.typeSwitcherField = {
+                  "typeField": "typeTwo",
+                  "field1": "AAA",
+                  "field2": 77
+                };
 
-                return this.Form$preInitialize({bto:this.formDefinition});
+                return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
             }
           }
         }
@@ -1034,29 +1046,29 @@
   runTest("Input: campo de tipo Array con campos complejos",
     "Cuando los elementos del array son complejos, los elementos de la lista se identifican por su número de orden únicamente.<br>" +
     "A su lado se crea un área donde mostrar el contenido de los elementos según se van seleccionando",
-    '<div data-sivWidget="array-field-complex-fields" data-widgetParams="" data-widgetCode="Test.ArrayFieldComplexFields">'+
-    '   <div class="label">Array de Container:</div>'+
+    '<div data-sivWidget="array-field-complex-fields" data-widgetParams="" data-widgetCode="Test.ArrayFieldComplexFields">' +
+    '   <div class="label">Array de Container:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"containerArray"}\'>' +
-    '   </div>'+
-    '   <div class="label">Array de Array:</div>'+
+    '   </div>' +
+    '   <div class="label">Array de Array:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"arrayArray"}\'>' +
-    '   </div>'+
-    '   <div class="label">Array de Dictionary:</div>'+
+    '   </div>' +
+    '   <div class="label">Array de Dictionary:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"dictionaryArray"}\'>' +
-    '   </div>'+
-    '   <div class="label">Array de TypeSwitcher:</div>'+
+    '   </div>' +
+    '   <div class="label">Array de TypeSwitcher:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"typeSwitcherArray"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="array-field-complex-fields"></div>',
-    function(){
+    function () {
       Siviglia.Utils.buildClass({
-        context:'Test',
-        classes:{
+        context: 'Test',
+        classes: {
           ArrayFieldComplexFields: {
             inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
@@ -1137,8 +1149,8 @@
                   {"field1": "ZZZ", "field2": 30}
                 ];
                 this.formDefinition.arrayArray = [
-                  ['aaa','zzz'],
-                  ['AAA','ZZZ'],
+                  ['aaa', 'zzz'],
+                  ['AAA', 'ZZZ'],
                 ]
                 this.formDefinition.dictionaryArray = [
                   {
@@ -1151,13 +1163,14 @@
                   },
                 ]
                 this.formDefinition.typeSwitcherArray = [
-                  {"typeField": "typeOne", contentField:"AAA"},
+                  {"typeField": "typeOne", contentField: "AAA"},
                   {"typeField": "typeTwo", "field1": "AAA", "field2": 77}
                 ]
 
-                return this.Form$preInitialize({bto:this.formDefinition});
+                return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
             }
           }
         }
@@ -1168,23 +1181,23 @@
     "En este ejemplo se crea un input con campo diccionario para cada tipo complejo.<br>" +
     "A su lado se crea un área donde mostrar el contenido de los elementos según se van seleccionando.<br>" +
     "En este caso no se ha dado un valor inicial por lo que los campos aparecen vacíos. Para ver cómo quedaría no hay más que ir rellenándolos desde el UI.",
-    '<div data-sivWidget="dictionary-field-complex-fields" data-widgetParams="" data-widgetCode="Test.DictionaryFieldComplexFields">'+
-    '   <div class="label">Dictionario de Container:</div>'+
+    '<div data-sivWidget="dictionary-field-complex-fields" data-widgetParams="" data-widgetCode="Test.DictionaryFieldComplexFields">' +
+    '   <div class="label">Dictionario de Container:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"containerDictionary"}\'>' +
-    '   </div>'+
-    '   <div class="label">Dictionario de Array:</div>'+
+    '   </div>' +
+    '   <div class="label">Dictionario de Array:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"arrayDictionary"}\'>' +
-    '   </div>'+
-    '   <div class="label">Dictionario de Dictionary:</div>'+
+    '   </div>' +
+    '   <div class="label">Dictionario de Dictionary:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"dictionaryDictionary"}\'>' +
-    '   </div>'+
-    '   <div class="label">Dictionario de TypeSwitcher:</div>'+
+    '   </div>' +
+    '   <div class="label">Dictionario de TypeSwitcher:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"typeSwitcherDictionary"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="dictionary-field-complex-fields"></div>',
     function () {
@@ -1283,7 +1296,8 @@
 
                 return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
             }
           }
         }
@@ -1295,14 +1309,14 @@
     "Dentro de él se crea un área donde mostrar el contenido de los elementos según se van seleccionando.<br>" +
     "Cuando el tipo es un objeto, por ejemplo un container, puede establecerse el valor mediante los nombres de los campos, al ser similar a aun path.<br>" +
     "En este caso no se ha dado un valor inicial por lo que los campos aparecen vacíos. Para ver cómo quedaría no hay más que ir rellenándolos desde el UI.",
-    '<div data-sivWidget="typeSwitcher-field-complex-fields" data-widgetParams="" data-widgetCode="Test.TypeSwitcherFieldComplexFields">'+
-    '   <div class="label">TypeSwitcher con campos complejos:</div>'+
+    '<div data-sivWidget="typeSwitcher-field-complex-fields" data-widgetParams="" data-widgetCode="Test.TypeSwitcherFieldComplexFields">' +
+    '   <div class="label">TypeSwitcher con campos complejos:</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"simpleTypeSwitcher"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="typeSwitcher-field-complex-fields"></div>',
-    function (){
+    function () {
       Siviglia.Utils.buildClass({
         context: 'Test',
         classes: {
@@ -1368,11 +1382,12 @@
                     }
                   }
                 });
-                this.formDefinition.simpleTypeSwitcher={typeField: 'containerType', field1: 'AAA', field2: 4}
+                this.formDefinition.simpleTypeSwitcher = {typeField: 'containerType', field1: 'AAA', field2: 4}
 
                 return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
             }
           }
         }
@@ -1382,10 +1397,10 @@
   runTest("Validación del valor de un campo",
     "Se establece un valor invalido y se ve si el input inmediatamente muestra el error.<br>" +
     "",
-    '<div data-sivWidget="input-validation" data-widgetParams="" data-widgetCode="Test.InputValidation">'+
+    '<div data-sivWidget="input-validation" data-widgetParams="" data-widgetCode="Test.InputValidation">' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"fieldName"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="input-validation"></div>',
     function () {
@@ -1411,11 +1426,13 @@
                 // Aqui ignoramos la excepcion, queremos que se pinte el input con el error.
                 try {
                   this.formDefinition.fieldName = "ab";
-                } catch (e) {}
+                } catch (e) {
+                }
 
                 return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
               // show: function () {},
             }
           }
@@ -1426,10 +1443,10 @@
   runTest("Mostrar campos mediante paths",
     "Para mostrar un campo que no está renderizado se emplea la funcion <b>showPath\(<i>path</i>\)</b>.<br>" +
     "Esta función refresca el render de la plantilla para mostrar el elemento indicado por el path que se le pasa como parámetro.",
-    '<div data-sivWidget="showPath-method" data-widgetCode="Test.ShowPathMethod">'+
+    '<div data-sivWidget="showPath-method" data-widgetCode="Test.ShowPathMethod">' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"key":"ROOT","parent":"*type","form":"*self"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="showPath-method"></div>',
     function () {
@@ -1518,25 +1535,49 @@
                     "dict1": {
                       stringType: "Valor para dict 1",
                       arrayType: [
-                        {"selectedType": "customType1", 'customType1-field1': "dic1->campo custom1", "customType1-field2": 1},
+                        {
+                          "selectedType": "customType1",
+                          'customType1-field1': "dic1->campo custom1",
+                          "customType1-field2": 1
+                        },
                         {"selectedType": "customType2", 'customType2-field1': "uno", "customType2-field2": false},
                       ]
                     },
                     "dict2": {
                       stringType: "Valor para dict 2",
                       arrayType: [
-                        {"selectedType": "customType1", 'customType1-field1': "dic2->campo custom1", "customType1-field2": 2},
+                        {
+                          "selectedType": "customType1",
+                          'customType1-field1': "dic2->campo custom1",
+                          "customType1-field2": 2
+                        },
                         {"selectedType": "customType2", 'customType2-field1': "dos", "customType2-field2": true},
-                        {"selectedType": "customType1", 'customType1-field1': "dic2->campo custom2", "customType1-field2": 2},
+                        {
+                          "selectedType": "customType1",
+                          'customType1-field1': "dic2->campo custom2",
+                          "customType1-field2": 2
+                        },
                       ]
                     },
                     "dict3": {
                       stringType: "Valor para dict 3",
                       arrayType: [
-                        {"selectedType": "customType1", 'customType1-field1': "dic3->campo custom1", "customType1-field2": 3},
+                        {
+                          "selectedType": "customType1",
+                          'customType1-field1': "dic3->campo custom1",
+                          "customType1-field2": 3
+                        },
                         {"selectedType": "customType2", 'customType2-field1': "tres", "customType2-field2": true},
-                        {"selectedType": "customType1", 'customType1-field1': "dic3->campo custom2", "customType1-field2": 3},
-                        {"selectedType": "customType1", 'customType1-field1': "dic3->campo custom3", "customType1-field2": 3},
+                        {
+                          "selectedType": "customType1",
+                          'customType1-field1': "dic3->campo custom2",
+                          "customType1-field2": 3
+                        },
+                        {
+                          "selectedType": "customType1",
+                          'customType1-field1': "dic3->campo custom3",
+                          "customType1-field2": 3
+                        },
                       ]
                     },
                   }
@@ -1558,7 +1599,8 @@
                    idx=(idx+1)%paths.length;
                 },3000);*/
               },
-              show: function () {},
+              show: function () {
+              },
             }
           }
         }
@@ -1568,11 +1610,11 @@
   runTest("ComboBox: definición (SOURCE tipo array)",
     "Cuando la fuente de un input es un array se genera un input con un comboBox de opciones asociado.<br>" +
     "El array debe contener un objeto para cada opción en donde se indique cuál es el valor que adopta el campo y cual es la etiqueta que debe mostarse.<br>",
-    '<div data-sivWidget="comboBox-input" data-widgetParams="" data-widgetCode="Test.ComboBoxInput">'+
-    '   <div class="label">ComboBox</div>'+
+    '<div data-sivWidget="comboBox-input" data-widgetParams="" data-widgetCode="Test.ComboBoxInput">' +
+    '   <div class="label">ComboBox</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"fieldName"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="comboBox-input"></div>',
     function () {
@@ -1607,7 +1649,8 @@
                 });
                 return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
             }
           }
         }
@@ -1617,25 +1660,25 @@
   runTest("ComboBox: ComboBox dependientes",
     "Una fuente de un input puede tener varios conjuntos de opciones, seleccionándose uno u otro según una clave externa, indicada en \"SOURCE/PATH/\"<br>" +
     "Esta clave externa tiene que tratarse de otro campo con su propia fuente. De esta forma las fuentes quedan relacionadas.",
-    '<div data-sivWidget="dependant-comboBox" data-widgetParams="" data-widgetCode="Test.DependantComboBox">'+
-    '   <div class="label">ComboBox origen</div>'+
+    '<div data-sivWidget="dependant-comboBox" data-widgetParams="" data-widgetCode="Test.DependantComboBox">' +
+    '   <div class="label">ComboBox origen</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"originComboBox"}\'>' +
-    '   </div>'+
-    '   <div class="label">ComboBox dependiente de comboBox origen</div>'+
+    '   </div>' +
+    '   <div class="label">ComboBox dependiente de comboBox origen</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"firstDependantComboBox"}\'>' +
-    '   </div>'+
-    '   <div class="label">ComboBox dependiente de comboBox anterior</div>'+
+    '   </div>' +
+    '   <div class="label">ComboBox dependiente de comboBox anterior</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"*self","parent":"*type","form":"*form","key":"secondDependantComboBox"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="dependant-comboBox"></div>',
-    function(){
+    function () {
       Siviglia.Utils.buildClass({
-        context:'Test',
-        classes:{
+        context: 'Test',
+        classes: {
           DependantComboBox: {
             inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
@@ -1646,7 +1689,7 @@
                 this.formDefinition = new Siviglia.model.BaseTypedObject({
                   "FIELDS": {
                     originComboBox: {
-                      "LABEL":"Combo fuente origen",
+                      "LABEL": "Combo fuente origen",
                       "TYPE": "String",
                       "SOURCE": {
                         "TYPE": "Array",
@@ -1659,7 +1702,7 @@
                       }
                     },
                     firstDependantComboBox: {
-                      "LABEL":"Combo dependiente de origen",
+                      "LABEL": "Combo dependiente de origen",
                       "TYPE": "Integer",
                       "SOURCE": {
                         "TYPE": "Array",
@@ -1679,7 +1722,7 @@
                       }
                     },
                     secondDependantComboBox: {
-                      "LABEL":"Combo dependiente segundo nivel",
+                      "LABEL": "Combo dependiente segundo nivel",
                       "TYPE": "Integer",
                       "SOURCE": {
                         "TYPE": "Array",
@@ -1709,9 +1752,10 @@
                   }
                 });
 
-                return this.Form$preInitialize({bto:this.formDefinition});
+                return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
               // show: function () {},
             }
           }
@@ -1724,10 +1768,10 @@
     '<div data-sivWidget="remote-source" data-widgetCode="Test.RemoteSource">' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"key":"dataSourceSource", "controller":"/*self","parent":"/*type","form":"/*form"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"key":"dataSourceParams", "controller":"/*self","parent":"/*type","form":"/*form"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="remote-source"></div>',
     function () {
@@ -1779,7 +1823,8 @@
                 });
                 return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
               // show: function () {},
             }
           }
@@ -1790,14 +1835,14 @@
   runTest("ComboBox: SOURCE remotos dependientes",
     "Al igual que con los SOURCE de tipo Array, se pueden hacer depender los SOURCE remotos mediante los parámetros de los dataSource dependientes.",
     '<div data-sivWidget="dependant-remote-source" data-widgetCode="Test.DependantRemoteSource">' +
-    '   <div class="label">Campo con source remoto DATASOURCE</div>'+
+    '   <div class="label">Campo con source remoto DATASOURCE</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"modelSelector"}\'>' +
-    '   </div>'+
-    '   <div class="label">Campo con source remoto DATASOURCE dependiente</div>'+
+    '   </div>' +
+    '   <div class="label">Campo con source remoto DATASOURCE dependiente</div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"controller":"/*self","parent":"/*type","form":"/*form","key":"fieldSelector"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="dependant-remote-source"></div>',
     function () {
@@ -1838,7 +1883,8 @@
                 });
                 return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
               // show: function () {},
             }
           }
@@ -1848,19 +1894,19 @@
   )
   runTest("Definición remota de campo",
     "Se puede emplear una definción remota de un campo dándole a la clave TYPE (o similar, como VALUETYPE) el valor del path remoto donde se encuentre la definición.",
-    '<div data-sivWidget="remote-field-definition" data-widgetParams="" data-widgetCode="Test.RemoteFieldDefintion">'+
+    '<div data-sivWidget="remote-field-definition" data-widgetParams="" data-widgetCode="Test.RemoteFieldDefintion">' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"key":"remoteField","controller":"/*self","parent":"/*type","form":"/*form"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"\n' +
     '       data-sivParams=\'{"key":"remoteDictionary","controller":"/*self","parent":"/*type","form":"/*form"}\'>' +
-    '   </div>'+
+    '   </div>' +
     '</div>',
     '<div data-sivView="remote-field-definition"></div>',
-    function(){
+    function () {
       Siviglia.Utils.buildClass({
-        context:'Test',
-        classes:{
+        context: 'Test',
+        classes: {
           RemoteFieldDefintion: {
             inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
@@ -1873,15 +1919,16 @@
                     remoteField: {
                       "TYPE": "/model/reflection/Types/types/BaseType",
                     },
-                    remoteDictionary:{
+                    remoteDictionary: {
                       TYPE: 'Dictionary',
                       VALUETYPE: '/model/reflection/Types/types/BaseType',
                     }
                   }
                 });
-                return this.Form$preInitialize({bto:this.formDefinition});
+                return this.Form$preInitialize({bto: this.formDefinition});
               },
-              initialize: function (params) {},
+              initialize: function (params) {
+              },
               // show: function () {},
             }
           }
@@ -1930,7 +1977,8 @@
 
     '',
     '<div data-sivView="Siviglia.model.web.Page.forms.Edit" data-sivParams=\'{"id_page":2}\'></div>',
-    function(){}
+    function () {
+    }
   )
 
   runTest("Source exclusivo", "Prueba de source exclusivo, donde los elementos de un source, no pueden repetirse en el valor asociado. <br>",
@@ -1940,10 +1988,10 @@
     '   </div>' +
     '</div>',
     '<div data-sivView="Test.ExSource"></div>',
-    function(){
+    function () {
       Siviglia.Utils.buildClass({
-        context:'Test',
-        classes:{
+        context: 'Test',
+        classes: {
           "ExSource": {
             inherits: "Siviglia.inputs.jqwidgets.Form",
             methods: {
@@ -1957,14 +2005,14 @@
                   "FIELDS": {
                     exSource:
                       {
-                        "LABEL":"FieldSelector",
+                        "LABEL": "FieldSelector",
                         "TYPE": "Array",
-                        "ELEMENTS":{
+                        "ELEMENTS": {
                           "TYPE": "Integer"
                         },
                         "SOURCE": {
                           "TYPE": "Array",
-                          "UNIQUE":true,
+                          "UNIQUE": true,
                           "DATA": [
                             {"a": 1, "message": "Opcion 1"},
                             {"a": 2, "message": "Opcion 2"},
@@ -1979,14 +2027,14 @@
                         }
                       }
                   },
-                  "INPUTPARAMS":{
-                    "/exSource":{
+                  "INPUTPARAMS": {
+                    "/exSource": {
                       "INPUT": "SourcedArray",
                     }
                   }
                 });
 
-                return this.Form$preInitialize({bto:this.typedObj});
+                return this.Form$preInitialize({bto: this.typedObj});
               },
               initialize: function (params) {
               },

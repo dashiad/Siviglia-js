@@ -10,4 +10,4 @@
 
 <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.base.css">
 
-<link rel="stylesheet" type="text/css" href="testStyles.css"><?php
+<link rel="stylesheet" type="text/css" href="testStyles.css">
