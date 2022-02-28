@@ -65,6 +65,7 @@
                 "inherits":"Siviglia.UI.Expando.View",
                 destruct:function()
                 {
+                  if (this.windowNode!==null)
                     this.windowNode.remove();
                 },
                 methods:{
