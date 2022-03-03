@@ -1,7 +1,7 @@
 var urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('name')) {
   var testLoader = document.createElement('script')
-  testLoader.src = 'http://statics.adtopy.com/packages/Siviglia/tests/Widgets/' + urlParams.get('name') + '.js'
+  testLoader.src = 'http://statics.adtopy.com/packages/Siviglia/tests/widgets/' + urlParams.get('name') + '.js'
   document.body.appendChild(testLoader)
 }
 var DEVELOP_MODE;
