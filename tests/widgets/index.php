@@ -33,9 +33,9 @@
     <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/Siviglia/tests/highlight/styles/ir-black.css">
 </head>
 <body style="background-color:#EEE; background-image:none;">
-<?php include_once("/sites/statics/html/packages/Siviglia/jQuery/JqxViews.html"); ?>
-<?php include_once("/sites/statics/html/packages/Siviglia/jQuery/jQuery/JqxLists.html"); ?>
-<?php include_once("/sites/statics/html/packages/Siviglia/jQuery/jQuery/Visual.html"); ?>
+<?php include_once("../../jQuery/JqxWidgets.html"); ?>
+<?php include_once("../../jQuery/JqxLists.html"); ?>
+<?php include_once("../../jQuery/Visual.html"); ?>
 <script src="testEngine.js"></script>
 </body>
 </html>
