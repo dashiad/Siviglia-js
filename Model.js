@@ -494,7 +494,7 @@ Siviglia.Utils.buildClass({
                   submit:function()
                   {
                       this.save();
-                      var i = Siviglia.issetOr(this.type.getDefinition().INDEXFIELDS,null);
+                      var i = Siviglia.issetOr(this.getDefinition().INDEXFIELDS,null);
                       var myIndexes = {};
                       var vals = this.getPlainValue();
                       if(i!=null) {
@@ -507,7 +507,7 @@ Siviglia.Utils.buildClass({
                               delete vals[i[k]];
                           }
                       }
-                      return Siviglia.Model.loader.doAction(myIdexes, vals, this.__model, this.__fname)
+                      return Siviglia.Model.loader.doAction(myIndexes, vals, this.__model, this.__fname)
                   }
               }
         },
