@@ -1,7 +1,7 @@
 var urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('name')) {
   var testLoader = document.createElement('script')
-  testLoader.src = 'http://statics.adtopy.com/packages/Siviglia/tests/widgets/' + urlParams.get('name') + '.js'
+  testLoader.src = 'http://statics.adtopy.com/packages/Siviglia/tests/apps/' + urlParams.get('name') + '.js'
   document.body.appendChild(testLoader)
 }
 var DEVELOP_MODE;
@@ -15,41 +15,6 @@ if (!urlParams.has("test")) {
 }
 var TEST_DESTROY = true;
 
-var Siviglia = Siviglia || {};
-Siviglia.debug = true;
-
-Siviglia.config = {
-  baseUrl: 'http://reflection.adtopy.com/',
-  staticsUrl: 'http://statics.adtopy.com/',
-  metadataUrl: 'http://metadata.adtopy.com/',
-  user: {
-    USER_ID: "1",
-    TOKEN: "1"
-  },
-  wampServer: {
-    "URL": "ws://statics.adtopy.com",
-    "PORT": "8999",
-    "REALM": "adtopy",
-  },
-  // Si el mapper es XXX, debe haber:
-  // 1) Un gestor en /lib/output/html/renderers/js/XXX.php
-  // 2) Un Mapper en Siviglia.Model.XXXMapper
-  // 3) Las urls de carga de modelos seria /js/XXX/model/zzz/yyyy....
-  mapper: 'Siviglia'
-};
-Siviglia.Model.initialize(Siviglia.config);
-
-var wConfig = Siviglia.config.wampServer;
-var wampServer = new Siviglia.comm.WampServer(
-  wConfig.URL,
-  wConfig.PORT,
-  wConfig.REALM,
-  Siviglia.config.user.TOKEN
-);
-Siviglia.Service.add("wampServer", wampServer);
-
-var parser = new Siviglia.UI.HTMLParser();
-parser.parse($(document.body));
 hljs.initHighlightingOnLoad();
 
 
