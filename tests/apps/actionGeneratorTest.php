@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Test loader</title>
+    <title>Action generator</title>
     <script src='http://statics.adtopy.com/packages/d3/d3.js'></script>
     <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
     <script src="/node_modules/autobahn-browser/autobahn.min.js"></script>
@@ -22,16 +22,18 @@
     <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/backend/css/style.css">
 
     <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/Siviglia/jQuery/css/JqxWidgets.css">
-    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/Siviglia/jQuery/css/jqx.adtopy-dev.css">
+    <link rel="stylesheet" type="text/css"
+          href="http://statics.adtopy.com/packages/Siviglia/jQuery/css/jqx.adtopy-dev.css">
 
     <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.base.css">
 
-    <link rel="stylesheet" type="text/css" href="testStyles.css">
-
 
     <!-- dependencias para la visualizacion de test-->
+    <link rel="stylesheet" type="text/css" href="testStyles.css">
+
     <script src="http://statics.adtopy.com/packages/Siviglia/tests/highlight/highlight.pack.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/Siviglia/tests/highlight/styles/ir-black.css">
+    <link rel="stylesheet" type="text/css"
+          href="http://statics.adtopy.com/packages/Siviglia/tests/highlight/styles/ir-black.css">
 </head>
 <body style="background-color:#EEE; background-image:none;">
 <?php include_once("../../jQuery/JqxWidgets.html"); ?>
@@ -73,10 +75,15 @@
     Siviglia.config.user.TOKEN
   );
   Siviglia.Service.add("wampServer", wampServer);
+</script>
 
+
+<div data-sivView="Siviglia.model.reflection.Action.forms.GenerateDefaults" data-sivParams='{}'></div>
+
+
+<script>
   var parser = new Siviglia.UI.HTMLParser();
   parser.parse($(document.body));
 </script>
-<script src="testEngine.js"></script>
 </body>
 </html>

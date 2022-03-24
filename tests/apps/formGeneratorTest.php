@@ -78,8 +78,7 @@
 </script>
 
 
-<!--- INSTANCIACION DEL EDITOR DE MODELOS -->
-<div data-sivView="Siviglia.model.reflection.Model.forms.Edit" data-sivParams='{"className":"/model/web/Site"}'></div>
+<div data-sivView="Siviglia.model.reflection.Action.forms.GenerateForm" data-sivParams="{}"></div>
 
 
 <script>

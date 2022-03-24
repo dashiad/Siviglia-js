@@ -76,6 +76,8 @@
   );
   Siviglia.Service.add("wampServer", wampServer);
 </script>
+
+
 <div style="display:none">
     <div data-sivWidget="model-manager" data-widgetCode="Testing.ModelManager">
         <div data-sivLoop="/*packageList" data-contextIndex="package">
@@ -101,9 +103,8 @@
         </div>
     </div>
 </div>
-
-
 <div data-sivView="model-manager"></div>
+
 <script>
   Siviglia.Utils.buildClass({
     "context": "Testing",
@@ -156,6 +157,8 @@
     }
   });
 </script>
+
+
 <script>
   var parser = new Siviglia.UI.HTMLParser();
   parser.parse($(document.body));
