@@ -100,22 +100,18 @@ function createHTMLTestStructure(test) {
   var descriptionDiv = createHTMLElement('div', 'testDoc', testContainer, test.doc)
 
   var codeContainer = createHTMLElement('div', 'testCont', testContainer)
-  codeContainer.style.height="250px";
 
   var templateContainer = createHTMLElement('div', 'testDef', codeContainer)
-  templateContainer.style.overflowY = "scroll";
   var templateTitle = createHTMLElement('div', 'resultTitle', templateContainer, 'Template')
   var templateContent = createHTMLElement('div', 'resultCode', templateContainer)
   templateContent.innerHTML = "<pre>" + hljs.highlightAuto(formatHTML(test.template)).value + "</pre>";
 
   var viewContainer = createHTMLElement('div', 'testView', codeContainer)
-  viewContainer.style.overflowY = "scroll";
   var viewTitle = createHTMLElement('div', 'resultTitle', viewContainer, 'View')
   var viewContent = createHTMLElement('div', 'resultCode', viewContainer)
   viewContent.innerHTML = "<pre>" + hljs.highlightAuto(formatHTML(test.view)).value + "</pre>";
 
   var classContainer = createHTMLElement('div', 'testCode', codeContainer)
-  classContainer.style.overflowY = "scroll";
   var classTitle = createHTMLElement('div', 'resultTitle', classContainer, 'Code')
   var classContent = createHTMLElement('div', 'resultCode', classContainer)
   classContent.innerHTML = "<pre>" + hljs.highlightAuto(test.cb.toString()).value + "</pre>";

@@ -62,24 +62,26 @@
             margin-top:30px;
         }
         .testCont {
-            height:500px;
-            overflow-y:scroll;
+            height: 250px;
         }
+
         .testDef {
-            width:700px;
-            float:left;
-            height:500px;
-            overflow:auto
+            width: 400px;
+            float: left;
+            height: 250px;
+            overflow-y: scroll;
         }
+
         .testView {
-            width:100px;
-            float:left;
-            height:500px;
-            overflow:auto
+            width: 400px;
+            float: left;
+            height: 250px;
+            overflow-y: scroll;
         }
+
         .testCode {
-            height:500px;
-            overflow:auto
+            height: 250px;
+            overflow-y: scroll;
         }
         .resultTitle {
             background-color: #DDD;
