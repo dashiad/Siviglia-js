@@ -81,31 +81,31 @@
 <div data-sivWidget="Test.FilterForm" data-widgetCode="Test.FilterForm">
     <div class="widField">
         <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
-             data-sivParams=\'{"key":"id","controller":"*self","parent":"*type","form":"*form"}\'></div>
+             data-sivParams='{"key":"id","controller":"*self","parent":"*type","form":"*form"}'></div>
     </div>
     <div class="widField">
         <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
-             data-sivParams=\'{"key":"parent","controller":"*self","parent":"*type","form":"*form"}\'></div>
+             data-sivParams='{"key":"parent","controller":"*self","parent":"*type","form":"*form"}'></div>
     </div>
     <div class="widField">
         <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
-             data-sivParams=\'{"key":"type","controller":"*self","parent":"*type","form":"*form"}\'></div>
+             data-sivParams='{"key":"type","controller":"*self","parent":"*type","form":"*form"}'></div>
     </div>
     <div class="widField">
         <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
-             data-sivParams=\'{"key":"status","controller":"*self","parent":"*type","form":"*form"}\'></div>
+             data-sivParams='{"key":"status","controller":"*self","parent":"*type","form":"*form"}'></div>
     </div>
     <div class="widField">
         <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
-             data-sivParams=\'{"key":"start","controller":"*self","parent":"*type","form":"*form"}\'></div>
+             data-sivParams='{"key":"start","controller":"*self","parent":"*type","form":"*form"}'></div>
     </div>
     <div class="widField">
         <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
-             data-sivParams=\'{"key":"end","controller":"*self","parent":"*type","form":"*form"}\'></div>
+             data-sivParams='{"key":"end","controller":"*self","parent":"*type","form":"*form"}'></div>
     </div>
     <div class="widField">
         <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
-             data-sivParams=\'{"key":"rowsProcessed","controller":"*self","parent":"*type","form":"*form"}\'></div>
+             data-sivParams='{"key":"rowsProcessed","controller":"*self","parent":"*type","form":"*form"}'></div>
     </div>
 </div>
 
