@@ -2480,7 +2480,7 @@
 
                   transport.doGet(formUrl).then(function (result) {
                     if (result.error == 0) {
-                      this._type = new Siviglia.Model.Form(params.model, params.name, params.keys, result.form.definition, result.form.value);
+                      this._type = new Siviglia.Model.Form(params.model, params.form, params.keys, result.form.definition, result.form.value);
                       this.setupBto();
                       loadedPromise.resolve(this._type);
 
@@ -2495,6 +2495,20 @@
                 }.bind(this));
                 return containerPromise;
               },
+              // todo: crear el initialize con lo necesario para sobreescribir los estilos por defecto del Form, como
+              // por ejemplo el texto del boton para submit, que es el ejemplo que ahora est'a incluido
+              /*initialize:function(params)
+              {
+                this.Container$initialize(params);
+                if(typeof params.style!=="undefined")
+                {
+                  if(typeof params.style.button!=="undefined")
+                  {
+                    if(params.style.button.text!=="undefined")
+                      $("button",this.rootNode).attr("value",params.style.button.text)
+                  }
+                }
+              },*/
               onLoaded:function(bto)
               {
                 this.Container$preInitialize({type:bto,form:this});
