@@ -1682,4 +1682,52 @@ runTest("Source exclusivo", "Prueba de source exclusivo, donde los elementos de 
     })
   }
 )
+runTest("Lista recursiva de DataSource",
+  "Este widget muestra el contenido de un DataSource en una lista.<br>" +
+  "Para crearlo es necesario que la clase del widget padre incluya una variable listValue, que toma el valor de los elementos de las listas clicados, y un objeto innerListParams con las siguientes claves:<br>" +
+  "  - model, dataSource y keys: definen el DS que se va a mostrar" +
+  "  - label: campo del DS que se va a mostrar en la lista<br>" +
+  "  - value: campo del DS que se va a tomar como valor<br>" +
+  "  - listParam: qué elemento de la definición del DS anidado (model, datasource o keys) se va a completar con el valor de la lista actual<br>" +
+  "  - keyParams: en el caso de que listParam sea \"keys\", se emplea para definir la clave del valor dentro de keys<br>" +
+  "  - innerListParams: un objeto con los mismos elementos que los descritos, para generar la lista anidada.",
+  '<div data-sivWidget="recursive-ds-list" data-widgetParams="" data-widgetCode="Test.RecursiveDSList">' +
+  '   <div data-sivView="Siviglia.widgets.jqwidgets.RecursiveDSList"\n' +
+  '       data-sivParams=\'{"innerListParams":"*innerListParams"}\'></div>' +
+  '   <div data-sivValue="[%*listValue%]"></div>' +
+  '   </div>' +
+  '</div>',
+  '<div data-sivView="recursive-ds-list"></div>',
+  function () {
+    Siviglia.Utils.buildClass({
+      context: 'Test',
+      classes: {
+        RecursiveDSList: {
+          inherits: 'Siviglia.UI.Expando.View',
+          methods: {
+            preInitialize: function () {
+              this.innerListParams = {
+                model: '/model/reflection/Model',
+                dataSource: 'PackageList',
+                // keys: {},
+                label: 'name',
+                value: 'name',
+                listParam: 'keys',
+                keysParam: 'package',
+                innerListParams: {
+                  model: '/model/reflection/Model',
+                  dataSource: 'FullList',
+                  keys: {},
+                  label: 'name',
+                  value: 'smallName',
+                }
+              }
+              this.listValue = 'valor inicial'
+            }
+          },
+        },
+      }
+    })
+  }
+)
 checkTests()
