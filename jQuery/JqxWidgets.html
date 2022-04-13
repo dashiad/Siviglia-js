@@ -136,11 +136,46 @@
 
 <script>
   Siviglia.Utils.buildClass({
-    context:'Siviglia.widgets.jqwidgets',
-    classes:{
-      'Loading':{
+    context: 'Siviglia.widgets.jqwidgets',
+    classes: {
+      Loading: {
         inherits: "Siviglia.UI.Expando.View",
-        methods:{
+        methods: {}
+      },
+      RecursiveDSList: {
+        inherits: 'Siviglia.UI.Expando.View',
+        methods: {
+          preInitialize: function (params) {
+            this.itemList = []
+            this.model = params.innerListParams.model
+            this.dataSource = params.innerListParams.dataSource
+            this.keys = params.innerListParams.keys ? params.innerListParams.keys : {}
+            this.label = params.innerListParams.label
+            this.value = params.innerListParams.value
+            this.listParam = params.innerListParams.listParam
+            this.keysParam = params.innerListParams.keysParam
+            this.innerListParams = params.innerListParams.innerListParams ? params.innerListParams.innerListParams : {}
+            this.innerListReference = ''
+
+            if (this.model && this.dataSource) {
+              this.ds = new Siviglia.Model.DataSource(this.model, this.dataSource, this.keys)
+              return this.ds.unfreeze().then(function () {
+                this.itemList = this.ds.data
+              }.bind(this))
+            }
+          },
+          onClickedItem: function (node, params) {
+            if (this.listParam === 'keys')
+              this.innerListParams.keys[this.keysParam] = params.clickedValue
+            else
+              this.innerListParams[this.listParam] = params.clickedValue
+
+            this.__parentView.listValue = params.clickedValue
+            if (this.__parentView.__parentView !== null)
+              this.__parentView.__parentView.listValue = this.__parentView.listValue
+
+            this.innerListReference = params.clickedLabel
+          },
         }
       }
     }
@@ -3382,7 +3417,24 @@
 
 
     <div data-sivWidget="Siviglia.widgets.jqwidgets.Loading" data-widgetParams="" data-widgetCode="Siviglia.widgets.jqwidgets.Loading">
-        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        <div class="lds-roller"></div>
+    </div>
+
+    <div data-sivWidget="Siviglia.widgets.jqwidgets.RecursiveDSList"
+         data-widgetCode="Siviglia.widgets.jqwidgets.RecursiveDSList">
+        <ul>
+            <div data-sivLoop="*itemList" data-contextIndex="item">
+                <li>
+                    <div class="listItem" data-sivValue="/@item/{%*label%}" data-sivEvent="click"
+                         data-sivCallback="onClickedItem"
+                         data-sivParams='{"clickedLabel":"/@item/{%*label%}","clickedValue":"/@item/{%*value%}"}'></div>
+                    <div data-sivIf="'[%/@item/{%*label%}%]'==='[%*innerListReference%]'">
+                        <div data-sivView="Siviglia.widgets.jqwidgets.RecursiveDSList"
+                             data-sivParams='{"innerListParams":"*innerListParams"}'></div>
+                    </div>
+                </li>
+            </div>
+        </ul>
     </div>
 
 </div>
