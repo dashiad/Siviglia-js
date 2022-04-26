@@ -1684,7 +1684,7 @@ runTest("Source exclusivo", "Prueba de source exclusivo, donde los elementos de 
 )
 runTest("Lista recursiva de DataSource",
   "Este widget muestra el contenido de un DataSource en una lista.<br>" +
-  "Para crearlo es necesario que la clase del widget padre incluya una variable listValue, que toma el valor de los elementos de las listas clicados, y un objeto innerListParams con las siguientes claves:<br>" +
+  "Para crearlo es necesario que la clase del widget padre incluya una variable listValue, que toma el valor de los elementos de las listas clicados, y un objeto con las siguientes claves:<br>" +
   "  - model, dataSource y keys: definen el DS que se va a mostrar" +
   "  - label: campo del DS que se va a mostrar en la lista<br>" +
   "  - value: campo del DS que se va a tomar como valor<br>" +
@@ -1726,6 +1726,65 @@ runTest("Lista recursiva de DataSource",
             }
           },
         },
+      }
+    })
+  }
+)
+runTest('jqxtree',
+  'jqxtest docs',
+  '<div data-sivWidget="jqxtree" data-widgetCode="Test.jqxtree">' +
+  '  <div id="jqxTree" data-sivId="treediv"></div>' +
+  '</div>',
+  '<div data-sivView="jqxtree"></div>',
+  function () {
+    Siviglia.Utils.buildClass({
+      context: 'Test',
+      classes: {
+        jqxtree: {
+          inherits: 'Siviglia.UI.Expando.View',
+          methods: {
+            preInitialize: function (params) {
+              this.source = [
+                { label: "Item 1", expanded: true, items: [
+                    { label: "Item 1.1" },
+                    { label: "Item 1.2", selected: true }
+                  ]
+                },
+                { label: "Item 2" },
+                { label: "Item 3" },
+                { label: "Item 4", items: [
+                    { label: "Item 4.1" },
+                    { label: "Item 4.2" }
+                  ]
+                },
+                { label: "Item 5" },
+                { label: "Item 6" },
+                { label: "Item 7" }
+              ]
+            },
+            initialize: function () {
+              var source = [
+                { label: "Item 1", expanded: true, items: [
+                    { label: "Item 1.1" },
+                    { label: "Item 1.2", selected: true }
+                  ]
+                },
+                { label: "Item 2" },
+                { label: "Item 3" },
+                { label: "Item 4", items: [
+                    { label: "Item 4.1" },
+                    { label: "Item 4.2" }
+                  ]
+                },
+                { label: "Item 5" },
+                { label: "Item 6" },
+                { label: "Item 7" }
+              ];
+              // Create jqxTree.
+              $('#jqxTree').jqxTree({ source: source, height: '300px', width: '300px' });
+            }
+          }
+        }
       }
     })
   }

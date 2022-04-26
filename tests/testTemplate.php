@@ -26,14 +26,6 @@
           href="http://statics.adtopy.com/packages/Siviglia/jQuery/css/jqx.adtopy-dev.css">
 
     <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.base.css">
-
-
-    <!-- dependencias para la visualizacion de test-->
-    <link rel="stylesheet" type="text/css" href="testStyles.css">
-
-    <script src="http://statics.adtopy.com/packages/Siviglia/tests/highlight/highlight.pack.js"></script>
-    <link rel="stylesheet" type="text/css"
-          href="http://statics.adtopy.com/packages/Siviglia/tests/highlight/styles/ir-black.css">
 </head>
 <body style="background-color:#EEE; background-image:none;">
 <?php include_once("../../jQuery/JqxWidgets.html"); ?>
@@ -78,8 +70,12 @@
 </script>
 
 
-<!--- INSTANCIACION DEL EDITOR DE MODELOS -->
-<div data-sivView="Siviglia.model.reflection.Model.forms.Edit" data-sivParams='{"className":"/model/web/Site"}'></div>
+<!--- Insertar aquí el html (widgets y demás) -->
+
+
+<script>
+    // Insertar aquí el js o las clases relativas a los widgets del html
+</script>
 
 
 <script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Model manager</title>
+    <title>Test app template</title>
     <script src='http://statics.adtopy.com/packages/d3/d3.js'></script>
     <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
     <script src="/node_modules/autobahn-browser/autobahn.min.js"></script>
@@ -26,14 +26,6 @@
           href="http://statics.adtopy.com/packages/Siviglia/jQuery/css/jqx.adtopy-dev.css">
 
     <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/jqwidgets/styles/jqx.base.css">
-
-
-    <!-- dependencias para la visualizacion de test-->
-    <link rel="stylesheet" type="text/css" href="testStyles.css">
-
-    <script src="http://statics.adtopy.com/packages/Siviglia/tests/highlight/highlight.pack.js"></script>
-    <link rel="stylesheet" type="text/css"
-          href="http://statics.adtopy.com/packages/Siviglia/tests/highlight/styles/ir-black.css">
 </head>
 <body style="background-color:#EEE; background-image:none;">
 <?php include_once("../../jQuery/JqxWidgets.html"); ?>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Model manager</title>
+    <title>Model generator</title>
     <script src='http://statics.adtopy.com/packages/d3/d3.js'></script>
     <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
     <script src="/node_modules/autobahn-browser/autobahn.min.js"></script>
@@ -78,85 +78,8 @@
 </script>
 
 
-<div style="display:none">
-    <div data-sivWidget="model-manager" data-widgetCode="Testing.ModelManager">
-        <div data-sivLoop="/*packageList" data-contextIndex="package">
-            <div data-sivValue="/@package/name" data-sivEvent="click" data-sivCallback="loadModels"
-                 data-sivparams='{"package":"/@package/name"}'>
-            </div>
-        </div>
-
-        <div data-sivLoop="/*modelList" data-contextIndex="model">
-            <div data-sivValue="/@model/name"></div>
-            <button data-sivEvent="click" data-sivCallback="generateAction"
-                    data-sivParams='{"model":"/@model/name"}'>
-                Regenerar acciones
-            </button>
-            <button data-sivEvent="click" data-sivCallback="generateDataSource"
-                    data-sivParams='{"model":"/@model/name"}'>
-                Regenerar dataSources
-            </button>
-            <button data-sivEvent="click" data-sivCallback="generateModel"
-                    data-sivParams='{"model":"/@model/name"}'>
-                Regenerar modelo
-            </button>
-        </div>
-    </div>
-</div>
-<div data-sivView="model-manager"></div>
-
-<script>
-  Siviglia.Utils.buildClass({
-    "context": "Testing",
-    "classes": {
-      ModelManager: {
-        "inherits": "Siviglia.inputs.jqwidgets.Form",
-        "methods": {
-          preInitialize: function (params) {
-            this.vars = {}
-            this.pkg = null
-            this.model = null
-            this.packageList = [];
-            this.modelList = [];
-          },
-          initialize: function (params) {
-            this.packageDS = new Siviglia.Model.DataSource("/model/reflection/Model", "PackageList", {});
-            return this.packageDS.unfreeze().then(function () {
-              this.packageList = this.packageDS.data;
-            }.bind(this))
-          },
-          loadModels: function (node, params) {
-            this.pkg = params.package;
-            this.modelDS = new Siviglia.Model.DataSource("/model/reflection/Model", "FullList", {package: this.pkg});
-            this.modelDS.freeze();
-            this.modelDS.unfreeze().then(function () {
-              this.modelList = this.modelDS.data
-            }.bind(this))
-          },
-          generateAction: function (node, params) {
-            this.model = params.model
-            this.sendForm('Action')
-          },
-          generateDataSource: function (node, params) {
-            this.model = params.model
-            this.sendForm('DataSource')
-          },
-          generateModel: function (node, params) {
-            this.model = params.model
-            this.sendForm('Model')
-          },
-          sendForm: function (formType) {
-            this.formFactory = new Siviglia.Model.FormFactory()
-            this.formFactory.getForm('/model/reflection/' + formType, 'generateDefaults', {}).then(function (form) {
-              form.model = '/model/' + this.pkg + '/' + this.model
-              form.submit()
-            }.bind(this))
-          }
-        }
-      }
-    }
-  });
-</script>
+<!--- INSTANCIACION DEL EDITOR DE MODELOS -->
+<div data-sivView="Siviglia.model.reflection.Model.forms.Edit" data-sivParams='{"className":"/model/web/Site"}'></div>
 
 
 <script>
