@@ -6,7 +6,7 @@
     <!-- para quitar error consola GET http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css net::ERR_ABORTED 404 (Not Found) -->
     <!-- <link rel='stylesheet prefetch' href='http://statics.adtopy.com/node-modules/font-awesome/css/font-awesome.css'> -->
     <!-- <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto'> -->
-    <script src='/packages/d3/d3.min.js'></script>
+    <script src='/node_modules/d3/dist/d3.min.js'></script>
     <script src="/node_modules/jquery/dist/jquery.js"></script>
     <script src="../Siviglia.js"></script>
     <script src="../SivigliaStore.js"></script>
