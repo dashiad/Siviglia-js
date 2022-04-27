@@ -28,12 +28,12 @@
     <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css">
 </head>
 <body style="background-color:#EEE; background-image:none;">
-<?php include_once("../../jQuery/JqxWidgets.html"); ?>
-<?php include_once("../../jQuery/JqxLists.html"); ?>
-<?php include_once("../../jQuery/Visual.html"); ?>
-<?php include_once("../../jQuery/JqxViews.html"); ?>
-<?php include_once("../../jQuery/JqxTypes.html"); ?>
-<?php include_once("../../jQuery/JqxApp.html"); ?>
+<?php include_once("../jQuery/JqxWidgets.html"); ?>
+<?php include_once("../jQuery/JqxLists.html"); ?>
+<?php include_once("../jQuery/Visual.html"); ?>
+<?php include_once("../jQuery/JqxViews.html"); ?>
+<?php include_once("../jQuery/JqxTypes.html"); ?>
+<?php include_once("../jQuery/JqxApp.html"); ?>
 <script>
   var Siviglia = Siviglia || {};
   Siviglia.debug = true;
