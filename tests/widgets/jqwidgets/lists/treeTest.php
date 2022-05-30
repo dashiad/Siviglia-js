@@ -72,94 +72,22 @@
 
 
 <div style="display:none">
-<!-- Widget base -->
+    <!-- Widget base -->
     <div data-sivWidget="Siviglia.Widgets.Lists.Tree" data-widgetCode="Siviglia.Widgets.Lists.Tree">
         <div data-sivId="treeContainer"></div>
     </div>
 
 
-<!-- Implementación de widget base -->
-    <div data-sivWidget="tree-test" data-widgetCode="Test.TreeTest">
-        <div data-sivView="Siviglia.Widgets.Lists.Tree" data-sivParams='{"renderEngine":"*renderEngine","config":"*config"}'></div>
+    <!-- Widget derivado -->
+    <div data-sivWidget="Siviglia.Widgets.Lists.ReflectionTree" data-widgetCode="Siviglia.Widgets.Lists.ReflectionTree">
+        <div data-sivId="treeContainer"></div>
     </div>
 </div>
 
-<div data-sivView="tree-test"></div>
+<div data-sivView="Siviglia.Widgets.Lists.ReflectionTree"></div>
 
 
 <script>
-  Siviglia.Utils.buildClass({
-    context: 'Test',
-    classes: {
-      TreeTest: {
-        inherits: 'Siviglia.UI.Expando.View',
-        methods: {
-          preInitialize: function () {
-            this.renderEngine = 'jQWidgets'
-            this.config = [
-              {
-                id: 1,
-                value: 1,
-                suffix: [
-                  {
-                    type: 'image',
-                    src: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/home.png'
-                  }
-                ],
-                content: [
-                  {
-                    type: 'text',
-                    content: 'soy el primero ',
-                    color: 'red'
-                  },
-                ],
-              },
-              {
-                id: 2,
-                value: 1,
-                suffix: [
-                  {
-                    type: 'image',
-                    src: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/broadcast.png'
-                  }
-                ],
-                content: [
-                  {
-                    type: 'text',
-                    content: 'soy el segundo ',
-                    color: 'blue'
-                  },
-                ],
-                children: [
-                  {
-                    id: 3,
-                    value: 1,
-                    suffix: [
-                      {
-                        type: 'image',
-                        src: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/image.png'
-                      }
-                    ],
-                    content: [
-                      {
-                        type: 'text',
-                        content: 'soy el primer hijo ',
-                        color: 'purple'
-                      },
-                    ],
-                  },
-                  {
-                    content: 'holas'
-                  }
-                ]
-              },
-            ]
-          }
-        }
-      }
-    }
-  })
-
   Siviglia.Utils.buildClass({
     context: 'Siviglia.Widgets.Lists',
     classes: {
@@ -167,17 +95,84 @@
         inherits: 'Siviglia.UI.Expando.View,Siviglia.Dom.EventManager',
         methods: {
           preInitialize: function (params) {
-            this.config = params.config
             this.renderEngine = params.renderEngine
+            this.treeData
+
+            this.dataSource = new Siviglia.Model.DataSource(
+              params.dataSource.model,
+              params.dataSource.name,
+              Siviglia.issetOr(params.dataSource.params, {})
+            )
+            this.dataSource.freeze()
+            this.dataSource.addListener('CHANGE', this, 'refreshTree')
           },
-          initialize: function (params) {
-            this.implementation = new Siviglia.RenderEngineInterface[this.renderEngine].Lists.Tree({node: this.treeContainer, config: this.config})
+          initialize: function () {
+            this.dataSource.unfreeze().then(function () {
+              this.treeData = this.dataSource.getRawData()[0].root.children
+              this.createTreeConfig()
+              this.buildTree()
+            }.bind(this))
+          },
+          buildTree: function () {
+            this.implementation = new Siviglia.RenderEngineInterface[this.renderEngine].Lists.Tree({
+              node: this.treeContainer,
+              config: this.treeConfig,
+            })
             this.implementation.build()
-            this.implementation.addListener('SELECTED', this, 'onSelected')
           },
-          onSelected: function (event, params) {
-            console.log(params)
-          }
+        }
+      },
+      ReflectionTree: {
+        inherits: 'Siviglia.Widgets.Lists.Tree',
+        methods: {
+          preInitialize: function () {
+            this.treeDefinition = {
+              renderEngine: 'jQWidgets',
+              dataSource: {
+                model: '/model/reflection/ReflectorFactory',
+                name: 'fullTree',
+                // params: {},
+              },
+              leaves: {
+                Package: {field: 'name'},
+                Folder: {field: 'name'},
+                Model: {field: 'item'},
+                Datasource: {field: 'item'},
+                Type: {field: 'item'},
+                ModelConfig: {field: 'name'},
+                Action: {field: 'name'},
+                HtmlView: {field: 'item'},
+                HtmlForm: {field: 'item'},
+                JsForm: {field: 'item'},
+                Cache: {field: 'item'},
+                JsApp: {field: 'item'},
+                JsModel: {field: 'item'},
+                JsView: {field: 'item'},
+                Worker: {field: 'name'},
+              }
+            }
+            this.Tree$preInitialize(this.treeDefinition)
+          },
+          initialize: function () {
+            this.Tree$initialize()
+          },
+          createTreeConfig: function () {
+            this.treeConfig = this.createBranch(this.treeData)
+          },
+          createBranch: function (config) {
+            var branch = []
+            for (var leafIndex=0; leafIndex<config.length; leafIndex++) {
+              branch.push(this.createLeaf(config[leafIndex]))
+            }
+            return branch
+          },
+          createLeaf: function (config) {
+            var leaf = {label: config[this.treeDefinition.leaves[config.resource].field]}
+            if (config.children) {
+              leaf.children = this.createBranch(config.children)
+            }
+            return leaf
+          },
         }
       }
     }
@@ -196,7 +191,7 @@
         methods: {
           build: function () {
             this.node.jqxTree({source: this.jqxConfig})
-            $(this.node).on('click', function(){
+            $(this.node).on('click', function () {
               var item = $(this.node).jqxTree('getSelectedItem');
               this.fireEvent('SELECTED', {element: item})
             }.bind(this))
@@ -208,28 +203,28 @@
             var branchConfig = []
 
             for (const element of config) {
-              branchConfig.push(this.createLeaveConfig(element))
+              branchConfig.push(this.createLeafConfig(element))
             }
 
             return branchConfig
           },
-          createLeaveConfig: function (config) {
+          createLeafConfig: function (config) {
             var itemConfig = {}
             var prefix = ''
             var suffix = ''
 
-            if (typeof config.content === 'string')
-              itemConfig.label = config.content
+            if (typeof config.label === 'string')
+              itemConfig.label = config.label
             else {
-              if (config.prefix)
-                prefix = this.createItemContent(config.prefix)
-              if (config.suffix)
-                suffix += this.createItemContent(config.suffix)
-              var content = this.createItemContent(config.content)
+              if (config.label.prefix)
+                prefix = this.createItemContent(config.label.prefix)
+              if (config.label.suffix)
+                suffix += this.createItemContent(config.label.suffix)
+              var content = this.createItemContent(config.label.content)
 
               itemConfig.label = prefix + content + suffix
-              itemConfig.id = config.id
-              itemConfig.value = config.value
+              itemConfig.id = Siviglia.issetOr(config.id, null)
+              itemConfig.value = Siviglia.issetOr(config.value, null)
             }
             if (config.children)
               itemConfig.items = this.createBranchConfig(config.children)
@@ -259,6 +254,7 @@
       },
     }
   })
+
 
 </script>
 
