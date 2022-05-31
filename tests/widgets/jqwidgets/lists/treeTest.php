@@ -133,10 +133,40 @@
                 name: 'fullTree',
                 // params: {},
               },
+              /*
+              * Para configurar una hoja se puede hacer de 2 formas:
+              * - pasar un objeto:
+              *     {field: 'nombre del campo'}
+              *     indica qué campo de los datos toma se emplea para generar el contenido
+              * - pasar un objeto:
+              *     {
+              *      content: [
+              *                 {
+              *                type: [text, image, button],
+              *                field/content: [campo del que tomar valor / valor del campo],
+              *                resto de parámetros del tipo:
+              *                     text -> color
+              *                     image -> height, width
+              *                     button -> ninguno
+              *                 },
+              *                 ...
+              *               ]
+              *      prefix: igual que content
+              *      suffix: igual que content
+              *     }
+              * */
               leaves: {
                 Package: {field: 'name'},
                 Folder: {field: 'name'},
-                Model: {field: 'item'},
+                Model: {
+                  content: [
+                    {type: 'text', field: 'item', color: 'blue'}
+                  ],
+                  prefix: [{type: 'image', content: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/home.png'}],
+                  suffix: [
+                    {type: 'button', content: 'Add'}
+                  ]
+                },
                 Datasource: {field: 'item'},
                 Type: {field: 'item'},
                 ModelConfig: {field: 'name'},
@@ -159,20 +189,67 @@
           createTreeConfig: function () {
             this.treeConfig = this.createBranch(this.treeData)
           },
-          createBranch: function (config) {
+          createBranch: function (data) {
             var branch = []
-            for (var leafIndex=0; leafIndex<config.length; leafIndex++) {
-              branch.push(this.createLeaf(config[leafIndex]))
+            for (var leafIndex = 0; leafIndex < data.length; leafIndex++) {
+              branch.push(this.createLeaf(data[leafIndex]))
             }
             return branch
           },
-          createLeaf: function (config) {
-            var leaf = {label: config[this.treeDefinition.leaves[config.resource].field]}
-            if (config.children) {
-              leaf.children = this.createBranch(config.children)
+          createLeaf: function (data) {
+            // var leafID = Siviglia.issetOr(config.idField, null)
+            // var leafValue = Siviglia.issetOr(config.valueField, null)
+            var leafContent = this.createLeafContent(data)
+            var leaf = {label: leafContent}
+            if (data.children) {
+              leaf.children = this.createBranch(data.children)
             }
             return leaf
           },
+          createLeafContent: function (data) {
+            var leafDefinition = this.treeDefinition.leaves[data.resource]
+            if (leafDefinition.field)
+              return data[leafDefinition.field]
+
+            var content = ''
+            var prefix = ''
+            var suffix = ''
+            for (var contentDefinition of leafDefinition.content) {
+              content += this.createLeafElement(contentDefinition, data) + ' '
+            }
+
+            if (leafDefinition.prefix) {
+              for (var prefixDefinition of leafDefinition.prefix) {
+                prefix += this.createLeafElement(prefixDefinition, data) + ' '
+              }
+            }
+
+            if (leafDefinition.suffix) {
+              for (var suffixDefinition of leafDefinition.suffix) {
+                suffix += this.createLeafElement(suffixDefinition, data) + ' '
+              }
+            }
+
+            return prefix + ' ' + content + ' ' + suffix
+          },
+          createLeafElement: function (config, data) {
+            var content = config.field ? data[config.field] : config.content
+            var element
+            switch (config.type) {
+              case 'text':
+                element = `<span ${config.color ? 'style=\'color:' + config.color + '\'' : ''}>${content}</span>`
+                break
+              case 'image':
+                if (!config.height) config.height = '16px'
+                if (!config.width) config.width = '16px'
+                element = `<img src=\'${content}\' style=\'height:${config.height};width:${config.width}\'>`
+                break
+              case 'button':
+                element = `<button>${content}</button>`
+                break
+            }
+            return element
+          }
         }
       }
     }
