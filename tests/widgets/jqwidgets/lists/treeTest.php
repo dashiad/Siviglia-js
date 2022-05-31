@@ -19,7 +19,6 @@
 
 
     <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/reflection/css/style.css">
-    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/backend/css/style.css">
 
     <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/Siviglia/jQuery/css/JqxWidgets.css">
     <link rel="stylesheet" type="text/css"
@@ -164,7 +163,8 @@
                   ],
                   prefix: [{type: 'image', content: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/home.png'}],
                   suffix: [
-                    {type: 'button', content: 'Add'}
+                    {type: 'icon', content: 'Dictionary-removeButton'},
+                    {type: 'icon', content: 'NewItem-addButton'},
                   ]
                 },
                 Datasource: {field: 'item'},
@@ -247,6 +247,8 @@
               case 'button':
                 element = `<button>${content}</button>`
                 break
+              case 'icon':
+                element = `<span class=\'${content}\'></span>`
             }
             return element
           }
