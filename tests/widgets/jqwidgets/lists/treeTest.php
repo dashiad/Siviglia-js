@@ -26,6 +26,24 @@
 
     <link rel="stylesheet" type="text/css"
           href="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css">
+
+    <style>
+        .edit-button:before {
+            content: var(--icon-edit);
+            padding-right: 5px;
+        }
+
+        .edit-button {
+            font-family: var(--icon-font);
+            font-style: normal;
+            color: var(--pallette-color-secondary-1-0);
+            cursor: pointer;
+        }
+
+        .edit-button:hover {
+            color: var(--pallette-color-secondary-1-1);
+        }
+    </style>
 </head>
 <body style="background-color:#EEE; background-image:none;">
 <?php include_once("../../../../jQuery/JqxWidgets.html"); ?>
@@ -311,7 +329,7 @@
 
             // no puede emplearse for (var element of data)
             // devuelve excepción porque data es Symbol
-            for (var elementIndex=0; elementIndex<data.length; elementIndex++)
+            for (var elementIndex = 0; elementIndex < data.length; elementIndex++)
               branchConfig.push(this.createItemConfig(this.config[data[elementIndex][this.dataIndexField]], data[elementIndex]))
 
             return branchConfig
@@ -321,7 +339,7 @@
 
             // no puede emplearse if (Siviglia.isString(data))
             // devuelve excepción porque data es Symbol
-            if (typeof(data) === 'string')
+            if (typeof (data) === 'string')
               itemConfig.label = data
             else if (config.field)
               itemConfig.label = data[config.field]
@@ -362,7 +380,7 @@
                 element = `<img id=\'${Siviglia.createID()}\' src=\'${content}\' style=\'height:${config.height};width:${config.width}\'>`
                 break
               case 'button':
-                element = `<button>${content}</button>`
+                element = `<button id=\'${Siviglia.createID()}\'>${content}</button>`
                 break
               case 'icon':
                 element = `<span id=\'${Siviglia.createID()}\' class=\'${content}\'></span>`
@@ -446,7 +464,17 @@
               * */
               config: {
                 Package: {field: 'name'},
-                Folder: {field: 'name'},
+                Folder: {
+                  content: [
+                    {type: 'text', field: 'name', color: 'green'}
+                  ],
+                  suffix: [
+                    {type: 'icon', content: 'add-button', action: 'add'},
+                  ],
+                  actions: {
+                    add: {event: 'ADD_ELEMENT', params: {}},
+                  },
+                },
                 Model: {
                   content: [
                     {type: 'text', field: 'item', color: 'blue'}
@@ -456,9 +484,13 @@
                     content: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/home.png'
                   }],
                   suffix: [
-                    {type: 'icon', content: 'Dictionary-removeButton'},
-                    {type: 'icon', content: 'NewItem-addButton'},
-                  ]
+                    {type: 'icon', content: 'Dictionary-removeButton', action: 'edit'},
+                    {type: 'icon', content: 'edit-button', action: 'remove'},
+                  ],
+                  actions: {
+                    edit: {event: 'EDIT_MODEL', params: {}},
+                    remove: {event: 'REMOVE_MODEL', params: {}},
+                  },
                 },
                 Datasource: {field: 'item'},
                 Type: {field: 'item'},
@@ -474,10 +506,12 @@
                 Worker: {field: 'name'},
               }
             }
-            /* Como el dataSource fullTree tiene una respuesta diferente a la habitual, no se puede emplear y hay que
+            /*
+            * Como el dataSource fullTree tiene una respuesta diferente a la habitual, no se puede emplear y hay que
             * ajustar la respuesta
             * this.Tree$preInitialize(this.definition)
-            * Se toma el código de Tree$preInitialize*/
+            * Se toma el código de Tree$preInitialize
+            * */
             this.renderEngine = this.definition.renderEngine
             this.config = this.definition.config
             this.dataIndexField = this.definition.dataIndexField
@@ -491,8 +525,10 @@
             this.dataSource.freeze()
             this.dataSource.addListener('CHANGE', this, 'refreshTree')
             return this.dataSource.unfreeze().then(function () {
-              /*la siguiente línea tendría que ser: this.data = this.dataSource.getRawData()
-              * se deja de esta forma para que funcione ReflectionTree*/
+              /*
+              * La siguiente línea tendría que ser: this.data = this.dataSource.getRawData()
+              * se deja de esta forma para que funcione ReflectionTree
+              * */
               this.data = this.dataSource.getRawData()[0].root.children
             }.bind(this))
           },

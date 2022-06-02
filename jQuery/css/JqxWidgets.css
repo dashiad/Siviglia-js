@@ -253,6 +253,34 @@
     display:flex;
 }
 
+.edit-button:before {
+    content: var(--icon-edit);
+    padding-right: 5px;
+}
+.edit-button {
+    font-family: var(--icon-font);
+    font-style: normal;
+    color: var(--pallette-color-secondary-1-0);
+    cursor: pointer;
+}
+.edit-button:hover {
+    color: var(--pallette-color-secondary-1-1);
+}
+
+.add-button {
+    font-family: var(--icon-font);
+    font-style: normal;
+    color: var(--pallette-color-secondary-1-0);
+    cursor: pointer;
+}
+.add-button:before {
+    content: var(--icon-add);
+    padding-right: 5px;
+}
+.add-button:hover {
+    color: var(--pallette-color-secondary-1-1);
+}
+
 .TypeSwitcherInput .TypeSwitcherSelector {
     background-color: var(--contrast-0);
     color: var(--white-color-font);
