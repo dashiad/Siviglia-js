@@ -73,13 +73,13 @@
 <div style="display:none">
     <!-- Widget base -->
     <div data-sivWidget="Siviglia.Widgets.Lists.Tree" data-widgetCode="Siviglia.Widgets.Lists.Tree">
-        <div data-sivId="treeContainer"></div>
+        <div data-sivId="containerNode"></div>
     </div>
 
 
     <!-- Widget derivado -->
     <div data-sivWidget="Siviglia.Widgets.Lists.ReflectionTree" data-widgetCode="Siviglia.Widgets.Lists.ReflectionTree">
-        <div data-sivId="treeContainer"></div>
+        <div data-sivId="containerNode"></div>
     </div>
 </div>
 
@@ -87,6 +87,292 @@
 
 
 <script>
+  var theData = [{
+    "resource": "Package",
+    "name": "ads",
+    "children": [{
+      "resource": "Folder",
+      "name": "Models",
+      "children": [{
+        "package": "ads",
+        "namespace": "\\model\\ads\\Comscore",
+        "model": "\\model\\ads\\Comscore",
+        "item": "Comscore",
+        "resourcePath": "",
+        "internalPath": "\/Comscore.php",
+        "modelPath": "\/model\/ads\/objects\/Comscore",
+        "path": "\/model\/ads\/objects\/Comscore\/Comscore.php",
+        "class": "\\model\\ads\\Comscore",
+        "file": "\/mnt\/c\/dev\/adtopy\/\/model\/ads\/objects\/Comscore\/\/Comscore.php",
+        "resource": "Model",
+        "label": "Model",
+        "extension": "php",
+        "resourceType": "class",
+        "subPath": "\/",
+        "name": "Comscore",
+        "children": [{
+          "resource": "Folder",
+          "name": "Datasources",
+          "children": [{
+            "package": "ads",
+            "namespace": "\\model\\ads\\Comscore",
+            "model": "\\model\\ads\\Comscore",
+            "item": "DemographicProfile",
+            "resourcePath": "",
+            "internalPath": "\/datasources\/DemographicProfile.php",
+            "modelPath": "\/model\/ads\/objects\/Comscore",
+            "path": "\/model\/ads\/objects\/Comscore\/datasources\/DemographicProfile.php",
+            "class": "\\model\\ads\\Comscore\\datasources\\DemographicProfile",
+            "file": "\/mnt\/c\/dev\/adtopy\/\/model\/ads\/objects\/Comscore\/datasources\/DemographicProfile.php",
+            "resource": "Datasource",
+            "label": "Datasources",
+            "extension": "php",
+            "resourceType": "class",
+            "enrutable": true,
+            "router": "datasource",
+            "subPath": "\/datasources",
+            "name": "DemographicProfile"
+          }, {
+            "package": "ads",
+            "namespace": "\\model\\ads\\Comscore",
+            "model": "\\model\\ads\\Comscore",
+            "item": "DemographicReport",
+            "resourcePath": "",
+            "internalPath": "\/datasources\/DemographicReport.php",
+            "modelPath": "\/model\/ads\/objects\/Comscore",
+            "path": "\/model\/ads\/objects\/Comscore\/datasources\/DemographicReport.php",
+            "class": "\\model\\ads\\Comscore\\datasources\\DemographicReport",
+            "file": "\/mnt\/c\/dev\/adtopy\/\/model\/ads\/objects\/Comscore\/datasources\/DemographicReport.php",
+            "resource": "Datasource",
+            "label": "Datasources",
+            "extension": "php",
+            "resourceType": "class",
+            "enrutable": true,
+            "router": "datasource",
+            "subPath": "\/datasources",
+            "name": "DemographicReport"
+          }, {
+            "package": "ads",
+            "namespace": "\\model\\ads\\Comscore",
+            "model": "\\model\\ads\\Comscore",
+            "item": "FrequencyReport",
+            "resourcePath": "",
+            "internalPath": "\/datasources\/FrequencyReport.php",
+            "modelPath": "\/model\/ads\/objects\/Comscore",
+            "path": "\/model\/ads\/objects\/Comscore\/datasources\/FrequencyReport.php",
+            "class": "\\model\\ads\\Comscore\\datasources\\FrequencyReport",
+            "file": "\/mnt\/c\/dev\/adtopy\/\/model\/ads\/objects\/Comscore\/datasources\/FrequencyReport.php",
+            "resource": "Datasource",
+            "label": "Datasources",
+            "extension": "php",
+            "resourceType": "class",
+            "enrutable": true,
+            "router": "datasource",
+            "subPath": "\/datasources",
+            "name": "FrequencyReport"
+          }, {
+            "package": "ads",
+            "namespace": "\\model\\ads\\Comscore",
+            "model": "\\model\\ads\\Comscore",
+            "item": "KeyMeasures",
+            "resourcePath": "",
+            "internalPath": "\/datasources\/KeyMeasures.php",
+            "modelPath": "\/model\/ads\/objects\/Comscore",
+            "path": "\/model\/ads\/objects\/Comscore\/datasources\/KeyMeasures.php",
+            "class": "\\model\\ads\\Comscore\\datasources\\KeyMeasures",
+            "file": "\/mnt\/c\/dev\/adtopy\/\/model\/ads\/objects\/Comscore\/datasources\/KeyMeasures.php",
+            "resource": "Datasource",
+            "label": "Datasources",
+            "extension": "php",
+            "resourceType": "class",
+            "enrutable": true,
+            "router": "datasource",
+            "subPath": "\/datasources",
+            "name": "KeyMeasures"
+          }, {
+            "package": "ads",
+            "namespace": "\\model\\ads\\Comscore",
+            "model": "\\model\\ads\\Comscore",
+            "item": "SearchMedia",
+            "resourcePath": "",
+            "internalPath": "\/datasources\/SearchMedia.php",
+            "modelPath": "\/model\/ads\/objects\/Comscore",
+            "path": "\/model\/ads\/objects\/Comscore\/datasources\/SearchMedia.php",
+            "class": "\\model\\ads\\Comscore\\datasources\\SearchMedia",
+            "file": "\/mnt\/c\/dev\/adtopy\/\/model\/ads\/objects\/Comscore\/datasources\/SearchMedia.php",
+            "resource": "Datasource",
+            "label": "Datasources",
+            "extension": "php",
+            "resourceType": "class",
+            "enrutable": true,
+            "router": "datasource",
+            "subPath": "\/datasources",
+            "name": "SearchMedia"
+          }, {
+            "package": "ads",
+            "namespace": "\\model\\ads\\Comscore",
+            "model": "\\model\\ads\\Comscore",
+            "item": "TestService",
+            "resourcePath": "",
+            "internalPath": "\/datasources\/TestService.php",
+            "modelPath": "\/model\/ads\/objects\/Comscore",
+            "path": "\/model\/ads\/objects\/Comscore\/datasources\/TestService.php",
+            "class": "\\model\\ads\\Comscore\\datasources\\TestService",
+            "file": "\/mnt\/c\/dev\/adtopy\/\/model\/ads\/objects\/Comscore\/datasources\/TestService.php",
+            "resource": "Datasource",
+            "label": "Datasources",
+            "extension": "php",
+            "resourceType": "class",
+            "enrutable": true,
+            "router": "datasource",
+            "subPath": "\/datasources",
+            "name": "TestService"
+          }]
+        }, {
+          "resource": "Folder",
+          "name": "Types",
+          "children": [{
+            "package": "ads",
+            "namespace": "\\model\\ads\\Comscore",
+            "model": "\\model\\ads\\Comscore",
+            "item": "BaseType",
+            "resourcePath": "",
+            "internalPath": "\/types\/BaseType.php",
+            "modelPath": "\/model\/ads\/objects\/Comscore",
+            "path": "\/model\/ads\/objects\/Comscore\/types\/BaseType.php",
+            "class": "\\model\\ads\\Comscore\\types\\BaseType",
+            "file": "\/mnt\/c\/dev\/adtopy\/\/model\/ads\/objects\/Comscore\/types\/BaseType.php",
+            "resource": "Type",
+            "label": "Types",
+            "extension": "php",
+            "resourceType": "class",
+            "subPath": "\/types",
+            "name": "BaseType"
+          }, {
+            "package": "ads",
+            "namespace": "\\model\\ads\\Comscore",
+            "model": "\\model\\ads\\Comscore",
+            "item": "Boolean",
+            "resourcePath": "",
+            "internalPath": "\/types\/Boolean.php",
+            "modelPath": "\/model\/ads\/objects\/Comscore",
+            "path": "\/model\/ads\/objects\/Comscore\/types\/Boolean.php",
+            "class": "\\model\\ads\\Comscore\\types\\Boolean",
+            "file": "\/mnt\/c\/dev\/adtopy\/\/model\/ads\/objects\/Comscore\/types\/Boolean.php",
+            "resource": "Type",
+            "label": "Types",
+            "extension": "php",
+            "resourceType": "class",
+            "subPath": "\/types",
+            "name": "Boolean"
+          }, {
+            "package": "ads",
+            "namespace": "\\model\\ads\\Comscore",
+            "model": "\\model\\ads\\Comscore",
+            "item": "Month",
+            "resourcePath": "",
+            "internalPath": "\/types\/Month.php",
+            "modelPath": "\/model\/ads\/objects\/Comscore",
+            "path": "\/model\/ads\/objects\/Comscore\/types\/Month.php",
+            "class": "\\model\\ads\\Comscore\\types\\Month",
+            "file": "\/mnt\/c\/dev\/adtopy\/\/model\/ads\/objects\/Comscore\/types\/Month.php",
+            "resource": "Type",
+            "label": "Types",
+            "extension": "php",
+            "resourceType": "class",
+            "subPath": "\/types",
+            "name": "Month"
+          }]
+        }]
+      },]
+    }]
+  }]
+  Siviglia.Utils.buildClass({
+    context: 'Siviglia.RenderEngineInterface.jQWidgets.Lists',
+    classes: {
+      Tree: {
+        inherits: 'Siviglia.Dom.EventManager',
+        construct: function (params) {
+          this.config = params.config
+          this.node = params.node
+          this.data = params.data
+          this.dataIndexField = params.dataIndexField
+          this.jqxConfig = this.createJqxConfig()
+        },
+        methods: {
+          render: function () {
+            this.node.jqxTree({source: this.jqxConfig})
+          },
+          createJqxConfig: function () {
+            return this.createBranchConfig(this.data)
+          },
+          createBranchConfig: function (data) {
+            var branchConfig = []
+
+            // no puede emplearse for (var element of data)
+            // devuelve excepción porque data es Symbol
+            for (var elementIndex=0; elementIndex<data.length; elementIndex++)
+              branchConfig.push(this.createItemConfig(this.config[data[elementIndex][this.dataIndexField]], data[elementIndex]))
+
+            return branchConfig
+          },
+          createItemConfig: function (config, data) {
+            var itemConfig = {}
+
+            // no puede emplearse if (Siviglia.isString(data))
+            // devuelve excepción porque data es Symbol
+            if (typeof(data) === 'string')
+              itemConfig.label = data
+            else if (config.field)
+              itemConfig.label = data[config.field]
+            else {
+              var content = ''
+              var prefix = ''
+              var suffix = ''
+              for (var contentConfig of config.content)
+                content += this.createItemElement(contentConfig, data) + ' '
+              if (config.prefix) {
+                for (var prefixConfig of config.prefix)
+                  prefix += this.createItemElement(prefixConfig, data) + ' '
+              }
+              if (config.suffix) {
+                for (var suffixConfig of config.suffix)
+                  suffix += this.createItemElement(suffixConfig, data) + ' '
+              }
+
+              itemConfig.label = prefix + content + suffix
+              itemConfig.id = Siviglia.issetOr(config.id, null)
+              itemConfig.value = Siviglia.issetOr(config.value, null)
+            }
+            if (data.children)
+              itemConfig.items = this.createBranchConfig(data.children)
+
+            return itemConfig
+          },
+          createItemElement: function (config, data) {
+            var content = config.field ? data[config.field] : config.content
+            var element
+            switch (config.type) {
+              case 'text':
+                element = `<span id=\'${Siviglia.createID()}\' ${config.color ? 'style=\'color:' + config.color + '\'' : ''}>${content}</span>`
+                break
+              case 'image':
+                if (!config.height) config.height = '16px'
+                if (!config.width) config.width = '16px'
+                element = `<img id=\'${Siviglia.createID()}\' src=\'${content}\' style=\'height:${config.height};width:${config.width}\'>`
+                break
+              case 'button':
+                element = `<button>${content}</button>`
+                break
+              case 'icon':
+                element = `<span id=\'${Siviglia.createID()}\' class=\'${content}\'></span>`
+            }
+            return element
+          },
+        }
+      },
+    }
+  })
   Siviglia.Utils.buildClass({
     context: 'Siviglia.Widgets.Lists',
     classes: {
@@ -95,7 +381,9 @@
         methods: {
           preInitialize: function (params) {
             this.renderEngine = params.renderEngine
-            this.treeData
+            this.config = params.config
+            this.dataIndexField = params.dataIndexField
+            this.data
 
             this.dataSource = new Siviglia.Model.DataSource(
               params.dataSource.model,
@@ -104,20 +392,21 @@
             )
             this.dataSource.freeze()
             this.dataSource.addListener('CHANGE', this, 'refreshTree')
-          },
-          initialize: function () {
-            this.dataSource.unfreeze().then(function () {
-              this.treeData = this.dataSource.getRawData()[0].root.children
-              this.createTreeConfig()
-              this.buildTree()
+            return this.dataSource.unfreeze().then(function () {
+              this.data = this.dataSource.getRawData()
             }.bind(this))
           },
-          buildTree: function () {
+          initialize: function () {
+            this.render()
+          },
+          render: function () {
             this.implementation = new Siviglia.RenderEngineInterface[this.renderEngine].Lists.Tree({
-              node: this.treeContainer,
-              config: this.treeConfig,
+              node: this.containerNode,
+              config: this.config,
+              data: this.data,
+              dataIndexField: this.dataIndexField,
             })
-            this.implementation.build()
+            this.implementation.render()
           },
         }
       },
@@ -125,13 +414,14 @@
         inherits: 'Siviglia.Widgets.Lists.Tree',
         methods: {
           preInitialize: function () {
-            this.treeDefinition = {
+            this.definition = {
               renderEngine: 'jQWidgets',
               dataSource: {
                 model: '/model/reflection/ReflectorFactory',
                 name: 'fullTree',
                 // params: {},
               },
+              dataIndexField: 'resource',
               /*
               * Para configurar una hoja se puede hacer de 2 formas:
               * - pasar un objeto:
@@ -154,14 +444,17 @@
               *      suffix: igual que content
               *     }
               * */
-              leaves: {
+              config: {
                 Package: {field: 'name'},
                 Folder: {field: 'name'},
                 Model: {
                   content: [
                     {type: 'text', field: 'item', color: 'blue'}
                   ],
-                  prefix: [{type: 'image', content: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/home.png'}],
+                  prefix: [{
+                    type: 'image',
+                    content: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/home.png'
+                  }],
                   suffix: [
                     {type: 'icon', content: 'Dictionary-removeButton'},
                     {type: 'icon', content: 'NewItem-addButton'},
@@ -181,160 +474,35 @@
                 Worker: {field: 'name'},
               }
             }
-            this.Tree$preInitialize(this.treeDefinition)
+            /* Como el dataSource fullTree tiene una respuesta diferente a la habitual, no se puede emplear y hay que
+            * ajustar la respuesta
+            * this.Tree$preInitialize(this.definition)
+            * Se toma el código de Tree$preInitialize*/
+            this.renderEngine = this.definition.renderEngine
+            this.config = this.definition.config
+            this.dataIndexField = this.definition.dataIndexField
+            this.data
+
+            this.dataSource = new Siviglia.Model.DataSource(
+              this.definition.dataSource.model,
+              this.definition.dataSource.name,
+              Siviglia.issetOr(this.definition.dataSource.params, {})
+            )
+            this.dataSource.freeze()
+            this.dataSource.addListener('CHANGE', this, 'refreshTree')
+            return this.dataSource.unfreeze().then(function () {
+              /*la siguiente línea tendría que ser: this.data = this.dataSource.getRawData()
+              * se deja de esta forma para que funcione ReflectionTree*/
+              this.data = this.dataSource.getRawData()[0].root.children
+            }.bind(this))
           },
           initialize: function () {
             this.Tree$initialize()
           },
-          createTreeConfig: function () {
-            this.treeConfig = this.createBranch(this.treeData)
-          },
-          createBranch: function (data) {
-            var branch = []
-            for (var leafIndex = 0; leafIndex < data.length; leafIndex++) {
-              branch.push(this.createLeaf(data[leafIndex]))
-            }
-            return branch
-          },
-          createLeaf: function (data) {
-            // var leafID = Siviglia.issetOr(config.idField, null)
-            // var leafValue = Siviglia.issetOr(config.valueField, null)
-            var leafContent = this.createLeafContent(data)
-            var leaf = {label: leafContent}
-            if (data.children) {
-              leaf.children = this.createBranch(data.children)
-            }
-            return leaf
-          },
-          createLeafContent: function (data) {
-            var leafDefinition = this.treeDefinition.leaves[data.resource]
-            if (leafDefinition.field)
-              return data[leafDefinition.field]
-
-            var content = ''
-            var prefix = ''
-            var suffix = ''
-            for (var contentDefinition of leafDefinition.content) {
-              content += this.createLeafElement(contentDefinition, data) + ' '
-            }
-
-            if (leafDefinition.prefix) {
-              for (var prefixDefinition of leafDefinition.prefix) {
-                prefix += this.createLeafElement(prefixDefinition, data) + ' '
-              }
-            }
-
-            if (leafDefinition.suffix) {
-              for (var suffixDefinition of leafDefinition.suffix) {
-                suffix += this.createLeafElement(suffixDefinition, data) + ' '
-              }
-            }
-
-            return prefix + ' ' + content + ' ' + suffix
-          },
-          createLeafElement: function (config, data) {
-            var content = config.field ? data[config.field] : config.content
-            var element
-            switch (config.type) {
-              case 'text':
-                element = `<span ${config.color ? 'style=\'color:' + config.color + '\'' : ''}>${content}</span>`
-                break
-              case 'image':
-                if (!config.height) config.height = '16px'
-                if (!config.width) config.width = '16px'
-                element = `<img src=\'${content}\' style=\'height:${config.height};width:${config.width}\'>`
-                break
-              case 'button':
-                element = `<button>${content}</button>`
-                break
-              case 'icon':
-                element = `<span class=\'${content}\'></span>`
-            }
-            return element
-          }
         }
       }
     }
   })
-
-  Siviglia.Utils.buildClass({
-    context: 'Siviglia.RenderEngineInterface.jQWidgets.Lists',
-    classes: {
-      Tree: {
-        inherits: 'Siviglia.Dom.EventManager',
-        construct: function (params) {
-          this.config = params.config
-          this.node = params.node
-          this.jqxConfig = this.createJqxConfig(this.config)
-        },
-        methods: {
-          build: function () {
-            this.node.jqxTree({source: this.jqxConfig})
-            $(this.node).on('click', function () {
-              var item = $(this.node).jqxTree('getSelectedItem');
-              this.fireEvent('SELECTED', {element: item})
-            }.bind(this))
-          },
-          createJqxConfig: function (config) {
-            return this.createBranchConfig(config)
-          },
-          createBranchConfig: function (config) {
-            var branchConfig = []
-
-            for (const element of config) {
-              branchConfig.push(this.createLeafConfig(element))
-            }
-
-            return branchConfig
-          },
-          createLeafConfig: function (config) {
-            var itemConfig = {}
-            var prefix = ''
-            var suffix = ''
-
-            if (typeof config.label === 'string')
-              itemConfig.label = config.label
-            else {
-              if (config.label.prefix)
-                prefix = this.createItemContent(config.label.prefix)
-              if (config.label.suffix)
-                suffix += this.createItemContent(config.label.suffix)
-              var content = this.createItemContent(config.label.content)
-
-              itemConfig.label = prefix + content + suffix
-              itemConfig.id = Siviglia.issetOr(config.id, null)
-              itemConfig.value = Siviglia.issetOr(config.value, null)
-            }
-            if (config.children)
-              itemConfig.items = this.createBranchConfig(config.children)
-
-            return itemConfig
-          },
-          createItemContent: function (config) {
-            var content = ''
-            for (const element of config) {
-              switch (element.type) {
-                case 'text':
-                  content += `<span ${element.color ? 'style=\'color:' + element.color + '\'' : ''}>${element.content}</span>`
-                  break
-                case 'image':
-                  if (!element.height) element.height = '16px'
-                  if (!element.width) element.width = '16px'
-                  content += `<img src=\'${element.src}\' style=\'height:${element.height};width:${element.width}\'>`
-                  break
-                case 'button':
-                  content += `<button>${element.label}</button>`
-                  break
-              }
-            }
-            return content
-          },
-        }
-      },
-    }
-  })
-
-
 </script>
 
 
