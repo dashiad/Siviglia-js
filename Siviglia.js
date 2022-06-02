@@ -219,6 +219,11 @@ Siviglia.isArray = function (obj) {
 Siviglia.isWindow = function ( obj ) {
     return obj != null && obj === obj.window;
 };
+Siviglia.idCounter = 0
+Siviglia.createID = function () {
+    Siviglia.idCounter ++
+    return (Date.now()+Siviglia.idCounter).toString(36);
+}
 Siviglia.__store__= {
     classes: {}
 }
