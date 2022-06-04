@@ -315,11 +315,16 @@
           this.node = params.node
           this.data = params.data
           this.dataIndexField = params.dataIndexField
+          this.itemsWithAction = []
           this.jqxConfig = this.createJqxConfig()
         },
         methods: {
           render: function () {
+
             this.node.jqxTree({source: this.jqxConfig})
+          },
+          addActions: function () {
+            this.itemsWithAction.forEach(function (item) {$('#'+item.id).click(function(){console.log('clicked on '+item.id)})})
           },
           createJqxConfig: function () {
             return this.createBranchConfig(this.data)
@@ -369,21 +374,26 @@
           },
           createItemElement: function (config, data) {
             var content = config.field ? data[config.field] : config.content
+            var elementID = Siviglia.createID()
+
+            if (config.action)
+              this.itemsWithAction.push({id: elementID, type: config.type, action: config.action})
+
             var element
             switch (config.type) {
               case 'text':
-                element = `<span id=\'${Siviglia.createID()}\' ${config.color ? 'style=\'color:' + config.color + '\'' : ''}>${content}</span>`
+                element = `<span id=\'${elementID}\' ${config.color ? 'style=\'color:' + config.color + '\'' : ''}>${content}</span>`
                 break
               case 'image':
                 if (!config.height) config.height = '16px'
                 if (!config.width) config.width = '16px'
-                element = `<img id=\'${Siviglia.createID()}\' src=\'${content}\' style=\'height:${config.height};width:${config.width}\'>`
+                element = `<img id=\'${elementID}\' src=\'${content}\' style=\'height:${config.height};width:${config.width}\'>`
                 break
               case 'button':
-                element = `<button id=\'${Siviglia.createID()}\'>${content}</button>`
+                element = `<button id=\'${elementID}\'>${content}</button>`
                 break
               case 'icon':
-                element = `<span id=\'${Siviglia.createID()}\' class=\'${content}\'></span>`
+                element = `<span id=\'${elementID}\' class=\'${content}\'></span>`
             }
             return element
           },
@@ -424,7 +434,13 @@
               data: this.data,
               dataIndexField: this.dataIndexField,
             })
-            this.implementation.render()
+            let rendering = new Promise (function (resolve, reject) {
+              this.implementation.render()
+              resolve()
+            }.bind(this))
+            rendering.then(function () {
+              this.implementation.addActions()
+            }.bind(this))
           },
         }
       },
@@ -468,6 +484,10 @@
                   content: [
                     {type: 'text', field: 'name', color: 'green'}
                   ],
+                  prefix: [{
+                    type: 'image',
+                    content: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/folder.jpg'
+                  }],
                   suffix: [
                     {type: 'icon', content: 'add-button', action: 'add'},
                   ],
@@ -479,10 +499,6 @@
                   content: [
                     {type: 'text', field: 'item', color: 'blue'}
                   ],
-                  prefix: [{
-                    type: 'image',
-                    content: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/home.png'
-                  }],
                   suffix: [
                     {type: 'icon', content: 'Dictionary-removeButton', action: 'edit'},
                     {type: 'icon', content: 'edit-button', action: 'remove'},
@@ -504,6 +520,7 @@
                 JsModel: {field: 'item'},
                 JsView: {field: 'item'},
                 Worker: {field: 'name'},
+                Detector: {field: 'name'}
               }
             }
             /*
@@ -524,13 +541,14 @@
             )
             this.dataSource.freeze()
             this.dataSource.addListener('CHANGE', this, 'refreshTree')
-            return this.dataSource.unfreeze().then(function () {
-              /*
+            /*return this.dataSource.unfreeze().then(function () {
+              /!*
               * La siguiente línea tendría que ser: this.data = this.dataSource.getRawData()
-              * se deja de esta forma para que funcione ReflectionTree
-              * */
+              * Esta es la razón por la que se repite este código de Tree$preInitialize.
+              * *!/
               this.data = this.dataSource.getRawData()[0].root.children
-            }.bind(this))
+            }.bind(this))*/
+            this.data = theData
           },
           initialize: function () {
             this.Tree$initialize()
