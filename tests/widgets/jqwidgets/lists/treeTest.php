@@ -315,16 +315,13 @@
           this.node = params.node
           this.data = params.data
           this.dataIndexField = params.dataIndexField
-          this.itemsWithAction = []
+          this.itemsWithAction = params.itemsWithAction
           this.jqxConfig = this.createJqxConfig()
         },
         methods: {
           render: function () {
 
             this.node.jqxTree({source: this.jqxConfig})
-          },
-          addActions: function () {
-            this.itemsWithAction.forEach(function (item) {$('#'+item.id).click(function(){console.log('clicked on '+item.id)})})
           },
           createJqxConfig: function () {
             return this.createBranchConfig(this.data)
@@ -349,19 +346,14 @@
             else if (config.field)
               itemConfig.label = data[config.field]
             else {
-              var content = ''
+              var {children, ...itemData} = data
               var prefix = ''
               var suffix = ''
-              for (var contentConfig of config.content)
-                content += this.createItemElement(contentConfig, data) + ' '
-              if (config.prefix) {
-                for (var prefixConfig of config.prefix)
-                  prefix += this.createItemElement(prefixConfig, data) + ' '
-              }
-              if (config.suffix) {
-                for (var suffixConfig of config.suffix)
-                  suffix += this.createItemElement(suffixConfig, data) + ' '
-              }
+              var content = this.createItemSection(config.content, itemData)
+              if (config.prefix)
+                prefix = this.createItemSection(config.prefix, itemData)
+              if (config.suffix)
+                suffix = this.createItemSection(config.suffix, itemData)
 
               itemConfig.label = prefix + content + suffix
               itemConfig.id = Siviglia.issetOr(config.id, null)
@@ -372,28 +364,40 @@
 
             return itemConfig
           },
-          createItemElement: function (config, data) {
+          createItemSection: function (config, data) {
+            var elementSection = ''
+            for (var elementConfig of config) {
+              var id = Siviglia.createID()
+              if (elementConfig.action) {
+                this.itemsWithAction.push({
+                  id: id,
+                  type: data[this.dataIndexField],
+                  action: elementConfig.action,
+                  data: data
+                })
+              }
+              elementSection += this.createItemElement(elementConfig, data, id) + ' '
+            }
+            return elementSection
+          },
+          createItemElement: function (config, data, id) {
             var content = config.field ? data[config.field] : config.content
-            var elementID = Siviglia.createID()
-
-            if (config.action)
-              this.itemsWithAction.push({id: elementID, type: config.type, action: config.action})
 
             var element
             switch (config.type) {
               case 'text':
-                element = `<span id=\'${elementID}\' ${config.color ? 'style=\'color:' + config.color + '\'' : ''}>${content}</span>`
+                element = `<span id=\'${id}\' ${config.color ? 'style=\'color:' + config.color + '\'' : ''}>${content}</span>`
                 break
               case 'image':
                 if (!config.height) config.height = '16px'
                 if (!config.width) config.width = '16px'
-                element = `<img id=\'${elementID}\' src=\'${content}\' style=\'height:${config.height};width:${config.width}\'>`
+                element = `<img id=\'${id}\' src=\'${content}\' style=\'height:${config.height};width:${config.width}\'>`
                 break
               case 'button':
-                element = `<button id=\'${elementID}\'>${content}</button>`
+                element = `<button id=\'${id}\'>${content}</button>`
                 break
               case 'icon':
-                element = `<span id=\'${elementID}\' class=\'${content}\'></span>`
+                element = `<span id=\'${id}\' class=\'${content}\'></span>`
             }
             return element
           },
@@ -412,6 +416,7 @@
             this.config = params.config
             this.dataIndexField = params.dataIndexField
             this.data
+            this.itemsWithAction = []
 
             this.dataSource = new Siviglia.Model.DataSource(
               params.dataSource.model,
@@ -433,14 +438,27 @@
               config: this.config,
               data: this.data,
               dataIndexField: this.dataIndexField,
+              itemsWithAction: this.itemsWithAction,
             })
-            let rendering = new Promise (function (resolve, reject) {
+            let rendering = new Promise(function (resolve, reject) {
               this.implementation.render()
               resolve()
             }.bind(this))
             rendering.then(function () {
-              this.implementation.addActions()
+              this.addActionsToHTMLEvent()
             }.bind(this))
+          },
+          addActionsToHTMLEvent: function () {
+            this.itemsWithAction.forEach(function (item) {
+              var actionConfig = this.config[item.type].actions[item.action]
+              this.addListener(actionConfig.event, this, 'executeEventCallback')
+              $('#' + item.id).click(function () {
+                this.fireEvent(actionConfig.event, {callback: actionConfig.callback, data: item.data})
+              }.bind(this))
+            }.bind(this))
+          },
+          executeEventCallback: function (event, data) {
+            data.callback(data.data)
           },
         }
       },
@@ -492,7 +510,9 @@
                     {type: 'icon', content: 'add-button', action: 'add'},
                   ],
                   actions: {
-                    add: {event: 'ADD_ELEMENT', params: {}},
+                    add: {
+                      event: 'ADD_ELEMENT', callback: function (data) {this.addFolder(data)}.bind(this)
+                    },
                   },
                 },
                 Model: {
@@ -504,8 +524,8 @@
                     {type: 'icon', content: 'edit-button', action: 'remove'},
                   ],
                   actions: {
-                    edit: {event: 'EDIT_MODEL', params: {}},
-                    remove: {event: 'REMOVE_MODEL', params: {}},
+                    edit: {event: 'EDIT_MODEL', callback: function (data) {console.log('edit model',data)}},
+                    remove: {event: 'REMOVE_MODEL', callback: function (data) {console.log('remove model',data)}},
                   },
                 },
                 Datasource: {field: 'item'},
@@ -533,6 +553,7 @@
             this.config = this.definition.config
             this.dataIndexField = this.definition.dataIndexField
             this.data
+            this.itemsWithAction = []
 
             this.dataSource = new Siviglia.Model.DataSource(
               this.definition.dataSource.model,
@@ -553,6 +574,9 @@
           initialize: function () {
             this.Tree$initialize()
           },
+          addFolder: function (data) {
+            console.log('la data', data)
+          }
         }
       }
     }
