@@ -446,7 +446,21 @@
             }.bind(this))
             rendering.then(function () {
               this.addActionsToHTMLEvent()
+              this.containerNode.on("added",function(){debugger;console.log("added");});
+              this.addActionsToTreeEvents()
             }.bind(this))
+          },
+          addActionsToTreeEvents: function (event) {
+            this.containerNode.on("added",function(){console.log("added");});
+            this.containerNode.on("checkChange",function(){console.log("checkChange");});
+            this.containerNode.on("collapse",function(){console.log("collapse");});
+            this.containerNode.on("dragStart",function(){console.log("dragStart");});
+            this.containerNode.on("dragEnd",function(){console.log("dragEnd");});
+            this.containerNode.on("expand",function(){console.log("expand");});
+            this.containerNode.on("initialized",function(){console.log("initialized");});
+            this.containerNode.on("itemClick",function(){console.log("itemClick");});
+            this.containerNode.on("removed",function(){console.log("removed");});
+            this.containerNode.on("select",function(){console.log("select");});
           },
           addActionsToHTMLEvent: function () {
             this.itemsWithAction.forEach(function (item) {
