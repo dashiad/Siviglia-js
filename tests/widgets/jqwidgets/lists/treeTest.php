@@ -311,7 +311,7 @@
       Tree: {
         inherits: 'Siviglia.Dom.EventManager',
         construct: function (params) {
-          this.config = params.config
+          this.nodeDefinitions = params.nodeDefinitions
           this.node = params.node
           this.data = params.data
           this.dataIndexField = params.dataIndexField
@@ -332,7 +332,7 @@
             // no puede emplearse for (var element of data)
             // devuelve excepción porque data es Symbol
             for (var elementIndex = 0; elementIndex < data.length; elementIndex++)
-              branchConfig.push(this.createItemConfig(this.config[data[elementIndex][this.dataIndexField]], data[elementIndex]))
+              branchConfig.push(this.createItemConfig(this.nodeDefinitions[data[elementIndex][this.dataIndexField]], data[elementIndex]))
 
             return branchConfig
           },
@@ -413,7 +413,7 @@
         methods: {
           preInitialize: function (params) {
             this.renderEngine = params.renderEngine
-            this.config = params.config
+            this.nodeDefinitions = params.nodeDefinitions
             this.dataIndexField = params.dataIndexField
             this.data
             this.itemsWithAction = []
@@ -435,7 +435,7 @@
           render: function () {
             this.implementation = new Siviglia.RenderEngineInterface[this.renderEngine].Lists.Tree({
               node: this.containerNode,
-              config: this.config,
+              nodeDefinitions: this.nodeDefinitions,
               data: this.data,
               dataIndexField: this.dataIndexField,
               itemsWithAction: this.itemsWithAction,
@@ -464,7 +464,7 @@
           },
           addActionsToHTMLEvent: function () {
             this.itemsWithAction.forEach(function (item) {
-              var actionConfig = this.config[item.type].actions[item.action]
+              var actionConfig = this.nodeDefinitions[item.type].actions[item.action]
               this.addListener(actionConfig.event, this, 'executeEventCallback')
               $('#' + item.id).click(function () {
                 this.fireEvent(actionConfig.event, {callback: actionConfig.callback, data: item.data})
@@ -510,7 +510,7 @@
               *      suffix: igual que content
               *     }
               * */
-              config: {
+              nodeDefinitions: {
                 Package: {field: 'name'},
                 Folder: {
                   content: [
@@ -564,7 +564,7 @@
             * Se toma el código de Tree$preInitialize
             * */
             this.renderEngine = this.definition.renderEngine
-            this.config = this.definition.config
+            this.nodeDefinitions = this.definition.nodeDefinitions
             this.dataIndexField = this.definition.dataIndexField
             this.data
             this.itemsWithAction = []
