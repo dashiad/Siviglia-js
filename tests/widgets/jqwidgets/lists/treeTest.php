@@ -408,6 +408,116 @@
   Siviglia.Utils.buildClass({
     context: 'Siviglia.Widgets.Lists',
     classes: {
+      TreeNode: {
+        construct: function (params) {
+          if (params === undefined)
+            params = {}
+          if (Siviglia.isString(params)) {
+            this.content = {field: params}
+            this.isSimpleNode = true
+          }
+          if (params.content) {
+            this.content = params.content
+            this.prefix = Siviglia.issetOr(params.prefix, null)
+            this.suffix = Siviglia.issetOr(params.suffix, null)
+            this.actions = Siviglia.issetOr(params.actions, null)
+          }
+        },
+        methods: {
+
+          createConfig: function () {
+            var config = this.isSimpleNode ? this.createContent() : {content: this.createContent()}
+
+            this.prefix = this.createPrefix()
+            this.suffix = this.createSuffix()
+            this.actions = this.createActions()
+
+            for (var section of ['prefix', 'suffix', 'actions']) {
+              if (section)
+                config[section] = this[section]
+            }
+
+            return config
+          },
+          createContent: function () {
+            return this.content
+          },
+          createPrefix: function () {
+            return this.prefix
+          },
+          createSuffix: function () {
+            return this.suffix
+          },
+          createActions: function () {
+            return this.actions
+          },
+        }
+      },
+      FolderNode: {
+        inherits: 'Siviglia.Widgets.Lists.TreeNode',
+        methods: {
+          createContent: function () {
+            return [
+              {type: 'text', field: 'name', color: 'green'},
+            ]
+          },
+          createPrefix: function () {
+            return [
+              {type: 'image', content: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/folder.jpg'},
+            ]
+          },
+          createSuffix: function () {
+            return [
+              {type: 'icon', content: 'add-button', action: 'add'},
+            ]
+          },
+          createActions: function () {
+            return {
+              add: {event: 'ADD_ELEMENT', callback: this.add},
+            }
+          },
+          add: function (data) {
+            console.log('add desde nodo:', data)
+          }
+        }
+      },
+      ModelNode: {
+        inherits: 'Siviglia.Widgets.Lists.TreeNode',
+        methods: {
+          createContent: function () {
+            return [
+              {type: 'text', field: 'item', color: 'blue'}
+            ]
+          },
+          createPrefix: function () {
+            return [
+              {type: 'image', content: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/folder.jpg'},
+            ]
+          },
+          createSuffix: function () {
+            return [
+              {type: 'icon', content: 'Dictionary-removeButton', action: 'remove'},
+              {type: 'icon', content: 'edit-button', action: 'edit'},
+            ]
+          },
+          createActions: function () {
+            return {
+              edit: {
+                event: 'EDIT_MODEL', callback: this.edit
+              },
+              remove: {
+                event: 'REMOVE_MODEL', callback: this.remove
+              },
+            }
+          },
+          edit: function (data) {
+            console.log('edit desde nodo:', data)
+          },
+          remove: function (data) {
+            console.log('remove desde nodo:', data)
+          },
+        }
+      },
       Tree: {
         inherits: 'Siviglia.UI.Expando.View,Siviglia.Dom.EventManager',
         methods: {
@@ -415,7 +525,7 @@
             this.renderEngine = params.renderEngine
             this.nodeDefinitions = params.nodeDefinitions
             this.dataIndexField = params.dataIndexField
-            this.data
+            this.data //= null
             this.itemsWithAction = []
 
             this.dataSource = new Siviglia.Model.DataSource(
@@ -446,7 +556,9 @@
             }.bind(this))
             rendering.then(function () {
               this.addActionsToHTMLEvent()
-              this.containerNode.on("added",function(){debugger;console.log("added");});
+              this.containerNode.on("added", function () {
+                console.log("added");
+              });
               this.addActionsToTreeEvents()
             }.bind(this))
           },
@@ -480,6 +592,9 @@
         inherits: 'Siviglia.Widgets.Lists.Tree',
         methods: {
           preInitialize: function () {
+            this.PackageNode = new Siviglia.Widgets.Lists.TreeNode('name')
+            this.FolderNode = new Siviglia.Widgets.Lists.FolderNode()
+            this.ModelNode = new Siviglia.Widgets.Lists.ModelNode()
             this.definition = {
               renderEngine: 'jQWidgets',
               dataSource: {
@@ -511,37 +626,9 @@
               *     }
               * */
               nodeDefinitions: {
-                Package: {field: 'name'},
-                Folder: {
-                  content: [
-                    {type: 'text', field: 'name', color: 'green'}
-                  ],
-                  prefix: [{
-                    type: 'image',
-                    content: 'http://statics.adtopy.com/packages/Siviglia/tests/assets/folder.jpg'
-                  }],
-                  suffix: [
-                    {type: 'icon', content: 'add-button', action: 'add'},
-                  ],
-                  actions: {
-                    add: {
-                      event: 'ADD_ELEMENT', callback: function (data) {this.addFolder(data)}.bind(this)
-                    },
-                  },
-                },
-                Model: {
-                  content: [
-                    {type: 'text', field: 'item', color: 'blue'}
-                  ],
-                  suffix: [
-                    {type: 'icon', content: 'Dictionary-removeButton', action: 'edit'},
-                    {type: 'icon', content: 'edit-button', action: 'remove'},
-                  ],
-                  actions: {
-                    edit: {event: 'EDIT_MODEL', callback: function (data) {console.log('edit model',data)}},
-                    remove: {event: 'REMOVE_MODEL', callback: function (data) {console.log('remove model',data)}},
-                  },
-                },
+                Package: this.PackageNode.createConfig(),//{field: 'name'},
+                Folder: this.FolderNode.createConfig(),
+                Model: this.ModelNode.createConfig(),
                 Datasource: {field: 'item'},
                 Type: {field: 'item'},
                 ModelConfig: {field: 'name'},
@@ -592,7 +679,7 @@
             console.log('la data', data)
           }
         }
-      }
+      },
     }
   })
 </script>
