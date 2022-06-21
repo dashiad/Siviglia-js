@@ -555,26 +555,43 @@
               resolve()
             }.bind(this))
             rendering.then(function () {
-              this.addActionsToHTMLEvent()
-              this.containerNode.on("added", function () {
-                console.log("added");
-              });
-              this.addActionsToTreeEvents()
+              this.addActionsToElements()
+              this.publishTreeEvents()
             }.bind(this))
           },
-          addActionsToTreeEvents: function (event) {
-            this.containerNode.on("added",function(){console.log("added");});
-            this.containerNode.on("checkChange",function(){console.log("checkChange");});
-            this.containerNode.on("collapse",function(){console.log("collapse");});
-            this.containerNode.on("dragStart",function(){console.log("dragStart");});
-            this.containerNode.on("dragEnd",function(){console.log("dragEnd");});
-            this.containerNode.on("expand",function(){console.log("expand");});
-            this.containerNode.on("initialized",function(){console.log("initialized");});
-            this.containerNode.on("itemClick",function(){console.log("itemClick");});
-            this.containerNode.on("removed",function(){console.log("removed");});
-            this.containerNode.on("select",function(){console.log("select");});
+          publishTreeEvents: function () {
+            this.containerNode.on("added", function (event) {
+              this.fireEvent('NODE_ADDED', {event: event})
+            }.bind(this));
+            this.containerNode.on("checkChange", function (event) {
+              this.fireEvent('CHECK_CHANGED', {event: event})
+            }.bind(this));
+            this.containerNode.on("collapse", function (event) {
+              this.fireEvent('BRANCH_COLLAPSED', {event: event})
+            }.bind(this));
+            this.containerNode.on("dragStart", function (event) {
+              this.fireEvent('DRAG_START', {event: event})
+            }.bind(this));
+            this.containerNode.on("dragEnd", function (event) {
+              this.fireEvent('DRAG_END', {event: event})
+            }.bind(this));
+            this.containerNode.on("expand", function (event) {
+              this.fireEvent('BRANCH_EXPANDED', {event: event})
+            }.bind(this));
+            this.containerNode.on("initialized", function (event) {
+              this.fireEvent('INITIALIZED', {event: event})
+            }.bind(this));
+            this.containerNode.on("itemClick", function (event) {
+              this.fireEvent('ITEM_CLICKED', {event: event})
+            }.bind(this));
+            this.containerNode.on("removed", function (event) {
+              this.fireEvent('NODE_REMOVED', {event: event})
+            }.bind(this));
+            this.containerNode.on("select", function (event) {
+              this.fireEvent('NODE_SELECTED', {event: event})
+            }.bind(this));
           },
-          addActionsToHTMLEvent: function () {
+          addActionsToElements: function () {
             this.itemsWithAction.forEach(function (item) {
               var actionConfig = this.nodeDefinitions[item.type].actions[item.action]
               this.addListener(actionConfig.event, this, 'executeEventCallback')
@@ -675,9 +692,6 @@
           initialize: function () {
             this.Tree$initialize()
           },
-          addFolder: function (data) {
-            console.log('la data', data)
-          }
         }
       },
     }
