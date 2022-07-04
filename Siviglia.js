@@ -355,6 +355,7 @@ Siviglia.Utils.buildClass = function (definition) {
                     alert("Error de herencia:No se encuentra:" + c.object);
                 }
 
+
                 var parts = inherits[i].split(".");
                 var baseClassName;
                 if (parts.length == 1)
@@ -493,7 +494,6 @@ Siviglia.Dom = {
     dumpEventStack: function () {
         for (var k = 0; k < Siviglia.Dom.eventStack.length; k++) {
             var el = Siviglia.Dom.eventStack[k];
-            console.log("id:" + el.id + " -- " + el.description);
         }
     }
 
@@ -2513,13 +2513,13 @@ Siviglia.Utils.buildClass(
                       var p = $.Deferred();
                       Siviglia.UI.Expando.WidgetExpando.prototype.widgetPromises[widgetName]=p;
                       var lib = Siviglia.UI.Expando.WidgetExpando.prototype.widgets;
-                      Siviglia.Utils.load([
+                      Siviglia.require([
                           {"type":"widget",
                               "template":"/js/"+widgetName.replace(/\./g,"/")+".html",
                               "js":"/js/"+widgetName.replace(/\./g,"/")+".js",
                               "context":context
                           }
-                      ]).then(function(){
+                      ],false,true).then(function(){
                           // Cuando se ha parseado el nodo al cargar el widget, se ha autoañadido a la cache.
                           if(typeof lib[widgetName]==="undefined")
                           {
@@ -2903,49 +2903,83 @@ Siviglia.Utils.buildClass({
 Siviglia.Service=new Siviglia.services.ServiceManager();
 Siviglia.UI.Expando.WidgetExpando.prototype.widgets={};
 Siviglia.UI.Expando.WidgetExpando.prototype.widgetPromises={};
-Siviglia.Utils.load=function(assets)
-{
-
-    var loadHTML=function(url,node){
-        var p=$.Deferred();
-
-        $.get(url).then(function(r){
-            if(typeof node == "undefined")
-            {
-                node=$("<div></div>");
-                $(document.body).append(node);
+Siviglia.Utils.load=function(assets, isStatic, doParse) {
+    var loadHTML=function(url,node,prevPromise){
+        var resourcePromise=$.Deferred();
+        $.get(url).then(function (r) {
+            var add = function () {
+                if (typeof node == "undefined" || node == null) {
+                    node = $("<div></div>");
+                    $(document.body).append(node);
+                }
+                node.html(r);
+                // Ojo, aqui se llama a un objeto Siviglia.App.Page
+                resourcePromise.resolve(node);
             }
-            node.html(r);
-            // Ojo, aqui se llama a un objeto Siviglia.App.Page
-            p.resolve(node);
+
+            if (typeof prevPromise == "undefined" || prevPromise == null)
+                add();
+            else
+                prevPromise.then(function () {add();});
         });
-        return p;
+        return resourcePromise;
     };
-    var loadJS=function(url){
-        var promise=$.Deferred();
-        var v=document.createElement("script");
-        v.onload=function(){
-            promise.resolve();
+    var loadJS = function (url, prevPromise) {
+        var resourcePromise = $.Deferred();
+        var add = function () {
+            var v = document.createElement("script");
+            v.onload = function () {
+                resourcePromise.resolve();
+            }
+            v.src = url;
+            document.head.appendChild(v);
         }
-        v.src=url;
-        document.head.appendChild(v);
-        return promise;
+        if (typeof prevPromise == "undefined" || prevPromise == null)
+            add();
+        else
+            prevPromise.then(function () {
+                add();});
+        return resourcePromise;
     };
     var loadCSS=function(url){
-        var promise=$.Deferred();
+        var resourcePromise=$.Deferred();
         var v=document.createElement("link");
         v.rel="stylesheet";
         v.href=url;
-        v.onload=function(){promise.resolve();}
+        v.onload=function(){resourcePromise.resolve();}
         document.head.appendChild(v);
-        return promise;
+        return resourcePromise;
     };
 
-    var curPromise=$.Deferred();
     var subpromises=[];
+    var loadWidget = function (config, prevPromise) {
+        if (!config.node) {
+            config.node = $('<div style="display:none"></div>');
+            $(document.body).append(config.node);
+        }
+        var resourceURL = Siviglia.config[isStatic ? 'staticsUrl' : 'baseUrl']
+        var resourcePromise = $.Deferred();
+        subpromises.push(resourcePromise);
+        var widgetPromises = [];
+        var htmlPromise = loadHTML(resourceURL + config.template, config.node, prevPromise)
+        widgetPromises.push(htmlPromise);
+        var jsPromise = loadJS(resourceURL + config.js, htmlPromise)
+        widgetPromises.push(jsPromise);
+        $.when.apply($, widgetPromises).then(function () {
+            if (typeof doParse !== "undefined" && doParse === true) {
+                var parser = new Siviglia.UI.HTMLParser(config.context, null);
+                parser.parse(config.node);
+            }
+            resourcePromise.resolve(config.node);
+        })
+        return jsPromise
+    }
+
+    var lastPromise=null;
     for(var k=0;k<assets.length;k++)
     {
         var p=assets[k];
+
         if(typeof p=="string")
         {
             var type="html";
@@ -2959,58 +2993,39 @@ Siviglia.Utils.load=function(assets)
                 var suffix=ss.split(".");
                 if(suffix.length > 1)
                     type=suffix.pop();
+                else
+                    type="widget";
             }
             switch(type) {
                 case "html": {
-                    subpromises.push(loadHTML(p));
+                    lastPromise=subpromises.push(loadHTML(p),null,lastPromise);
                 }break;
                 case "js": {
-                    subpromises.push(loadJS(p));
+                    lastPromise=subpromises.push(loadJS(p),lastPromise);
                 }break;
                 case "css": {
                     subpromises.push(loadCSS(p));
                 }break;
-            }
-        }
-        else
-        {
-            switch(p.type)
-            {
                 case "widget":{
-                    if(!p.node) {
-                        p.node = $('<div style="display:none"></div>');
-                        $(document.body).append(p.node);
-                    }
-                    var pr=$.Deferred();
-                    subpromises.push(pr);
-                    var promises=[];
-                    promises.push(loadHTML(Siviglia.config.baseUrl+p.template,p.node));
-                    promises.push(loadJS(Siviglia.config.baseUrl+p.js));
-                    $.when.apply($,promises).then(function(){
-                        var parser= new Siviglia.UI.HTMLParser(p.context,null);
-                        parser.parse(p.node);
-                        pr.resolve(p.node);
-                    })
-                }break;
-                case "html":{
-                    subpromises.push(loadHTML(p.url));
-                }break;
-                case "js":{
-                    subpromises.push(loadJS(p.url));
-                }break;
-                case "css":{
-                    subpromises.push(loadCSS(p.url));
-                }break;
+                    lastPromise=loadWidget({"template":p+".html","js":p+".js"},lastPromise)
+                }
             }
+
+        } else {
+            lastPromise = loadWidget(p,lastPromise)
         }
     }
 
+    var curPromise=$.Deferred();
     $.when.apply($, subpromises).done(function() {
 
         curPromise.resolve();
     });
     return curPromise;
 };
+Siviglia.require = function (list, isStatics, doParse) {
+    return Siviglia.Utils.load(list, isStatics, doParse);
+}
 
 Siviglia.Utils.setCookie = function (name, value, expires, path, domain, secure) {
     var today = new Date().getTime();
