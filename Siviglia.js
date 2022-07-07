@@ -2957,20 +2957,23 @@ Siviglia.Utils.load=function(assets, isStatic, doParse) {
             config.node = $('<div style="display:none"></div>');
             $(document.body).append(config.node);
         }
-        var resourceURL = Siviglia.config[isStatic ? 'staticsUrl' : 'baseUrl']
-        var resourcePromise = $.Deferred();
-        subpromises.push(resourcePromise);
-        var widgetPromises = [];
-        var htmlPromise = loadHTML(resourceURL + config.template, config.node, prevPromise)
-        widgetPromises.push(htmlPromise);
-        var jsPromise = loadJS(resourceURL + config.js, htmlPromise)
-        widgetPromises.push(jsPromise);
-        $.when.apply($, widgetPromises).then(function () {
+        var widgetURL = Siviglia.config[isStatic ? 'staticsUrl' : 'baseUrl']
+        var widgetPromise = $.Deferred();
+        subpromises.push(widgetPromise);
+        var widgetSubPromises = [];
+        
+        var htmlPromise = loadHTML(widgetURL + config.template, config.node, prevPromise)
+        widgetSubPromises.push(htmlPromise);
+
+        var jsPromise = loadJS(widgetURL + config.js, htmlPromise)
+        widgetSubPromises.push(jsPromise);
+
+        $.when.apply($, widgetSubPromises).then(function () {
             if (typeof doParse !== "undefined" && doParse === true) {
                 var parser = new Siviglia.UI.HTMLParser(config.context, null);
                 parser.parse(config.node);
             }
-            resourcePromise.resolve(config.node);
+            widgetPromise.resolve(config.node);
         })
         return jsPromise
     }
@@ -2998,10 +3001,10 @@ Siviglia.Utils.load=function(assets, isStatic, doParse) {
             }
             switch(type) {
                 case "html": {
-                    lastPromise=subpromises.push(loadHTML(p),null,lastPromise);
+                    lastPromise=loadHTML(p,null,lastPromise)
                 }break;
                 case "js": {
-                    lastPromise=subpromises.push(loadJS(p),lastPromise);
+                    lastPromise=loadJS(p,lastPromise);
                 }break;
                 case "css": {
                     subpromises.push(loadCSS(p));

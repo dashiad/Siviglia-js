@@ -127,6 +127,7 @@ function createHTMLTestStructure(test) {
   resultContent.id = "testCont" + test.number;
   resultContent.innerHTML = '<div style="display:none">' + test.template + '</div>' + test.view;
 
+  var parser = new Siviglia.UI.HTMLParser();
   parser.parse($("#testCont" + test.number));
 
   if (TEST_DESTROY === true && DEVELOP_MODE !== 0) {
@@ -168,7 +169,6 @@ function checkTests(restart) {
     else
       testStack = [testStack[DEVELOP_MODE - 1]];
   }
-  // var parser = new Siviglia.UI.HTMLParser();
   while (testStack.length > 0) {
     var currentTest = testStack.shift();
     try {
