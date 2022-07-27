@@ -465,7 +465,8 @@ Siviglia.Utils.isSubclass = function (obj, className) {
     function checkSubclassesRecursively(current, target) {
         var baseClasses = Siviglia.__store__.classes[current];
         if (typeof baseClasses !== 'undefined') {
-            for (var baseClass of baseClasses) {
+            for (var baseClassIndex = 0, maxIndex = baseClasses.length() - 1; baseClassIndex <= maxIndex; baseClassesIndex++) {
+                var baseClass = baseClasses[baseClassIndex]
                 if (baseClass === target) return true;
                 if (checkSubclassesRecursively(baseClass, target)) return true;
             }
@@ -911,8 +912,8 @@ Siviglia.Utils.buildClass(
               construct: function (contexts,path,eventMode) {
                   // EventMode 0 : Ningun evento.
                   // EventMode 1: Eventizado solo ultimo elemento del path.
-                  // EventMode 2: Eventizado todo
-                  this.eventMode=2; // Todo eventizado.
+                  // EventMode 2: Eventizado el path completo.
+                  this.eventMode=2; // Se eventiza el path completo
                   if(typeof eventMode!=="undefined")
                   {
                       this.eventMode=eventMode;
@@ -1724,7 +1725,8 @@ Siviglia.UI = {
         'sivcss': 'CssExpando',
         'sivattr': 'AttrExpando',
         'sivcall': 'CallExpando',
-        'sivpromise': 'PromiseExpando'
+        'sivpromise': 'PromiseExpando',
+        'sivexists': 'NonEmptyExpando'
     },
     viewStack: []
 };
@@ -1821,6 +1823,21 @@ Siviglia.Utils.buildClass(
       }
   }
 );
+Siviglia.Errors={}
+Siviglia.Errors.PathNotFoundException=function (path) {
+    this.path = path;
+    // Use V8's native method if available, otherwise fallback
+    if ("captureStackTrace" in Error)
+        Error.captureStackTrace(this, PathNotFoundException);
+    else
+        this.stack = (new Error()).stack;
+};
+
+
+Siviglia.Errors.PathNotFoundException.prototype = Object.create(Error.prototype);
+Siviglia.Errors.PathNotFoundException.prototype.name = "PathNotFoundException";
+Siviglia.Errors.PathNotFoundException.prototype.constructor = Siviglia.Errors.PathNotFoundException;
+
 Siviglia.UI.expandoCounter = 0;
 Siviglia.Utils.buildClass(
   {
@@ -1865,7 +1882,7 @@ Siviglia.Utils.buildClass(
                             v = this.str.parse();
                         }catch(e)
                         {
-                            throw e;
+                            throw new Siviglia.Errors.PathNotFoundException(pString);
 
                         }
                         if(contextual)
@@ -2331,6 +2348,29 @@ Siviglia.Utils.buildClass(
                         this.removeCurrentChildren();
                         this.node.css("display", "none");
                         this.dontRecurse = true;
+                    }
+                }
+            },
+            NonEmptyExpando: {
+                inherits: "IfExpando",
+                construct: function () {
+                    this.oManager = null;
+                    this.Expando("sivexists");
+                },
+                methods: {
+                    _initialize: function (node, nodeManager, stack, nodeExpandos) {
+                        try {
+                            this.IfExpando$_initialize(node, nodeManager, stack, nodeExpandos);
+                        } catch (e) {
+                            if (e instanceof Siviglia.Errors.PathNotFoundException) {
+                                node.remove();
+                                this.removeContent();
+                            } else
+                                throw e;
+                        }
+                    },
+                    update: function () {
+                        this.restoreContent();
                     }
                 }
             },
