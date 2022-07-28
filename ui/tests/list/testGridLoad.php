@@ -8,18 +8,18 @@
     <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Roboto'>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
     <script src="/node_modules/jquery/dist/jquery.js"></script>
-    <script src="../../Siviglia.js"></script>
-    <script src="../../SivigliaStore.js"></script>
+    <script src="../../../Siviglia.js"></script>
+    <script src="../../../SivigliaStore.js"></script>
 
-    <script src="../../SivigliaTypes.js"></script>
-    <script src="../../Model.js"></script>
+    <script src="../../../SivigliaTypes.js"></script>
+    <script src="../../../Model.js"></script>
 
-    <script src="../../../jqwidgets/jqx-all.js"></script>
-    <script src="../../../jqwidgets/globalization/globalize.js"></script>
+    <script src="../../../../jqwidgets/jqx-all.js"></script>
+    <script src="../../../../jqwidgets/globalization/globalize.js"></script>
     <link rel="stylesheet" href="/reflection/css/style.css">
-    <link rel="stylesheet" href="../../jQuery/css/JqxWidgets.css">
-    <link rel="stylesheet" href="../../jQuery/css/jqx.base.css">
-    <link rel="stylesheet" href="../../jQuery/css/jqx.adtopy-dev.css">
+    <link rel="stylesheet" href="../../../jQuery/css/JqxWidgets.css">
+    <link rel="stylesheet" href="../../../jQuery/css/jqx.base.css">
+    <link rel="stylesheet" href="../../../jQuery/css/jqx.adtopy-dev.css">
     <script src="/node_modules/autobahn-browser/autobahn.min.js"></script>
     <script src="/reflection/js/WampServer.js"></script>
 

@@ -25,8 +25,8 @@
 
     <!-- <link rel="stylesheet" href="../../jqwidgets/styles/jqx.base.css"> -->
     <link rel="stylesheet"
-          href="highlight/styles/ir-black.css">
-    <script src="highlight/highlight.pack.js"></script>
+          href="dependencies/highlight/styles/ir-black.css">
+    <script src="dependencies/highlight/highlight.pack.js"></script>
     <style type="text/css">
         .resultError {
             background-color: #cc3636;
