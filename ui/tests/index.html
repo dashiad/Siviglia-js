@@ -36,12 +36,6 @@
           href="http://statics.adtopy.com/packages/Siviglia/ui/tests/highlight/styles/ir-black.css">
 </head>
 <body style="background-color:#EEE; background-image:none;">
-<!--<?php //include_once("../../jQuery/JqxWidgets.html"); ?>-->
-<!--<?php //include_once("../../jQuery/JqxLists.html"); ?>-->
-<!--<?php //include_once("../../jQuery/Visual.html"); ?>-->
-<!--<?php //include_once("../../jQuery/JqxViews.html"); ?>-->
-<!--<?php //include_once("../../jQuery/JqxTypes.html"); ?>-->
-<!--<?php //include_once("../../jQuery/JqxApp.html"); ?>-->
 <script>
   var Siviglia = Siviglia || {};
   Siviglia.debug = true;
@@ -90,20 +84,6 @@
     "/packages/Siviglia/ui/tests/stubs/js/testEngine.js",
   ]
   Siviglia.require(dependencyList, true, false).then(function () {
-    /*Siviglia.Utils.buildClass({
-      context: "Siviglia.Widget.Surface",
-      classes: {
-        Card: {
-          inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
-          methods: {
-            preInitialize: function (params) {},
-            initialize: function (params) {},
-            update: function (source) {
-            },
-          },
-        },
-      },
-    })*/
 
     $(document).ready(function(){
       var parser = new Siviglia.UI.HTMLParser();
@@ -111,6 +91,5 @@
     })
   })
 </script>
-<!--<script src="testEngine.js"></script>-->
 </body>
 </html>
