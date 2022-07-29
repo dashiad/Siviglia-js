@@ -1,23 +1,11 @@
 var urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('path')) {
-  var path = urlParams.get('path')
-  /*var extension = (/[.]/.exec(path)) ? path.split('.').pop() : undefined;
-  var testLoader
-  switch (extension) {
-    case 'js':
-      testLoader = document.createElement('script')
-      break
-    case 'html':
-      testLoader = document.createElement('div')
-      break
-  }
-  testLoader.src = 'http://statics.adtopy.com/packages/Siviglia/ui/tests/' + urlParams.get('path')
-  document.body.appendChild(testLoader)*/
 
-  Siviglia.require(['/packages/Siviglia/ui/tests/'+path], true, true)
+if (urlParams.has('path')) {
+  Siviglia.require(['/packages/Siviglia/ui/tests/' + urlParams.get('path')], true, false)
 } else {
   console.log('No se ha indicado un path para el test')
 }
+
 var DEVELOP_MODE;
 if (!urlParams.has("test")) {
   //DEVELOP_MODE=47;    // Specific test number
@@ -27,6 +15,7 @@ if (!urlParams.has("test")) {
 } else {
   DEVELOP_MODE = parseInt(urlParams.get("test"));
 }
+
 var TEST_DESTROY = true;
 
 hljs.initHighlightingOnLoad();

@@ -1,0 +1,32 @@
+<!-- Poner aquí el código HTML a probar -->
+
+<!-- Ejemplo -->
+<div style="display: none">
+    <div data-sivWidget="widget-name" data-widgetCode="ContextName.ClassName">
+        <span data-sivValue="Hello world!"></span>
+    </div>
+</div>
+
+<div data-sivView="widget-name"></div>
+
+
+<script>
+  /* Poner el título del test */
+  document.getElementsByTagName('title')[0].innerHTML = 'Implementation test template'
+
+  // Poner aquí el código js a probar
+
+  // Ejemplo
+  Siviglia.Utils.buildClass({
+    context: 'ContextName',
+    classes: {
+      ClassName: {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {},
+          // initialize: function (params) {}
+        }
+      }
+    }
+  })
+</script>
