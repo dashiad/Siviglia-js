@@ -1,8 +1,22 @@
 var urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('path')) {
-  var testLoader = document.createElement('script')
-  testLoader.src = 'http://statics.adtopy.com/packages/Siviglia/ui/tests/' + urlParams.get('path') + '.js'
-  document.body.appendChild(testLoader)
+  var path = urlParams.get('path')
+  /*var extension = (/[.]/.exec(path)) ? path.split('.').pop() : undefined;
+  var testLoader
+  switch (extension) {
+    case 'js':
+      testLoader = document.createElement('script')
+      break
+    case 'html':
+      testLoader = document.createElement('div')
+      break
+  }
+  testLoader.src = 'http://statics.adtopy.com/packages/Siviglia/ui/tests/' + urlParams.get('path')
+  document.body.appendChild(testLoader)*/
+
+  Siviglia.require(['/packages/Siviglia/ui/tests/'+path], true, true)
+} else {
+  console.log('No se ha indicado un path para el test')
 }
 var DEVELOP_MODE;
 if (!urlParams.has("test")) {
@@ -161,6 +175,7 @@ function createHTMLTestStructure(test) {
 }
 
 var testStack = [];
+
 function checkTests(restart) {
   if (restart !== false && DEVELOP_MODE !== 0) {
     if (DEVELOP_MODE === -1)
@@ -180,6 +195,7 @@ function checkTests(restart) {
 }
 
 var testNumber = 0;
+
 function runTest(name, doc, template, view, callback) {
   testNumber++;
   if (typeof expectedResult == "undefined")

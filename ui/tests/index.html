@@ -73,7 +73,7 @@
   var parser = new Siviglia.UI.HTMLParser();
   parser.parse($(document.body));
 </script>
-
+<script src="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/js/testEngine.js"></script>
 
 <script>
   var dependencyList = [
@@ -81,7 +81,6 @@
     'packages/Siviglia/ui/List',
     "packages/Siviglia/ui/Types",
     "packages/Siviglia/ui/View",
-    "/packages/Siviglia/ui/tests/dependencies/js/testEngine.js",
   ]
   Siviglia.require(dependencyList, true, false).then(function () {
 
