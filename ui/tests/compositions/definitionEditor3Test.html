@@ -1,0 +1,63 @@
+<script>
+  document.getElementsByTagName('title')[0].innerHTML = 'definitionEditor3Test'
+
+  /* Test de formulario de edición de definiciones.*/
+  // No funciona
+</script>
+
+
+<div style="display:none">
+    <div data-sivWidget="Siviglia.model.reflection.MetaDefinition.forms.Add" data-widgetCode="Siviglia.model.reflection.MetaDefinition.forms.Add">
+
+        <div><div>Definition:</div>
+            <div data-sivCall="getInputFor" data-sivParams='{"key":"definition"}'></div>
+        </div>
+        <div><input type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar"></div>
+    </div>
+</div>
+
+<div data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Add"></div>
+
+
+<script>
+    Siviglia.Utils.buildClass({
+        "context":"Siviglia.model.reflection.MetaDefinition.forms",
+        "classes":{
+            Add:{
+                "inherits":"Siviglia.inputs.jqwidgets.Form",
+                "methods":{
+                    preInitialize:function(params)
+                    {
+                        var p={
+                            "keys":params,
+                            "model":"/model/reflection/MetaDefinition",
+                            "form":"Add"
+                        };
+                        var bto=new Siviglia.model.BaseTypedObject({
+                            "FIELDS":{
+                                "definition":{"LABEL":"Definition","TYPE":"/model/reflection/Model/types/ModelType"}
+                            }
+                        })
+                        //var t=Siviglia.types.TypeFactory.getType(null,"/model/reflection/Model/ModelType",null);
+                        return this.Form$preInitialize({bto:bto});
+                    }
+                }
+            }
+        }
+    });
+
+    var Siviglia=Siviglia || {};
+    Siviglia.config={
+        baseUrl:'http://reflection.adtopy.com/',
+        staticsUrl:'http://statics.adtopy.com/',
+        metadataUrl:'http://metadata.adtopy.com/',
+
+        locale:'es-ES',
+        // Si el mapper es XXX, debe haber:
+        // 1) Un gestor en /lib/output/html/renderers/js/XXX.php
+        // 2) Un Mapper en Siviglia.Model.XXXMapper
+        // 3) Las urls de carga de modelos seria /js/XXX/model/zzz/yyyy....
+        mapper:'Siviglia'
+    };
+    Siviglia.Model.initialize(Siviglia.config);
+</script>

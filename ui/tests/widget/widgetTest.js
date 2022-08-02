@@ -1,3 +1,5 @@
+document.getElementsByTagName('title')[0].innerHTML = 'Tests widget'
+
 runTest("sivWidget: widget mínimo",
   "Un widget se compone de una <b>plantilla HTML</b> y una <b>clase asociada</b>. Estos widgets se invocan mediante una <b>vista</b>.<br>" +
   "El widget se declara mediante el atributo <b>sivWidget</b>.<br>"+

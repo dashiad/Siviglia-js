@@ -1,0 +1,73 @@
+<script>
+  document.getElementsByTagName('title')[0].innerHTML = 'demoTest'
+
+  /* Test de editor de definiciones */
+  // No funciona
+</script>
+
+
+<div style="display:none">
+	<div data-sivWidget="SmartConfig.Selector" 
+		 data-widgetCode="SmartConfig.Selector" 
+		 data-sivParams='{"bto":"/*configSelector"}'>
+			<div data-sivCall="getInputFor" 
+				 data-sivParams='{"key":"domain"}'>
+		    </div>
+			<div data-sivView="Siviglia.model.ads.Demo.forms.Edit" 
+				 data-widgetCode="Siviglia.model.ads.Demo.forms.Edit" 
+				 data-sivParams='{"id":"/*configSelector/domain"}'>
+	        </div>
+    </div>
+</div>
+
+<div class="widget">
+	<div class="widget-content">
+		<div data-sivView="SmartConfig.Selector"></div>
+	</div>
+</div>
+
+
+	<script>
+    Siviglia.Utils.buildClass({
+        "context":"SmartConfig",
+        "classes":{
+            Selector:{
+				"inherits": "Siviglia.inputs.jqwidgets.Form",
+                "methods":{
+                    preInitialize:function(params)
+                    {
+                    	this.factory = Siviglia.types.TypeFactory;
+                        this.self = this;
+                        this.typeCol = [];
+                        this.configSelector=new Siviglia.model.BaseTypedObject(
+                            {
+                                "FIELDS":{
+                                    "domain": {
+                                        "LABEL":"Select domain",
+                                        "TYPE":"String",
+                                        "ROLE": "List",
+                                        "SOURCE":{
+                                            "TYPE":"DataSource",
+                                            "MODEL":"/model/ads/Demo",
+                                            "DATASOURCE":"FullList",
+                                            "LABEL":"domain",
+                                            "VALUE":"id"
+                                        }
+                                    },
+                                },
+                                "INPUTPARAMS": {
+                                	"/":{
+                                		"INPUT": "FlexContainer"
+									},
+                                },
+                            }
+                        );
+                        return this.Form$preInitialize({bto:this.configSelector});
+                    },
+                    initialize:function(params){}
+                }
+            },
+        }
+    });
+
+</script>

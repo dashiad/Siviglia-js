@@ -178,6 +178,7 @@ function checkTests(restart) {
       currentTest.cb.apply(null);
       createHTMLTestStructure(currentTest)
     } catch (error) {
+      console.log('Falla el test número ' + currentTest.number + ' -> ' + currentTest.name)
       console.dir(error);
     }
   }

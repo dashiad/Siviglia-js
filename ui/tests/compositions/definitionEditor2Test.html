@@ -1,0 +1,61 @@
+<script>
+  document.getElementsByTagName('title')[0].innerHTML = 'definitionEditor2Test'
+
+  /* Test de editor de definitiones */
+  // No funciona
+</script>
+
+
+<div style="display:none">
+    <div data-sivWidget="Siviglia.model.reflection.MetaDefinition.forms.Add" data-widgetCode="Siviglia.model.reflection.MetaDefinition.forms.Add">
+        <div class="widget-content">
+            <div><div class="widget-title">Destination file:</div>
+                <div data-sivCall="getInputFor" data-sivParams='{"key":"file"}'></div>
+            </div>
+
+            <div><div class="widget-title">Definition:</div>
+                <div data-sivCall="getInputFor" data-sivParams='{"key":"definition"}'></div>
+            </div>
+            <div><input class="form-button" type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar"></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="widget">
+    <div data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Add"></div>
+</div>
+<script>
+
+
+    Siviglia.Utils.buildClass({
+        "context":"Siviglia.model.reflection.MetaDefinition.forms",
+        "classes":{
+            Add:{
+                "inherits":"Siviglia.inputs.jqwidgets.Form",
+                "methods":{
+                    preInitialize:function(params)
+                    {
+                        var p={
+                            "keys":params,
+                            "model":"/model/reflection/MetaDefinition",
+                            "form":"Add"
+                        };
+                        var bto=new Siviglia.model.BaseTypedObject({
+                            "FIELDS":{
+                                "file":{"LABEL":"File","TYPE":"String"},
+                                "definition":{"LABEL":"Definition","TYPE":"/model/reflection/Model/types/BaseTypedObject"}
+                            }
+                        })
+
+                        var t=Siviglia.types.TypeFactory.getType(null,"/model/reflection/Model/types/ModelType",null,null);
+                        bto.file="Test";
+                        bto.definition=t.definition;
+                        //var t=Siviglia.types.TypeFactory.getType(null,"/model/reflection/Model/ModelType",null);
+                        return this.Form$preInitialize({bto:bto});
+                    }
+                }
+            }
+        }
+    });
+</script>

@@ -1,0 +1,78 @@
+<script>
+  document.getElementsByTagName('title')[0].innerHTML = 'comboBox'
+
+  /* Test de input comboBox.*/
+  // No funciona
+</script>
+
+
+<div style="display:none">
+    <div data-sivWidget="Test.Combo" data-widgetCode="Test.Combo">
+    </div>
+</div>
+
+<div data-sivView="Test.Combo"></div>
+<div data-sivView="Test.Combo"></div>
+<div data-sivView="Test.Combo"></div>
+<div data-sivView="Test.Combo"></div>
+<div data-sivView="Test.Combo"></div>
+
+
+<div id='jqxcombobox'></div>
+
+<input type="button" onclick="recreate()">
+
+
+    <script>
+        Siviglia.Utils.buildClass({
+           "context":"Test",
+           classes:{
+               "Combo":{
+                   inherits:"Siviglia.UI.Expando.View",
+                   destruct:function(){
+
+
+                       this.rootNode.html("");
+                   },
+                   methods:{
+                       preInitialize:function(params)
+                       {
+
+                       },
+                       initialize:function(params)
+                       {
+                           var source = [
+                               "Affogato",
+                               "Americano",
+                               "Bicerin",
+                               "Breve",
+                               "Café Bombón",
+                               "Café au lait",
+                               "Caffé Corretto",
+                               "Café Crema",
+                               "Caffé Latte",
+                           ];
+                           var current=$("<div></div>");
+                           // Create a jqxComboBox
+                           current.jqxComboBox({ source: source, selectedIndex: 0, width: '200px', height: '25px' });
+                           // disable the sixth item.
+                           current.jqxComboBox('disableAt', 5);
+                           // bind to 'select' event.
+                           current.bind('select', function (event) {
+                               var args = event.args;
+                               var item = current.jqxComboBox('getItem', args.index);
+                               alert('Selected: ' + item.label);
+                           });
+                           this.rootNode.append(current);
+                           setTimeout(function(){
+                               console.log("DESTROYING");
+                                current.jqxComboBox("destroy");
+                               //this.rootNode.jqxComboBox("destroy");
+                               //this.destruct();
+                           }.bind(this),1000);
+                       }
+                   }
+               }
+           }
+        });
+    </script>
