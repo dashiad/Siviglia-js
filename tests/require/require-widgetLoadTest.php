@@ -6,11 +6,12 @@
     <script src='http://statics.adtopy.com/node_modules/d3/dist/d3.js'></script>
     <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
     <script src="/node_modules/autobahn-browser/autobahn.min.js"></script>
-
     <script src="http://statics.adtopy.com/packages/Siviglia/Siviglia.js"></script>
     <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaStore.js"></script>
     <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaTypes.js"></script>
     <script src="http://statics.adtopy.com/packages/Siviglia/Model.js"></script>
+
+    <script src="http://statics.adtopy.com/packages/Siviglia/tests/require/require.js"></script>
 
     <script src="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/jqx-all.js"></script>
     <script src="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/globalization/globalize.js"></script>
@@ -82,13 +83,13 @@
 
 <script>
   var dependencyList = [
-    "packages/Siviglia/jQuery/JqxWidgets",
-    'packages/Siviglia/jQuery/JqxTypes',
-    "packages/Siviglia/jQuery/JqxViews",
-    "packages/Siviglia/jQuery/JqxLists",
-    "packages/Siviglia/jQuery/JqxWidgets",
+    "packages/Siviglia/ui/Input",
+    'packages/Siviglia/ui/Types',
+    // "packages/Siviglia/ui/View",
+    // "packages/Siviglia/ui/List",
+    // "packages/Siviglia/ui/App",
   ]
-  Siviglia.require(dependencyList, true, false).then(function () {
+  Siviglia.Utils.load(dependencyList, true, false).then(function () {
     Siviglia.Utils.buildClass({
       context: "Siviglia.Widget.Surface",
       classes: {

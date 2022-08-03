@@ -1,137 +1,125 @@
 Siviglia.requireStore = Siviglia.requireStore || {} // Cuando se implemente en Siviglia.js, esta línea va al principio con __store__
 Siviglia.requiredPromises = Siviglia.requiredPromises || []
 
-Siviglia.Utils.load=function(assets, isStatic, doParse) {
-  var loadHTML=function(url,node,prevPromise){
-    var resourcePromise=$.Deferred();
-    $.get(url).then(function (r) {
-      var add = function () {
-        if (typeof node == "undefined" || node == null) {
-          node = $("<div></div>");
-          $(document.body).append(node);
-        }
-        node.html(r);
-        // Ojo, aqui se llama a un objeto Siviglia.App.Page
-        resourcePromise.resolve(node);
-      }
+Siviglia.Utils.load=function(list, isStatic=true, doParse) {
+  var loadHTML=function(url,node){
+    var promise=$.Deferred();
 
-      if (typeof prevPromise == "undefined" || prevPromise == null)
-        add();
-      else
-        prevPromise.then(function () {add();});
-    });
-    return resourcePromise;
-  };
-  var loadJS = function (url, prevPromise) {
-    var resourcePromise = $.Deferred();
-    var add = function () {
-      var v = document.createElement("script");
-      v.onload = function () {
-        resourcePromise.resolve();
+    $.get(url).then(function(r){
+      if(typeof node == "undefined") {
+        node=$("<div></div>");
+        $(document.body).append(node);
       }
-      v.src = url;
-      document.head.appendChild(v);
+      node.html(r);
+      // Ojo, aqui se llama a un objeto Siviglia.App.Page
+      promise.resolve(node);
+    });
+    return promise;
+  };
+  var loadJS=function(url){
+    var promise=$.Deferred();
+    var v=document.createElement("script");
+    v.onload=function(){
+      promise.resolve();
     }
-    if (typeof prevPromise == "undefined" || prevPromise == null)
-      add();
-    else
-      prevPromise.then(function () {
-        add();});
-    return resourcePromise;
+    v.src=url;
+    document.head.appendChild(v);
+    return promise;
   };
   var loadCSS=function(url){
-    var resourcePromise=$.Deferred();
+    var promise=$.Deferred();
     var v=document.createElement("link");
     v.rel="stylesheet";
     v.href=url;
-    v.onload=function(){resourcePromise.resolve();}
+    v.onload=function(){promise.resolve();}
     document.head.appendChild(v);
-    return resourcePromise;
+    return promise;
   };
-
-  var subpromises=[];
   var loadWidget = function (config, prevPromise) {
     if (!config.node) {
       config.node = $('<div style="display:none"></div>');
       $(document.body).append(config.node);
     }
-    var widgetURL = Siviglia.config[isStatic ? 'staticsUrl' : 'baseUrl']
-    var widgetPromise = $.Deferred();
-    subpromises.push(widgetPromise);
-    var widgetSubPromises = [];
+    var subdomain = Siviglia.config[isStatic ? 'staticsUrl' : 'baseUrl']
+    var promise = $.Deferred();
 
-    var htmlPromise = loadHTML(widgetURL + config.template, config.node, prevPromise)
-    widgetSubPromises.push(htmlPromise);
+    var htmlConfig = {
+      type: 'html',
+      url: subdomain+config.template,
+      node: config.node
+    }
+    var jsConfig = {
+      type: 'js',
+      url: subdomain+config.js,
+    }
 
-    var jsPromise = loadJS(widgetURL + config.js, htmlPromise)
-    widgetSubPromises.push(jsPromise);
-
-    $.when.apply($, widgetSubPromises).then(function () {
+    var requirePromise = Siviglia.Utils.load([htmlConfig, jsConfig])
+    $.when.apply($, requirePromise).then(function () {
       if (typeof doParse !== "undefined" && doParse === true) {
         var parser = new Siviglia.UI.HTMLParser(config.context, null);
         parser.parse(config.node);
       }
-      widgetPromise.resolve(config.node);
+      promise.resolve(config.node);
     })
-    return jsPromise
+    return promise
   }
 
+  if (typeof list === 'string')
+    list = [list]
+  if (typeof list.type === 'string')
+    list = [list]
 
+  var mainPromise=$.Deferred();
+  var promiseList=[];
 
-  var lastPromise=null;
-  for(var k=0;k<assets.length;k++)
-  {
-    var p=assets[k];
-
-    if(typeof p=="string")
-    {
-      var type="html";
-      // Es una simple cadena.Se busca que tipo de recurso puede ser.
-      var aa=document.createElement("a");
-      aa.href=p;
-      var path=aa.pathname.split("/");
-      if(path.length>0)
-      {
-        var ss=path[path.length-1];
-        var suffix=ss.split(".");
-        if(suffix.length > 1)
-          type=suffix.pop();
+  for(var k=0;k<list.length;k++) {
+    var resource=list[k];
+    var resourceObj=null
+    if(typeof resource=="string") {
+      var type = null
+      var splitPath = resource.split('/')
+      if(splitPath.length>0) {
+        var fileName=splitPath.pop()
+        var splitFileName=fileName.split(".");
+        if(splitFileName.length > 1)
+          type=splitFileName.pop();
         else
-          type="widget";
-      }
-      switch(type) {
-        case "html": {
-          lastPromise=loadHTML(p,null,lastPromise)
-        }break;
-        case "js": {
-          lastPromise=loadJS(p,lastPromise);
-        }break;
-        case "css": {
-          subpromises.push(loadCSS(p));
-        }break;
-        case "widget":{
-          lastPromise=loadWidget({"template":p+".html","js":p+".js"},lastPromise)
-        }
+          type = 'widget'
       }
 
+      resourceObj= {
+        type: type,
+        template: resource+'.html',
+        js: resource+'.js',
+        url: resource,
+      }
     } else {
-      lastPromise = loadWidget(p,lastPromise)
+      resourceObj = resource
+    }
+
+    switch(resourceObj.type) {
+      case "widget":
+        promiseList.push(loadWidget(resourceObj))
+        break;
+      case "html":
+        promiseList.push(loadHTML(resourceObj.url));
+        break;
+      case "js":
+        promiseList.push(loadJS(resourceObj.url));
+        break;
+      case "css":
+        promiseList.push(loadCSS(resourceObj.url));
+        break;
     }
   }
 
-  var curPromise=$.Deferred();
-  $.when.apply($, subpromises).done(function() {
-
-    curPromise.resolve();
+  $.when.apply($, promiseList).done(function() {
+    mainPromise.resolve();
   });
-  return curPromise;
+  return mainPromise;
 };
+
 Siviglia.require = function (list, isStatics, doParse) {
-  var fileParams = getFileParams()
-  console.log(fileParams)
-  Siviglia.requireStore[fileParams] = 1
-
-
   return Siviglia.Utils.load(list, isStatics, doParse);
 }
 
@@ -146,7 +134,7 @@ const STACK_TRACE_ROW_PATTERN2 = /^(?:.*?@)?(.*?):\d+(?::\d+)?$/;
 
 SIVIGLIA_FILE_URL = 'http://statics.adtopy.com/packages/Siviglia/tests/require/require.js'
 
-function getFileParams () {
+Siviglia.getCaller = function () {
   var stringStack = new Error().stack
   var stack = stringStack.split(STACK_TRACE_SPLIT_PATTERN)
   for (var trace of stack) {
@@ -160,8 +148,7 @@ function getFileParams () {
     return;
   }
   try {
-    const urlObj = new URL(url);
-    return urlObj.pathname; // This feature doesn't exists in IE, in this case you should use urlObj.search and handle the query parsing by yourself.
+    return new URL(url);
   } catch (e) {
     console.warn(`The URL '${url}' is not valid.`);
   }
