@@ -39,7 +39,7 @@ function showResult(name, doc, template, view, result, callback, testNumber, exc
   var className = "result resultError";
   var message = "ERROR";
   if (!exception) {
-    if (JSON.stringify(expected) == JSON.stringify(result)) {
+    if (JSON.stringify(expected) === JSON.stringify(result)) {
       className = "result resultOk";
       message = "OK!";
     }
@@ -199,4 +199,26 @@ function runTest(name, doc, template, view, callback) {
     cb: callback,
     number: testNumber
   });
+}
+
+var uiTestPath = '/packages/Siviglia/ui/tests/'
+
+function addTest(name, doc, path) {
+  var template
+  var view
+  var code
+  var promise
+  // var url = Siviglia.config.staticsUrl + uiTestPath + path
+  $.get(path).then(function(res) {
+    template = getStringBetween(res, '<!-- templateInit -->', '<!-- templateEnd -->').replace(/(\r\n|\n|\r)/gm, "");
+    view = getStringBetween(res, '<!-- viewInit -->', '<!-- viewEnd -->').replace(/(\r\n|\n|\r)/gm, "");
+    code = Function(getStringBetween(res, '//codeInit', '//codeEnd'))
+    runTest(name, doc, template, view, code)
+  }).then(function(){checkTests()})
+}
+
+function getStringBetween(str, start, end) {
+  const result = str.match(new RegExp(start + "(.*)" + end, 's'));
+
+  return result[1];
 }
