@@ -1,18 +1,20 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <script src="/node_modules/jquery/dist/jquery.js"></script>
-    <script src="../Siviglia.js"></script>
+    <title>VTests</title>
+    <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
 
-    <script src="../SivigliaStore.js"></script>
-    <script src="../SivigliaTypes.js"></script>
-    <script src="../Model.js"></script>
-    <script src="../ui/tests/dependencies/jsonView/jquery.json-view.min.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/Siviglia.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaStore.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaTypes.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/Model.js"></script>
+
+    <script src="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/jsonView/jquery.json-view.min.js"></script>
     <link rel="stylesheet"
-          href="../ui/tests/dependencies/jsonView/jquery.json-view.min.css">
+          href="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/jsonView/jquery.json-view.min.css">
     <link rel="stylesheet"
-          href="../ui/tests/dependencies/highlight/styles/monokai.css">
-    <script src="../ui/tests/dependencies/highlight/highlight.pack.js"></script>
+          href="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/highlight/styles/monokai.css">
+    <script src="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/highlight/highlight.pack.js"></script>
     <style type="text/css">
         .testDiv {}
         .testTitle {}
@@ -77,11 +79,14 @@
     hljs.initHighlightingOnLoad();
 
     var urlParams = new URLSearchParams(window.location.search);
+    var DEVELOP_MODE;
     if (!urlParams.has("test")) {
-        var DEVELOP_MODE=0;  // All tests
-        //var DEVELOP_MODE=-1; // Latest test
+      //DEVELOP_MODE=47;    // Specific test number
+      //DEVELOP_MODE=0;     // All tests
+      //DEVELOP_MODE=(-1);  // Latest test
+      DEVELOP_MODE = (-1);
     } else {
-        var DEVELOP_MODE = urlParams.get("test");
+      DEVELOP_MODE = parseInt(urlParams.get("test"));
     }
 
     var def1={
@@ -2778,7 +2783,7 @@
                     "TYPE": "Integer",
                     "SOURCE":{
                         "TYPE":"Url",
-                        "URL":"/packages/Siviglia/tests/data/[%#../f4%].json",
+                        "URL":"/packages/Siviglia/tests/stubs/data/[%#../f4%].json",
                         "LABEL":"a",
                         "VALUE":"b"
                     }
