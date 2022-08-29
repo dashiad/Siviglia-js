@@ -201,20 +201,27 @@ function runTest(name, doc, template, view, callback) {
   });
 }
 
-var uiTestPath = '/packages/Siviglia/ui/tests/'
 
-function addTest(name, doc, path) {
+function addTestPromise(name, doc, path) {
   var template
   var view
   var code
-  var promise
-  // var url = Siviglia.config.staticsUrl + uiTestPath + path
-  $.get(path).then(function(res) {
+  var promise = $.Deferred();
+  /* Parece que no hace falta incluir el path completo del test
+  *  Se deja el código por si en un futuro se quiere cambiar
+  * */
+  /*var uiTestPath = '/packages/Siviglia/ui/tests/'
+  var url = Siviglia.config.staticsUrl + uiTestPath + path
+  $.get(url).then(function(res) {*/
+  $.get(path).then(function (res) {
     template = getStringBetween(res, '<!-- templateInit -->', '<!-- templateEnd -->').replace(/(\r\n|\n|\r)/gm, "");
     view = getStringBetween(res, '<!-- viewInit -->', '<!-- viewEnd -->').replace(/(\r\n|\n|\r)/gm, "");
     code = Function(getStringBetween(res, '//codeInit', '//codeEnd'))
     runTest(name, doc, template, view, code)
-  }).then(function(){checkTests()})
+    promise.resolve()
+  })
+
+  return promise
 }
 
 function getStringBetween(str, start, end) {
