@@ -75,10 +75,11 @@
 
 <script>
   var dependencyList = [
-    "packages/Siviglia/jQuery/JqxWidgets",
-    'packages/Siviglia/jQuery/JqxTypes',
-    'packages/Siviglia/jQuery/JqxViews',
-    'packages/Siviglia/jQuery/JqxLists'
+    "packages/Siviglia/ui/Input",
+    'packages/Siviglia/ui/Types',
+    "packages/Siviglia/ui/View",
+    "packages/Siviglia/ui/List",
+    "packages/Siviglia/ui/App",
   ]
   Siviglia.require(dependencyList, true, false).then(function () {
     console.log('require terminado')

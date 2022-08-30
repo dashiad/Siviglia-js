@@ -1,7 +1,7 @@
 Siviglia.requireStore = Siviglia.requireStore || {} // Cuando se implemente en Siviglia.js, esta línea va al principio con __store__
-Siviglia.requiredPromises = Siviglia.requiredPromises || []
+Siviglia.requiredPromises = Siviglia.requirePromises || {}
 
-Siviglia.Utils.load=function(list, isStatic=true, doParse) {
+Siviglia.Utils.load=function(assets, isStatic=true, doParse) {
   var loadHTML=function(url,node){
     var promise=$.Deferred();
 
@@ -64,16 +64,16 @@ Siviglia.Utils.load=function(list, isStatic=true, doParse) {
     return promise
   }
 
-  if (typeof list === 'string')
-    list = [list]
-  if (typeof list.type === 'string')
-    list = [list]
+  if (typeof assets === 'string')
+    assets = [assets]
+  if (typeof assets.type === 'string')
+    assets = [assets]
 
   var mainPromise=$.Deferred();
-  var promiseList=[];
+  var promisesList=[];
 
-  for(var k=0;k<list.length;k++) {
-    var resource=list[k];
+  for(var k=0;k<assets.length;k++) {
+    var resource=assets[k];
     var resourceObj=null
     if(typeof resource=="string") {
       var type = null
@@ -99,42 +99,67 @@ Siviglia.Utils.load=function(list, isStatic=true, doParse) {
 
     switch(resourceObj.type) {
       case "widget":
-        promiseList.push(loadWidget(resourceObj))
+        promisesList.push(loadWidget(resourceObj))
         break;
       case "html":
-        promiseList.push(loadHTML(resourceObj.url));
+        promisesList.push(loadHTML(resourceObj.url));
         break;
       case "js":
-        promiseList.push(loadJS(resourceObj.url));
+        promisesList.push(loadJS(resourceObj.url));
         break;
       case "css":
-        promiseList.push(loadCSS(resourceObj.url));
+        promisesList.push(loadCSS(resourceObj.url));
         break;
     }
   }
 
-  $.when.apply($, promiseList).done(function() {
+  $.when.apply($, promisesList).done(function() {
     mainPromise.resolve();
   });
   return mainPromise;
 };
 
 Siviglia.require = function (list, isStatics, doParse) {
+  function loadJS(url, caller) {
+    var promise = $.Deferred();
+    var scriptElement = document.createElement("script");
+    scriptElement.onload = function () {
+      if (Siviglia.requireStore[url] === 0) {
+        promise.resolve();
+        Siviglia.requireStore[caller] = 1
+      }
+    }
+    scriptElement.src = url;
+    document.head.appendChild(scriptElement);
+    return promise;
+  }
+
+
+  var requiredURL = list
+  var caller = Siviglia.getCaller().pathname
+
+  Siviglia.requireStore[list] = 0
+  Siviglia.requireStore[caller] = 1
+
+  // Siviglia.requirePromises[requiredURL] = $.Deferred()
+  // loadJS(requiredURL, caller, )
+
   return Siviglia.Utils.load(list, isStatics, doParse);
 }
 
 
 
 
-const STACK_TRACE_SPLIT_PATTERN = /(?:Error)?\n(?:\s*at\s+)?/;
-// For browsers, like Chrome, IE, Edge and more.
-const STACK_TRACE_ROW_PATTERN1 = /^.+?\s\((.+?):\d+:\d+\)$/;
-// For browsers, like Firefox, Safari, some variants of Chrome and maybe other browsers.
-const STACK_TRACE_ROW_PATTERN2 = /^(?:.*?@)?(.*?):\d+(?::\d+)?$/;
 
-SIVIGLIA_FILE_URL = 'http://statics.adtopy.com/packages/Siviglia/tests/require/require.js'
 
 Siviglia.getCaller = function () {
+  var STACK_TRACE_SPLIT_PATTERN = /(?:Error)?\n(?:\s*at\s+)?/;
+// For browsers, like Chrome, IE, Edge and more.
+  var STACK_TRACE_ROW_PATTERN1 = /^.+?\s\((.+?):\d+:\d+\)$/;
+// For browsers, like Firefox, Safari, some variants of Chrome and maybe other browsers.
+  var STACK_TRACE_ROW_PATTERN2 = /^(?:.*?@)?(.*?):\d+(?::\d+)?$/;
+  var SIVIGLIA_FILE_URL = 'http://statics.adtopy.com/packages/Siviglia/tests/require/require.js' //cambiar cuando se implemente en Siviglia.js
+
   var stringStack = new Error().stack
   var stack = stringStack.split(STACK_TRACE_SPLIT_PATTERN)
   for (var trace of stack) {

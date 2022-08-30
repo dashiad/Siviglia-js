@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Test file</title>
-    <script src='http://statics.adtopy.com/node_modules/d3/dist/d3.js'></script>
     <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
     <script src="/node_modules/autobahn-browser/autobahn.min.js"></script>
     <script src="http://statics.adtopy.com/packages/Siviglia/Siviglia.js"></script>
     <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaStore.js"></script>
     <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaTypes.js"></script>
     <script src="http://statics.adtopy.com/packages/Siviglia/Model.js"></script>
-
-    <script src="http://statics.adtopy.com/packages/Siviglia/tests/require/require.js"></script>
 
     <script src="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/jqx-all.js"></script>
     <script src="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/globalization/globalize.js"></script>
@@ -29,12 +26,6 @@
           href="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css">
 </head>
 <body style="background-color:#EEE; background-image:none;">
-<?php //include_once("../jQuery/JqxWidgets.html"); ?>
-<?php //include_once("../jQuery/JqxLists.html"); ?>
-<?php //include_once("../jQuery/Visual.html"); ?>
-<?php //include_once("../jQuery/JqxViews.html"); ?>
-<?php //include_once("../jQuery/JqxTypes.html"); ?>
-<?php //include_once("../jQuery/JqxApp.html"); ?>
 <script>
   var Siviglia = Siviglia || {};
   Siviglia.debug = true;
@@ -71,35 +62,33 @@
 </script>
 
 <div style="display:none">
-    <div data-sivWidget="input-definition" data-widgetParams="" data-widgetCode="Test.InputDefinition">
-        <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
-             data-sivParams='{"key":"fieldName","parent":"*type","form":"*form","controller":"*self"}'>
-        </div>
+    <div data-sivWidget="widget-example" data-widgetCode="Test.InputDefinition">
+        <div data-sivValue="hola"</div>
     </div>
 </div>
 
-<div data-sivView="input-definition"></div>
+<div data-sivView="widget-example"></div>
 
 
 <script>
   var dependencyList = [
     "packages/Siviglia/ui/Input",
     'packages/Siviglia/ui/Types',
-    // "packages/Siviglia/ui/View",
-    // "packages/Siviglia/ui/List",
-    // "packages/Siviglia/ui/App",
+    "packages/Siviglia/ui/View",
+    "packages/Siviglia/ui/List",
+    "packages/Siviglia/ui/App",
   ]
-  Siviglia.Utils.load(dependencyList, true, false).then(function () {
+  Siviglia.require(dependencyList, true, false).then(function () {
     Siviglia.Utils.buildClass({
-      context: "Siviglia.Widget.Surface",
+      context: "Test",
       classes: {
-        Card: {
-          inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
+        InputDefinition: {
+          inherits: "Siviglia.UI.Expando.View",
           methods: {
             preInitialize: function (params) {},
-            initialize: function (params) {},
-            update: function (source) {
-            },
+            // initialize: function (params) {},
+            // update: function (source) {
+            // },
           },
         },
       },

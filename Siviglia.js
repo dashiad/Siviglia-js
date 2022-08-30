@@ -1726,7 +1726,7 @@ Siviglia.UI = {
         'sivattr': 'AttrExpando',
         'sivcall': 'CallExpando',
         'sivpromise': 'PromiseExpando',
-        'sivexists': 'NonEmptyExpando'
+        // 'sivexists': 'NonEmptyExpando'
     },
     viewStack: []
 };
@@ -1824,7 +1824,7 @@ Siviglia.Utils.buildClass(
   }
 );
 Siviglia.Errors={}
-Siviglia.Errors.PathNotFoundException=function (path) {
+/*Siviglia.Errors.PathNotFoundException=function (path) {
     this.path = path;
     // Use V8's native method if available, otherwise fallback
     if ("captureStackTrace" in Error)
@@ -1836,7 +1836,7 @@ Siviglia.Errors.PathNotFoundException=function (path) {
 
 Siviglia.Errors.PathNotFoundException.prototype = Object.create(Error.prototype);
 Siviglia.Errors.PathNotFoundException.prototype.name = "PathNotFoundException";
-Siviglia.Errors.PathNotFoundException.prototype.constructor = Siviglia.Errors.PathNotFoundException;
+Siviglia.Errors.PathNotFoundException.prototype.constructor = Siviglia.Errors.PathNotFoundException;*/
 
 Siviglia.UI.expandoCounter = 0;
 Siviglia.Utils.buildClass(
@@ -1882,7 +1882,8 @@ Siviglia.Utils.buildClass(
                             v = this.str.parse();
                         }catch(e)
                         {
-                            throw new Siviglia.Errors.PathNotFoundException(pString);
+                            throw e
+                            // throw new Siviglia.Errors.PathNotFoundException(pString);
 
                         }
                         if(contextual)
@@ -2351,7 +2352,7 @@ Siviglia.Utils.buildClass(
                     }
                 }
             },
-            NonEmptyExpando: {
+            /*NonEmptyExpando: {
                 inherits: "IfExpando",
                 construct: function () {
                     this.oManager = null;
@@ -2373,7 +2374,7 @@ Siviglia.Utils.buildClass(
                         this.restoreContent();
                     }
                 }
-            },
+            },*/
             PromiseExpando:{
                 inherits: "Expando",
                 construct: function () {
@@ -2943,9 +2944,12 @@ Siviglia.Utils.buildClass({
 Siviglia.Service=new Siviglia.services.ServiceManager();
 Siviglia.UI.Expando.WidgetExpando.prototype.widgets={};
 Siviglia.UI.Expando.WidgetExpando.prototype.widgetPromises={};
+
+Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises={};
+Siviglia.UI.Expando.WidgetExpando.prototype.widgetExecutingRequires={};
 Siviglia.Utils.load=function(assets, isStatic, doParse) {
     var loadHTML=function(url,node,prevPromise){
-        var resourcePromise=$.Deferred();
+        var promise=$.Deferred();
         $.get(url).then(function (r) {
             var add = function () {
                 if (typeof node == "undefined" || node == null) {
@@ -2954,7 +2958,7 @@ Siviglia.Utils.load=function(assets, isStatic, doParse) {
                 }
                 node.html(r);
                 // Ojo, aqui se llama a un objeto Siviglia.App.Page
-                resourcePromise.resolve(node);
+                promise.resolve(node);
             }
 
             if (typeof prevPromise == "undefined" || prevPromise == null)
@@ -2962,14 +2966,14 @@ Siviglia.Utils.load=function(assets, isStatic, doParse) {
             else
                 prevPromise.then(function () {add();});
         });
-        return resourcePromise;
+        return promise;
     };
     var loadJS = function (url, prevPromise) {
-        var resourcePromise = $.Deferred();
+        var promise = $.Deferred();
         var add = function () {
             var v = document.createElement("script");
             v.onload = function () {
-                resourcePromise.resolve();
+                promise.resolve();
             }
             v.src = url;
             document.head.appendChild(v);
@@ -2979,95 +2983,122 @@ Siviglia.Utils.load=function(assets, isStatic, doParse) {
         else
             prevPromise.then(function () {
                 add();});
-        return resourcePromise;
+        return promise;
     };
     var loadCSS=function(url){
-        var resourcePromise=$.Deferred();
+        var promise=$.Deferred();
         var v=document.createElement("link");
         v.rel="stylesheet";
         v.href=url;
-        v.onload=function(){resourcePromise.resolve();}
+        v.onload=function(){promise.resolve();}
         document.head.appendChild(v);
-        return resourcePromise;
+        return promise;
     };
-
-    var subpromises=[];
     var loadWidget = function (config, prevPromise) {
+        var widgetPrototype = Siviglia.UI.Expando.WidgetExpando.prototype;
+        var subdomain = Siviglia.config[isStatic ? 'staticsUrl' : 'baseUrl']
+        var promise = $.Deferred();
+        var jsURL = subdomain + config.js
+        var htmlURL = subdomain + config.template
+
         if (!config.node) {
             config.node = $('<div style="display:none"></div>');
             $(document.body).append(config.node);
         }
-        var widgetURL = Siviglia.config[isStatic ? 'staticsUrl' : 'baseUrl']
-        var widgetPromise = $.Deferred();
-        subpromises.push(widgetPromise);
-        var widgetSubPromises = [];
-        
-        var htmlPromise = loadHTML(widgetURL + config.template, config.node, prevPromise)
-        widgetSubPromises.push(htmlPromise);
 
-        var jsPromise = loadJS(widgetURL + config.js, htmlPromise)
-        widgetSubPromises.push(jsPromise);
+        widgetPrototype.widgetExecutingRequires[jsURL]=0;
 
-        $.when.apply($, widgetSubPromises).then(function () {
+       // promisesList.push(promise);
+        var widgetPromises = [];
+
+        var htmlPromise = loadHTML(htmlURL, config.node, prevPromise)
+        widgetPromises.push(htmlPromise);
+
+        var jsAndRequirePromise=$.Deferred();
+        var jsPromise = loadJS(jsURL, htmlPromise)
+        jsPromise.then(function(){
+            if(widgetPrototype.widgetExecutingRequires[jsURL]===0)
+                jsAndRequirePromise.resolve();
+            else
+                widgetPrototype.widgetLoadingPromises.then(function(){jsAndRequirePromise.resolve();})
+        })
+        widgetPromises.push(jsAndRequirePromise);
+
+        $.when.apply($, widgetPromises).then(function () {
             if (typeof doParse !== "undefined" && doParse === true) {
                 var parser = new Siviglia.UI.HTMLParser(config.context, null);
                 parser.parse(config.node);
             }
-            widgetPromise.resolve(config.node);
+            promise.resolve(config.node);
+            if(typeof widgetPrototype.widgetLoadingPromises[jsURL] !=="undefined")
+                widgetPrototype.widgetLoadingPromises[jsURL].resolve();
         })
         return jsPromise
     }
 
-    var lastPromise=null;
-    for(var k=0;k<assets.length;k++)
-    {
-        var p=assets[k];
+    if (typeof assets === 'string' || typeof assets.template === 'string')
+        assets = [assets]
 
-        if(typeof p=="string")
-        {
-            var type="html";
-            // Es una simple cadena.Se busca que tipo de recurso puede ser.
-            var aa=document.createElement("a");
-            aa.href=p;
-            var path=aa.pathname.split("/");
-            if(path.length>0)
-            {
-                var ss=path[path.length-1];
-                var suffix=ss.split(".");
-                if(suffix.length > 1)
-                    type=suffix.pop();
+    var promisesList=[];
+    var lastPromise=null;
+
+    for(var k=0;k<assets.length;k++) {
+        var resource=assets[k];
+
+        if(typeof resource==="string") {
+            var type=null;
+            var splitPath = resource.split('/')
+            if(splitPath.length>0) {
+                var fileName=splitPath.pop()
+                var splitFileName=fileName.split(".");
+                if(splitFileName.length > 1)
+                    type=splitFileName.pop();
                 else
-                    type="widget";
+                    type = 'widget'
             }
             switch(type) {
                 case "html": {
-                    lastPromise=loadHTML(p,null,lastPromise)
+                    promisesList.push(loadHTML(resource,null));
                 }break;
                 case "js": {
-                    lastPromise=loadJS(p,lastPromise);
+                    promisesList.push(loadJS(resource));
                 }break;
                 case "css": {
-                    subpromises.push(loadCSS(p));
+                    promisesList.push(loadCSS(resource));
                 }break;
                 case "widget":{
-                    lastPromise=loadWidget({"template":p+".html","js":p+".js"},lastPromise)
+                    lastPromise=loadWidget({"template":resource+".html","js":resource+".js"},lastPromise)
+                    promisesList.push(lastPromise);
                 }
             }
 
         } else {
-            lastPromise = loadWidget(p,lastPromise)
+            lastPromise = loadWidget(resource,lastPromise)
+            promisesList.push(lastPromise)
         }
     }
 
     var curPromise=$.Deferred();
-    $.when.apply($, subpromises).done(function() {
+    $.when.apply($, promisesList).done(function() {
 
         curPromise.resolve();
     });
     return curPromise;
 };
-Siviglia.require = function (list, isStatics, doParse) {
-    return Siviglia.Utils.load(list, isStatics, doParse);
+Siviglia.require = function (list, isStatic, doParse) {
+    for (var k = 0; k < list.length; k++) {
+        var dependency = list[k];
+        var widgetURL = Siviglia.config[isStatic ? 'staticsUrl' : 'baseUrl']
+        var promiseForDepended = $.Deferred();
+        Siviglia.UI.Expando.WidgetExpando.prototype.widgetExecutingRequires[widgetURL + dependency + '.js'] = 1;
+        Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js'] = promiseForDepended;
+    }
+
+    var promise = Siviglia.Utils.load(list, isStatic, doParse);
+    promise.then(function () {
+        promiseForDepended.resolve()
+    });
+    return promise;
 }
 
 Siviglia.Utils.setCookie = function (name, value, expires, path, domain, secure) {
