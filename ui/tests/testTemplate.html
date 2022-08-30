@@ -1,0 +1,34 @@
+<!-- templateInit -->
+<!--- Insertar aquí el html de los widgets -->
+<!-- Ejemplo -->
+<div style="display: none">
+    <div data-sivWidget="Test.Minimal" data-widgetCode="Test.Minimal">
+        <span>Hello world</span>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<!--- Insertar aquí el html de la vista -->
+<!-- Ejemplo -->
+<div data-sivView="Test.Minimal"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  // Insertar aquí el js o las clases relativas a los widgets del html
+  // Ejemplo
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'Minimal': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {},
+          initialize: function (params) {}
+        }
+      }
+    }
+  })
+  //codeEnd
+</script>

@@ -1,27 +1,22 @@
 /* Poner el título del grupo de tests */
 document.getElementsByTagName('title')[0].innerHTML = 'Batch test template'
 
-/* Crea tantos tests como desees con la siguiente estructura */
-runTest("Título del test",
-  "Descripción del test",
-  '<style>.simpleClass {font-weight:bold;color:green}</style>' +
-  '<div data-sivWidget="widget-name" data-widgetCode="ContextName.ClassName">' +
-  '<span data-sivValue="Hello world!"></span>' +
-  '</div>',
-  '<div data-sivView="widget-name"></div>',
-  function () {
-    Siviglia.Utils.buildClass({
-      context: 'ContextName',
-      classes: {
-        ClassName: {
-          inherits: "Siviglia.UI.Expando.View",
-          methods: {
-            preInitialize: function (params) {},
-            // initialize: function (params) {}
-          }
-        }
-      }
-    })
-  }
-)
-checkTests()
+var promiseList = []
+
+// Añadir los tests a la lista de la siguiente forma:
+promiseList.push(addTestPromise(
+  "Nombre de test 1",
+  "documentación 1",
+  'testTemplate.html'
+))
+promiseList.push(addTestPromise(
+  "Nombre de test 2",
+  "documentación 2",
+  'testTemplate.html'
+))
+
+
+//var mainPromise = $.Deferred()
+$.when.apply($, promiseList).done(function () {
+  checkTests()
+});
