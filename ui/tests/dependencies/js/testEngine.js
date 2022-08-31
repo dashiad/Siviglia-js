@@ -217,6 +217,8 @@ function addTestPromise(name, doc, path) {
     template = getStringBetween(res, '<!-- templateInit -->', '<!-- templateEnd -->').replace(/(\r\n|\n|\r)/gm, "");
     view = getStringBetween(res, '<!-- viewInit -->', '<!-- viewEnd -->').replace(/(\r\n|\n|\r)/gm, "");
     code = Function(getStringBetween(res, '//codeInit', '//codeEnd'))
+    /* ToDo: al estar dentro de la resolución de la promesa runTest (que es quien mete en el array el test) no se
+    *   asegura que el orden te los test sea siempre el mismo; depende del orden en el que se resuelvan los $.get */
     runTest(name, doc, template, view, code)
     promise.resolve()
   })

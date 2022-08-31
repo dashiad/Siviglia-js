@@ -654,4 +654,3 @@ runTest("Comunicación entre widgets: eventos",
     })
   }
 )
-checkTests();

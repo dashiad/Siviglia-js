@@ -529,4 +529,3 @@ runTest("Promise Expando", "El expando Promise, ejecuta sus contenidos cuando un
     })
   }
 )
-checkTests();

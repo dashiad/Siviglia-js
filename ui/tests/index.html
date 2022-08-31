@@ -27,7 +27,8 @@
     <link rel="stylesheet" type="text/css"
           href="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css">
 
-    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/css/testStyles.css">
+    <link rel="stylesheet" type="text/css"
+          href="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/css/testStyles.css">
 
 
     <!-- dependencias para la visualizacion de test-->
@@ -73,7 +74,6 @@
   var parser = new Siviglia.UI.HTMLParser();
   parser.parse($(document.body));
 </script>
-<!--<script src="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/js/testEngine.js"></script>-->
 
 <script>
   var dependencyList = [
@@ -83,11 +83,17 @@
     "packages/Siviglia/ui/Types",
     "packages/Siviglia/ui/View",
   ]
+  var testPromises = []
+
   Siviglia.require(dependencyList, true, false).then(function () {
 
-    $(document).ready(function(){
+    $(document).ready(function () {
       var parser = new Siviglia.UI.HTMLParser();
       parser.parse($(document.body));
+      $.when.apply($, testPromises).done(function () {
+        if (testStack.length > 0)
+          checkTests()
+      });
     })
   })
 </script>
