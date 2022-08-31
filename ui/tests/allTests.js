@@ -3254,5 +3254,3 @@ runTest("ParametrizableString testing",
     })
   }
 )
-
-checkTests();
