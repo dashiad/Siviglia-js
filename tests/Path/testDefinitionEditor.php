@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="../../../../reflection/css/vendors/select2.min.css">
 
     <script src="../../../../reflection/js/vendors.min.js"></script>
-    <script src="../../../../reflection/js/select2.min.js"></script>    
+    <script src="../../../../reflection/js/select2.min.js"></script>
 
     <script>
         var Siviglia = Siviglia || {};
@@ -58,7 +58,7 @@
 <!--- INSTANCIACION DEL EDITOR DE MODELOS -->
 <div class="widget">
     <div class="widget-content">
-        <div data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Edit" data-sivParams='{"id_page":2}'></div>    
+        <div data-sivView="Siviglia.model.reflection.MetaDefinition.forms.Edit" data-sivParams='{"id_page":2}'></div>
     </div>
 </div>
 
@@ -70,5 +70,6 @@
     var parser=new Siviglia.UI.HTMLParser();
     parser.parse($(document.body));
 </script>
+
 </body>
 </html>
