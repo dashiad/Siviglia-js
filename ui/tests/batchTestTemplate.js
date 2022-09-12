@@ -14,9 +14,10 @@ promiseList.push(addTestPromise(
   "documentación 2",
   'testTemplate.html'
 ))
+/*
 
 
 //var mainPromise = $.Deferred()
 $.when.apply($, promiseList).done(function () {
   checkTests()
-});
+});*/

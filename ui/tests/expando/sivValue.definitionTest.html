@@ -1,0 +1,35 @@
+<!-- templateInit -->
+<div style="display: none">
+    <style>.simpleClass {font-weight: bold; color: green}</style>
+    <div data-sivWidget="sivValue-definition" data-widgetCode="Test.SivValueExamples">
+        <span data-sivValue="Hello world!"></span>
+        <br>
+        <span data-sivValue="class|[%*assignedClass%]::title|El titulo es:[%*title%]">Simple content</span>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="sivValue-definition"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'SivValueExamples': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.assignedClass = "simpleClass";
+            this.title = "Titulo asignado desde el widget";
+          },
+          initialize: function (params) {
+          }
+        }
+      }
+    }
+  })
+  //codeEnd
+</script>
