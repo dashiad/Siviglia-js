@@ -41,3 +41,10 @@ promiseList.push(addTestPromise(
   "(Nota: para especificar el JSON dentro del atributo html, se utilizan comillas simples para el valor del atributo y dobles para las clave y valores del JSON, de forma que no hay que escapear las comillas dobles)",
   'expando/sivCall.definitionTest.html'
 ))
+promiseList.push(addTestPromise(
+  'sivEvent: definition',
+  "SivEvent, junto a sivcallback y sivParams, se utiliza para asignar un gestor de eventos.<br>" +
+  "Aunque es posible asignar más de 1 evento, el callback y los parámetros son compartidos.<br>" +
+  "El nombre de los eventos es el usado por jQuery, y, en caso de especificar más de uno, debe ir separado por comas.<br>",
+  'expando/sivEvent.definitionTest.html'
+))
