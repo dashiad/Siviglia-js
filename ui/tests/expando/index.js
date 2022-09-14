@@ -31,5 +31,5 @@ promiseList.push(addTestPromise(
   'sivLoop: refresco ante cambios en los objetos iterados',
   "Cuando el objeto sobre el que se itera cambia, se renderiza de nuevo la plantilla<br>" +
   "Los cambios en el objeto iterado pueden deberse a: nuevos elementos, elementos eliminados o cambios en los valores de los elementos",
-  'expando/sivLoop.nestedLoopsTest.html'
+  'expando/sivLoop.refreshTest.html'
 ))
