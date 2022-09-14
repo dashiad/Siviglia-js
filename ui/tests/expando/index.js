@@ -22,7 +22,14 @@ promiseList.push(addTestPromise(
   'expando/sivLoop.definitionTest.html'
 ))
 promiseList.push(addTestPromise(
-  'sivValue: valor como parametrizableString',
-  "El valor de sivValue es una parametrizableString, por lo que no sólo es posible usarlo para referenciar a 1 variable: puede referenciar más de una, texto o expresiones complejas.",
-  'expando/sivValue.psValueTest.html'
+  'sivLoop: iteraciones anidadas',
+  "Es posible anidar varios sivLoops cuando el elemento extraido del objeto iterable es a su vez otro objeto iterable.<br>" +
+  "Para ello solo hay que crear un nuevo sivLoop dentro del primero utilizando la referencia al elemento de la iteración como fuente.<br>",
+  'expando/sivLoop.nestedLoopsTest.html'
+))
+promiseList.push(addTestPromise(
+  'sivLoop: refresco ante cambios en los objetos iterados',
+  "Cuando el objeto sobre el que se itera cambia, se renderiza de nuevo la plantilla<br>" +
+  "Los cambios en el objeto iterado pueden deberse a: nuevos elementos, elementos eliminados o cambios en los valores de los elementos",
+  'expando/sivLoop.nestedLoopsTest.html'
 ))
