@@ -1,0 +1,32 @@
+<!-- templateInit -->
+<div style="display: none">
+    <div data-sivWidget="sivValue-ps" data-widgetCode="Test.SivValuePS">
+        <span data-sivValue="Esto <h2>[%*message1%]</h2> una <b><i>[%*message2%]</i></b>"></span>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="sivValue-ps"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'SivValuePS': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.message1 = "es"
+            this.message2 = "prueba"
+          },
+          initialize: function (params) {
+          }
+        }
+      }
+    }
+  })
+  //codeEnd
+</script>
