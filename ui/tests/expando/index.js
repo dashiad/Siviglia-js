@@ -61,3 +61,12 @@ promiseList.push(addTestPromise(
   "Se prueba cómo sivIf regenera los contenidos a medida que cambia.Especificamente, qué ocurre con los sivId definidos dentro de un sivIf.<br>",
   'expando/sivIf.refreshTest.html'
 ))
+promiseList.push(addTestPromise(
+  'sivView: definition',
+  "Desde un widget, es posible instanciar otros widgets usando SivView desde dentro de la plantilla.<br>" +
+  "La plantilla padre puede pasar parámetros a las vistas hijas, usando sivParams.Estos parámetros se reciben en los métodos preInitialize e <br>" +
+  "Los parámetros siguen bindeados, por lo que un cambio en las variables pasadas como parametros, provoca el repintado de las vistas.<br>" +
+  "El siguiente ejemplo, pasa 2 variables (una de ellas, un valor fijo, y la otra, una variable bindeada del widget) a la vista hija.Se cambia el valor de la variable, y se refresca la vista hija.<br>" +
+  "Primero se define las vistas hijas, y luego la vista padre.<br>",
+  'expando/sivView.definitionTest.html'
+))

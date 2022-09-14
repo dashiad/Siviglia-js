@@ -1,0 +1,51 @@
+<!-- templateInit -->
+<div style="display: none">
+    <div data-sivWidget="Test.SubView" data-widgetCode="Test.SubView">
+        <div data-sivValue="[%*mensajeFijo%]"></div>
+        <div data-sivValue="[%*mensajeVariable%]"></div>
+    </div>
+    <div data-sivWidget="Test.SivViews" data-widgetCode="Test.SivViews">
+        <div data-sivView="Test.SubView" data-sivparams=\'{"fijo":"Texto Fijo","variable":"/*variable"}\'></div>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.SivViews"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'SubView': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.mensajeFijo = params.fijo;
+            this.mensajeVariable = params.variable;
+          },
+          initialize: function () {
+          }
+        }
+      },
+      'SivViews': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function () {
+            this.counter = 1;
+            this.variable = "Mensaje Variable";
+          },
+          initialize: function () {
+            setInterval(function () {
+              this.variable = "Mensaje Cambiado " + this.counter;
+              this.counter = (this.counter + 1) % 2
+            }.bind(this), 1000);
+          }
+        }
+      }
+    }
+  })
+  //codeEnd
+</script>
