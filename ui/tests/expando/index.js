@@ -33,3 +33,11 @@ promiseList.push(addTestPromise(
   "Los cambios en el objeto iterado pueden deberse a: nuevos elementos, elementos eliminados o cambios en los valores de los elementos",
   'expando/sivLoop.refreshTest.html'
 ))
+promiseList.push(addTestPromise(
+  'sivCall: definition',
+  "El atributo sivCall realiza una llamada al metodo especificado mediante su valor, que recibe como parametro el nodo HTML donde se declara.<br>" +
+  "Es posible enviar parámetros adicionales mediante el atributo <b>sivParams</b>. El valor de este atributo es un objeto JSON que en el que se pueden emplear referencias a variables de clase y de contexto.<br>" +
+  "En este ejemplo se establece el contenido de los nodos usando sivCall en vez de sivValue.<br>" +
+  "(Nota: para especificar el JSON dentro del atributo html, se utilizan comillas simples para el valor del atributo y dobles para las clave y valores del JSON, de forma que no hay que escapear las comillas dobles)",
+  'expando/sivCall.definitionTest.html'
+))
