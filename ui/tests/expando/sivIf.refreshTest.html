@@ -1,0 +1,43 @@
+<!-- templateInit -->
+<div style="display: none">
+    <div data-sivWidget="Test.SivIf" data-widgetCode="Test.SivIf">
+        <div data-sivIf="[%/*flipper%] == 1">
+            <div data-sivId="target"></div>
+            <div style="background-color:blue;color:white">Valor Uno</div>
+        </div>
+        <div data-sivIf="[%/*flipper%] == 0">
+            <div data-sivId="target"></div>
+            <div style="background-color:green;color:white">Valor Cero</div>
+        </div>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.SivIf"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'SivIf': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function () {
+            this.flipper = 1;
+          },
+          initialize: function () {
+            setInterval(function () {
+              this.flipper = (this.flipper + 1) % 2;
+              if (typeof this.flipper !== "undefined")
+                this.target.html("**" + this.flipper + "**");
+            }.bind(this), 1000);
+          }
+        }
+      }
+    }
+  })
+  //codeEnd
+</script>

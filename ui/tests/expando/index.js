@@ -55,3 +55,9 @@ promiseList.push(addTestPromise(
   "la expresion del SivIf se evalua con eval de javascript, por lo que admite los condicionales de javascript",
   'expando/sivIf.definitionTest.html'
 ))
+promiseList.push(addTestPromise(
+  'sivIf: refresco ante cambios en la condición',
+  "Prueba de funcionamiento de la regeneración del contenido de sivIf." +
+  "Se prueba cómo sivIf regenera los contenidos a medida que cambia.Especificamente, qué ocurre con los sivId definidos dentro de un sivIf.<br>",
+  'expando/sivIf.refreshTest.html'
+))
