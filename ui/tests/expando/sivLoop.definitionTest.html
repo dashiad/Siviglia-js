@@ -1,0 +1,33 @@
+<!-- templateInit -->
+<div style="display: none">
+    '<div data-sivWidget="sivLoop-definition" data-widgetCode="Test.SivLoopDefinition">' +
+    '<div data-sivLoop="*simpleArray" data-contextIndex="currentArrayElement">' +
+        '<div data-sivValue="Para esta iteración => clave del elemento: [%@currentArrayElement-index%] - valor del elemento: [%@currentArrayElement%]"></div>' +
+        '</div>' +
+    '</div>'
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="sivLoop-definition"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'SivLoopDefinition': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.simpleArray = ["array element 1", "array element 2", "array element 3"];
+          },
+          initialize: function (params) {
+          }
+        }
+      }
+    }
+  })
+  //codeEnd
+</script>
