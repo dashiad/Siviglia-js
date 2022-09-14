@@ -48,3 +48,10 @@ promiseList.push(addTestPromise(
   "El nombre de los eventos es el usado por jQuery, y, en caso de especificar más de uno, debe ir separado por comas.<br>",
   'expando/sivEvent.definitionTest.html'
 ))
+promiseList.push(addTestPromise(
+  'sivIf: definition',
+  "SivIf evalua una expresion, y en caso de evaluar a true, renderiza el contenido de su tag." +
+  "En este ejemplo, se alterna el valor de una variable, lo que alterna el contenido mostrado.<br>" +
+  "la expresion del SivIf se evalua con eval de javascript, por lo que admite los condicionales de javascript",
+  'expando/sivIf.definitionTest.html'
+))
