@@ -164,8 +164,9 @@ function createHTMLTestStructure(test) {
 }
 
 var testStack = [];
-
+var indexContent = `document.getElementsByTagName('title')[0].innerHTML = 'Tests expandos'\n\nvar promiseList = []\n\n`
 function checkTests(restart) {
+  saveFileInUserStorage('index.js', indexContent, 'application/javascript')
   if (restart !== false && DEVELOP_MODE !== 0) {
     if (DEVELOP_MODE === -1)
       testStack = [testStack.pop()];
@@ -187,6 +188,17 @@ function checkTests(restart) {
 var testNumber = 0;
 
 function runTest(name, doc, template, view, callback) {
+
+  var templateContent = '<!-- templateInit -->\n'+template+ '\n<!-- templateEnd -->\n\n'
+  var viewContent = '<!-- viewInit -->\n'+view+ '\n<!-- viewEnd -->\n\n'
+  var codeContent = '<script>\n  //codeInit\n'+ getStringBetween(callback.toString(2),'{\n  ','}')+'  \n//codeEnd\n</script>'
+  var fileContent = templateContent+viewContent+codeContent
+  indexContent += `promiseList.push(addTestPromise(
+  '${name}',
+  '${doc}',
+  'path unsetted'
+))\n`
+  saveFileInUserStorage(name+'.html', fileContent, 'text/html')
   testNumber++;
   if (typeof expectedResult == "undefined")
     expectedResult = true;
@@ -199,6 +211,20 @@ function runTest(name, doc, template, view, callback) {
     cb: callback,
     number: testNumber
   });
+}
+
+function saveFileInUserStorage(filename, data, type) {
+  const file = new Blob([data], { type: type })
+  const a = document.createElement('a')
+  const url = URL.createObjectURL(file)
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  setTimeout(function() {
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(url)
+  }, 0)
 }
 
 
