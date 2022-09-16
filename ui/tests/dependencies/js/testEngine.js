@@ -164,9 +164,16 @@ function createHTMLTestStructure(test) {
 }
 
 var testStack = [];
-var indexContent = `document.getElementsByTagName('title')[0].innerHTML = 'Tests expandos'\n\nvar promiseList = []\n\n`
+
+/*// Test extractor
+var indexContent = `document.getElementsByTagName('title')[0].innerHTML = 'Tests expandos'\n\nvar promiseList = []\n\n`*/
+
 function checkTests(restart) {
+
+  /*// Test extractor
   saveFileInUserStorage('index.js', indexContent, 'application/javascript')
+   */
+
   if (restart !== false && DEVELOP_MODE !== 0) {
     if (DEVELOP_MODE === -1)
       testStack = [testStack.pop()];
@@ -189,6 +196,7 @@ var testNumber = 0;
 
 function runTest(name, doc, template, view, callback) {
 
+  /*// Test extractor
   var templateContent = '<!-- templateInit -->\n'+template+ '\n<!-- templateEnd -->\n\n'
   var viewContent = '<!-- viewInit -->\n'+view+ '\n<!-- viewEnd -->\n\n'
   var codeContent = '<script>\n  //codeInit\n'+ getStringBetween(callback.toString(2),'{\n  ','}')+'  \n//codeEnd\n</script>'
@@ -198,7 +206,8 @@ function runTest(name, doc, template, view, callback) {
   '${doc}',
   'path unsetted'
 ))\n`
-  saveFileInUserStorage(name+'.html', fileContent, 'text/html')
+  saveFileInUserStorage(name+'.html', fileContent, 'text/html')*/
+
   testNumber++;
   if (typeof expectedResult == "undefined")
     expectedResult = true;
