@@ -1,0 +1,70 @@
+<!-- templateInit -->
+<div data-sivWidget="remote-source" data-widgetCode="Test.RemoteSource">   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+       data-sivParams='{"key":"dataSourceSource", "controller":"/*self","parent":"/*type","form":"/*form"}'>   </div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+       data-sivParams='{"key":"dataSourceParams", "controller":"/*self","parent":"/*type","form":"/*form"}'>   </div></div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="remote-source"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+      context: 'Test',
+      classes: {
+        RemoteSource: {
+          inherits: "Siviglia.inputs.jqwidgets.Form",
+          methods: {
+            preInitialize: function (params) {
+              // this.factory = Siviglia.types.TypeFactory;
+              // this.self = this;
+              // this.typeCol = [];
+              this.formDefinition = new Siviglia.model.BaseTypedObject({
+                "FIELDS": {
+                  dataSourceSource: {
+                    "LABEL": "DataSource como fuente",
+                    "TYPE": "String",
+                    "SOURCE": {
+                      "TYPE": "DataSource",
+                      // El valor de LABEL es el la clave dentro de la respuesta que se va tomar para mostrar las
+                      // opciones en el comboBox. En este caso:
+                      // http://metadata.adtopy.com//model/web/Page/datasources/FullList/definition > FIELDS > name
+                      "LABEL": "name",
+                      // El campo value es igual que LABEL pero para el valor que va a tomar el campo cuando se
+                      // seleccione la opción.
+                      "VALUE": "id_page",
+                      "MODEL": "/model/web/Page",
+                      "DATASOURCE": "FullList",
+                    }
+                  },
+                  dataSourceParams: {
+                    "LABEL": "DataSource con query parameters",
+                    "TYPE": "String",
+                    "SOURCE": {
+                      "TYPE": "DataSource",
+                      "LABEL": "NAME",
+                      "VALUE": "NAME",
+                      "MODEL": "/model/reflection/Model",
+                      "DATASOURCE": "FieldList",
+                      // Si es necesario incluir parámetros adicionales en la petición de la obtención del datasource,
+                      // esto se hace mediante la clave PARAMS.
+                      "PARAMS": {
+                        "model": "/model/ads/Comscore"
+                      },
+                    }
+                  },
+                }
+              });
+              return this.Form$preInitialize({bto: this.formDefinition});
+            },
+            initialize: function (params) {
+            },
+            // show: function () {},
+          }
+        }
+      }
+    })
+    
+//codeEnd
+</script>

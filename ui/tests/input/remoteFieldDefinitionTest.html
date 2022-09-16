@@ -1,0 +1,45 @@
+<!-- templateInit -->
+<div data-sivWidget="remote-field-definition" data-widgetParams="" data-widgetCode="Test.RemoteFieldDefintion">   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+       data-sivParams='{"key":"remoteField","controller":"/*self","parent":"/*type","form":"/*form"}'>   </div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+       data-sivParams='{"key":"remoteDictionary","controller":"/*self","parent":"/*type","form":"/*form"}'>   </div></div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="remote-field-definition"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+      context: 'Test',
+      classes: {
+        RemoteFieldDefintion: {
+          inherits: "Siviglia.inputs.jqwidgets.Form",
+          methods: {
+            preInitialize: function (params) {
+              // this.factory = Siviglia.types.TypeFactory;
+              // this.self = this;
+              // this.typeCol = [];
+              this.formDefinition = new Siviglia.model.BaseTypedObject({
+                "FIELDS": {
+                  remoteField: {
+                    "TYPE": "/model/reflection/Types/types/BaseType",
+                  },
+                  remoteDictionary: {
+                    TYPE: 'Dictionary',
+                    VALUETYPE: '/model/reflection/Types/types/BaseType',
+                  }
+                }
+              });
+              return this.Form$preInitialize({bto: this.formDefinition});
+            },
+            initialize: function (params) {
+            },
+            // show: function () {},
+          }
+        }
+      }
+    })
+    
+//codeEnd
+</script>

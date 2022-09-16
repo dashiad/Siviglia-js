@@ -1,0 +1,111 @@
+<!-- templateInit -->
+<div data-sivWidget="container-field-complex-fields" data-widgetParams="" data-widgetCode="Test.ContainerFieldComplexFields">   <div class="label">Container con campos complejos:</div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+       data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"simpleContainer"}'>   </div></div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="container-field-complex-fields"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+      context: 'Test',
+      classes: {
+        ContainerFieldComplexFields: {
+          inherits: "Siviglia.inputs.jqwidgets.Form",
+          methods: {
+            preInitialize: function (params) {
+              this.factory = Siviglia.types.TypeFactory;
+              this.self = this;
+              this.typeCol = [];
+              this.formDefinition = new Siviglia.model.BaseTypedObject({
+                "FIELDS": {
+                  simpleContainer: {
+                    "LABEL": "Campo container principal",
+                    "TYPE": "Container",
+                    "FIELDS": {
+                      containerfield: {
+                        "LABEL": "Campo tipo container",
+                        "TYPE": "Container",
+                        FIELDS: {
+                          innerField1: {
+                            LABEL: 'Campo 1 del container interno',
+                            TYPE: 'String',
+                          },
+                          innerField2: {
+                            LABEL: 'Campo 2 del container interno',
+                            TYPE: 'Integer',
+                          },
+                        },
+                      },
+                      arrayField: {
+                        "LABEL": "Campo tipo array",
+                        "TYPE": "Array",
+                        "ELEMENTS": {
+                          "LABEL": "Elemento del array",
+                          "TYPE": "String"
+                        }
+                      },
+                      dictionaryField: {
+                        LABEL: "Campo tipo diccionario",
+                        "TYPE": "Dictionary",
+                        "VALUETYPE": {
+                          "TYPE": "String"
+                        }
+                      },
+                      typeSwitcherField: {
+                        "LABEL": "Campo tipo TypeSwitcher",
+                        "TYPE": "TypeSwitcher",
+                        "TYPE_FIELD": "typeField",
+                        "ALLOWED_TYPES": {
+                          "typeOne": {
+                            "TYPE": "String"
+                          },
+                          "typeTwo": {
+                            "TYPE": "Container",
+                            "FIELDS": {
+                              field1: {
+                                "LABEL": "Campo 1",
+                                "TYPE": "String"
+                              },
+                              field2: {
+                                "LABEL": "Campo 2",
+                                "TYPE": "Integer"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              });
+              this.formDefinition.simpleContainer = {
+                containerfield: {
+                  innerField1: 'valor1',
+                  innerField2: 222,
+                },
+                arrayField: ['AAA', 'ZZZ']
+              };
+              this.formDefinition.simpleContainer.dictionaryField = {
+                'primera entrada': "valor de la primera entrada",
+                'segunda entrada': "valor de la segunda entrada"
+              }
+              this.formDefinition.simpleContainer.typeSwitcherField = {
+                "typeField": "typeTwo",
+                "field1": "AAA",
+                "field2": 77
+              };
+
+              return this.Form$preInitialize({bto: this.formDefinition});
+            },
+            initialize: function (params) {
+            },
+          }
+        }
+      }
+    })
+    
+//codeEnd
+</script>

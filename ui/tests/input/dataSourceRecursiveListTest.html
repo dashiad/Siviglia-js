@@ -1,0 +1,43 @@
+<!-- templateInit -->
+<div data-sivWidget="recursive-ds-list" data-widgetParams="" data-widgetCode="Test.RecursiveDSList">   <div data-sivView="Siviglia.widgets.jqwidgets.RecursiveDSList"
+       data-sivParams='{"innerListParams":"*innerListParams"}'></div>   <div data-sivValue="[%*listValue%]"></div>   </div></div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="recursive-ds-list"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+      context: 'Test',
+      classes: {
+        RecursiveDSList: {
+          inherits: 'Siviglia.UI.Expando.View',
+          methods: {
+            preInitialize: function () {
+              this.innerListParams = {
+                model: '/model/reflection/Model',
+                dataSource: 'PackageList',
+                // keys: {},
+                label: 'name',
+                value: 'name',
+                listParam: 'keys',
+                keysParam: 'package',
+                innerListParams: {
+                  model: '/model/reflection/Model',
+                  dataSource: 'FullList',
+                  keys: {},
+                  label: 'name',
+                  value: 'smallName',
+                }
+              }
+              this.listValue = 'valor inicial'
+            }
+          },
+        },
+      }
+    })
+    
+//codeEnd
+</script>
