@@ -1,11 +1,13 @@
 <!-- templateInit -->
-<div data-sivWidget="Test.PromiseTest" data-widgetCode="Test.PromiseTest">
-    <div data-sivPromise="*myPromise"> Hola!</div>
+<div data-sivWidget="Test.Transp" data-widgetCode="Test.Transp" style="background-color:yellow">
+    <div data-sivLoop="/*anArray" data-contextIndex="current" style="background-color:blue">
+        <div data-sivValue="[%@current%]"></div>
+    </div>
 </div>
 <!-- templateEnd -->
 
 <!-- viewInit -->
-<div data-sivView="Test.PromiseTest"></div>
+<div data-sivView="Test.Transp" style="background-color:green"></div>
 <!-- viewEnd -->
 
 <script>
@@ -13,14 +15,11 @@
   Siviglia.Utils.buildClass({
     context: 'Test',
     classes: {
-      "PromiseTest": {
+      'Transp': {
         inherits: "Siviglia.UI.Expando.View",
         methods: {
           preInitialize: function (params) {
-            this.myPromise = SMCPromise();
-            setTimeout(function () {
-              this.myPromise.resolve()
-            }.bind(this), 3000)
+            this.anArray = ["a", "b", "c"];
           },
           initialize: function (params) {
           }

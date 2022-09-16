@@ -1,6 +1,9 @@
 <!-- templateInit -->
-<div data-sivWidget="container-field" data-widgetParams="" data-widgetCode="Test.ContainerField">   <div class="label">Input con campo Container:</div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
-       data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"simpleContainer"}'>   </div></div>
+<div data-sivWidget="container-field" data-widgetParams="" data-widgetCode="Test.ContainerField">
+    <div class="label">Input con campo Container:</div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"simpleContainer"}'></div>
+</div>
 <!-- templateEnd -->
 
 <!-- viewInit -->
@@ -10,41 +13,41 @@
 <script>
   //codeInit
   Siviglia.Utils.buildClass({
-      context: 'Test',
-      classes: {
-        ContainerField: {
-          inherits: "Siviglia.inputs.jqwidgets.Form",
-          methods: {
-            preInitialize: function (params) {
-              this.factory = Siviglia.types.TypeFactory;
-              this.self = this;
-              this.typeCol = [];
-              this.formDefinition = new Siviglia.model.BaseTypedObject({
-                "FIELDS": {
-                  simpleContainer: {
-                    "LABEL": "Campo container",
-                    "TYPE": "Container",
-                    "FIELDS": {
-                      "field1": {
-                        "LABEL": "Campo 1 del container",
-                        "TYPE": "String"
-                      },
-                      "field2": {
-                        "LABEL": "Campo 2 del container",
-                        "TYPE": "Integer"
-                      }
+    context: 'Test',
+    classes: {
+      ContainerField: {
+        inherits: "Siviglia.inputs.jqwidgets.Form",
+        methods: {
+          preInitialize: function (params) {
+            this.factory = Siviglia.types.TypeFactory;
+            this.self = this;
+            this.typeCol = [];
+            this.formDefinition = new Siviglia.model.BaseTypedObject({
+              "FIELDS": {
+                simpleContainer: {
+                  "LABEL": "Campo container",
+                  "TYPE": "Container",
+                  "FIELDS": {
+                    "field1": {
+                      "LABEL": "Campo 1 del container",
+                      "TYPE": "String"
+                    },
+                    "field2": {
+                      "LABEL": "Campo 2 del container",
+                      "TYPE": "Integer"
                     }
                   }
                 }
-              });
-              this.formDefinition.simpleContainer = {"field1": "AAA", "field2": 555};
+              }
+            });
+            this.formDefinition.simpleContainer = {"field1": "AAA", "field2": 555};
 
-              return this.Form$preInitialize({bto: this.formDefinition});
-            },
-          }
+            return this.Form$preInitialize({bto: this.formDefinition});
+          },
         }
       }
-    })
-    
-//codeEnd
+    }
+  })
+
+  //codeEnd
 </script>

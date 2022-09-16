@@ -1,5 +1,8 @@
 <!-- templateInit -->
-<div data-sivWidget="Test.Sample" data-widgetCode="Test.Sample"><b data-sivValue="[%*receivedParam%]"></b></div><div data-sivWidget="Test.ByCode" data-widgetCode="Test.ByCode"><div data-sivId="here" style="background-color:yellow"></div></div>
+<div data-sivWidget="Test.Sample" data-widgetCode="Test.Sample"><b data-sivValue="[%*receivedParam%]"></b></div>
+<div data-sivWidget="Test.ByCode" data-widgetCode="Test.ByCode">
+    <div data-sivId="here" style="background-color:yellow"></div>
+</div>
 <!-- templateEnd -->
 
 <!-- viewInit -->
@@ -9,44 +12,44 @@
 <script>
   //codeInit
   Siviglia.Utils.buildClass({
-      context: 'Test',
-      classes: {
-        'Sample': {
-          inherits: "Siviglia.UI.Expando.View",
-          methods: {
-            preInitialize: function (params) {
-              this.receivedParam = params.sentParam;
-              console.dir(params);
-            },
-            initialize: function (params) {
-            }
-          }
-        },
-        'ByCode': {
-          inherits: "Siviglia.UI.Expando.View",
-          destruct: function () {
-            if (this.innerWidget) this.innerWidget.destruct();
+    context: 'Test',
+    classes: {
+      'Sample': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.receivedParam = params.sentParam;
+            console.dir(params);
           },
-          methods: {
-            preInitialize: function (params) {
-              this.innerWidget = null;
-            },
-            initialize: function (params) {
-              this.innerWidget = new Test.Sample(
-                "Test.Sample",
-                {sentParam: "Texto Enviado"}, {},
-                $("<div></div>"),
-                new Siviglia.Path.ContextStack()
-              );
+          initialize: function (params) {
+          }
+        }
+      },
+      'ByCode': {
+        inherits: "Siviglia.UI.Expando.View",
+        destruct: function () {
+          if (this.innerWidget) this.innerWidget.destruct();
+        },
+        methods: {
+          preInitialize: function (params) {
+            this.innerWidget = null;
+          },
+          initialize: function (params) {
+            this.innerWidget = new Test.Sample(
+              "Test.Sample",
+              {sentParam: "Texto Enviado"}, {},
+              $("<div></div>"),
+              new Siviglia.Path.ContextStack()
+            );
 
-              this.innerWidget.__build().then(function (instance) {
-                this.here.append(this.innerWidget.rootNode);
-              }.bind(this));
-            }
+            this.innerWidget.__build().then(function (instance) {
+              this.here.append(this.innerWidget.rootNode);
+            }.bind(this));
           }
         }
       }
-    })
-    
-//codeEnd
+    }
+  })
+
+  //codeEnd
 </script>

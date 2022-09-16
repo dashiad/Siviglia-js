@@ -1,11 +1,10 @@
 <!-- templateInit -->
-<div data-sivWidget="Test.PromiseTest" data-widgetCode="Test.PromiseTest">
-    <div data-sivPromise="*myPromise"> Hola!</div>
-</div>
+<div data-sivWidget="widget-life-cycle" data-widgetCode="Test.WidgetLifeCycle">
+    <span data-sivValue="[%*counter%]"></span></div>
 <!-- templateEnd -->
 
 <!-- viewInit -->
-<div data-sivView="Test.PromiseTest"></div>
+<div data-sivView="widget-life-cycle"></div>
 <!-- viewEnd -->
 
 <script>
@@ -13,21 +12,20 @@
   Siviglia.Utils.buildClass({
     context: 'Test',
     classes: {
-      "PromiseTest": {
+      'WidgetLifeCycle': {
         inherits: "Siviglia.UI.Expando.View",
         methods: {
           preInitialize: function (params) {
-            this.myPromise = SMCPromise();
-            setTimeout(function () {
-              this.myPromise.resolve()
-            }.bind(this), 3000)
+            this.counter = 0;
           },
           initialize: function (params) {
+            setInterval(function () {
+              this.counter++
+            }.bind(this), 2000);
           }
         }
       }
     }
-
   })
 
   //codeEnd

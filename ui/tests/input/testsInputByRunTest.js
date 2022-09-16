@@ -1748,43 +1748,47 @@ runTest('jqxtree',
           methods: {
             preInitialize: function (params) {
               this.source = [
-                { label: "Item 1", expanded: true, items: [
-                    { label: "Item 1.1" },
-                    { label: "Item 1.2", selected: true }
+                {
+                  label: "Item 1", expanded: true, items: [
+                    {label: "Item 1.1"},
+                    {label: "Item 1.2", selected: true}
                   ]
                 },
-                { label: "Item 2" },
-                { label: "Item 3" },
-                { label: "Item 4", items: [
-                    { label: "Item 4.1" },
-                    { label: "Item 4.2" }
+                {label: "Item 2"},
+                {label: "Item 3"},
+                {
+                  label: "Item 4", items: [
+                    {label: "Item 4.1"},
+                    {label: "Item 4.2"}
                   ]
                 },
-                { label: "Item 5" },
-                { label: "Item 6" },
-                { label: "Item 7" }
+                {label: "Item 5"},
+                {label: "Item 6"},
+                {label: "Item 7"}
               ]
             },
             initialize: function () {
               var source = [
-                { label: "Item 1", expanded: true, items: [
-                    { label: "Item 1.1" },
-                    { label: "Item 1.2", selected: true }
+                {
+                  label: "Item 1", expanded: true, items: [
+                    {label: "Item 1.1"},
+                    {label: "Item 1.2", selected: true}
                   ]
                 },
-                { label: "Item 2" },
-                { label: "Item 3" },
-                { label: "Item 4", items: [
-                    { label: "Item 4.1" },
-                    { label: "Item 4.2" }
+                {label: "Item 2"},
+                {label: "Item 3"},
+                {
+                  label: "Item 4", items: [
+                    {label: "Item 4.1"},
+                    {label: "Item 4.2"}
                   ]
                 },
-                { label: "Item 5" },
-                { label: "Item 6" },
-                { label: "Item 7" }
+                {label: "Item 5"},
+                {label: "Item 6"},
+                {label: "Item 7"}
               ];
               // Create jqxTree.
-              $('#jqxTree').jqxTree({ source: source, height: '300px', width: '300px' });
+              $('#jqxTree').jqxTree({source: source, height: '300px', width: '300px'});
             }
           }
         }

@@ -5,42 +5,45 @@
 </script>
 
 
-    <style type="text/css">
-        .estilo1 {color:red}
-        .estilo2 {color:blue}
-    </style>
+<style type="text/css">
+    .estilo1 {
+        color: red
+    }
 
-    <script>
-        var q={};
+    .estilo2 {
+        color: blue
+    }
+</style>
 
-                                q.t=new Siviglia.model.BaseTypedObject({
-                                        "FIELDS":{
-                                            "z":{
-                                                "TYPE":"Array",
-                                                "ELEMENTS":"String"
-                                            }
-                                        }
-                                    }
-                                );
-                                q.t.z=["a","b","c"]
-                                q.h=["1","2","3"]
-                                q.val=q.t["*z"].getValue();
+<script>
+  var q = {};
 
-
-
-                                setTimeout(function(){
-                                    q.t.z.push("Z");
-                              //      q.h.push("4");
-                                    console.dir("DONE");
-                                },3000);
+  q.t = new Siviglia.model.BaseTypedObject({
+      "FIELDS": {
+        "z": {
+          "TYPE": "Array",
+          "ELEMENTS": "String"
+        }
+      }
+    }
+  );
+  q.t.z = ["a", "b", "c"]
+  q.h = ["1", "2", "3"]
+  q.val = q.t["*z"].getValue();
 
 
+  setTimeout(function () {
+    q.t.z.push("Z");
+    //      q.h.push("4");
+    console.dir("DONE");
+  }, 3000);
 
-    </script>
 
-       <div data-sivLoop="/t/z" data-contextIndex="current">
-            <span data-sivValue="/@current"></span>
-        </div>
+</script>
+
+<div data-sivLoop="/t/z" data-contextIndex="current">
+    <span data-sivValue="/@current"></span>
+</div>
 <!--        <div data-sivLoop="/h" data-contextIndex="current">
             <span data-sivValue="/@current"></span>
         </div>

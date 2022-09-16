@@ -1,6 +1,9 @@
 <!-- templateInit -->
-<div data-sivWidget="comboBox-input" data-widgetParams="" data-widgetCode="Test.ComboBoxInput">   <div class="label">ComboBox</div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
-       data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"fieldName"}'>   </div></div>
+<div data-sivWidget="comboBox-input" data-widgetParams="" data-widgetCode="Test.ComboBoxInput">
+    <div class="label">ComboBox</div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"fieldName"}'></div>
+</div>
 <!-- templateEnd -->
 
 <!-- viewInit -->
@@ -10,42 +13,42 @@
 <script>
   //codeInit
   Siviglia.Utils.buildClass({
-      context: 'Test',
-      classes: {
-        ComboBoxInput: {
-          inherits: "Siviglia.inputs.jqwidgets.Form",
-          methods: {
-            preInitialize: function (params) {
-              this.factory = Siviglia.types.TypeFactory;
-              this.self = this;
-              this.typeCol = [];
-              this.formDefinition = new Siviglia.model.BaseTypedObject({
-                "FIELDS": {
-                  fieldName: {
-                    LABEL: "Input comboBox",
-                    "TYPE": "Integer",
-                    "SOURCE": {
-                      "TYPE": "Array",
-                      "LABEL": "labelKey",
-                      "VALUE": "valueKey",
-                      "DATA": [
-                        {"valueKey": 1, "labelKey": "Opción 1"},
-                        {"valueKey": 2, "labelKey": "Opción 2"},
-                        {"valueKey": 3, "labelKey": "Opción 3"},
-                        {"valueKey": 4, "labelKey": "Opción 4"},
-                      ],
-                    }
-                  },
-                }
-              });
-              return this.Form$preInitialize({bto: this.formDefinition});
-            },
-            initialize: function (params) {
-            },
-          }
+    context: 'Test',
+    classes: {
+      ComboBoxInput: {
+        inherits: "Siviglia.inputs.jqwidgets.Form",
+        methods: {
+          preInitialize: function (params) {
+            this.factory = Siviglia.types.TypeFactory;
+            this.self = this;
+            this.typeCol = [];
+            this.formDefinition = new Siviglia.model.BaseTypedObject({
+              "FIELDS": {
+                fieldName: {
+                  LABEL: "Input comboBox",
+                  "TYPE": "Integer",
+                  "SOURCE": {
+                    "TYPE": "Array",
+                    "LABEL": "labelKey",
+                    "VALUE": "valueKey",
+                    "DATA": [
+                      {"valueKey": 1, "labelKey": "Opción 1"},
+                      {"valueKey": 2, "labelKey": "Opción 2"},
+                      {"valueKey": 3, "labelKey": "Opción 3"},
+                      {"valueKey": 4, "labelKey": "Opción 4"},
+                    ],
+                  }
+                },
+              }
+            });
+            return this.Form$preInitialize({bto: this.formDefinition});
+          },
+          initialize: function (params) {
+          },
         }
       }
-    })
-    
-//codeEnd
+    }
+  })
+
+  //codeEnd
 </script>

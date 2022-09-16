@@ -1,0 +1,27 @@
+<!-- templateInit -->
+<div data-sivWidget="widget-name" data-widgetCode="ContextName.ClassName"><span>Hello, world!</span></div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="widget-name"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'ContextName',
+    classes: {
+      'ClassName': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+          },
+          initialize: function (params) {
+          },
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>

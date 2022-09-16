@@ -1,0 +1,91 @@
+<!-- templateInit -->
+<div data-sivWidget="Test.Waiter1" data-widgetCode="Test.Waiter1"></div>
+<div data-sivWidget="Test.Waiter2" data-widgetCode="Test.Waiter2">
+    <div data-sivView="Test.Waiter1" data-sivParams='{"wait":"*randSecs"}'></div>
+</div>
+<div data-sivWidget="Test.Waiter3" data-widgetCode="Test.Waiter3"></div>
+<div data-sivWidget="Test.WaiterTest" data-widgetCode="Test.WaiterTest">
+    <div data-sivView="Test.Waiter1" data-sivParams='{"wait":"*randSecs"}'></div>
+    <div data-sivView="Test.Waiter2" data-sivParams='{"wait":"*randSecs"}'></div>
+    <div data-sivView="Test.Waiter3" data-sivParams='{"wait":"*randSecs"}'></div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.WaiterTest"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      "WaiterTest": {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.waitComplete().then(function () {
+              this.showMessage();
+            }.bind(this))
+            this.randSecs = this.getRandSeconds();
+
+            if (
+              typeof params !== "undefined" &&
+              typeof params.wait !== "undefined"
+            ) {
+              var p = SMCPromise();
+              setTimeout(function () {
+                  p.resolve()
+                }.bind(this), params.wait
+              );
+              return p;
+            }
+          },
+          initialize: function (params) {
+          },
+          showMessage: function () {
+            console.log("WAITERTEST: LISTO")
+          },
+          getRandSeconds: function () {
+            return 2000;
+          }
+        }
+      },
+      "Waiter1": {
+        inherits: "Test.WaiterTest",
+        methods: {
+          showMessage: function () {
+            console.log("WAITERTEST 1: LISTO")
+          },
+          getRandSeconds: function () {
+            return 1000;
+          }
+        }
+      },
+      "Waiter2": {
+        inherits: "Test.WaiterTest",
+        methods: {
+          showMessage: function () {
+            console.log("WAITERTEST 2: LISTO")
+          },
+          getRandSeconds: function () {
+            return 3000;
+          }
+        }
+      },
+      "Waiter3": {
+        inherits: "Test.WaiterTest",
+        methods: {
+          showMessage: function () {
+            console.log("WAITERTEST 3: LISTO")
+          },
+          getRandSeconds: function () {
+            return 5000;
+          }
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>

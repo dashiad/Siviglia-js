@@ -1,33 +1,50 @@
 <!-- templateInit -->
-<div data-sivWidget="Test.AltLayout" data-widgetCode="Test.AltLayout"><ul><div data-sivLoop="*options" data-contextIndex="current"><li><a data-sivValue="href|[%@current/link%]"><span data-sivValue="[%@current/text%]"></span></a></li></div></ul></div><div data-sivWidget="Test.AltLayout2" data-widgetCode="Test.AltLayout"><div><div data-sivLoop="*options" data-contextIndex="current"><div style="float:left;border-radius:8px;background-color:green;color:white;padding:4px;margin-right:3px"><a data-sivValue="href|[%@current/link%]"><span data-sivValue="[%@current/text%]"></span></a></div></div></div><div style="clear:both"></div></div>
+<div data-sivWidget="Test.AltLayout" data-widgetCode="Test.AltLayout">
+    <ul>
+        <div data-sivLoop="*options" data-contextIndex="current">
+            <li><a data-sivValue="href|[%@current/link%]"><span data-sivValue="[%@current/text%]"></span></a></li>
+        </div>
+    </ul>
+</div>
+<div data-sivWidget="Test.AltLayout2" data-widgetCode="Test.AltLayout">
+    <div>
+        <div data-sivLoop="*options" data-contextIndex="current">
+            <div style="float:left;border-radius:8px;background-color:green;color:white;padding:4px;margin-right:3px"><a
+                    data-sivValue="href|[%@current/link%]"><span data-sivValue="[%@current/text%]"></span></a></div>
+        </div>
+    </div>
+    <div style="clear:both"></div>
+</div>
 <!-- templateEnd -->
 
 <!-- viewInit -->
-<div data-sivView="Test.AltLayout"></div><div style="height:10px"></div><div data-sivView="Test.AltLayout" data-sivLayout="Test.AltLayout2"></div>
+<div data-sivView="Test.AltLayout"></div>
+<div style="height:10px"></div>
+<div data-sivView="Test.AltLayout" data-sivLayout="Test.AltLayout2"></div>
 <!-- viewEnd -->
 
 <script>
   //codeInit
   Siviglia.Utils.buildClass({
-      context: 'Test',
-      classes: {
-        'AltLayout': {
-          inherits: "Siviglia.UI.Expando.View",
-          methods: {
-            preInitialize: function (params) {
-              this.options = [
-                {"link": "http://elmundo.es", "text": "ElMundo"},
-                {"link": "http://cnn.com", "text": "CNN"},
-                {"link": "http://wwww.google.com", "text": "Google"}
-              ];
-            },
-            initialize: function (params) {
-            }
+    context: 'Test',
+    classes: {
+      'AltLayout': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.options = [
+              {"link": "http://elmundo.es", "text": "ElMundo"},
+              {"link": "http://cnn.com", "text": "CNN"},
+              {"link": "http://wwww.google.com", "text": "Google"}
+            ];
+          },
+          initialize: function (params) {
           }
         }
       }
+    }
 
-    })
-    
-//codeEnd
+  })
+
+  //codeEnd
 </script>

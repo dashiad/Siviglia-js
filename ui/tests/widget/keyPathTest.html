@@ -1,11 +1,10 @@
 <!-- templateInit -->
-<div data-sivWidget="Test.PromiseTest" data-widgetCode="Test.PromiseTest">
-    <div data-sivPromise="*myPromise"> Hola!</div>
-</div>
+<div data-sivWidget="path-access-to-var" data-widgetCode="Test.PathAccessToVar"><span
+        data-sivValue="[%*varName/0/key%]"></span></div>
 <!-- templateEnd -->
 
 <!-- viewInit -->
-<div data-sivView="Test.PromiseTest"></div>
+<div data-sivView="path-access-to-var"></div>
 <!-- viewEnd -->
 
 <script>
@@ -13,21 +12,19 @@
   Siviglia.Utils.buildClass({
     context: 'Test',
     classes: {
-      "PromiseTest": {
+      'PathAccessToVar': {
         inherits: "Siviglia.UI.Expando.View",
         methods: {
           preInitialize: function (params) {
-            this.myPromise = SMCPromise();
-            setTimeout(function () {
-              this.myPromise.resolve()
-            }.bind(this), 3000)
+            this.varName = [
+              {key: "Hello world!"}
+            ]
           },
           initialize: function (params) {
           }
         }
       }
     }
-
   })
 
   //codeEnd

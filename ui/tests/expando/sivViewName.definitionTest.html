@@ -1,5 +1,18 @@
 <!-- templateInit -->
-<div data-sivWidget="Test.Map1" data-widgetCode="Test.Map1">a<div data-sivId="target"></div>b</div><div data-sivWidget="Test.Map2" data-widgetCode="Test.Map2">z<div data-sivId="target"></div>q</div><div data-sivWidget="Test.MapTest" data-widgetCode="Test.MapTest">   <div data-sivView="Test.Map1" data-viewName="map1"></div>   <div data-sivLoop="*instances" data-contextIndex="current">       <div data-sivView="Test.Map2" data-viewName="map2-[%@current-index%]"></div>   </div></div>
+<div data-sivWidget="Test.Map1" data-widgetCode="Test.Map1">a
+    <div data-sivId="target"></div>
+    b
+</div>
+<div data-sivWidget="Test.Map2" data-widgetCode="Test.Map2">z
+    <div data-sivId="target"></div>
+    q
+</div>
+<div data-sivWidget="Test.MapTest" data-widgetCode="Test.MapTest">
+    <div data-sivView="Test.Map1" data-viewName="map1"></div>
+    <div data-sivLoop="*instances" data-contextIndex="current">
+        <div data-sivView="Test.Map2" data-viewName="map2-[%@current-index%]"></div>
+    </div>
+</div>
 <!-- templateEnd -->
 
 <!-- viewInit -->
@@ -9,45 +22,45 @@
 <script>
   //codeInit
   Siviglia.Utils.buildClass({
-      context: 'Test',
-      classes: {
-        "MapTest": {
-          inherits: "Siviglia.UI.Expando.View",
-          methods: {
-            preInitialize: function (params) {
-              this.instances = {};
-              for (var k = 0; k < 2; k++) {
-                this.instances["prueba-" + k] = "hola";
-              }
+    context: 'Test',
+    classes: {
+      "MapTest": {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.instances = {};
+            for (var k = 0; k < 2; k++) {
+              this.instances["prueba-" + k] = "hola";
+            }
 
-            },
-            initialize: function (params) {
-              this.waitComplete().then(function () {
-                this.map1.showLabel(" SOY MAP 1");
-                for (var k = 0; k < 2; k++) {
-                  this["map2-prueba-" + k].showLabel("SOY MAP2, INSTANCIA " + k);
-                }
-              }.bind(this));
-            },
-          }
-        },
-        "Map1": {
-          inherits: "Siviglia.UI.Expando.View",
-          methods: {
-            preInitialize: function () {
-            },
-            initialize: function () {
-            },
-            showLabel: function (label) {
-              this.target.html(label)
-            },
-          }
-        },
-        "Map2": {
-          inherits: "Test.Map1"
+          },
+          initialize: function (params) {
+            this.waitComplete().then(function () {
+              this.map1.showLabel(" SOY MAP 1");
+              for (var k = 0; k < 2; k++) {
+                this["map2-prueba-" + k].showLabel("SOY MAP2, INSTANCIA " + k);
+              }
+            }.bind(this));
+          },
         }
+      },
+      "Map1": {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function () {
+          },
+          initialize: function () {
+          },
+          showLabel: function (label) {
+            this.target.html(label)
+          },
+        }
+      },
+      "Map2": {
+        inherits: "Test.Map1"
       }
-    })
-    
-//codeEnd
+    }
+  })
+
+  //codeEnd
 </script>

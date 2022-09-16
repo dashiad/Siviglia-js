@@ -1,0 +1,56 @@
+<!-- templateInit -->
+<div data-sivWidget="Test.BTO" data-widgetCode="Test.BTO">
+    <div data-sivLoop="*bto/arrField" data-contextIndex="current">
+        <div data-sivValue="[%@current/fieldA%]"></div>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.BTO" style="background-color:green"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'BTO': {
+        inherits: "Siviglia.UI.Expando.View",
+        destruct: function () {
+          this.bto.destruct();
+        },
+        methods: {
+          preInitialize: function (params) {
+            this.bto = new Siviglia.model.BaseTypedObject({
+              "FIELDS": {
+                "arrField": {
+                  "TYPE": "Array",
+                  "ELEMENTS": {
+                    "TYPE": "Container",
+                    "FIELDS": {
+                      "fieldA": {"TYPE": "String"}
+                    }
+                  }
+                }
+              }
+            });
+            this.bto.setValue({
+              arrField: [{fieldA: "Campo1"},
+                {fieldA: "Campo2"},
+                {fieldA: "Campo3"}]
+            })
+          },
+          initialize: function (params) {
+            setTimeout(function () {
+              this.bto.arrField.push({fieldA: "Added"});
+            }.bind(this), 1000);
+          }
+        }
+      }
+    }
+
+  })
+
+  //codeEnd
+</script>

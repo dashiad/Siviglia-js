@@ -1,5 +1,24 @@
 <!-- templateInit -->
-<div data-sivWidget = "basic-field-types" data-widgetParams="" data-widgetCode="Test.BasicFieldTypes">   <div class="label">Input con campo String</div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"stringType"}'></div>   <div class="label">Input con campo Enum</div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"enumType"}'></div>   <div class="label">Input con campo Integer</div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"integerType"}'></div>   <div class="label">Input con campo Decimal</div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"decimalType"}'></div>   <div class="label">Input con campo Text</div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"textType"}'></div>   <div class="label">Input con campo Boolean</div>   <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer" data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"booleanType"}'></div></div>
+<div data-sivWidget="basic-field-types" data-widgetParams="" data-widgetCode="Test.BasicFieldTypes">
+    <div class="label">Input con campo String</div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"stringType"}'></div>
+    <div class="label">Input con campo Enum</div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"enumType"}'></div>
+    <div class="label">Input con campo Integer</div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"integerType"}'></div>
+    <div class="label">Input con campo Decimal</div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"decimalType"}'></div>
+    <div class="label">Input con campo Text</div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"textType"}'></div>
+    <div class="label">Input con campo Boolean</div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"booleanType"}'></div>
+</div>
 <!-- templateEnd -->
 
 <!-- viewInit -->
@@ -9,61 +28,61 @@
 <script>
   //codeInit
   Siviglia.Utils.buildClass({
-      context: 'Test',
-      classes: {
-        BasicFieldTypes: {
-          inherits: "Siviglia.inputs.jqwidgets.Form",
-          methods: {
-            preInitialize: function (params) {
-              this.factory = Siviglia.types.TypeFactory;
-              this.self = this;
-              this.typeCol = [];
-              this.formDefinition = new Siviglia.model.BaseTypedObject({
-                FIELDS: {
-                  stringType: {
-                    TYPE: "String",
-                    LABEL: "String type",
-                    MINLENGTH: 3,
-                    HELP: "La ayuda"
-                  },
-                  enumType: {
-                    TYPE: "Enum",
-                    LABEL: "Enum type",
-                    VALUES: ["Uno", "Dos", "Tres"],
-                  },
-                  integerType: {
-                    TYPE: "Integer",
-                    LABEL: "Integer type",
-                    MAX: 1000
-                  },
-                  decimalType: {
-                    TYPE: "Decimal",
-                    LABEL: "Decimal type",
-                    NINTEGERS: 5,
-                    NDECIMALS: 2
-                  },
-                  textType: {
-                    TYPE: "Text",
-                    LABEL: "text type",
-                  },
-                  booleanType: {
-                    TYPE: "Boolean",
-                    LABEL: "Boolean type",
-                  }
+    context: 'Test',
+    classes: {
+      BasicFieldTypes: {
+        inherits: "Siviglia.inputs.jqwidgets.Form",
+        methods: {
+          preInitialize: function (params) {
+            this.factory = Siviglia.types.TypeFactory;
+            this.self = this;
+            this.typeCol = [];
+            this.formDefinition = new Siviglia.model.BaseTypedObject({
+              FIELDS: {
+                stringType: {
+                  TYPE: "String",
+                  LABEL: "String type",
+                  MINLENGTH: 3,
+                  HELP: "La ayuda"
+                },
+                enumType: {
+                  TYPE: "Enum",
+                  LABEL: "Enum type",
+                  VALUES: ["Uno", "Dos", "Tres"],
+                },
+                integerType: {
+                  TYPE: "Integer",
+                  LABEL: "Integer type",
+                  MAX: 1000
+                },
+                decimalType: {
+                  TYPE: "Decimal",
+                  LABEL: "Decimal type",
+                  NINTEGERS: 5,
+                  NDECIMALS: 2
+                },
+                textType: {
+                  TYPE: "Text",
+                  LABEL: "text type",
+                },
+                booleanType: {
+                  TYPE: "Boolean",
+                  LABEL: "Boolean type",
                 }
-              });
-              this.formDefinition.stringType = "abcde";
-              this.formDefinition.enumType = "Dos";
-              this.formDefinition.integerType = 10;
-              this.formDefinition.decimalType = 8.3;
-              this.formDefinition.textType = "Esta es una prueba";
-              this.formDefinition.booleanType = true;
-              return this.Form$preInitialize({bto: this.formDefinition});
-            },
-          }
+              }
+            });
+            this.formDefinition.stringType = "abcde";
+            this.formDefinition.enumType = "Dos";
+            this.formDefinition.integerType = 10;
+            this.formDefinition.decimalType = 8.3;
+            this.formDefinition.textType = "Esta es una prueba";
+            this.formDefinition.booleanType = true;
+            return this.Form$preInitialize({bto: this.formDefinition});
+          },
         }
       }
-    })
-    
-//codeEnd
+    }
+  })
+
+  //codeEnd
 </script>

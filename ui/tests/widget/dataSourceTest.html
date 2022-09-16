@@ -1,0 +1,41 @@
+<!-- templateInit -->
+<div data-sivWidget="Test.BTOtest" data-widgetCode="Test.BTOtest">
+    <div data-sivLoop="*ds/data" data-contextIndex="server">
+        <div style="border:1px solid black">
+            <div data-sivValue="[%@server/host%]"></div>
+        </div>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.BTOtest" style="background-color:green"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'BTOtest': {
+        inherits: "Siviglia.UI.Expando.View",
+        destruct: function () {
+          this.ds.destruct();
+        },
+        methods: {
+          preInitialize: function (params) {
+            this.ds = new Siviglia.Model.DataSource("/model/web/Site", "FullList", {});
+            this.ds.freeze();
+            this.ds.settings.__start = 0;
+            this.ds.settings.__count = 5;
+            return this.ds.unfreeze();
+          },
+          initialize: function (params) {
+          }
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>
