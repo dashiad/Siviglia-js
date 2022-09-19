@@ -1,0 +1,30 @@
+<!-- templateInit -->
+<div data-sivWidget="class-var" data-widgetCode="Test.ClassVar">
+    <span data-sivValue="[%*message%]"></span>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="class-var"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'ClassVar': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.message = "Hello, world again!"
+          },
+          initialize: function (params) {
+          }
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>

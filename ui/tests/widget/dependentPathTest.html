@@ -1,0 +1,41 @@
+<!-- templateInit -->
+<div data-sivWidget="dependant-paths" data-widgetCode="Test.DependantPaths"><span
+        data-sivValue="[%/*obj/{%*obj/2/indexKey%}/key%]"></span><br></br><span
+        data-sivValue="[%/*obj/{%*indexVar%}/key%]"></span></div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="dependant-paths"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'DependantPaths': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.indexVar = 0;
+            this.obj = [
+              {key: "Hello..."},
+              {key: "...world!"},
+              {indexKey: 0}
+            ]
+          },
+          initialize: function (params) {
+            setInterval(function () {
+              this.obj[2].indexKey = (this.obj[2].indexKey + 1) % 2;
+            }.bind(this), 1000);
+            setInterval(function () {
+              this.indexVar = (this.indexVar + 1) % 2;
+            }.bind(this), 1000);
+          }
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>

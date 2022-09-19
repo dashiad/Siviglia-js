@@ -1,0 +1,32 @@
+<!-- templateInit -->
+<div data-sivWidget="widget-life-cycle" data-widgetCode="Test.WidgetLifeCycle">
+    <span data-sivValue="[%*counter%]"></span></div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="widget-life-cycle"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'WidgetLifeCycle': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.counter = 0;
+          },
+          initialize: function (params) {
+            setInterval(function () {
+              this.counter++
+            }.bind(this), 2000);
+          }
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>

@@ -1,0 +1,59 @@
+<!-- templateInit -->
+<div data-sivWidget="parametrizable-string" data-widgetCode="Test.ParametrizableString">
+    <div data-sivValue="Sustitución simple: [%*okMessage%]"></div>
+    <div data-sivValue="Sustitución anidada: [%*objVar/{%*keyName%}%]"></div>
+    <div data-sivValue="Comprobación de existencia de una variable: [%*stringVar:{%*okMessage%}%]"></div>
+    <div data-sivValue="Negacion existencia de variable: [%!*noVar:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion <: [%/*intVar < 3:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion >: [%/*intVar > 1:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion == en integer: [%*intVar == 2:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion == en string: [%*stringVar == testString:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion == en array: [%*arrayVar == [1]:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion == en object (solo funciona por referencia): [%*objVar == *objVar:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion != en integer: [%*intVar != 1:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion != en string: [%*stringVar != noString:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion del tipo String: [%*stringVar is string:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion del tipo Integer: [%*intVar is int:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion del tipo Array: [%*arrayVar is array:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion del tipo Object: [%*intVar is plainObject:{%*okMessage%}%]"></div>
+    <div data-sivValue="Verificacion del tipo Function: [%*funcVar is function:{%*okMessage%}%]"></div>
+    <div data-sivValue="Concatenación de verificaciones: [%*stringVar is string,*intVar is int:{%*okMessage%}%]"></div>
+    <div data-sivValue="Transformacion-capitalize: [%*stringVar:{%*okMessage:ucfirst%}%]"></div>
+    <div data-sivValue="Transformacion-default: [%*stringVar:{%*noVar:default 'OK!'%}%]"></div>
+    <div data-sivValue="Transformacion-repeat: [%*stringVar:{%*okMessage:str_repeat 2%}%]"></div>
+    <div data-sivValue="Concatenacion de transformaciones: [%*stringVar:{%*noVar:default 'ok'|ucfirst|str_repeat 2%}%]"></div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="parametrizable-string"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'ParametrizableString': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.okMessage = "test passed"
+            this.stringVar = 'testString'
+            this.intVar = 2
+            this.arrayVar = [1]
+            this.objVar = {a: 'test passed'}
+            this.keyName = 'a'
+            this.funcVar = function () {
+            }
+            this.testArray = []
+          },
+          initialize: function (params) {
+          }
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>

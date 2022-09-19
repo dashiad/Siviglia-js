@@ -1,18 +1,20 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <script src="/node_modules/jquery/dist/jquery.js"></script>
-    <script src="../Siviglia.js"></script>
+    <title>VTests</title>
+    <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
 
-    <script src="../SivigliaStore.js"></script>
-    <script src="../SivigliaTypes.js"></script>
-    <script src="../Model.js"></script>
-    <script src="./jsonView/jquery.json-view.min.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/Siviglia.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaStore.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaTypes.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/Model.js"></script>
+
+    <script src="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/jsonView/jquery.json-view.min.js"></script>
     <link rel="stylesheet"
-          href="./jsonView/jquery.json-view.min.css">
+          href="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/jsonView/jquery.json-view.min.css">
     <link rel="stylesheet"
-          href="highlight/styles/monokai.css">
-    <script src="highlight/highlight.pack.js"></script>
+          href="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/highlight/styles/monokai.css">
+    <script src="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/highlight/highlight.pack.js"></script>
     <style type="text/css">
         .testDiv {}
         .testTitle {}
@@ -77,11 +79,14 @@
     hljs.initHighlightingOnLoad();
 
     var urlParams = new URLSearchParams(window.location.search);
+    var DEVELOP_MODE;
     if (!urlParams.has("test")) {
-        var DEVELOP_MODE=0;  // All tests
-        //var DEVELOP_MODE=-1; // Latest test
+      //DEVELOP_MODE=47;    // Specific test number
+      //DEVELOP_MODE=0;     // All tests
+      //DEVELOP_MODE=(-1);  // Latest test
+      DEVELOP_MODE = (-1);
     } else {
-        var DEVELOP_MODE = urlParams.get("test");
+      DEVELOP_MODE = parseInt(urlParams.get("test"));
     }
 
     var def1={
@@ -2778,7 +2783,7 @@
                     "TYPE": "Integer",
                     "SOURCE":{
                         "TYPE":"Url",
-                        "URL":"/packages/Siviglia/tests/data/[%#../f4%].json",
+                        "URL":"/packages/Siviglia/tests/stubs/data/[%#../f4%].json",
                         "LABEL":"a",
                         "VALUE":"b"
                     }
@@ -4538,6 +4543,111 @@
             t1.destruct();
             return status;
         }, true);
+
+
+    runTest(
+      'Array con campos container',
+      'Array cuyos elementos son de tipo container',
+      {
+
+        "FIELDS": {
+          "f3": {
+            "TYPE": "Array",
+            "ELEMENTS": {
+              "TYPE": "TypeSwitcher",
+              "TYPE_FIELD": "TYPE",
+              "ALLOWED_TYPES": {
+                "T1": {
+                  "TYPE": "Container",
+                  "FIELDS": {
+                    "TYPE": {
+                      "TYPE": "String",
+                      "FIXED": "T1"
+                    },
+                    "CAMPO": {
+                      "TYPE": "String"
+                    }
+                  }
+                },
+                "T2": {
+                  "TYPE": "Container",
+                  "FIELDS": {
+                    "TYPE": {
+                      "TYPE": "String",
+                      "FIXED": "T2"
+                    },
+                    "CAMPO2": {
+                      "TYPE": "String"
+                    }
+                  }
+                },
+                "T3": {
+                  "TYPE": "Container",
+                  "FIELDS": {
+                    "TYPE": {
+                      "TYPE": "String",
+                      "FIXED": "T3"
+                    },
+                    "CAMPO3": {
+                      "TYPE": "String"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+      },
+      function (def) {
+        var t1 = new Siviglia.model.BaseTypedObject(
+          def
+        );
+        var f=t1["*f3"];
+        var nErrors = 0;
+        var nChanges = 0;
+
+        f.addListener("CHANGE", null, function () {
+          nChanges++
+        });
+        var a1={"TYPE":"T1","CAMPO":"abcde"};
+        var a2={"TYPE":"T2", CAMPO2:'qwer'};
+        var a3={"TYPE":"T3","CAMPO3":"jklm"};
+        f.setValue([a1,a2,a3]);
+        f[0].CAMPO='campocambiado'
+
+        f.splice(0,1);
+
+        var status=f[0].CAMPO2==="qwer" && f[1].CAMPO3==="jklm" && f.length===2;
+
+        // El splice ha movido el elemento que antes estaba en 2, a la posicion 1. Para que esto funcione, ha
+        // habido que crear un nuevo typeswitcher en 1, con el valor del typeswitcher que habia en 2.
+
+        // Lo importante, es que ese valor siga apuntando al mismo objeto, de forma que sigue siendo el mismo
+        // valor referenciado por a3. Asi que si cambiamos a3, lo que hay en f[1] tiene que cambiar tambien.
+        // NOTA: LO ANTERIOR NO ES POSIBLE: EL TYPESWITCHER QUE HABIA EN 2, EVENTIZO EL OBJETO a3 PARA QUE APUNTARA A ÉL.
+        // SI LUEGO ESE OBJETO PASA A SER EL VALOR DEL TYPESWITCHER QUE SE CREA EN 1, SOLO HABRIA 2 POSIBILIDADES:
+        // 1) RE-EVENTIZAR a3 PARA QUE AHORA APUNTE AL TYPESWITCHER NUEVO. ESTO NO ES POSIBLE, PORQUE NADIE GARANTIZA
+        // QUE EL TYPESWITCHER QUE HAY EN 2 (Y QUE LO EVENTIZÓ INICIALMENTE), VAYA A DESAPARECER: LO SIGUE USANDO. SERIA
+        // UN VALOR COMPARTIDO
+        // 2) NO RE-EVENTIZAR : a3 SEGUIRIA APUNTANDO A TYPESWITCHER 2, QUE VA A SER DESTRUIDO.
+        // ASI QUE NO QUEDA MAS REMEDIO QUE HACER UNA COPIA!
+
+
+        // a3.CAMPO3="JORGITO";
+        a3=f[1];
+        a3.CAMPO3="JORGITO";
+
+
+
+        status= status && f[1].CAMPO3==="JORGITO";
+
+        t1.destruct();
+
+        return status && countListeners() == 0;
+      },
+      true
+    )
 
 
 </script>

@@ -1,0 +1,172 @@
+<script>
+  document.getElementsByTagName('title')[0].innerHTML = 'modelManagerTest'
+
+  /* Test de formulario de creación de modelos.*/
+</script>
+
+
+<style>
+    body {
+        color: #FFFFFF;
+    }
+
+    .sidebar {
+        height: 100%; /* Full-height: remove this if you want "auto" height */
+        width: 250px; /* Set the width of the sidebar */
+        position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+        top: 0; /* Stay at the top */
+        left: 0;
+        background-color: #191c24;
+        overflow-x: hidden; /* Disable horizontal scroll */
+        padding-top: 20px;
+    }
+
+    .sidebar .listItem {
+        padding: 6px 8px 6px 16px;
+        text-decoration: none;
+        /*font-size: 25px;*/
+        color: #6c7293;
+        display: block;
+    }
+
+    .sidebar .listItem:hover {
+        color: #f1f1f1;
+    }
+
+    .page-body {
+        margin-left: 250px; /* Same as the width of the sidebar */
+        padding: 1.875rem 1.75rem;
+    }
+
+    .card {
+        background-color: #191c24;
+        border-radius: 0.25rem;
+        margin-bottom: 1.25rem;
+        padding: 1.875rem 1.75rem;
+    }
+
+    .card-body {
+        color: #6c7293;
+    }
+
+    .title-3 {
+        color: #FFFFFF;
+    }
+</style>
+
+<!-- Declaración de widgets -->
+<div style="display:none">
+    <div data-sivWidget="Siviglia.Apps.jqwidgets.ModelCard" data-widgetCode="Siviglia.Apps.jqwidgets.ModelCard">
+        <div class="card">
+            <div data-sivValue="[%*modelName%]"></div>
+            <div class="card-body">
+                <h5 class="title-3">Actions</h5>
+                <div data-sivView="Siviglia.widgets.jqwidgets.RecursiveDSList"
+                     data-sivParams='{"innerListParams":"*actionListParams"}'></div>
+                <h5 class="title-3">DataSources</h5>
+                <div data-sivView="Siviglia.widgets.jqwidgets.RecursiveDSList"
+                     data-sivParams='{"innerListParams":"*dataSourceListParams"}'></div>
+                <h5 class="title-3">Forms</h5>
+                <div data-sivView="Siviglia.widgets.jqwidgets.RecursiveDSList"
+                     data-sivParams='{"innerListParams":"*formListParams"}'></div>
+                <h5 class="title-3">Pages</h5>
+                ?
+                <h5 class="title-3">Views</h5>
+                ?
+                <h5 class="title-3">Forms html/js</h5>
+                ?
+                <h5 class="title-3">Apps html/js</h5>
+                ?
+            </div>
+        </div>
+    </div>
+
+    <div data-sivWidget="Siviglia.Apps.jqwidgets.MenuList" data-widgetCode="Siviglia.Apps.jqwidgets.MenuList">
+        <div data-sivView="Siviglia.widgets.jqwidgets.RecursiveDSList"
+             data-sivParams='{"innerListParams":"*innerListParams"}'></div>
+    </div>
+
+    <div data-sivWidget="Siviglia.Apps.jqwidgets.ModelManager" data-widgetCode="Siviglia.Apps.jqwidgets.ModelManager">
+        <div class="sidebar">
+            <div data-sivView="Siviglia.Apps.jqwidgets.MenuList"></div>
+        </div>
+        <div class="page-body">
+            <div data-sivView="Siviglia.Apps.jqwidgets.ModelCard"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Fin declaración de widgets -->
+
+<div data-sivView="Siviglia.Apps.jqwidgets.ModelManager"></div>
+
+<script>
+  Siviglia.Utils.buildClass({
+    context: 'Siviglia.Apps.jqwidgets',
+    classes: {
+      ModelManager: {
+        inherits: 'Siviglia.UI.Expando.View',
+        methods: {
+          preInitialize: function () {
+            this.var = null
+          },
+          initialize: function (){}
+        },
+      },
+      ModelCard: {
+        inherits: 'Siviglia.UI.Expando.View',
+        methods: {
+          preInitialize: function () {
+            this.modelName = 'Action(test)'
+            this.actionListParams = {
+              model: '/model/reflection/Action',
+              dataSource: 'fullList',
+              keys: {model: '/model/reflection/Action'},
+              label: 'name',
+              value: 'name',
+            }
+            this.dataSourceListParams = {
+              model: '/model/reflection/DataSource',
+              dataSource: 'fullList',
+              keys: {model: '/model/reflection/Action'},
+              label: 'name',
+              value: 'name',
+            }
+            this.formListParams = {
+              model: '/model/reflection/Html/Form',
+              dataSource: 'fullList',
+              keys: {model: '/model/reflection/Action'},
+              label: 'name',
+              value: 'name',
+            }
+          },
+        },
+      },
+      MenuList: {
+        inherits: 'Siviglia.UI.Expando.View',
+        methods: {
+          preInitialize: function () {
+            this.innerListParams = {
+              model: '/model/reflection/Model',
+              dataSource: 'PackageList',
+              // keys: {},
+              label: 'name',
+              value: 'name',
+              listParam: 'keys',
+              keysParam: 'package',
+              innerListParams: {
+                model: '/model/reflection/Model',
+                dataSource: 'FullList',
+                keys: {},
+                label: 'name',
+                value: 'smallName',
+              }
+            }
+            this.listValue = 'hosl'
+          }
+        },
+      },
+    }
+  })
+</script>

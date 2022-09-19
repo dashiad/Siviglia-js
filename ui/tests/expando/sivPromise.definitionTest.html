@@ -1,0 +1,34 @@
+<!-- templateInit -->
+<div data-sivWidget="Test.PromiseTest" data-widgetCode="Test.PromiseTest">
+    <div data-sivPromise="*myPromise"> Hola!</div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.PromiseTest"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      "PromiseTest": {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.myPromise = SMCPromise();
+            setTimeout(function () {
+              this.myPromise.resolve()
+            }.bind(this), 3000)
+          },
+          initialize: function (params) {
+          }
+        }
+      }
+    }
+
+  })
+
+  //codeEnd
+</script>

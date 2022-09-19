@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create user test</title>
+    <script src='http://statics.adtopy.com/node_modules/d3/dist/d3.js'></script>
+    <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
+    <script src="http://statics.adtopy.com/node_modules/autobahn-browser/autobahn.min.js"></script>
+    <script src="http://statics.adtopy.com/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!--    <script src="/node_modules/bootstrap/dist/css/bootstrap.min.css"></script>-->
+
+    <script src="http://statics.adtopy.com/packages/Siviglia/Siviglia.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaStore.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaTypes.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/Model.js"></script>
+
+    <script src="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/jqx-all.js"></script>
+    <script src="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/globalization/globalize.js"></script>
+
+    <script src="http://statics.adtopy.com/reflection/js/WampServer.js"></script>
+
+
+    <link href="http://statics.adtopy.com/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://statics.adtopy.com/node_modules/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/Siviglia/css/style.css">
+    <!--    Se comenta la siguiente línea para poder probar en el futuro los estilos propios de los sites.-->
+    <!--    Ahora se emplea el archivo para desarrollo Siviglia/css/styles.css-->
+    <!--    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/reflection/css/style.css">-->
+
+    <!--    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/Siviglia/jQuery/css/JqxWidgets.css">-->
+    <!--    <link rel="stylesheet" type="text/css"-->
+    <!--          href="http://statics.adtopy.com/packages/Siviglia/jQuery/css/jqx.adtopy-dev.css">-->
+
+    <!--    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css">-->
+    <style>
+        .template-demo > h2,
+        .template-demo > h3,
+        .template-demo > h4,
+        .template-demo > h5,
+        .template-demo > h6,
+        .template-demo > h1 {
+            border-top: 1px solid #2c2e33;
+            padding: 0.5rem 0 0;
+        }
+    </style>
+</head>
+<body>
+<script>
+  var Siviglia = Siviglia || {};
+  Siviglia.debug = true;
+
+  Siviglia.config = {
+    baseUrl: 'http://reflection.adtopy.com/',
+    staticsUrl: 'http://statics.adtopy.com/',
+    metadataUrl: 'http://metadata.adtopy.com/',
+    user: {
+      USER_ID: "1",
+      TOKEN: "1"
+    },
+    wampServer: {
+      "URL": "ws://statics.adtopy.com",
+      "PORT": "8999",
+      "REALM": "adtopy",
+    },
+    // Si el mapper es XXX, debe haber:
+    // 1) Un gestor en /lib/output/html/renderers/js/XXX.php
+    // 2) Un Mapper en Siviglia.Model.XXXMapper
+    // 3) Las urls de carga de modelos seria /js/XXX/model/zzz/yyyy....
+    mapper: 'Siviglia'
+  };
+  Siviglia.Model.initialize(Siviglia.config);
+
+  var wConfig = Siviglia.config.wampServer;
+  var wampServer = new Siviglia.comm.WampServer(
+    wConfig.URL,
+    wConfig.PORT,
+    wConfig.REALM,
+    Siviglia.config.user.TOKEN
+  );
+  Siviglia.Service.add("wampServer", wampServer);
+</script>
+
+<style>
+    body {
+        background-image: url('https://technext.github.io/corona-free-dark-bootstrap-admin-template/assets/images/auth/Login_bg.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+
+    .login {
+        background-color: #191c24;
+        width: 320px;
+        padding: 30px;
+        color: white;
+    }
+</style>
+
+<div class="row">
+    <div class="col-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Nuevo usuario</h5>
+                <div data-sivView="Siviglia.model.web.WebUser.forms.AddUser" data-sivParams="{}"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+  var dependencyList = [
+    "packages/Siviglia/jQuery/JqxWidgets",
+    'packages/Siviglia/jQuery/JqxTypes',
+    "packages/Siviglia/jQuery/JqxViews",
+    "packages/Siviglia/jQuery/JqxLists",
+    "packages/Siviglia/jQuery/JqxWidgets",
+  ]
+  Siviglia.require(dependencyList, true, false).then(function () {
+
+    $(document).ready(function () {
+      var parser = new Siviglia.UI.HTMLParser();
+      parser.parse($(document.body));
+    })
+  })
+</script>
+</body>
+</html>

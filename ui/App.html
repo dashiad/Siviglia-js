@@ -1,0 +1,26 @@
+<div style="display:none">
+<div data-sivWidget="Siviglia.site.widgets.JS.SubMenu" data-widgetCode="Siviglia.site.widgets.JS.SubMenu">
+    <ul data-sivId="mainUL">
+        <div data-sivLoop="/*menu" data-contextIndex="current">
+            <li>
+                <a  style="display:block;width:100%" data-sivEvent="click" data-sivCallback="onClicked" data-sivParams='{"item":"/@current"}' href="#" data-sivValue="[%@current/label%]" ></a>
+            <div data-sivIf="[%@current/menu: 1%][%!@current/menu: null%]!==null">
+                <div data-sivView="Siviglia.site.widgets.JS.SubMenu" data-sivParams='{"menu":"@current/menu","getParent":"/*getParent","nestLevel":"/*nestLevel"}'></div>
+            </div>
+            </li>
+        </div>
+    </ul>
+</div>
+<div data-sivWidget="Siviglia.site.widgets.JS.Menu" data-widgetCode="Siviglia.site.widgets.JS.Menu">
+    <div data-sivId="jqxMenu">
+        <div data-sivView="Siviglia.site.widgets.JS.SubMenu" data-sivParams='{"menu":"/*menu","getParent":"/*getParent","nestLevel":"/*nestLevel"}'></div>
+    </div>
+</div>
+<div data-sivWidget="Siviglia.site.widgets.JS.App" data-widgetCode="Siviglia.site.widgets.JS.App" style="display:none">
+    <div data-sivIf="[%!/*menu: null%]!==null">
+        <div data-sivView="Siviglia.site.widgets.JS.Menu" data-sivParams='{"menu":"/*menu","getParent":"/*getSelf"}'>
+        </div>
+    </div>
+    <div data-sivId="widgetContainer"></div>
+</div>
+</div>

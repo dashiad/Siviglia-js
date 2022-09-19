@@ -1,0 +1,68 @@
+<!-- templateInit -->
+<div data-sivWidget="field-states" data-widgetParams="" data-widgetCode="Test.FieldStates">
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"key":"simpleContainer", "controller":"*self","parent":"*type", "form":"*form"}'></div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="field-states"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      "FieldStates": {
+        inherits: "Siviglia.inputs.jqwidgets.Form",
+        methods: {
+          preInitialize: function (params) {
+            // this.factory = Siviglia.types.TypeFactory;
+            // this.self = this;
+            // this.typeCol = [];
+            this.formDefinition = new Siviglia.model.BaseTypedObject({
+              "FIELDS": {
+                simpleContainer: {
+                  "TYPE": "Container",
+                  "LABEL": "Campo Container con estados",
+                  "FIELDS": {
+                    "one": {"TYPE": "String", "LABEL": "Campo uno"},
+                    "two": {"TYPE": "String", "LABEL": "Campo dos"},
+                    "three": {"TYPE": "String", "LABEL": "Campo tres"},
+                    "state": {
+                      "TYPE": "State",
+                      "LABEL": "Estado",
+                      "VALUES": ["state1", "state2", "state3"],
+                      "DEFAULT": "state1",
+                    }
+                  },
+                  'STATES': {
+                    'FIELD': 'state',
+                    'STATES': {
+                      'state1': {
+                        'FIELDS': {'EDITABLE': ['one', 'two']}
+                      },
+                      'state2': {
+                        'ALLOW_FROM': ["state1"],
+                        'FIELDS': {'EDITABLE': ['two', 'three']}
+                      },
+                      'state3': {
+                        'ALLOW_FROM': ["state2"],
+                        'FINAL': true,
+                        'FIELDS': {'REQUIRED': ['three']}
+                      }
+                    },
+                  }
+                },
+              }
+            });
+            return this.Form$preInitialize({bto: this.formDefinition});
+          },
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>

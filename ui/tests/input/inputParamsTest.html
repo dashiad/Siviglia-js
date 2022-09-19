@@ -1,0 +1,97 @@
+<!-- templateInit -->
+<div data-sivWidget="container-inputParams" data-widgetParams="" data-widgetCode="Test.ContainerInputParams">
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"simpleContainer"}'></div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"gridContainer"}'></div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"*self","parent":"*type","form":"*form","key":"byFieldContainer"}'></div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="container-inputParams"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      ContainerInputParams: {
+        inherits: "Siviglia.inputs.jqwidgets.Form",
+        methods: {
+          preInitialize: function (params) {
+            this.factory = Siviglia.types.TypeFactory;
+            this.self = this;
+            this.typeCol = [];
+            this.formDefinition = new Siviglia.model.BaseTypedObject({
+              "FIELDS": {
+                simpleContainer: {
+                  "LABEL": "Visualización normal",
+                  "TYPE": "Container",
+                  "FIELDS": {
+                    "field1": {
+                      "LABEL": "Campo 1 del container",
+                      "TYPE": "String"
+                    },
+                    "field2": {
+                      "LABEL": "Campo 2 del container",
+                      "TYPE": "Integer"
+                    }
+                  }
+                },
+                gridContainer: {
+                  "LABEL": "Visualización tipo grid",
+                  "TYPE": "Container",
+                  "FIELDS": {
+                    "field1": {
+                      "LABEL": "Campo 1 del container",
+                      "TYPE": "String"
+                    },
+                    "field2": {
+                      "LABEL": "Campo 2 del container",
+                      "TYPE": "Integer"
+                    }
+                  }
+                },
+                byFieldContainer: {
+                  "LABEL": "Visualización tipo 'por campos'",
+                  "TYPE": "Container",
+                  "FIELDS": {
+                    "field1": {
+                      "LABEL": "Campo 1 del container",
+                      "TYPE": "String"
+                    },
+                    "field2": {
+                      "LABEL": "Campo 2 del container",
+                      "TYPE": "Integer"
+                    }
+                  }
+                },
+              },
+              "INPUTPARAMS": {
+                '/gridContainer': {
+                  INPUT: 'GridContainer',
+                  JQXPARAMS: {width: 700, height: 500},
+                },
+                '/byFieldContainer': {
+                  INPUT: 'ByFieldContainer',
+                },
+              },
+            });
+            this.formDefinition.simpleContainer = {"field1": "AAA", "field2": 555};
+            this.formDefinition.gridContainer = {"field1": "AAA", "field2": 555};
+            this.formDefinition.byFieldContainer = {"field1": "AAA", "field2": 555};
+
+            return this.Form$preInitialize({bto: this.formDefinition});
+          },
+          initialize: function (params) {
+          },
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>

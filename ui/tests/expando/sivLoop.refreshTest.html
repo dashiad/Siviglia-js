@@ -1,0 +1,51 @@
+<!-- templateInit -->
+<div style="display: none">
+    <div data-sivWidget="Test.SivLoop" data-widgetCode="Test.SivLoop">
+        <div data-sivLoop="/*simpleArray" data-contextIndex="current">
+            <div>
+                <div data-sivLoop="@current" data-contextIndex="current2">
+                    <span data-sivValue="[%/@current2%]"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.SivLoop"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      SivLoop: {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function () {
+            this.simpleArray = [["item1"], ["item2"], ["item3"]];
+            top.sss = this.simpleArray;
+          },
+          initialize: function () {
+            setTimeout(function () {
+              this.simpleArray.push(["newItem4"]);
+            }.bind(this), 1000);
+            setTimeout(function () {
+              this.simpleArray[1][0] = 'changedItem';
+            }.bind(this), 2000);
+            setTimeout(function () {
+              this.simpleArray[0].push("newItem1b");
+            }.bind(this), 3000);
+            setTimeout(function () {
+              this.simpleArray.splice(1, 2);
+            }.bind(this), 4000);
+
+          }
+        }
+      }
+    }
+  })
+  //codeEnd
+</script>

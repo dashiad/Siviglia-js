@@ -1,0 +1,46 @@
+<!-- templateInit -->
+<div style="display: none">
+    <div data-sivWidget="sivCall-definition" data-widgetCode="Test.SivCallDefinition">
+        <div data-sivLoop="*dictionariesArray" data-contextIndex="dictionary">
+            <div style="border:1px solid black">
+                <div data-sivLoop="@dictionary" data-contextIndex="value">
+                    <div data-sivCall="setContent"
+                         data-sivParams='{"indexKey":"@value-index","valueKey":"/@value"}'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="sivCall-definition"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'SivCallDefinition': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.dictionariesArray = [
+              {a: "item1", b: "item2", c: "item3"},
+              {a: "item4", b: "item5", c: "item6"},
+              {a: "item7", b: "item8", c: "item9"},
+            ];
+          },
+          initialize: function (params) {
+            //todo: ver si se puede quitar la instancianción de este método al estar vacío
+          },
+          setContent: function (node, params) {
+            node.html(params.indexKey + " : " + params.valueKey);
+          }
+        }
+      }
+    }
+  })
+  //codeEnd
+</script>

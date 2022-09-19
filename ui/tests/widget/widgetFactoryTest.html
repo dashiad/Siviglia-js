@@ -1,0 +1,88 @@
+<!-- templateInit -->
+<div data-sivWidget="Test.Factory" data-widgetCode="Test.Factory">
+    <div data-sivLoop="*mybto/__definition/FIELDS" data-contextIndex="current">
+        <div data-sivCall="getTypeWidget" data-sivParams='{"field":"@current-index","type":"@current/TYPE"}'></div>
+    </div>
+</div>
+<div data-sivWidget="Test.Integer" data-widgetCode="Test.Integer">
+    <div style="background-color:green" data-sivValue="Entero: [%*currentValue%]"></div>
+</div>
+<div data-sivWidget="Test.String" data-widgetCode="Test.String">
+    <div style="background-color:yellow" data-sivValue="Cadena: [%*currentValue%]"></div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.Factory"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'TypeRenderer': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.currentValue = params.field.getValue();
+          },
+          initialize: function (params) {
+          }
+        }
+      },
+      'Integer': {
+        inherits: "Test.TypeRenderer"
+      },
+      'String': {
+        inherits: "Test.TypeRenderer"
+      },
+      'Factory': {
+        inherits: "Siviglia.UI.Expando.View",
+        destruct: function () {
+          this.mybto.destruct();
+          for (var k in this.createdWidgets)
+            this.createdWidgets[k].destruct();
+        },
+        methods: {
+          preInitialize: function (params) {
+            this.mybto = new Siviglia.model.BaseTypedObject({
+              "FIELDS": {
+                "textField": {
+                  "TYPE": "String"
+                },
+                "integerField": {
+                  "TYPE": "Integer"
+                }
+              }
+            });
+            this.mybto.setValue({"textField": "Campo de texto", "integerField": 11223344})
+            this.createdWidgets = [];
+          },
+          initialize: function (params) {
+          },
+          getTypeWidget: function (node, params) {
+            var field = this.mybto["*" + params.field];
+            var type = params.type;
+            var widgetName = "Test." + type;
+            var ctx = Siviglia.Utils.stringToContextAndObject(widgetName);
+            var targetWidget = new ctx.context[ctx.object](
+              widgetName,
+              {field: field},
+              {},
+              $("<div></div>"),
+              new Siviglia.Path.ContextStack()
+            );
+            targetWidget.__build().then(function (instance) {
+              node.append(instance.rootNode);
+            })
+            this.createdWidgets[params.field] = targetWidget;
+          }
+        }
+      }
+    }
+
+  })
+
+  //codeEnd
+</script>

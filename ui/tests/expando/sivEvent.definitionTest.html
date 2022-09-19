@@ -1,0 +1,33 @@
+<!-- templateInit -->
+<div style="display: none">
+    <div data-sivWidget="Test.SivEvent" data-widgetCode="Test.SivEvent">
+        <div data-sivEvent="click" data-sivCallback="onclicked" data-sivParams='{"phrase":"An alert"}'>Click aqui</div>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.SivEvent"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'SivEvent': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+          },
+          initialize: function (params) {//todo:quitar si se puede
+          },
+          onclicked: function (node, params) {
+            alert(params.phrase);
+          }
+        }
+      }
+    }
+  })
+  //codeEnd
+</script>

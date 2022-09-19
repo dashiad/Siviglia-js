@@ -1,0 +1,35 @@
+<!-- templateInit -->
+<div data-sivWidget="Test.RootNode" data-widgetCode="Test.RootNode">
+    <div>
+        <div class="a">A</div>
+        <div class="b">B</div>
+        <div class="a">A</div>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.RootNode" style="background-color:green"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'RootNode': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+          },
+          initialize: function (params) {
+            $(".a", this.rootNode).css("background-color", "blue");
+          }
+        }
+      }
+    }
+
+  })
+
+  //codeEnd
+</script>

@@ -1,0 +1,80 @@
+<!-- templateInit -->
+<div data-sivWidget="child-widget-A" data-widgetCode="Test.ChildWidgetA">
+    <div><span style="background-color:#123180;color:white" data-sivEvent="click" data-sivCallback="onClick"
+               data-sivParams='{"clickVal":"Evento lanzado"}'>Soy hijo A .</span><span>y digo...</span> <span
+            data-sivValue="[%*messageA%]"></span></div>
+</div>
+<div data-sivWidget="child-widget-B" data-widgetCode="Test.ChildWidgetB">
+    <div><span>Soy hijo B y escucho...</span> <span data-sivValue="[%*messageB%]"></span></div>
+</div>
+<div data-sivWidget="widget-comm" data-widgetCode="Test.WidgetComm">
+    <div data-sivView="child-widget-A"></div>
+    <div><span>Soy padre y eschucho de hijo A...</span> <span data-sivValue="[%*listenedMessage%]"></span></div>
+    <div><span>Soy padre y le digo a hijo B...</span> <span data-sivValue="[%*firedMessage%]"></span></div>
+    <div data-sivView="child-widget-B"></div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="widget-comm"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      WidgetComm: {
+        inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
+        methods: {
+          preInitialize: function (params) {
+            this.listenedMessage = 'nada de momento'
+            this.firedMessage = 'nada de momento'
+          },
+          initialize: function (params) {
+            this.__subViews[0].view.__view.addListener('EVENT_A', this, 'onEventListened')
+          },
+          onEventListened: function (event, params) {
+            this.listenedMessage = params.eventVal
+            console.log('evento escuchado en el parent: ', params.eventVal)
+            this.firedMessage = this.listenedMessage
+            this.fireEvent(event, this.firedMessage)
+            console.log('evento lanzado por el parent: ', this.firedMessage)
+          },
+        }
+      },
+      ChildWidgetA: {
+        inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
+        methods: {
+          preInitialize: function (params) {
+            this.messageA = "nada de momento"
+            this.addListener('EVENT_A', this, 'onEvent')
+          },
+          onClick: function (event, params) {
+            console.log('valor llegado con el click: ', params.clickVal)
+            this.fireEvent('EVENT_A', {eventVal: params.clickVal})
+          },
+          onEvent: function (event, params) {
+            this.messageA = params.eventVal
+            console.log('evento escuchado en el mismo widget generador: ', params.eventVal)
+          }
+        }
+      },
+      ChildWidgetB: {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.messageB = "nada de momento"
+            this.__parentView.addListener('EVENT_A', this, 'onEvent')
+          },
+          onEvent: function (event, params) {
+            this.messageB = params
+            console.log('evento escuchado en el widget hermano: ', params)
+          },
+        }
+      },
+    }
+  })
+
+  //codeEnd
+</script>

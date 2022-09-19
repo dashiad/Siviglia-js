@@ -1,0 +1,36 @@
+<!-- templateInit -->
+<div data-sivWidget="Test.Promise" data-widgetCode="Test.Promise">
+    <div data-sivValue="[%*timerValue%]"></div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.Promise" style="background-color:green"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'Promise': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            var returnedPromise = $.Deferred();
+            setTimeout(function () {
+              this.timerValue = "Timer finalizado";
+              returnedPromise.resolve();
+            }.bind(this), 3000);
+            return returnedPromise;
+          },
+          initialize: function (params) {
+          }
+        }
+      }
+    }
+
+  })
+
+  //codeEnd
+</script>

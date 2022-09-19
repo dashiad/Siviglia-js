@@ -1,0 +1,31 @@
+<!-- templateInit -->
+<div data-sivWidget="path-access-to-var" data-widgetCode="Test.PathAccessToVar"><span
+        data-sivValue="[%*varName/0/key%]"></span></div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="path-access-to-var"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'PathAccessToVar': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.varName = [
+              {key: "Hello world!"}
+            ]
+          },
+          initialize: function (params) {
+          }
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>

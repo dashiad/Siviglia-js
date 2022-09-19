@@ -1,0 +1,44 @@
+<!-- templateInit -->
+<div data-sivWidget="remote-form-definition" data-widgetCode="Test.RemoteFormDefinition">
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"key":"name","parent":"*type","form":"*form","controller":"*self"}'></div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"key":"tag","parent":"*type","form":"*form","controller":"*self"}'></div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"key":"id_site","parent":"*type","form":"*form","controller":"*self"}'></div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"key":"isPrivate","parent":"*type","form":"*form","controller":"*self"}'></div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"key":"path","parent":"*type","form":"*form","controller":"*self"}'></div>
+    <div><input type="button" data-sivEvent="click" data-sivCallback="submit" value="Guardar"></div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="remote-form-definition" data-sivParams='{"id_page":1}'></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    "context": "Test",
+    "classes": {
+      RemoteFormDefinition: {
+        "inherits": "Siviglia.inputs.jqwidgets.Form",
+        "methods": {
+          preInitialize: function (params) {
+            this.self = this;
+            var formDefinition = {
+              "model": "/model/web/Page",
+              "form": "Edit",
+              "keys": params,
+            }
+            return this.Form$preInitialize(formDefinition);
+          }
+        }
+      }
+    }
+  });
+
+  //codeEnd
+</script>

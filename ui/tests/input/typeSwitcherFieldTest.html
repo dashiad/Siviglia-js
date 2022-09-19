@@ -1,0 +1,72 @@
+<!-- templateInit -->
+<div data-sivWidget="typeSwitcher-field" data-widgetParams="" data-widgetCode="Test.TypeSwitcherField">
+    <div class="label">Input con campo TypeSwitcher:</div>
+    <div data-sivView="Siviglia.inputs.jqwidgets.StdInputContainer"
+         data-sivParams='{"controller":"/*self","parent":"/*type","form":"/*form","key":"simpleTypeSwitcher"}'></div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="typeSwitcher-field"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      "TypeSwitcherField": {
+        inherits: "Siviglia.inputs.jqwidgets.Form",
+        methods: {
+          preInitialize: function (params) {
+            this.factory = Siviglia.types.TypeFactory;
+            this.self = this;
+            this.typeCol = [];
+            this.formDefinition = new Siviglia.model.BaseTypedObject({
+              "FIELDS": {
+                simpleTypeSwitcher: {
+                  "LABEL": "Campo TypeSwitcher",
+                  "TYPE": "TypeSwitcher",
+                  "TYPE_FIELD": "typeField",
+                  CONTENT_FIELD: 'contentField',
+                  "ALLOWED_TYPES": {
+                    "stringType": {
+                      "TYPE": "String"
+                    },
+                    "integerType": {
+                      "TYPE": "Integer",
+                    },
+                    decimalType: {
+                      TYPE: 'Decimal',
+                      NINTEGERS: 3,
+                      NDECIMALS: 2
+                    },
+                    textType: {
+                      TYPE: 'Text'
+                    },
+                    enumType: {
+                      TYPE: 'Enum',
+                      VALUES: ['uno', 'dos', 'tres']
+                    },
+                    booleanType: {
+                      TYPE: 'Boolean'
+                    }
+                  }
+                }
+              }
+            });
+            // Cuando el tipo es un objeto, por ejemplo un container, puede establecerse el valor mediante los
+            // nombres de los campos, al ser similar a aun path.
+            this.formDefinition.simpleTypeSwitcher = {"typeField": "stringType", contentField: "AAA"};
+
+            return this.Form$preInitialize({bto: this.formDefinition});
+          },
+          initialize: function (params) {
+          },
+        }
+      }
+    }
+  })
+
+  //codeEnd
+</script>

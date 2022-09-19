@@ -1,0 +1,33 @@
+<!-- templateInit -->
+<div data-sivWidget="Test.Transp" data-widgetCode="Test.Transp" style="background-color:yellow">
+    <div data-sivLoop="/*anArray" data-contextIndex="current" style="background-color:blue">
+        <div data-sivValue="[%@current%]"></div>
+    </div>
+</div>
+<!-- templateEnd -->
+
+<!-- viewInit -->
+<div data-sivView="Test.Transp" style="background-color:green"></div>
+<!-- viewEnd -->
+
+<script>
+  //codeInit
+  Siviglia.Utils.buildClass({
+    context: 'Test',
+    classes: {
+      'Transp': {
+        inherits: "Siviglia.UI.Expando.View",
+        methods: {
+          preInitialize: function (params) {
+            this.anArray = ["a", "b", "c"];
+          },
+          initialize: function (params) {
+          }
+        }
+      }
+    }
+
+  })
+
+  //codeEnd
+</script>
