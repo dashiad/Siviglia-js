@@ -375,7 +375,7 @@
                 cnt.save();
             }catch(e)
             {
-                result=result && e.type==="BaseTypeException" && e.code===Siviglia.types.BaseTypeException.ERR_REQUIRED;
+                result=result && e.type==="BaseTypedException" && e.code===Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD;
                 // Tiene que estar errored.
                 thrown=true;
             }
@@ -859,7 +859,7 @@
             t2.save();
 
         } catch (e) {
-            if(e.code && e.code==Siviglia.types.BaseTypeException.ERR_REQUIRED)
+            if(e.code && e.code==Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD)
                     e1 = 1;
 
         }
@@ -974,7 +974,7 @@
         try {
             t2.save();
         } catch (q) {
-            result=(q.type=="BaseTypeException" && q.code==Siviglia.types.BaseTypeException.ERR_REQUIRED);
+            result=(q.type=="BaseTypedException" && q.code==Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD);
         }
         t2.TIPO2.f1 = "lala";
         t2.save();
@@ -1179,7 +1179,7 @@
                 }catch(e)
                 {
                     excpThrown=true;
-                    result=expectException && e.path==="/f4" && e.code===Siviglia.types.BaseTypeException.ERR_REQUIRED;
+                    result=expectException && e.path==="/f4" && e.code===Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD;
                 }
                 return result && expectException===excpThrown;
             }
@@ -3343,7 +3343,7 @@
             }catch(e)
             {
                 thrown=true;
-                result=result && e.path==="/a/three" && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_NOT_EDITABLE_IN_STATE);
+                result=result && e.path==="/a/three" && (e.type=="BaseTypedException" && e.code==Siviglia.model.BaseTypedException.ERR_NOT_EDITABLE_IN_STATE);
             }
             result=result && thrown;
 
@@ -3357,7 +3357,7 @@
             }catch(e)
             {
                 thrown=true;
-                result=result && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_NOT_EDITABLE_IN_STATE);
+                result=result && (e.type=="BaseTypedException" && e.code==Siviglia.model.BaseTypedException.ERR_NOT_EDITABLE_IN_STATE);
             }
             result=result && thrown;
 
@@ -3369,7 +3369,7 @@
             }catch(e)
             {
                 // Ahora mismo, hay 3 campos con errores: one, (de arriba), state y three (que es requerido)
-                result=result && e.path==="/a/state" && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION)
+                result=result && e.path==="/a/state" && (e.type=="BaseTypedException" && e.code==Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION)
                                && cnt.getErroredFields().length===3;
                 thrown=true;
             }
@@ -3388,7 +3388,7 @@
                 cnt.state = "E2";
             }catch(e)
             {
-                result=result && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_FINAL_STATE);
+                result=result && (e.type=="BaseTypedException" && e.code==Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_FINAL_STATE);
                 thrown=true;
             }
             cnt.destruct();
@@ -3450,7 +3450,7 @@
             }catch(e)
             {
                 thrown=true;
-                result=result && e.path==="/a/state" && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION);
+                result=result && e.path==="/a/state" && (e.type=="BaseTypedException" && e.code==Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION);
             }
             result=result && true==thrown;
 
@@ -3930,7 +3930,7 @@
                 obj.two="hola";
             }catch(e) {
                 thrown=true;
-                result=result && (e.type=="BaseTypeException" && e.code==Siviglia.model.BaseTypedException.ERR_NOT_EDITABLE_IN_STATE);
+                result=result && (e.type=="BaseTypedException" && e.code==Siviglia.model.BaseTypedException.ERR_NOT_EDITABLE_IN_STATE);
                 result=result && true==obj.__isErrored();
                 erroredFields=obj.getErroredFields();
                 result=result && 1== erroredFields.length;
@@ -3964,11 +3964,11 @@
                 result=result && 2==errored.length;
                 result=result && "/three"==errored[0].__getFieldPath();
                 var exception=errored[0].__getError();
-                result=result && exception.type=='BaseTypeException';
+                result=result && exception.type=='BaseTypedException';
                 result=result && exception.code==Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD;
 
                 exception=errored[1].__getError();
-                result=result && exception.type=='BaseTypeException';
+                result=result && exception.type=='BaseTypedException';
                 result=result && exception.code==Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION;
                 result=result && exception.path==="/status";
                 thrown=true;
@@ -4015,7 +4015,7 @@
                 obj.status="Other";
             }catch(e) {
                 thrown=true;
-                result = e.type == 'BaseTypeException';
+                result = e.type == 'BaseTypedException';
                 result = result && e.code == Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_STATE_TO;
             }
             obj.destruct();
@@ -4068,7 +4068,7 @@
             }catch(e)
             {
                 thrown=true;
-                result = e.type == 'BaseTypeException';
+                result = e.type == 'BaseTypedException';
                 result = result && e.code == Siviglia.model.BaseTypedException.ERR_UNKNOWN_STATE;
             }
             obj.destruct();
@@ -4149,7 +4149,7 @@
             }catch(e)
             {
                 thrown=true;
-                result = e.type == 'BaseTypeException';
+                result = e.type == 'BaseTypedException';
                 result = result && e.code == Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_STATE;
             }
             obj.destruct();
@@ -4213,7 +4213,7 @@
             }catch(e)
             {
                 thrown=true;
-                result = e.type == 'BaseTypeException';
+                result = e.type == 'BaseTypedException';
                 result = result && e.code == Siviglia.model.BaseTypedException.ERR_CANT_CHANGE_FINAL_STATE;
             }
             obj.destruct();
@@ -4401,7 +4401,7 @@
             }catch(e)
             {
                 thrown=true;
-                result = e.type == 'BaseTypeException';
+                result = e.type == 'BaseTypedException';
                 result = result && e.code == Siviglia.model.BaseTypedException.ERR_INVALID_STATE_TRANSITION;
                 isErrored=t.__isErrored();
                 isErrored2=t["*inner"].__isErrored();

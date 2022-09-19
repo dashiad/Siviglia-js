@@ -138,10 +138,13 @@ Siviglia.Utils.buildClass(
                             ERR_CANT_SAVE_ERRORED_FIELD: 21,
                             ERR_CANT_SAVE_ERRORED_OBJECT: 22,
                             ERR_CANT_COPY_ERRORED_FIELD: 23,
+                            ERR_TYPE_NOT_FOUND:24,
+                            ERR_INVALID_SERIALIZER:25,
+                            ERR_UNSET:26
                         },
                     construct: function (path, code, params) {
                         this.path = path;
-                        this.type = 'BaseTypeException';
+                        this.type = 'BaseTypedException';
                         this.code = code;
                         this.params = params;
                     },
@@ -153,7 +156,7 @@ Siviglia.Utils.buildClass(
     {
         context: 'Siviglia.types',
         classes: {
-            BaseTypeException:
+            BaseTypedException:
                 {
                     constants:
                         {
@@ -168,7 +171,7 @@ Siviglia.Utils.buildClass(
                         },
                     construct: function (path, code, params) {
                         this.path = path;
-                        this.type = 'BaseTypeException';
+                        this.type = 'BaseTypedException';
                         this.code = code;
                         this.params = params;
                     },
@@ -463,7 +466,7 @@ Siviglia.Utils.buildClass(
                                     }
                                     if (validationMode === Siviglia.types.BaseType.VALIDATION_MODE_STRICT) {
                                         if (this.__isRequired()) {
-                                            var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED);
+                                            var e = new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD);
                                             this.__setErrored(e);
                                             throw e;
                                         }
@@ -565,7 +568,7 @@ Siviglia.Utils.buildClass(
                                     if (!this.__hasOwnValue()) {
                                         if (validationMode === Siviglia.types.BaseType.VALIDATION_MODE_STRICT) {
                                             if (this.__isRequired()) {
-                                                var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED);
+                                                var e = new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD);
                                                 this.__setErrored(e);
                                                 throw e;
                                             }
@@ -608,7 +611,7 @@ Siviglia.Utils.buildClass(
                                 if (this.__hasSource()) {
                                     if(value===null)
                                     {
-                                        var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: value});
+                                        var e = new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_VALUE, {value: value});
                                         // No lo ponemos a errored. Esto lo hara quien capture esta excepcion.
                                         //this.__setErrored(e);
                                         // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
@@ -622,7 +625,7 @@ Siviglia.Utils.buildClass(
                                     var checker=function(val) {
                                         if (!s.contains(val)) {
                                             //this.setValue(null);
-                                            var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: val});
+                                            var e = new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_VALUE, {value: val});
                                             // No lo ponemos a errored. Esto lo hara quien capture esta excepcion.
                                             //this.__setErrored(e);
                                             // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
@@ -662,7 +665,7 @@ Siviglia.Utils.buildClass(
                                             if(wasChecked===false && !this.__saving)
                                                 return;
                                             // Si no lo sabiamos, creamos una excepcion, y ponemos este objeto a erroneo.
-                                            var e=new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: this.getValue()});
+                                            var e=new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_VALUE, {value: this.getValue()});
                                             this.__setErrored(e);
                                             // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
                                             // que podemos borrar el error, y volver a poner este campo a "ok"
@@ -683,7 +686,7 @@ Siviglia.Utils.buildClass(
                                         // El source no es valido.Si no es valido, y el valor actual si lo es, hay que lanzar una excepcion
                                         if(wasChecked==true)
                                         {
-                                            var e=new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: this.getValue()});
+                                            var e=new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_VALUE, {value: this.getValue()});
                                             this.__setErrored(e);
                                             // Nos guardamos que la excepcion se ha lanzado aqui, para que, si más tarde, desde el listener de source, se valida ok, sepamos
                                             // que podemos borrar el error, y volver a poner este campo a "ok"
@@ -827,7 +830,7 @@ Siviglia.Utils.buildClass(
                                 if (this.__isErrored())
                                     throw new Siviglia.model.BaseTypedException(this.__fieldNamePath,Siviglia.model.BaseTypedException.ERR_CANT_SAVE_ERRORED_FIELD);
                                 if (!Siviglia.empty(this.__definition.REQUIRED) && this.__definition.REQUIRED==true && (!this.__valueSet || this.__value === "")) {
-                                    this.__setErrored(new Siviglia.types.BaseTypeException(this.__fieldNamePath, Siviglia.types.BaseTypeException.ERR_REQUIRED));
+                                    this.__setErrored(new Siviglia.model.BaseTypedException(this.__fieldNamePath, Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD));
                                 }
                                 if (this.isDirty())
                                     this.__setDirty(false);
@@ -931,7 +934,7 @@ Siviglia.Utils.buildClass(
                 },
             IntegerException:
                 {
-                    inherits: 'BaseTypeException',
+                    inherits: 'Siviglia.model.BaseTypedException',
                     constants:
                         {
                             ERR_TOO_SMALL: 100,
@@ -939,7 +942,7 @@ Siviglia.Utils.buildClass(
                             ERR_NOT_A_NUMBER: 102
                         },
                     construct: function (path, code, params) {
-                        this.BaseTypeException(path, code, params);
+                        this.BaseTypedException(path, code, params);
                         this.type = 'IntegerException';
                     }
                 },
@@ -950,7 +953,7 @@ Siviglia.Utils.buildClass(
                         {
                             get: function () {
                                 if (!this.__valueSet)
-                                    throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_UNSET);
+                                    throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_UNSET);
                                 return parseInt(this.__value);
                             },
                             getValue: function () {
@@ -988,14 +991,14 @@ Siviglia.Utils.buildClass(
                 },
             StringException:
                 {
-                    inherits: 'BaseTypeException',
+                    inherits: 'Siviglia.model.BaseTypedException',
                     constants: {
                         ERR_TOO_SHORT: 100,
                         ERR_TOO_LONG: 101,
                         ERR_INVALID_CHARACTERS: 102
                     },
                     construct: function (path, code, params) {
-                        this.BaseTypeException(path, code, params);
+                        this.BaseTypedException(path, code, params);
                         this.type = 'StringException';
                     }
                 },
@@ -1009,7 +1012,7 @@ Siviglia.Utils.buildClass(
                                 var val=this.__value;
                                 if (this.__isEmptyValue(val)) {
                                     if (this.__definition.REQUIRED)
-                                        throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_UNSET);
+                                        throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_UNSET);
                                     else {
                                             return true;
                                         }
@@ -1109,7 +1112,7 @@ Siviglia.Utils.buildClass(
                 },
             DateTimeException:
                 {
-                    inherits: 'BaseTypeException',
+                    inherits: 'Siviglia.model.BaseTypedException',
                     constants:
                         {
                             ERR_START_YEAR: 100,
@@ -1120,7 +1123,7 @@ Siviglia.Utils.buildClass(
                             ERR_STRICTLY_FUTURE: 105
                         },
                     construct: function (path, code, params) {
-                        this.BaseTypeException(path, code, params);
+                        this.BaseTypedException(path, code, params);
                         this.type = 'DateTimeException';
                     }
                 },
@@ -1141,7 +1144,7 @@ Siviglia.Utils.buildClass(
                                 var year = odate.getFullYear();
 
                                 if (isNaN(year)) {
-                                    throw new ex.DateTimeException(this.getFullPath(), ex.BaseTypeException.ERR_INVALID);
+                                    throw new ex.DateTimeException(this.getFullPath(), ex.BaseTypedException.ERR_INVALID_VALUE);
                                 }
 
                                 var ex = Siviglia.types;
@@ -1206,7 +1209,7 @@ Siviglia.Utils.buildClass(
                                     odate = new Date();
                                     odate.setTime(v);
                                     if (odate == 'Invalid date') {
-                                        throw new ex.DateTimeException(this.getFullPath(), ex.BaseTypeException.ERR_INVALID);
+                                        throw new ex.DateTimeException(this.getFullPath(), ex.BaseTypedException.ERR_INVALID_VALUE);
                                     }
                                 } else
                                     odate = value;
@@ -1259,7 +1262,7 @@ Siviglia.Utils.buildClass(
                                 var val=this.__value;
                                 var v = this.__definition.VALUES;
                                 if (this.__isEmptyValue(val))
-                                    throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_UNSET);
+                                    throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_UNSET);
 
                                 if (Siviglia.types.isString(val) && val != parseInt(val)) {
                                     var idx = this.findIndexOf(val);
@@ -1269,7 +1272,7 @@ Siviglia.Utils.buildClass(
                                         return true;
                                 }
 
-                                throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {val: val});
+                                throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_VALUE, {val: val});
                             },
                             _setValue: function (val) {
                                 if (Siviglia.types.isString(val) && val != parseInt(val)) {
@@ -1431,7 +1434,7 @@ Siviglia.Utils.buildClass(
             },
             /* START */
             FileException: {
-                inherits: 'BaseTypeException',
+                inherits: 'Siviglia.model.BaseTypedException',
                 constants: {
                     ERR_FILE_TOO_SMALL: 100,
                     ERR_FILE_TOO_BIG: 101,
@@ -1446,7 +1449,7 @@ Siviglia.Utils.buildClass(
                     ERR_UPLOAD_ERR_FORM_SIZE: 111
                 },
                 construct: function (path, code, message) {
-                    this.BaseTypeException(path, code, message);
+                    this.BaseTypedException(path, code, message);
                     this.type = 'FileException';
                 }
             },
@@ -1465,7 +1468,7 @@ Siviglia.Utils.buildClass(
                             __localValidate: function () {
                                 var val=this.__value;
                                 if (this.__isEmptyValue(val) || val === "")
-                                    throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_UNSET);
+                                    throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_UNSET);
 
                                 if (window.File && window.FileList && window.FileReader) {
                                     size = val.fileSize;
@@ -1548,7 +1551,7 @@ Siviglia.Utils.buildClass(
                         ERR_TOO_TALL: 124
                     },
                     construct: function (path, code, param) {
-                        this.BaseTypeException(path, code, param);
+                        this.BaseTypedException(path, code, param);
                         this.type = 'ImageException';
                     }
                 },
@@ -1565,7 +1568,7 @@ Siviglia.Utils.buildClass(
                             __localValidate: function () {
                                 var val=this.__value;
                                 if (this.__isEmptyValue(val) || val === "")
-                                    throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_UNSET);
+                                    throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_UNSET);
 
                                 if (window.File && window.FileList && window.FileReader && window.Blob) {
                                     // Se pueden hacer cosas con HTML5, como copiarlo a un canvas y saber el tamanio real de la imagen,
@@ -1646,7 +1649,7 @@ Siviglia.Utils.buildClass(
                                 if (("" + val).match(/[0-9]+(:?\.[0-9]*)/)) {
                                     return true;
                                 }
-                                throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID);
+                                throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_VALUE);
                             }
                         }
                 },
@@ -1695,7 +1698,7 @@ Siviglia.Utils.buildClass(
                         {
                             get: function () {
                                 if (!this.__valueSet)
-                                    throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_UNSET);
+                                    throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_UNSET);
 
                                 if (Siviglia.Utils.isSubclass(valueType, 'Siviglia.types.Integer'))
                                     return parseInt(this.__value);
@@ -2345,7 +2348,7 @@ Siviglia.Utils.buildClass(
                                 if (f.__isRequired()) {
                                     if(throwExceptions)
                                     {
-                                        var e = new Siviglia.types.BaseTypeException(f.__getFieldPath(),Siviglia.types.BaseTypeException.ERR_REQUIRED);
+                                        var e = new Siviglia.model.BaseTypedException(f.__getFieldPath(),Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD);
                                         f.__setErrored(e);
                                         throw e;
                                     }
@@ -2812,7 +2815,7 @@ Siviglia.Utils.buildClass(
                                     return true;
                /*                     } catch (e) {
                                         m.fireEvent("ERROR", {})
-                                        throw new Siviglia.types.BaseTypeException(m.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {});
+                                        throw new Siviglia.model.BaseTypedException(m.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_VALUE, {});
                                         return false;
                                     }*/
                                 }
@@ -3002,7 +3005,7 @@ Siviglia.Utils.buildClass(
 
                                 if (nSet === 0 && !Siviglia.empty(this.__definition.REQUIRED) && this.__definition.REQUIRED === true &&
                                     this.__definition["SET_ON_EMPTY"] !== true)
-                                    this.__setErrored(new Siviglia.types.BaseTypeException(this.__fieldNamePath, Siviglia.types.BaseTypeException.ERR_REQUIRED));
+                                    this.__setErrored(new Siviglia.model.BaseTypedException(this.__fieldNamePath, Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD));
 
 
                         },
@@ -3048,7 +3051,7 @@ Siviglia.Utils.buildClass(
                                 for(var k in val) {
                                     if (!s.contains(k)) {
                                         //this.setValue(null);
-                                        var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: k});
+                                        var e = new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_VALUE, {value: k});
                                         this.__setErrored(e);
                                         this.__sourceException=true;
                                         throw e;
@@ -3063,14 +3066,14 @@ Siviglia.Utils.buildClass(
                 },
 
                 TypeSwitcherException: {
-                    inherits: 'BaseTypeException',
+                    inherits: 'Siviglia.model.BaseTypedException',
                     constants: {
                         ERR_TYPE_NOT_SET: 140,
                         ERR_INVALID_TYPE: 141,
                     },
                     construct: function (path, code, param) {
                         this.path = path;
-                        this.BaseTypeException(path, code, param);
+                        this.BaseTypedException(path, code, param);
                         this.type = 'TypeSwitcherException';
                     }
                 },
@@ -3501,7 +3504,7 @@ Siviglia.Utils.buildClass(
                                for(var k=0;k<val.length;k++) {
                                    if (!s.contains(val[k])) {
                                        //this.setValue(null);
-                                       var e = new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_INVALID, {value: val[k]});
+                                       var e = new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_INVALID_VALUE, {value: val[k]});
                                        this.__setErrored(e);
                                        this.__sourceException=true;
                                        throw e;
@@ -4223,7 +4226,7 @@ Siviglia.Utils.buildClass(
                                             type = def["TYPE"];
                                         }
                                     } else
-                                        throw new Siviglia.types.BaseTypeException(this.getFullPath(), Siviglia.types.BaseTypeException.ERR_TYPE_NOT_FOUND, {type: type});
+                                        throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_TYPE_NOT_FOUND, {type: type});
                                 } else
                                     type = def['TYPE'];
                             } else {
@@ -4255,14 +4258,14 @@ Siviglia.Utils.buildClass(
                                             url: Siviglia.config.metadataUrl + "js/" + Siviglia.config.mapper + "/" + type,
                                             success: function (data) {
                                                 if (data === null)
-                                                    throw new Siviglia.types.BaseTypeException(null, Siviglia.types.BaseTypeException.ERR_TYPE_NOT_FOUND, {type: type});
+                                                    throw new Siviglia.model.BaseTypedException(null, Siviglia.model.BaseTypedException.ERR_TYPE_NOT_FOUND, {type: type});
                                                 Siviglia.types.typeCache[type] = data;
                                             },
                                             complete: function (data) {
 
                                             },
                                             error: function (data) {
-                                                throw new Siviglia.types.BaseTypeException(null, Siviglia.types.BaseTypeException.ERR_TYPE_NOT_FOUND, {type: type});
+                                                throw new Siviglia.model.BaseTypedException(null, Siviglia.model.BaseTypedException.ERR_TYPE_NOT_FOUND, {type: type});
                                             }
 
                                         }

@@ -542,7 +542,7 @@
                 if ( typeof this.inputNode !== "undefined" &&
                   node_empty_and_required === ""  &&  input_required) {
                   // lanzamos una excepcion con el codigo de error de campo requerido (5)
-                  var e = new Siviglia.types.BaseTypeException(this.type.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED, this.type.__definition);
+                  var e = new Siviglia.model.BaseTypedException(this.type.getFullPath(), Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD, this.type.__definition);
                   this.type.__setErrored(e);
                   //throw e;
                 }else{
