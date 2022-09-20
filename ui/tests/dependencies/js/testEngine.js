@@ -1,7 +1,8 @@
 var urlParams = new URLSearchParams(window.location.search);
 
 if (urlParams.has('path')) {
-  Siviglia.require(['/packages/Siviglia/ui/tests/' + urlParams.get('path')], true, false)
+  testFilePath = '/packages/Siviglia/ui/tests/' + urlParams.get('path')
+  // Siviglia.require(['/packages/Siviglia/ui/tests/' + urlParams.get('path')], true, false)
 } else {
   console.log('No se ha indicado un path para el test')
 }
