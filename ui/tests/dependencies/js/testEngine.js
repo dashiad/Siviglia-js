@@ -213,7 +213,7 @@ function runTest(name, doc, template, view, callback) {
   if (typeof expectedResult == "undefined")
     expectedResult = true;
 
-  testStack.push({
+  return testStack.push({
     name: name,
     doc: doc,
     template: template,
@@ -224,14 +224,14 @@ function runTest(name, doc, template, view, callback) {
 }
 
 function saveFileInUserStorage(filename, data, type) {
-  const file = new Blob([data], { type: type })
+  const file = new Blob([data], {type: type})
   const a = document.createElement('a')
   const url = URL.createObjectURL(file)
   a.href = url
   a.download = filename
   document.body.appendChild(a)
   a.click()
-  setTimeout(function() {
+  setTimeout(function () {
     document.body.removeChild(a)
     window.URL.revokeObjectURL(url)
   }, 0)
@@ -239,9 +239,7 @@ function saveFileInUserStorage(filename, data, type) {
 
 
 function addTestPromise(name, doc, path) {
-  var template
-  var view
-  var code
+  var currentTestIndex = runTest(name, doc) - 1
   var promise = $.Deferred();
   /* Parece que no hace falta incluir el path completo del test
   *  Se deja el código por si en un futuro se quiere cambiar
@@ -250,12 +248,9 @@ function addTestPromise(name, doc, path) {
   var url = Siviglia.config.staticsUrl + uiTestPath + path
   $.get(url).then(function(res) {*/
   $.get(path).then(function (res) {
-    template = getStringBetween(res, '<!-- templateInit -->', '<!-- templateEnd -->').replace(/(\r\n|\n|\r)/gm, "");
-    view = getStringBetween(res, '<!-- viewInit -->', '<!-- viewEnd -->').replace(/(\r\n|\n|\r)/gm, "");
-    code = Function(getStringBetween(res, '//codeInit', '//codeEnd'))
-    /* ToDo: al estar dentro de la resolución de la promesa runTest (que es quien mete en el array el test) no se
-    *   asegura que el orden te los test sea siempre el mismo; depende del orden en el que se resuelvan los $.get */
-    runTest(name, doc, template, view, code)
+    testStack[currentTestIndex].template = getStringBetween(res, '<!-- templateInit -->', '<!-- templateEnd -->').replace(/(\r\n|\n|\r)/gm, "");
+    testStack[currentTestIndex].view = getStringBetween(res, '<!-- viewInit -->', '<!-- viewEnd -->').replace(/(\r\n|\n|\r)/gm, "");
+    testStack[currentTestIndex].cb = Function(getStringBetween(res, '//codeInit', '//codeEnd'))
     promise.resolve()
   })
 
