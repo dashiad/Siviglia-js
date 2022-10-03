@@ -1509,18 +1509,22 @@ Siviglia.Utils.buildClass(
               onRemoveItem: function (node, params, evName, event) {
                 var idx = params.index;
                 var v = this.type.getValue();
+                var currentSelectionIndex = this.currentSelection
+                if (this.currentItem) {
+                  this.currentItem.destruct();
+                  this.currentItemNode.html("");
+                }
                 v.splice(idx, 1);
-                if (idx === this.currentSelection) {
-                  if (this.type.getValue().length > 0)
-                    this.setSelected(0);
-                  else {
-                    this.currentSelection = -1;
-                    if (this.currentItem) {
-                      this.currentItem.destruct();
-                      this.currentItemNode.html("");
-                    }
+                if (currentSelectionIndex > idx) {
+                  this.setSelected(currentSelectionIndex - 1)
+                } else if (currentSelectionIndex < idx) {
+                  this.setSelected(0)
+                  this.setSelected(currentSelectionIndex)
+                } else if (currentSelectionIndex === idx) {
+                  if (currentSelectionIndex === 0 && v.length > 1) {
+                    this.setSelected(v.length - 1)
                   }
-
+                  this.setSelected(0)
                 }
 
                 event.stopPropagation()
