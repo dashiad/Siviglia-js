@@ -1514,21 +1514,17 @@ Siviglia.Utils.buildClass(
                 var idx = params.index;
                 var v = this.type.getValue();
                 var curIdx=this.currentSelection;
-                v.splice(idx, 1);
-
                 if (idx === this.currentSelection) {
-                  if (this.type.getValue().length > 0)
-                    this.setSelected(0);
-                  else {
-                    this.currentSelection = -1;
-                    if (this.currentItem) {
-                      this.currentItem.destruct();
-                      this.currentItemNode.html("");
-                    }
+                  if (this.currentItem) {
+                    this.currentItem.destruct();
+                    this.currentItemNode.html("");
                   }
-
                 }
-
+                v.splice(idx, 1);
+                if (this.type.getValue().length > 0)
+                  this.setSelected(0);
+                else
+                  this.currentItem=null;
 
                 event.stopPropagation()
               },
@@ -1566,8 +1562,8 @@ Siviglia.Utils.buildClass(
                 event.stopPropagation();
               },
               setSelected: function (idx) {
-                if (idx == this.currentSelection)
-                  return;
+                /*if (idx == this.currentSelection)
+                  return;*/
                 if (this.currentItem) {
                   this.currentItem.destruct();
                   this.currentItemNode.html("");
