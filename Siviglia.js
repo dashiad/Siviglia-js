@@ -3002,8 +3002,13 @@ Siviglia.Utils.load=function(assets, isStatic, doParse) {
         var htmlURL = subdomain + config.template
 
         if (!config.node) {
-            config.node = $('<div style="display:none"></div>');
-            $(document.body).append(config.node);
+            if(typeof Siviglia.Utils.load.__rootloadnode__=="undefined") {
+                Siviglia.Utils.load.__rootloadnode__ = $('<div style="display:none;"></div>');
+                $(document.body).prepend(Siviglia.Utils.load.__rootloadnode__);
+            }
+            var newDiv=$('<div></div>');
+            Siviglia.Utils.load.__rootloadnode__.append(newDiv);
+            config.node=newDiv;
         }
 
         widgetPrototype.widgetExecutingRequires[jsURL]=0;
@@ -3025,9 +3030,10 @@ Siviglia.Utils.load=function(assets, isStatic, doParse) {
         widgetPromises.push(jsAndRequirePromise);
 
         $.when.apply($, widgetPromises).then(function () {
-            if (typeof doParse !== "undefined" && doParse === true) {
+            if (true ){ //typeof doParse !== "undefined" && doParse === true) {
                 var parser = new Siviglia.UI.HTMLParser(config.context, null);
                 parser.parse(config.node);
+                config.node.data("noparse",true);
             }
             promise.resolve(config.node);
             if(typeof widgetPrototype.widgetLoadingPromises[jsURL] !=="undefined")
