@@ -465,7 +465,7 @@ Siviglia.Utils.isSubclass = function (obj, className) {
     function checkSubclassesRecursively(current, target) {
         var baseClasses = Siviglia.__store__.classes[current];
         if (typeof baseClasses !== 'undefined') {
-            for (var baseClassIndex = 0, maxIndex = baseClasses.length - 1; baseClassIndex <= maxIndex; baseClassesIndex++) {
+            for (var baseClassIndex = 0, maxIndex = baseClasses.length - 1; baseClassIndex <= maxIndex; baseClassIndex++) {
                 var baseClass = baseClasses[baseClassIndex]
                 if (baseClass === target) return true;
                 if (checkSubclassesRecursively(baseClass, target)) return true;
