@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Require test</title>
+    <script src='http://statics.adtopy.com/node_modules/d3/dist/d3.js'></script>
+    <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
+    <script src="http://statics.adtopy.com/node_modules/autobahn-browser/autobahn.min.js"></script>
+
+    <script src="http://statics.adtopy.com/packages/Siviglia/Siviglia.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaStore.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaTypes.js"></script>
+    <script src="http://statics.adtopy.com/packages/Siviglia/Model.js"></script>
+
+    <script src="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/jqx-all.js"></script>
+    <script src="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/globalization/globalize.js"></script>
+
+    <script src="http://statics.adtopy.com/reflection/js/WampServer.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/backend/css/style.css">
+
+    <link rel="stylesheet" type="text/css" href="http://statics.adtopy.com/packages/Siviglia/css/jqx/JqxWidgets.css">
+    <link rel="stylesheet" type="text/css"
+          href="http://statics.adtopy.com/packages/Siviglia/css/jqx/jqx.adtopy-dev.css">
+
+    <link rel="stylesheet" type="text/css"
+          href="http://statics.adtopy.com/node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css">
+
+    <link rel="stylesheet" type="text/css"
+          href="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/css/testStyles.css">
+
+
+    <!-- dependencias para la visualizacion de test-->
+    <script src="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/highlight/highlight.pack.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/highlight/styles/ir-black.css">
+</head>
+<body style="background-color:#EEE; background-image:none;">
+<script>
+  var Siviglia = Siviglia || {};
+  Siviglia.debug = true;
+
+  Siviglia.config = {
+    baseUrl: 'http://reflection.adtopy.com/',
+    staticsUrl: 'http://statics.adtopy.com/',
+    metadataUrl: 'http://metadata.adtopy.com/',
+    user: {
+      USER_ID: "1",
+      TOKEN: "1"
+    },
+    wampServer: {
+      "URL": "ws://statics.adtopy.com",
+      "PORT": "8999",
+      "REALM": "adtopy",
+    },
+    // Si el mapper es XXX, debe haber:
+    // 1) Un gestor en /lib/output/html/renderers/js/XXX.php
+    // 2) Un Mapper en Siviglia.Model.XXXMapper
+    // 3) Las urls de carga de modelos seria /js/XXX/model/zzz/yyyy....
+    mapper: 'Siviglia'
+  };
+  Siviglia.Model.initialize(Siviglia.config);
+
+  var wConfig = Siviglia.config.wampServer;
+  var wampServer = new Siviglia.comm.WampServer(
+    wConfig.URL,
+    wConfig.PORT,
+    wConfig.REALM,
+    Siviglia.config.user.TOKEN
+  );
+  Siviglia.Service.add("wampServer", wampServer);
+
+  var parser = new Siviglia.UI.HTMLParser();
+  parser.parse($(document.body));
+</script>
+
+<script>
+  var signingBook = []
+
+  // Test básico del funcionamiento de require
+  /*var dependencyList = [
+    'stubs/simpleDependency.js',
+  ]*/
+
+  // Test de carga de distintos tipos de recurso
+  /*var dependencyList = [
+    '/packages/Siviglia/tests/require/stubs/mock.html',
+    '/packages/Siviglia/tests/require/stubs/mock.js',
+    '/packages/Siviglia/tests/require/stubs/mock.css'
+  ]*/
+
+  // Test de carga de widget por objeto
+  /*var dependencyList = [
+    {
+      template: '/packages/Siviglia/tests/require/stubs/widgetMock.html',
+      js: '/packages/Siviglia/tests/require/stubs/widgetMock.js',
+    },
+  ]*/
+
+  // Test de paths
+  /*var dependencyList = [
+    // para widgets funciona poner el path desde el raiz SIN BARRA '/'
+    'packages/Siviglia/tests/require/stubs/widgetMock',
+    // para un recurso de otro tipo falla
+    'packages/Siviglia/tests/require/stubs/mock.js',
+    // funciona si el mismo path comienza con '/'
+    '/packages/Siviglia/tests/require/stubs/mock.html',
+    // para recursos no widget funciona poner un path relativo al directorio del archivo
+    // que genera el contexto principal
+    'stubs/mock.css',
+    // para widgets no funciona el path relativo al directorio del archivo
+    // que genera el contexto principal
+    'stubs/widgetMock',
+    // Cuando se carga por objeto funciona correctamente con y sin '/' al ppio
+    {
+      template: '/packages/Siviglia/tests/require/stubs/widgetMock.html',
+      js: '/packages/Siviglia/tests/require/stubs/widgetMock.js',
+    },
+    {
+      template: 'packages/Siviglia/tests/require/stubs/widgetMock.html',
+      js: 'packages/Siviglia/tests/require/stubs/widgetMock.js',
+    },
+  ]*/
+
+  // Test de verificación de relaciones entre dependencias
+  /*var dependencyList = [
+     'chainTest.js',
+    // 'multipleTest.js',
+    // 'mutualRequirementTest.js',
+    // 'chainedMultipleTest.js',
+  ]*/
+
+
+  Siviglia.require(dependencyList, true, false).then(function () {
+    $(document).ready(function () {
+      console.log('running main context')
+      signingBook.push('Main context')
+    })
+  })
+</script>
+</body>
+</html>
