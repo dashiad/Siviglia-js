@@ -55,7 +55,7 @@ testPromises.push(addTestPromise(
 testPromises.push(addTestPromise(
   'SivId y ByCode: definition',
   'Los nodos que contienen el atributo data-sivId, se mapean a variables con el mismo nombre en la clase del widget <br>Todos los ejemplos hasta ahora, han instanciado los widgets desde HTML, con un tag sivView. En este ejemplo, se instancia una vista a traves de código.<br>Los parámetros recibidos son: 1)Nombre de la template, 2)Parametros (recibidos en preInitialize), 3)Bloques (actualmente sin uso), 4)Placeholder (establer a un div vacio), 5)instancia de Siviglia.Path.ContextStack<br>En el ejemplo, se crea una instancia del widget Test.Sample, dentro del nodo identificado por sivId=here<br>Una vez creada la instancia, se llama a su metodo __build, que devuelve una promesa.El widget estará construido cuando la promesa se resuelva<br>Un punto importante, es que los widgets creados desde código, deben ser destruidos cuando no son necesarios (en este caso, se hace en el destruct del propio widget)',
-  'expando/sivId-byCode.definitionTest.html'
+  'expando/sivId-ByCode.definitionTest.html'
 ))
 testPromises.push(addTestPromise(
   'sivLayout: definition',
