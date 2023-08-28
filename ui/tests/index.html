@@ -84,21 +84,20 @@
     "packages/Siviglia/ui/Types",
     "packages/Siviglia/ui/View",
   ]
-  var testPromises = []
-  var testFilePath
+  // var testPromises = []
+  // var testFilePath
 
   Siviglia.require(dependencyList, true, false).then(function () {
-
-    $(document).ready(function () {
+    /*$(document).ready(function () {
       Siviglia.require([testFilePath], true, false).then(function () {
         var parser = new Siviglia.UI.HTMLParser();
         parser.parse($(document.body));
         $.when.apply($, testPromises).done(function () {
           if (testStack.length > 0)
-            checkTests()
+            buildTests()
         });
       })
-    })
+    })*/
   })
 </script>
 </body>
