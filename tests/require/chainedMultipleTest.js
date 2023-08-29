@@ -4,7 +4,7 @@ var dependencyList = [
   'stubs/thirdDependencyFromLast.js'
 ]
 
-Siviglia.require(dependencyList, true, false).then(() => {
+Siviglia.require(dependencyList).then(() => {
   signingBook.push('chainedMultipleTest')
   console.log('running chained multiple test')
 

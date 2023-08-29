@@ -6,4 +6,4 @@ var dependencyList = [
   "packages/Siviglia/ui/View",
 ]
 
-Siviglia.require(dependencyList, true, false).then(function () {console.log('terminadas dependencias')});
+Siviglia.require(dependencyList).then(function () {console.log('terminadas dependencias')});

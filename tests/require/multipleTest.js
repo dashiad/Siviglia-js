@@ -4,7 +4,7 @@ var dependencyList = [
   'stubs/simpleDependency3.js',
 ]
 
-Siviglia.require(dependencyList, true, false).then(() => {
+Siviglia.require(dependencyList).then(() => {
   signingBook.push('multipleTest')
   console.log('running multiple test')
 })

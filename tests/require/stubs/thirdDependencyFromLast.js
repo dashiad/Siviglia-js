@@ -1,4 +1,4 @@
-Siviglia.require('/packages/Siviglia/tests/require/stubs/lastButOneDependency.js', true, false).then(() => {
+Siviglia.require('/packages/Siviglia/tests/require/stubs/lastButOneDependency.js').then(() => {
   signingBook.push('third dependency from last')
   console.log('running third dependency from last')
 

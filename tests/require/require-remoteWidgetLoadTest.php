@@ -81,7 +81,7 @@
     "packages/Siviglia/ui/List",
     "packages/Siviglia/ui/App",
   ]
-  Siviglia.require(dependencyList, true, false).then(function () {
+  Siviglia.require(dependencyList).then(function () {
     console.log('require terminado')
 
     $(document).ready(function () {

@@ -1,7 +1,7 @@
 
 
 
-Siviglia.require('stubs/mutualRequirement1.js', true, false).then(() => {
+Siviglia.require('stubs/mutualRequirement1.js').then(() => {
   signingBook.push('mutual requirement B')
   console.log('running mutual requirement B')
 

@@ -2560,7 +2560,7 @@ Siviglia.Utils.buildClass(
                               "js":"/js/"+widgetName.replace(/\./g,"/")+".js",
                               "context":context
                           }
-                      ],false,true).then(function(){
+                      ],true).then(function(){
                           // Cuando se ha parseado el nodo al cargar el widget, se ha autoañadido a la cache.
                           if(typeof lib[widgetName]==="undefined")
                           {
@@ -2947,7 +2947,7 @@ Siviglia.UI.Expando.WidgetExpando.prototype.widgetPromises={};
 
 Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises={};
 Siviglia.UI.Expando.WidgetExpando.prototype.widgetExecutingRequires={};
-Siviglia.Utils.load=function(assets, isStatic, doParse) {
+Siviglia.Utils.load=function(assets, doParse) {
     var loadHTML=function(url,node,prevPromise){
         var promise=$.Deferred();
         $.get(url).then(function (r) {
@@ -2996,7 +2996,7 @@ Siviglia.Utils.load=function(assets, isStatic, doParse) {
     };
     var loadWidget = function (config, prevPromise) {
         var widgetPrototype = Siviglia.UI.Expando.WidgetExpando.prototype;
-        var subdomain = Siviglia.config[isStatic ? 'staticsUrl' : 'baseUrl']
+        var subdomain = Siviglia.config.staticsUrl
         var promise = $.Deferred();
         var jsURL = subdomain + config.js
         var htmlURL = subdomain + config.template
@@ -3091,16 +3091,19 @@ Siviglia.Utils.load=function(assets, isStatic, doParse) {
     });
     return curPromise;
 };
-Siviglia.require = function (list, isStatic, doParse) {
-    for (var k = 0; k < list.length; k++) {
-        var dependency = list[k];
-        var widgetURL = Siviglia.config[isStatic ? 'staticsUrl' : 'baseUrl']
+Siviglia.require = function (assets, doParse=false) {
+    if (typeof assets === 'string' || typeof assets.template === 'string') {
+        assets = [assets]
+    }
+    for (var k = 0; k < assets.length; k++) {
+        var dependency = assets[k];
+        var widgetURL = Siviglia.config.staticsUrl
         var promiseForDepended = $.Deferred();
         Siviglia.UI.Expando.WidgetExpando.prototype.widgetExecutingRequires[widgetURL + dependency + '.js'] = 1;
         Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js'] = promiseForDepended;
     }
 
-    var promise = Siviglia.Utils.load(list, isStatic, doParse);
+    var promise = Siviglia.Utils.load(assets, doParse);
     promise.then(function () {
         promiseForDepended.resolve()
     });

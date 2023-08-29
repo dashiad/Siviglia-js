@@ -1,4 +1,4 @@
-Siviglia.require('stubs/lastDependency.js', true, false).then(() => {
+Siviglia.require('stubs/lastDependency.js').then(() => {
   signingBook.push('last but one chained dependency')
   console.log('running last but one chained dependency')
 

@@ -78,7 +78,7 @@
     "packages/Siviglia/ui/List",
     "packages/Siviglia/ui/App",
   ]
-  Siviglia.require(dependencyList, true, false).then(function () {
+  Siviglia.require(dependencyList).then(function () {
     Siviglia.Utils.buildClass({
       context: "Test",
       classes: {

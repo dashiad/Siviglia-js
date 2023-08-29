@@ -220,7 +220,7 @@ function buildTests() {
   }
 }
 
-Siviglia.require(['dependencies/js/testsList.js'], true, false).then(function () {
+Siviglia.require(['dependencies/js/testsList.js']).then(function () {
   let selectedTests = []
   if (isSingleTest) {
     selectedTests.push(testsList.find(function (test) {

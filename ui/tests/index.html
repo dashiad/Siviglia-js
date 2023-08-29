@@ -87,9 +87,9 @@
   // var testPromises = []
   // var testFilePath
 
-  Siviglia.require(dependencyList, true, false).then(function () {
+  Siviglia.require(dependencyList).then(function () {
     /*$(document).ready(function () {
-      Siviglia.require([testFilePath], true, false).then(function () {
+      Siviglia.require([testFilePath]).then(function () {
         var parser = new Siviglia.UI.HTMLParser();
         parser.parse($(document.body));
         $.when.apply($, testPromises).done(function () {

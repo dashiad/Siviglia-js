@@ -185,7 +185,7 @@
     document.getElementById(containerID).appendChild(buttonElement)
   }
 
-  Siviglia.require(['dependencies/js/testsList.js'], true, false).then(function () {
+  Siviglia.require(['dependencies/js/testsList.js']).then(function () {
     $(document).ready(function () {
       for (const test of testsList) {
         if (test.path.includes('expando/')) {
