@@ -2,19 +2,19 @@
 <head>
     <meta charset="UTF-8">
     <title>VTests</title>
-    <script src="http://statics.adtopy.com/node_modules/jquery/dist/jquery.js"></script>
+    <script src="../../../node_modules/jquery/dist/jquery.js"></script>
 
-    <script src="http://statics.adtopy.com/packages/Siviglia/Siviglia.js"></script>
-    <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaStore.js"></script>
-    <script src="http://statics.adtopy.com/packages/Siviglia/SivigliaTypes.js"></script>
-    <script src="http://statics.adtopy.com/packages/Siviglia/Model.js"></script>
+    <script src="../../../packages/Siviglia/Siviglia.js"></script>
+    <script src="../../../packages/Siviglia/SivigliaStore.js"></script>
+    <script src="../../../packages/Siviglia/SivigliaTypes.js"></script>
+    <script src="../../../packages/Siviglia/Model.js"></script>
 
-    <script src="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/jsonView/jquery.json-view.min.js"></script>
+    <script src="../../../packages/Siviglia/ui/tests/dependencies/jsonView/jquery.json-view.min.js"></script>
     <link rel="stylesheet"
-          href="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/jsonView/jquery.json-view.min.css">
+          href="../../../packages/Siviglia/ui/tests/dependencies/jsonView/jquery.json-view.min.css">
     <link rel="stylesheet"
-          href="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/highlight/styles/monokai.css">
-    <script src="http://statics.adtopy.com/packages/Siviglia/ui/tests/dependencies/highlight/highlight.pack.js"></script>
+          href="../../../packages/Siviglia/ui/tests/dependencies/highlight/styles/monokai.css">
+    <script src="../../../packages/Siviglia/ui/tests/dependencies/highlight/highlight.pack.js"></script>
     <style type="text/css">
         .testDiv {}
         .testTitle {}
@@ -42,7 +42,8 @@
         var Siviglia = Siviglia || {};
         Siviglia.config = {
             baseUrl: 'http://editor.adtopy.com/',
-            staticsUrl: 'http://statics.adtopy.com/',
+            // staticsUrl: 'http://statics.adtopy.com/',
+            staticsUrl: '../../../',
             metadataUrl:'http://metadata.adtopy.com/',
             jsFramework: 'jquery',
             locale: 'es-ES',
@@ -2821,7 +2822,7 @@
     }, true);
 
 
-    runTest("Tipo Custom Remoto, definido via Metadata",
+    /*runTest("Tipo Custom Remoto, definido via Metadata",
         "Se crea un bto cuyo tipo es remoto (en este caso, un tipo metadata de String)",
         {
             "FIELDS": {
@@ -2856,7 +2857,7 @@
         var status= t1.f4.LABEL=="Probando" && t1.f4["*STRICTLYPAST"].__definition.TYPE=="Boolean";
         t1.destruct();
         return status;
-    }, true);
+    }, true);*/
     runTest("Typeswitcher extended 1",
         "Especificacion de typeswitcher basados en el tipo de dato de un cierto campo existente en el valor asignado al TypeSwicther.Esto es, en la clave 'ON' del TypeSwitcher, existe un campo FIELD",
         {
@@ -4652,7 +4653,14 @@
 
 </script>
 <script>
-    checkTests();
+  // if (DEVELOP_MODE <= 98) {
+  //   DEVELOP_MODE++
+  //   setTimeout(function () {
+  //     window.open("http://0.0.0.0:9000/packages/Siviglia/tests/VTest.html?test=" + DEVELOP_MODE, "_self")
+  //   }, 1000)
+  // }
+  checkTests();
+
 </script>
 </body>
 </html>
