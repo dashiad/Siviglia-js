@@ -3039,7 +3039,7 @@ Siviglia.Utils.load=function(assets, doParse) {
             if(typeof widgetPrototype.widgetLoadingPromises[jsURL] !=="undefined")
                 widgetPrototype.widgetLoadingPromises[jsURL].resolve();
         })
-        return jsPromise
+        return promise
     }
 
     if (typeof assets === 'string' || typeof assets.template === 'string')
@@ -3091,23 +3091,32 @@ Siviglia.Utils.load=function(assets, doParse) {
     });
     return curPromise;
 };
-Siviglia.require = function (assets, doParse=false) {
+Siviglia.require = function (assets, doParse = false) {
     if (typeof assets === 'string' || typeof assets.template === 'string') {
         assets = [assets]
     }
+    var newAssets = [];
+    var existingPromises = [];
+    var widgetURL = Siviglia.config.staticsUrl;
+    var promiseForDepended = $.Deferred();
     for (var k = 0; k < assets.length; k++) {
+
         var dependency = assets[k];
-        var widgetURL = Siviglia.config.staticsUrl
-        var promiseForDepended = $.Deferred();
-        Siviglia.UI.Expando.WidgetExpando.prototype.widgetExecutingRequires[widgetURL + dependency + '.js'] = 1;
-        Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js'] = promiseForDepended;
+        if (typeof Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js'] !== "undefined") existingPromises.push(Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js']); else {
+
+            Siviglia.UI.Expando.WidgetExpando.prototype.widgetExecutingRequires[widgetURL + dependency + '.js'] = 1;
+            Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js'] = promiseForDepended;
+            newAssets.push(dependency);
+        }
     }
 
-    var promise = Siviglia.Utils.load(assets, doParse);
+    var promise = Siviglia.Utils.load(newAssets, doParse);
     promise.then(function () {
-        promiseForDepended.resolve()
+        $.when.apply($, existingPromises).then(function () {
+            promiseForDepended.resolve()
+        })
     });
-    return promise;
+    return promiseForDepended;
 }
 
 Siviglia.Utils.setCookie = function (name, value, expires, path, domain, secure) {
