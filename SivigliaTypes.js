@@ -227,7 +227,7 @@ Siviglia.Utils.buildClass(
                     destruct: function () {
 
                         if (this.__source) {
-                            console.log("DESTRUYENDO SOURCE:"+this.__name);
+                            console.log("DESTRUYENDO SOURCE: "+JSON.stringify(this.__name, null, 2));
                             this.__source.destruct();
                         }
                         for(var k=0;k<this.__resolvers.length;k++)

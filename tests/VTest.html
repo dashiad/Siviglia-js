@@ -38,6 +38,33 @@
   Siviglia.Model.initialize(Siviglia.config);
   Siviglia.debug=true;
 
+  // Test extraction code: this code is added to extract the content from the tests to individual files
+  function saveFileInUserStorage(filename, data, type) {
+    const file = new Blob([data], { type: type })
+    const a = document.createElement('a')
+    const url = URL.createObjectURL(file)
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    setTimeout(function () {
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+    }, 0)
+  }
+  function getStringBetween(str, start, end) {
+    const result = str.match(new RegExp(start + "(.*)" + end, 's'));
+
+    return result[1];
+  }
+  function camelize(str) {
+    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    }).replace(/\s+/g, '');
+  }
+  var indexContent = `var testsList = [`
+  // End extraction code initialization
+
     hljs.initHighlightingOnLoad();
 
     var urlParams = new URLSearchParams(window.location.search);
@@ -284,7 +311,22 @@
         {
             var cItem=cbStack.shift();
             try {
-                var rs = cItem.cb.apply(null,[cItem.def]);
+              // Test extraction start
+              /*const testGroup = camelize(cItem.name.split(': ')[0])
+                const definitionContent = '//definitionInit\n' + JSON.stringify(cItem.def, null, 2) + '\n//definitionEnd\n\n'
+                const codeContent = '//codeInit\n' + getStringBetween(cItem.cb.toString(2), '{\n  ', '}') + '  \n//codeEnd\n'
+                const fileContent = '(function () {\n//callbackInit\ndef =\n' + definitionContent + codeContent + '//callbackEnd\n})'
+                const testName = camelize(cItem.name.split(': ')[1])
+                saveFileInUserStorage(testName + '.js', fileContent, 'text/javascript')
+
+                indexContent += `{
+  name: '${cItem.name}',
+  description: '${cItem.doc}',
+  path: '${testGroup}/${testName}.js'
+},`*/
+              // test extraction end
+
+              var rs = cItem.cb.apply(null,[cItem.def]);
                 if(rs && rs.then)
                 {
                     // Es una promesa.
@@ -305,6 +347,11 @@
             }
 
         }
+
+        // test extraction start
+        /*indexContent += ']'
+      saveFileInUserStorage('testsList.js', indexContent, 'text/javascript')*/
+      //test extraction end
     }
     function runTest(name, doc, def,cb, expectedResult) {
         testNumber++;
@@ -420,7 +467,7 @@
             return null===plain.one;
         }
     )
-    runTest("Container usando BLANK_IS_NULL","Container: Valor nulo cuando: 1) BLANK_IS_NULL es true en el container, y no hay campos, o 2)BLANK_IS_NULL es true en el container, y los campos que se asignan, tambien tienen BLANK_IS_NULL, y estan en blanco.",
+    runTest("Container: Container usando BLANK_IS_NULL","Container: Valor nulo cuando: 1) BLANK_IS_NULL es true en el container, y no hay campos, o 2)BLANK_IS_NULL es true en el container, y los campos que se asignan, tambien tienen BLANK_IS_NULL, y estan en blanco.",
         {
             "TYPE":"Container",
             "BLANK_IS_NULL":true,
@@ -832,7 +879,7 @@
         t2.destruct();
         return e1===1;
     });
-    runTest("BaseTypedObject: Comprobacion de getPath en BaseTypedObject / TypeSwitcher",
+    runTest("BaseTypedObject: Comprobacion de getPath en BaseTypedObject y TypeSwitcher",
         "Se comprueba el funcionamiento de getFullPath, que debe calcular el path completo de un campo.Aqui, el typeswitcher en si, no debe añadir nada al path.Ese campo debe ser transparente.",
         {
             "FIELDS": {
@@ -942,7 +989,7 @@
     }, true);
 
 
-    runTest("Container: Comprobacion de getPath() en Container",
+    runTest("Container: Comprobacion de getPath en Container",
         "Comprobacion de calculo correcto de paths de campos",
         {
             "FIELDS": {
@@ -968,13 +1015,13 @@
         var t2 = new Siviglia.model.BaseTypedObject(def);
         t2.TIPO2 = {"f1": "hola", "TIPO7": {f1: "Prueba", f2: 55}};
         var path = t2.TIPO2.TIPO7["*f2"].__getFieldPath();
-        var status=path == "/TIPO2/TIPO7/f2";
+        var status = path == "/TIPO2/TIPO7/f2";
         t2.destruct();
         return status;
 
-    }, true);
+      }, true);
 
-    runTest("Container: Comprobacion de SET_ON_EMPTY / KEEP_ON_EMPTY en Container",
+    runTest("Container: Comprobacion de SET_ON_EMPTY y KEEP_ON_EMPTY en Container",
         "Comprobacion de KEEP_KEY_ON_EMPTY y SET_ON_EMPTY",
         {
             "FIELDS": {
@@ -1020,7 +1067,7 @@
         return status;
 
     }, true)
-    runTest("Dictionary: Comprobacion de getPath / DEFAULT en Dictionary",
+    runTest("Dictionary: Comprobacion de getPath y DEFAULT en Dictionary",
         "Comprobaciones de valor por defecto y getPath en tipos Dictionary",
         {
             "FIELDS": {
@@ -1168,7 +1215,7 @@
             return status && countListeners()==0;
         }, true);
 
-    runTest("Dictionary: Test simple de dictionary",
+    runTest("Dictionary: Test simple de dictionary (1)",
         "Pruebas de funcionamiento simple de diccionarios, incluyendo listeners",
         {
             "FIELDS": {
@@ -1617,7 +1664,7 @@
 
     });
 
-    runTest("Comprobaciones de Array (1)",
+    runTest("Array: Comprobaciones de Array (1)",
         "Comprobaciones basicas de array, incluyendo gestores de eventos,chequeos de errores,etc",
         {
             "FIELDS": {
@@ -4066,7 +4113,7 @@
     var classContainerTitle = createHTMLElement('div', 'resultOk', classContainer, 'Clase utilizada en los tests de estado, con los callbacks definidos para test y cambio de estado')
     var classShow = createHTMLElement('div', 'testCode', classContainer, "<pre>" + hljs.highlightAuto(classDeclaration).value + "</pre>")
     var classHTML=classContainer.outerHTML;
-console.log("<pre>" + hljs.highlightAuto(classDeclaration).value + "</pre>")
+
     var d1 = defInstance.getDefinition4();
     runTest('BaseTypedObjectModel: ' + classHTML + "Tests de llamada de callbacks",
         "Al cambiar el estado del objeto, se llaman diferentes callbacks:ON_ENTER,ON_LEAVE y TESTS.Los callbacks de TEST se llaman para verificar que el cambio de estado se permite.En la definicion usada en este ejemplo, hay un test que siempre devuelve falso, asociado al paso al estado Another. Es por eso que salta una excepcion al intentar ir a ese estado.",
