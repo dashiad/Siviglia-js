@@ -317,7 +317,6 @@ var testsList = [{
 }, {
   name: 'BaseTypedObjectModel: Otra comprobacion de cambio de estado incorrecto',
   description: 'Utilizando la misma definicion, se intenta pasar de un estado (Another) a otro (Other), que solo permite transicionar a él desde el estado None,lo que provoca la excepcion',
-  description: 'Utilizando la misma definicion, se intenta pasar de un estado (Another) a otro (Other), que solo permite transicionar a él desde el estado None,lo que provoca la excepcion',
   path: 'baseTypedObjectModel/otraComprobacionDeCambioDeEstadoIncorrecto.js'
 }, {
   name: 'BaseTypedObjectModel: Error al intentar una transicion de estado no permitida',
