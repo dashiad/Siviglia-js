@@ -1,0 +1,45 @@
+.testDiv {
+}
+
+.testTitle {
+}
+
+.testCont {
+}
+
+.testDoc {
+    background-color: white;
+    color: black;
+    border: 2px solid gray;
+    padding: 4px;
+}
+
+.testDef {
+    background-color: white;
+    color: black;
+    height: 250px;
+    float: left;
+    width: 300px;
+}
+
+.testCode {
+    background-color: black;
+    height: 250px;
+    overflow-y: scroll;
+}
+
+.resultError {
+    background-color: #cc3636;
+
+}
+
+.result {
+    margin: 2px;
+    padding: 3px;
+    color: honeydew;
+}
+
+.resultOk {
+    background-color: green;
+
+}
