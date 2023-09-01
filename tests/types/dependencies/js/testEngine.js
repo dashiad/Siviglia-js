@@ -11,7 +11,7 @@ if (urlParams.has('path')) {
   pathParameter = urlParams.get('path')
   testPath = TEST_FOLDER_PATH + pathParameter
   const splitPath = pathParameter.split('/')
-  if (splitPath.length > 0) {
+  if (splitPath.length > 0 && splitPath[0]!=='') {
     testRequestType = 'set'
     setName = pathParameter.split('/')[0]
   }
@@ -49,7 +49,6 @@ function fetchTestContent(path, index) {
   var url = Siviglia.config.staticsUrl + uiTestPath + path
   $.get(url).then(function(res) {*/
   $.get(path).then(function (res) {
-    console.log(testStack[index].name)
     testStack[index].definition = getStringBetween(res, '//definitionInit', '//definitionEnd').replace(/(\r\n|\n|\r)/gm, "");
     testStack[index].code = Function(getStringBetween(res, '//codeInit', '//codeEnd'))
     testStack[index].callback = Function(getStringBetween(res, '//callbackInit', '//callbackEnd'))

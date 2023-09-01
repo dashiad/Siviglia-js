@@ -23,57 +23,6 @@
 </head>
 
 <body class="wemass-background">
-<script type="text/javascript">
-  window.addEventListener('load', addURLOptions)
-
-  function addURLOptions() {
-    const storedURLs = JSON.parse(localStorage.getItem('wm-test-urls')) || []
-    let list = document.getElementById('stored-urls')
-    for (let url of storedURLs) {
-      const option = document.createElement('option')
-      option.value = url
-      list.appendChild(option)
-    }
-  }
-
-  function doOnSubmitTasks(form) {
-    storeURL(form)
-    setActionURL(form)
-    if (form['keyWords-key'].value && form['keyWords-values'].value) {
-      createKeyValueSearchParam(form)
-    }
-    cleanEmptySelects(form)
-  }
-
-  function setActionURL(form) {
-    form.action = form['url-input'].value
-  }
-
-  function cleanEmptySelects(form) {
-    for (let i = 0; i < form.length; i++) {
-      if ((form[i].localName === 'select' || form[i].localName === 'input') && form[i].value === '') {
-        form[i].name = ''
-      }
-    }
-  }
-
-  function createKeyValueSearchParam(form) {
-    const searchParamValue = {}
-    const key = form['keyWords-key'].value
-    searchParamValue[key] = form['keyWords-values'].value.split(',')
-    form['keyWords'].value = JSON.stringify(searchParamValue)
-  }
-
-  function storeURL(form) {
-    const url = form['url-input'].value
-    const storedURLs = JSON.parse(localStorage.getItem('wm-test-urls')) || []
-    if (!storedURLs.includes(url)) {
-      storedURLs.push(url)
-    }
-    localStorage.setItem('wm-test-urls', JSON.stringify(storedURLs))
-  }
-</script>
-
 <div class="container py-4 ">
     <main>
         <header class="pb-3 mb-4 border-bottom wemass-background">
@@ -99,8 +48,9 @@
                     <div class="h-100 p-5 bg-light border rounded-3">
                         <h2>Tests de expandos</h2>
                         <div class="mb-3">
-<!--                            <input type="button" value="button name" onclick="window.open('example.com/')" />-->
-                            <button id="expando-set-btn" id="expando-set-btn" class="btn btn-primary" onclick="openTestSet('expando')">Set completo</button>
+                            <button id="expando-set-btn" id="expando-set-btn" class="btn btn-primary"
+                                    onclick="openTestSet('expando')">Set completo
+                            </button>
                         </div>
 
                         <div class="mb-3">
@@ -114,7 +64,9 @@
                     <div class="h-100 p-5 bg-light border rounded-3">
                         <h2>Tests de inputs</h2>
                         <div class="mb-3">
-                            <button id="input-set-btn" class="btn btn-primary" onclick="openTestSet('input')">Set completo</button>
+                            <button id="input-set-btn" class="btn btn-primary" onclick="openTestSet('input')">Set
+                                completo
+                            </button>
                         </div>
 
                         <div class="mb-3">
@@ -128,7 +80,9 @@
                     <div class="h-100 p-5 bg-light border rounded-3">
                         <h2>Tests de widgets</h2>
                         <div class="mb-3">
-                            <button id="widget-set-btn" class="btn btn-primary" onclick="openTestSet('widget')">Set completo</button>
+                            <button id="widget-set-btn" class="btn btn-primary" onclick="openTestSet('widget')">Set
+                                completo
+                            </button>
                         </div>
 
                         <div class="mb-3">
@@ -165,14 +119,15 @@
       currentIframe.remove()
     }
   }
+
   function createIframeInDOM(event) {
     removeIframeFromDOM()
     const iframeElement = document.createElement('iframe')
     iframeElement.id = 'test-iframe'
-    iframeElement.title="Inline Frame Example"
-    iframeElement.width="100%"
-    iframeElement.height="600"
-    iframeElement.src=`${basePath}?path=` + event.currentTarget.id
+    iframeElement.title = "Inline Frame Example"
+    iframeElement.width = "100%"
+    iframeElement.height = "600"
+    iframeElement.src = `${basePath}?path=` + event.currentTarget.id
     document.getElementById('test-container').appendChild(iframeElement)
   }
 

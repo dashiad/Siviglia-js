@@ -1,3 +1,6 @@
+:root{
+    --height: 500px;
+}
 .testDiv {
 }
 
@@ -17,14 +20,14 @@
 .testDef {
     background-color: white;
     color: black;
-    height: 250px;
+    height: var(--height);
     float: left;
     width: 300px;
 }
 
 .testCode {
     background-color: black;
-    height: 250px;
+    height: var(--height);
     overflow-y: scroll;
 }
 
