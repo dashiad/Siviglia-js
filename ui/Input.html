@@ -248,6 +248,14 @@
          data-widgetCode="Siviglia.inputs.jqwidgets.File">
         <div data-sivId="inputNode" class="form-control FileInput"></div>
     </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Image" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.Image">
+        <div data-sivId="inputNode" class="form-control ImageInput"></div>
+    </div>
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.Video" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.Video">
+        <div data-sivId="inputNode" class="form-control VideoInput"></div>
+    </div>
     <div data-sivWidget="Siviglia.inputs.jqwidgets.IP" data-widgetParams="type,inputParams"
          data-widgetCode="Siviglia.inputs.jqwidgets.IP">
         <div data-sivId="inputNode" class="form-control IPInput"></div>
@@ -500,6 +508,17 @@
          data-widgetCode="Siviglia.inputs.jqwidgets.FilteringForm">
         <div class="Form FilteringForm">
             <div data-sivId="formNode"></div>
+        </div>
+
+    </div>
+
+    <div data-sivWidget="Siviglia.inputs.jqwidgets.AutoForm" data-widgetParams="type,inputParams"
+         data-widgetCode="Siviglia.inputs.jqwidgets.AutoForm">
+
+        <div class="Form">
+            <div data-sivId="formNode"></div>
+            <!-- <div class="formSubmit"></div> -->
+            <input class="form-button" type="button" data-sivEvent="click" data-sivCallback="submit" value="Save">
         </div>
 
     </div>

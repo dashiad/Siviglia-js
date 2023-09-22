@@ -379,7 +379,7 @@ Siviglia.Utils.buildClass(
               if (typeof this.inputNode !== "undefined" &&
                 node_empty_and_required === "" && input_required) {
                 // lanzamos una excepcion con el codigo de error de campo requerido (5)
-                var e = new Siviglia.types.BaseTypeException(this.type.getFullPath(), Siviglia.types.BaseTypeException.ERR_REQUIRED, this.type.__definition);
+                var e = new Siviglia.model.BaseTypedException(this.type.getFullPath(), Siviglia.model.BaseTypedException.ERR_REQUIRED_FIELD, this.type.__definition);
                 this.type.__setErrored(e);
                 //throw e;
               } else {
@@ -615,6 +615,68 @@ Siviglia.Utils.buildClass(
           },
           getValue: function () {
             return this.inputNode.val() ? "1" : "0";
+          }
+        }
+      },
+      File:{
+          inherits:'BaseInput',
+          methods:{
+            initialize:function(params){
+              this.BaseInput$initialize(params);
+              this._innerVal=null;
+              this.inputNode.on('select', function (event) {
+                var args = event.args;
+                var fileName = args.file;
+                var fileSize = args.size; // Note: Internet Explorer 9 and earlier do not support getting the file size.
+                this._innerVal={fileName:fileName,fileSize:fileSize};
+                this.type.setValue(this._innerVal);
+              }.bind(this));
+            },
+            debounce: function (func, wait, immediate) {
+              var timeout;
+              return function () {
+                var context = this, args = arguments;
+                func.apply(context, args);
+              };
+            },
+            getDefaultInputOptions:function(){
+
+              return {
+                autoUpload:false,
+                multipleFilesUpload:false,
+                fileInputName:this.type.__getFieldName()
+              };
+            },
+            getJqxWidgetName(){
+              return "jqxFileUpload";
+            },
+            _setInputValue:function(value)
+            {
+              this._innerVal=value;
+              return null;
+            },
+            getValue: function () {
+              return this._innerVal;
+            }
+          }
+      },
+      Image:{
+          inherits:'File',
+          methods:{
+            getDefaultInputOptions:function(){
+              let cur=this.File$getDefaultInputOptions();
+              cur.accept="image/*";
+              return cur;
+            }
+          }
+      },
+      Video:{
+        inherits:'File',
+        methods:{
+          getDefaultInputOptions:function(){
+            let cur=this.File$getDefaultInputOptions();
+            cur.accept="video/*";
+            return cur;
           }
         }
       },
@@ -1132,15 +1194,11 @@ Siviglia.Utils.buildClass(
       Email: {
         inherits: 'String'
       },
-      File: {
-        inherits: 'String'
-      },
+
       IP: {
         inherits: 'String'
       },
-      // Image:{
-      //     inherits:'String'
-      // },
+
       Link: {
         inherits: 'String'
       },
@@ -2352,6 +2410,47 @@ Siviglia.Utils.buildClass(
               }
               return this.onSubmit();
             },
+            htmlSubmit:function(method,action,encType,extraFields)
+            {
+              //this.inputContainers[5].innerInput.__inherits.indexOf("File")
+              let fData=new FormData();
+              this.inputContainers.map(function(ip,idx){
+                let inp=ip.innerInput;
+                let name=ip.fieldName;
+                // Por algun motivo, no es posible obtener el File del jqxFileUpload. No solo eso, sino que
+                // dentro del widget hay 2 inputs de tipo File. Hay que coger el que tenga algo en su array de "files",
+                // No voy a iterar tambien sobre ellos. Cojo el primer input, que parece ser el correcto.
+                if(inp.__inherits.indexOf("File")>=0)
+                {
+                  let rawNodes=$("input[type=file]",inp.rootNode);
+                  if(rawNodes[0].files.length>0)
+                  {
+                    fData.append(name,rawNodes[0].files[0])
+                  }
+                }
+                else
+                  fData.append(name,inp.getValue());
+              })
+              if(typeof extraFields!=="undefined")
+              {
+                for(let k in extraFields)
+                {
+                  fData.append(k,extraFields[k]);
+                }
+              }
+
+              return $.ajax({
+                url: action,
+                type: method,
+                data: fData,
+                success: function (data) {
+                  alert(data)
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+              });
+            },
             doRedirect: function (type) {
               if (typeof this._type.__definition["REDIRECT"] !== "undefined" &&
                 typeof this._type.__definition["REDIRECT"][type] !== "undefined" &&
@@ -2478,6 +2577,7 @@ Siviglia.Utils.buildClass(
               this.hasGlobalErrors = false;
               var p = $.Deferred();
               if (this.__model === null) {
+                this.fireEvent("SUBMIT", {});
                 p.resolve();
               } else {
                 this._type.submit().then(
@@ -2585,6 +2685,35 @@ Siviglia.Utils.buildClass(
               return "Unknown error";
             }
           }
+      },
+      AutoForm:{
+        inherits:"Siviglia.inputs.jqwidgets.Form",
+        destruct:function()
+        {
+          this.inputContainers.map(function(i){i.destruct()});
+        },
+        methods:{
+          preInitialize:function(params)
+          {
+            this.inputContainers=[];
+            this.Form$preInitialize(params);
+
+          },
+          initialize:function(params)
+          {
+             let q=this._type;
+             let definition=q.getDefinition();
+             for(let k in definition.FIELDS)
+             {
+              let n=$("<div></div>");
+               let it=new Siviglia.inputs.jqwidgets.StdInputContainer('Siviglia.inputs.jqwidgets.StdInputContainer',
+               {key:k, parent:this.type,form:this,controller:this},{},n,this.__context);
+               this.formNode.append(n);
+               it.__build();
+               this.inputContainers.push(it);
+             }
+          }
+        }
       },
       Confirm: {
         inherits: "Siviglia.UI.Expando.View,Siviglia.Dom.EventManager",
