@@ -2637,8 +2637,9 @@ Siviglia.Utils.buildClass(
                                   return;
                               this.__composeHtml(w);
                               this.parseNode();
-                              this.initialize(this.__params);
-
+                              this.waitComplete().then(function(){
+                                  this.initialize(this.__params);
+                              }.bind(this))
                               p.resolve(this);
                               this.__builtPromise.resolve();
                           }.bind(this);
@@ -3091,18 +3092,20 @@ Siviglia.Utils.load=function(assets, doParse) {
     });
     return curPromise;
 };
-Siviglia.require = function (assets, doParse = false) {
+Siviglia.require = function (assets, doParse=false) {
     if (typeof assets === 'string' || typeof assets.template === 'string') {
         assets = [assets]
     }
-    var newAssets = [];
-    var existingPromises = [];
+    var newAssets=[];
+    var existingPromises=[];
     var widgetURL = Siviglia.config.staticsUrl;
     var promiseForDepended = $.Deferred();
     for (var k = 0; k < assets.length; k++) {
 
         var dependency = assets[k];
-        if (typeof Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js'] !== "undefined") existingPromises.push(Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js']); else {
+        if(typeof Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js'] !== "undefined")
+            existingPromises.push(Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js']);
+        else {
 
             Siviglia.UI.Expando.WidgetExpando.prototype.widgetExecutingRequires[widgetURL + dependency + '.js'] = 1;
             Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js'] = promiseForDepended;
@@ -3112,7 +3115,7 @@ Siviglia.require = function (assets, doParse = false) {
 
     var promise = Siviglia.Utils.load(newAssets, doParse);
     promise.then(function () {
-        $.when.apply($, existingPromises).then(function () {
+        $.when.apply($, existingPromises).then(function(){
             promiseForDepended.resolve()
         })
     });

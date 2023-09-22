@@ -156,38 +156,6 @@ Siviglia.Utils.buildClass(
     {
         context: 'Siviglia.types',
         classes: {
-            BaseTypedException:
-                {
-                    constants:
-                        {
-                            ERR_UNSET: 1,
-                            ERR_INVALID: 2,
-                            ERR_TYPE_NOT_FOUND: 3,
-                            ERR_INCOMPLETE_TYPE: 4,
-                            ERR_REQUIRED: 5,
-                            ERR_SERIALIZER_NOT_FOUND: 7,
-                            ERR_TYPE_NOT_EDITABLE: 8,
-                            ERR_SAVE_ERROR: 9
-                        },
-                    construct: function (path, code, params) {
-                        this.path = path;
-                        this.type = 'BaseTypedException';
-                        this.code = code;
-                        this.params = params;
-                    },
-
-                    methods:
-                        {
-                            getName: function () {
-                                var srcObject = Siviglia.types[this.type];
-                                for (var k in srcObject) {
-                                    if (srcObject[k] == this.code)
-                                        return k;
-                                }
-                                return null;
-                            }
-                        }
-                },
 
             BaseType:
                 {
@@ -1465,7 +1433,7 @@ Siviglia.Utils.buildClass(
                     },
                     methods:
                         {
-                            __localValidate: function () {
+                            _validate: function () {
                                 var val=this.__value;
                                 if (this.__isEmptyValue(val) || val === "")
                                     throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_UNSET);
@@ -1488,12 +1456,6 @@ Siviglia.Utils.buildClass(
                                     }
                                 }
                                 return true;
-                            },
-                            _setValue: function (val,validationMode) {
-                                this.__value = val;
-                                this.__localValidate();
-                                return this.__value;
-
                             }
                         }
                 },
@@ -1565,7 +1527,7 @@ Siviglia.Utils.buildClass(
                     },
                     methods:
                         {
-                            __localValidate: function () {
+                            _validate: function () {
                                 var val=this.__value;
                                 if (this.__isEmptyValue(val) || val === "")
                                     throw new Siviglia.model.BaseTypedException(this.getFullPath(), Siviglia.model.BaseTypedException.ERR_UNSET);
@@ -1601,6 +1563,15 @@ Siviglia.Utils.buildClass(
                             }
                         }
                 },
+            Video:{
+                    inherits:'File',
+                construct: function (name, def, parentType, val, validationType) {
+                    var stdDef = {'TYPE': 'Video'};
+                    var fullDef = this.__overrideDefinition(def, stdDef);
+                    this.File(name, fullDef, parentType, val, validationType);
+                }
+
+            },
             IP:
                 {
                     inherits: 'String',
@@ -3222,7 +3193,7 @@ Siviglia.Utils.buildClass(
                         }
                     }*/
                         },
-                        _validate: function (val) {
+                        _validate: function () {
                             return true;
                         },
 

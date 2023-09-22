@@ -33,6 +33,21 @@ var Cache = new Siviglia.Cache();
 Siviglia.globals.Cache = Cache;
 
 
+Siviglia.globals.FileServer=function(def)
+{
+    this.def=def;
+    this.getUrl=function(subPath){return this.def.baseUrl+"/"+subPath;}
+}
+Siviglia.globals.FileServerFactory=function(fileServer)
+{
+    if(typeof Siviglia.config !== "undefined" && typeof Siviglia.config.FileServers!=="undefined" && typeof Siviglia.config.FileServers[fileServer]!=="undefined")
+        return new Siviglia.globals.FileServer(Siviglia.config.FileServers[fileServer]);
+    // No dejamos que todo pete si no existe el fileserver. Devolvemos el path local.
+    console.error("Siviglia: requesting unknown fileServer:"+fileServer);
+    return new FileServer({"baseUrl":""});
+}
+
+
 Siviglia.Model.initialize = function (config) {
 
     Siviglia.Model.config = config;
