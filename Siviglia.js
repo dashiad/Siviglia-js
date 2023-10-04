@@ -491,13 +491,7 @@ Siviglia.Dom = {
     managerCounter: 0,
     existingManagers: {},
     existingListeners: {},
-    eventStack: [],
-    dumpEventStack: function () {
-        for (var k = 0; k < Siviglia.Dom.eventStack.length; k++) {
-            var el = Siviglia.Dom.eventStack[k];
-        }
-    }
-
+    eventStack: []
 };
 Siviglia.Utils.buildClass({
     context: 'Siviglia.Dom',
@@ -832,13 +826,12 @@ Siviglia.Utils.buildClass(
                                       v.addListener("CHANGE", this, "onChange", "BaseCursor:" + spec);
                                       this.remListeners.push(v);
                                   }
-
                               }
                               else
                                   this.addPathListener(currentParent, childName);
-
                           }
-                          else {
+                          else
+                          {
                               if(eventMode==2)
                                   this.addPathListener(currentParent, childName);
                           }
