@@ -882,9 +882,7 @@ Siviglia.Utils.buildClass(
                   getRoot:function(){
                       return this.objRoot;
                   },
-                  getCursor:function(){
-                      return new Siviglia.Path.BaseObjectContainerCursor(this.objRoot);
-                  },
+
                   // Necesario en los contextos @.
                   // El tener un "padre" dentro del stack, hace que se use
                   // ese padre, en vez del stack, cuando hay que eventizar el objeto
