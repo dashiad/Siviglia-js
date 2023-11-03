@@ -572,12 +572,11 @@ Siviglia.Utils.buildClass(
           },
           getDefaultInputOptions: function () {
             return {
-              //height: "400px",
-              //width: '200px'
-            };
+              height: "400px"
+            }
           },
           getJqxWidgetName: function () {
-            return "jqxInput";
+            return "jqxTextArea";
           }
 
         }
