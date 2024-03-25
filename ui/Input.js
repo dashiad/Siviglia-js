@@ -542,7 +542,7 @@ Siviglia.Utils.buildClass(
            */
           getDefaultInputOptions: function () {
 
-            return {decimalDigits: 0};
+            return {width: '100%', height: '100%', decimalDigits: 0, groupSeparator: "", promptChar: ""};
           },
           getJqxWidgetName: function () {
             return "jqxNumberInput";
