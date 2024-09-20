@@ -2058,6 +2058,7 @@ Siviglia.Utils.buildClass(
                     this.Expando("sivloop");
                     this.oldNodes=null;
                     this.origNode=null;
+
                     this.childNodes = [];
                     this.nest = true;
 
@@ -2074,8 +2075,11 @@ Siviglia.Utils.buildClass(
                         this.stack = stack;
                         this.oManagers=[];
                         this.ownStacks=[];
-                        this.origNode=node;
                         this.node = node;
+                        this.origNode=node[0].cloneNode(false);
+                        Object.keys(this.origNode.dataset).forEach(dataKey => {
+                            delete this.origNode.dataset[dataKey];
+                        });
                         this.parentView=nodeManager.parentView;
                         for (var k = 0; k < node[0].childNodes.length; k++) {
                             var cNode = node[0].childNodes[k];
@@ -2107,7 +2111,8 @@ Siviglia.Utils.buildClass(
                             return;
                         var oldNodes=this.childNodes;
                         if(this.oManagers.length > 0) {
-                            this.node=$('<div></div>').insertBefore(this.node[0]);
+                            let nnode=this.origNode.cloneNode(false);
+                                this.node=$(nnode).insertBefore(this.node[0]);
                             this.reset();
                         }
                         var val = params.value;
@@ -2116,7 +2121,8 @@ Siviglia.Utils.buildClass(
                         if (!val)
                             val = [];
                         var contextRoot;
-                        var newNode=$("<div></div>");
+                        var newNode=$(this.origNode.cloneNode(false));
+
                         var newNodes=[];
                         var cb = (function (key, value,parent) {
                             contextRoot = {};
@@ -2144,7 +2150,8 @@ Siviglia.Utils.buildClass(
                                 // Asi que creamos un padre "fake", para que el contenido del cloneNode tenga un padre..y asi, si hay
                                 // una vista, el clone pueda tener un padre.
                                 var curNode = this.origHTML[j].cloneNode(true);
-                                var fakeParent=$("<div></div>");
+                                // Como padre, creamos una copia del nodo original.
+                                var fakeParent=$(this.origNode.cloneNode(false));
                                 fakeParent.append(curNode);
                                 if (curNode.nodeType == 1)
                                     manager.parse(fakeParent);
@@ -2990,6 +2997,7 @@ Siviglia.Utils.load=function(assets, doParse) {
         var widgetPrototype = Siviglia.UI.Expando.WidgetExpando.prototype;
         var subdomain = Siviglia.config.staticsUrl
         var promise = $.Deferred();
+        promise.resolved=false;
         var jsURL = subdomain + config.js
         var htmlURL = subdomain + config.template
 
@@ -3022,11 +3030,13 @@ Siviglia.Utils.load=function(assets, doParse) {
         widgetPromises.push(jsAndRequirePromise);
 
         $.when.apply($, widgetPromises).then(function () {
+            console.log("RESUELTO WIDGET DE "+jsURL);
             if (true ){ //typeof doParse !== "undefined" && doParse === true) {
                 var parser = new Siviglia.UI.HTMLParser(config.context, null);
                 parser.parse(config.node);
                 config.node.data("noparse",true);
             }
+            promise.resolved=true;
             promise.resolve(config.node);
             if(typeof widgetPrototype.widgetLoadingPromises[jsURL] !=="undefined")
                 widgetPrototype.widgetLoadingPromises[jsURL].resolve();
@@ -3078,7 +3088,7 @@ Siviglia.Utils.load=function(assets, doParse) {
 
     var curPromise=$.Deferred();
     $.when.apply($, promisesList).done(function() {
-
+        console.dir(promisesList);
         curPromise.resolve();
     });
     return curPromise;
@@ -3088,14 +3098,14 @@ Siviglia.require = function (assets, doParse=false) {
         assets = [assets]
     }
     var newAssets=[];
-    var existingPromises=[];
+    reqPromises=[];
     var widgetURL = Siviglia.config.staticsUrl;
     var promiseForDepended = $.Deferred();
     for (var k = 0; k < assets.length; k++) {
 
         var dependency = assets[k];
         if(typeof Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js'] !== "undefined")
-            existingPromises.push(Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js']);
+            reqPromises.push(Siviglia.UI.Expando.WidgetExpando.prototype.widgetLoadingPromises[widgetURL + dependency + '.js']);
         else {
 
             Siviglia.UI.Expando.WidgetExpando.prototype.widgetExecutingRequires[widgetURL + dependency + '.js'] = 1;
@@ -3103,14 +3113,16 @@ Siviglia.require = function (assets, doParse=false) {
             newAssets.push(dependency);
         }
     }
-
-    var promise = Siviglia.Utils.load(newAssets, doParse);
-    promise.then(function () {
-        $.when.apply($, existingPromises).then(function(){
-            promiseForDepended.resolve()
-        })
-    });
-    return promiseForDepended;
+    var finishedPromise=$.Deferred();
+    if(newAssets.length > 0) {
+        var promise = Siviglia.Utils.load(newAssets, doParse);
+        reqPromises.push(promise);
+    }
+    $.when.apply($,reqPromises).then(function(){
+        promiseForDepended.resolve()
+        finishedPromise.resolve();
+    })
+    return finishedPromise;
 }
 
 Siviglia.Utils.setCookie = function (name, value, expires, path, domain, secure) {
