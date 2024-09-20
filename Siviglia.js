@@ -2093,6 +2093,7 @@ Siviglia.Utils.buildClass(
                         this.resolver = new Siviglia.Path.PathResolver(stack, node.data("sivloop"));
                         this.resolver.addListener("CHANGE", this, "update", "LoopExpando:" + this.str);
                         this.resolver.getPath();
+                        node.remove();
                         return false;
                     },
                     reset: function () {
@@ -2188,13 +2189,25 @@ Siviglia.Utils.buildClass(
                             }
                         }
                         var newChildren=$(newNode).contents();
-                        if(newChildren.length===0)
-                            newChildren=$("<div></div>");
-                        newChildren.insertBefore(this.node[0]);
-                        this.node.remove();
+                        if (newChildren.length === 0)
+                            newChildren = $("<div></div>");
+                        if(this.origNode.tagName=="div" || this.origNode.tagName=="span") {
+
+                            newChildren.insertBefore(this.node[0]);
+                            this.node.remove();
+                            this.node=newChildren;
+                        }
+                        else
+                        {
+                            let newNode=$(this.origNode.cloneNode(false));
+                            newNode.insertBefore(this.node[0]);
+                            newNode.append(newChildren);
+                            this.node.remove();
+                            this.node=newNode;
+                        }
 
                         //$(newNode).children().appendTo(this.node);
-                        this.node=newChildren;
+
                         this.childNodes=newNodes;
 
                         for(var k=0;k<oldNodes.length;k++)
