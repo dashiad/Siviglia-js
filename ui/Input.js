@@ -94,20 +94,37 @@ Siviglia.Utils.buildClass(
               }
             }
             var stack = new Siviglia.Path.ContextStack();
-            var instance = new Siviglia.inputs.jqwidgets[input](
-              //"Siviglia.inputs.jqwidgets."+input,
-              input.indexOf(".") > -1 ? input : "Siviglia.inputs.jqwidgets." + input,
-              p,
-              {},
-              dv,
-              stack
-            );
-            instance.__build().then(function () {
-              // Se crea el layout y se le pasa la instancia.
+            if(typeof Siviglia.inputs.jqwidgets[input]==="undefined")
+            {
+              Siviglia.require(["Siviglia/inputs/jqwidgets/"+input.replaceAll(".","/")],true).then(function(){
+                let q=Siviglia.Utils.stringToContextAndObject("Siviglia.inputs.jqwidgets."+input);
+                var instance=new q.context[q.object](
+                    "Siviglia.inputs.jqwidgets."+input,p,{},dv,stack
+                );
+                instance.__build().then(function () {
+                  // Se crea el layout y se le pasa la instancia.
 
-              d.resolve(instance);
+                  d.resolve(instance);
+                })
+              })
 
-            })
+            }
+            else {
+              var instance = new Siviglia.inputs.jqwidgets[input](
+                  //"Siviglia.inputs.jqwidgets."+input,
+                  input.indexOf(".") > -1 ? input : "Siviglia.inputs.jqwidgets." + input,
+                  p,
+                  {},
+                  dv,
+                  stack
+              );
+              instance.__build().then(function () {
+                // Se crea el layout y se le pasa la instancia.
+
+                d.resolve(instance);
+
+              })
+            }
             return d;
 
           }

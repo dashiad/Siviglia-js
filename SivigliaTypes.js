@@ -3553,6 +3553,11 @@ Siviglia.Utils.buildClass(
                             return function (target, prop, receiver) {
                                 if (prop == "length")
                                     return target[prop];
+                                if(prop.toString()=='Symbol(Symbol.toPrimitive)' || prop.toString()=='Symbol(Symbol.toStringTag)')
+                                {
+                                    return function(){return JSON.stringify(target)};
+                                }
+
                                 return parentFunc.apply(this, arguments);
                             }
                         },
@@ -4225,7 +4230,6 @@ Siviglia.Utils.buildClass(
                                                 withCredentials: true
                                             },
                                             type: 'GET',
-                                            dataType: "json",
                                             url: Siviglia.config.metadataUrl + "js/" + Siviglia.config.mapper + "/" + type,
                                             success: function (data) {
                                                 if (data === null)
@@ -4242,21 +4246,7 @@ Siviglia.Utils.buildClass(
                                         }
                                     );
                                 }
-                                if (typeof Siviglia.types.typeCache[type] == "undefined")
-                                    throw "Unknown Type : " + def["TYPE"];
-                                var definition = Siviglia.types.typeCache[type];
-                                if (definition.type === "definition") {
-                                    return this.getType(fieldName, definition.content, parent,val,validationMode);
-                                } else {
-                                    // Si estamos aqui, es que es una clase javascript "custom".
-                                    // Ademas, acaba de cargarse por Ajax, ya que, en caso contrario, se habría
-                                    // encontrado ya la clase, a traves de ctx.context[ctx.object].
-                                    // Asi que creamos el elemento <script> para parsear y ejecutar el script recibido.
-                                    var scr = document.createElement("script");
-                                    scr.text = definition.content;
-                                    document.body.appendChild(scr);
-                                    ctx = Siviglia.Utils.stringToContextAndObject(fullTypeDotted);
-                                }
+                                ctx = Siviglia.Utils.stringToContextAndObject(fullTypeDotted);
                             }
                             // Se comprueba ahora si existe un Proxy para este tipo de objeto:
                             var newType;

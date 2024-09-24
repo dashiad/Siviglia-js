@@ -71,8 +71,8 @@ Siviglia.Utils.buildClass(
             // Para ello, se genera un prefijo para los ids de los divs, a los que se les aniade un contador
             this.filterPromise = $.Deferred();
             this.gridPromise = $.Deferred();
-            this.__addDependency(this.filterPromise);
-            this.__addDependency(this.gridPromise);
+            //this.__addDependency(this.filterPromise);
+            //this.__addDependency(this.gridPromise);
             this.divPrefix = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'e', 'f'][parseInt(Math.random() * 10)] + (new Date()).getTime();
             this.divCounter = 0;
             this.futureWidgetData = [];

@@ -187,7 +187,7 @@ Siviglia.Utils.buildClass({
                     }
 
                     query =$.param(n);
-                    return this.config.baseUrl + "datasource/" + model.getCanonical() + '/' + (id ? id + '/' : '') + datasource + '?output=' +output + "&" + query;
+                    return this.config.baseUrl + "datasource" + model.getCanonical() + '/' + (id ? id + '/' : '') + datasource + '?output=' +output + "&" + query;
                 },
                 getJSModelUrl: function (model) {
                     var m = new Siviglia.Model.ModelDescriptor(model);
